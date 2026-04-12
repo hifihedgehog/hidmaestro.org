@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIDMaestro &mdash; Virtual Game Controllers That Look Like Real Hardware</title>
+    <meta name="description" content="A user-mode virtual controller platform for Windows. No kernel driver, no EV certificate, no reboot. Every gaming API sees real hardware.">
+    <meta name="keywords" content="HIDMaestro, virtual controller, UMDF2, DirectInput, XInput, SDL3, gamepad emulation, HID descriptor, controller emulation, ViGEmBus alternative">
+    <meta property="og:title" content="HIDMaestro &mdash; Virtual Game Controllers That Look Like Real Hardware">
+    <meta property="og:description" content="A user-mode virtual controller platform for Windows. No kernel driver, no EV certificate, no reboot. Every gaming API sees real hardware.">
+    <meta property="og:image" content="https://hidmaestro.org/assets/logo.png">
+    <meta property="og:url" content="https://hidmaestro.org">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="assets/icon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="container nav-container">
+        <a href="#" class="nav-logo">
+            <img src="assets/icon.png" alt="HIDMaestro" width="36" height="36">
+            <span>HIDMaestro</span>
+        </a>
+        <button class="nav-toggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#screenshots">Screenshots</a></li>
+            <li><a href="#download">Get Started</a></li>
+            <li><a href="https://github.com/hifihedgehog/HIDMaestro" class="nav-github" target="_blank" rel="noopener">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+    <div class="container hero-content">
+        <img src="assets/logo.png" alt="HIDMaestro Logo" class="hero-logo">
+        <h1>Virtual game controllers that look like real hardware.</h1>
+        <p class="hero-sub">A user-mode virtual controller platform for Windows. No kernel driver, no EV certificate, no reboot. Every gaming API sees real hardware &mdash; DirectInput, XInput, SDL3, browser Gamepad, and more.</p>
+        <div class="hero-buttons">
+            <a href="https://github.com/hifihedgehog/HIDMaestro" class="btn btn-primary" target="_blank" rel="noopener">View on GitHub</a>
+            <a href="https://github.com/hifihedgehog/HIDMaestro#getting-started" class="btn btn-secondary" target="_blank" rel="noopener">Read the Docs</a>
+        </div>
+    </div>
+</header>
+
+<!-- Features -->
+<section id="features" class="features">
+    <div class="container">
+        <h2>Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">&#128274;</div>
+                <h3>No Kernel Driver</h3>
+                <p>Runs entirely in user mode via UMDF2. No custom kernel driver to sign, no EV certificate, no reboot to install.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#127918;</div>
+                <h3>225+ Device Profiles</h3>
+                <p>Embedded profiles across 32 vendors &mdash; Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#127760;</div>
+                <h3>Every Gaming API</h3>
+                <p>DirectInput, XInput, SDL3/HIDAPI, browser Gamepad, WGI/GameInput, and RawInput all see the same real controller simultaneously.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128270;</div>
+                <h3>Exact Hardware Identity</h3>
+                <p>Profile-driven VID/PID, product strings, and HID descriptors. Games can't distinguish virtual from physical.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#9889;</div>
+                <h3>Hot-Plug Support</h3>
+                <p>Create and remove controllers on the fly. ~200ms for a single controller, ~3.5s for 6 mixed. No reboots.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#127922;</div>
+                <h3>Multi-Controller</h3>
+                <p>Up to 6+ simultaneous virtual controllers of mixed types, verified working across all APIs with correct ordering.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128295;</div>
+                <h3>Custom Descriptors</h3>
+                <p>Public SDK APIs to clone, modify, or build entirely new controller profiles from scratch with custom HID descriptors.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128220;</div>
+                <h3>MIT Licensed</h3>
+                <p>Free and open source. Use it in your own projects, commercial or otherwise, with no restrictions.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Screenshots -->
+<section id="screenshots" class="screenshots">
+    <div class="container">
+        <h2>Screenshots</h2>
+        <div class="screenshot-gallery">
+            <div class="screenshot-nav">
+                <button class="screenshot-prev" aria-label="Previous screenshot">&larr;</button>
+                <button class="screenshot-next" aria-label="Next screenshot">&rarr;</button>
+            </div>
+            <div class="screenshot-viewport">
+                <div class="screenshot-track">
+                    <figure class="screenshot-item active">
+                        <img src="assets/screenshot-xbox-series-bt.png" alt="Xbox Series BT" loading="lazy">
+                        <figcaption>Xbox Series X|S Bluetooth &mdash; Device Manager, joy.cpl, Chrome Gamepad Tester, PadForge/SDL3</figcaption>
+                    </figure>
+                    <figure class="screenshot-item">
+                        <img src="assets/screenshot-xbox-360-wired.png" alt="Xbox 360 Wired" loading="lazy">
+                        <figcaption>Xbox 360 Wired &mdash; Device Manager, joy.cpl, Chrome Gamepad Tester, PadForge/SDL3</figcaption>
+                    </figure>
+                    <figure class="screenshot-item">
+                        <img src="assets/screenshot-dualsense.png" alt="DualSense PS5" loading="lazy">
+                        <figcaption>DualSense (PS5) &mdash; Device Manager, joy.cpl, Chrome Gamepad Tester, PadForge/SDL3</figcaption>
+                    </figure>
+                </div>
+            </div>
+            <div class="screenshot-dots"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Download / Getting Started -->
+<section id="download" class="download">
+    <div class="container download-content">
+        <h2>Get Started</h2>
+        <p>HIDMaestro is a developer platform. Clone the repo or grab a release to get started.</p>
+        <div class="download-buttons">
+            <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary btn-lg" target="_blank" rel="noopener">Download Latest Release</a>
+        </div>
+        <div class="download-info">
+            <p>Prerequisites:</p>
+            <ul>
+                <li><strong>Windows 10 or 11</strong> &mdash; x64</li>
+                <li><strong>.NET 10</strong> &mdash; runtime</li>
+                <li><strong>Administrator privileges</strong> &mdash; virtual device creation requires SeLoadDriverPrivilege</li>
+                <li><strong>Visual Studio 2022+</strong> &mdash; for building from source (with Windows SDK/WDK 10.0.26100.0)</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container footer-content">
+        <div class="footer-left">
+            <img src="assets/icon.png" alt="HIDMaestro" width="24" height="24">
+            <span>HIDMaestro</span>
+        </div>
+        <div class="footer-links">
+            <a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://github.com/hifihedgehog/HIDMaestro/issues" target="_blank" rel="noopener">Issues</a>
+            <a href="https://github.com/hifihedgehog/HIDMaestro/discussions" target="_blank" rel="noopener">Discussions</a>
+        </div>
+        <div class="footer-right">
+            <p>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT License</a></p>
+        </div>
+    </div>
+</footer>
+
+<script>
+(function() {
+    // Mobile nav toggle
+    const toggle = document.querySelector('.nav-toggle');
+    const links = document.querySelector('.nav-links');
+    toggle.addEventListener('click', () => {
+        links.classList.toggle('open');
+        toggle.classList.toggle('active');
+    });
+
+    // Screenshot gallery
+    const items = document.querySelectorAll('.screenshot-item');
+    const dotsContainer = document.querySelector('.screenshot-dots');
+    let current = 0;
+
+    // Create dots
+    items.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.classList.add('dot');
+        if (i === 0) dot.classList.add('active');
+        dot.setAttribute('aria-label', `Screenshot ${i + 1}`);
+        dot.addEventListener('click', () => goTo(i));
+        dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function goTo(index) {
+        items[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = (index + items.length) % items.length;
+        items[current].classList.add('active');
+        dots[current].classList.add('active');
+    }
+
+    document.querySelector('.screenshot-prev').addEventListener('click', () => goTo(current - 1));
+    document.querySelector('.screenshot-next').addEventListener('click', () => goTo(current + 1));
+
+    // Keyboard nav for gallery
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') goTo(current - 1);
+        if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(a.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+                links.classList.remove('open');
+                toggle.classList.remove('active');
+            }
+        });
+    });
+
+    // Navbar background on scroll
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+})();
+</script>
+
+</body>
+</html>

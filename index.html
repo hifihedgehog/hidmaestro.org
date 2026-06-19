@@ -85,6 +85,7 @@
                         <th>VIIPER</th>
                         <th>ViGEmBus</th>
                         <th>vJoy</th>
+                        <th>WinUHid</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -94,11 +95,21 @@
                         <td>Yes (USBIP)</td>
                         <td>Yes</td>
                         <td>Yes</td>
+                        <td>No (on VHF)</td>
+                    </tr>
+                    <tr>
+                        <th>Installs without test-signing</th>
+                        <td class="col-win">Yes</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>No</td>
                     </tr>
                     <tr>
                         <th>Network play</th>
                         <td class="col-win">App layer via consumers (PadForge Remote Link)</td>
                         <td>In the driver: +1-5 ms wired, +10-50 ms Wi-Fi</td>
+                        <td>No</td>
                         <td>No</td>
                         <td>No</td>
                     </tr>
@@ -108,6 +119,7 @@
                         <td>USB only</td>
                         <td>2 fixed types</td>
                         <td>Fixed identity</td>
+                        <td>4 presets, USB only</td>
                     </tr>
                     <tr>
                         <th>Add a new device</th>
@@ -115,13 +127,15 @@
                         <td>Write Go per device</td>
                         <td>N/A</td>
                         <td>N/A</td>
+                        <td>Write C, or raw descriptor</td>
                     </tr>
                     <tr>
                         <th>Local single-press latency</th>
                         <td class="col-win">~35 &micro;s measured</td>
                         <td>168 &micro;s published</td>
-                        <td>&mdash;</td>
-                        <td>&mdash;</td>
+                        <td>N/A</td>
+                        <td>N/A</td>
+                        <td>Not published</td>
                     </tr>
                     <tr>
                         <th>Status</th>
@@ -129,6 +143,7 @@
                         <td>Active</td>
                         <td>Retired</td>
                         <td>Stale</td>
+                        <td>Active</td>
                     </tr>
                 </tbody>
             </table>

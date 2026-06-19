@@ -144,8 +144,8 @@
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">&#128274;</div>
-                <h3>No Kernel Driver</h3>
-                <p>Runs entirely in user mode via UMDF2. No custom kernel driver to sign, no EV certificate, no reboot to install. A bug cannot blue-screen the machine.</p>
+                <h3>No Kernel Driver, No Test-Signing</h3>
+                <p>Runs entirely in user mode via UMDF2, loaded by a locally trusted self-signed certificate. No test-signing mode, no purchased certificate, no reboot. It installs on a normal PC, not just a developer box, and a bug cannot blue-screen the machine.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">&#128225;</div>
@@ -168,9 +168,14 @@
                 <p>DirectInput, XInput, SDL3/HIDAPI, browser Gamepad, WGI/GameInput, and RawInput all see the same real controller at once.</p>
             </div>
             <div class="feature-card">
+                <div class="feature-icon">&#9989;</div>
+                <h3>Validated Across the Stack</h3>
+                <p>A 41-scenario regression battery checks DirectInput, XInput, SDL3, the browser Gamepad API, and WGI on every change, passing on both a 16-core Windows 11 desktop and a low-power Intel Atom Windows 10 machine.</p>
+            </div>
+            <div class="feature-card">
                 <div class="feature-icon">&#128295;</div>
-                <h3>Devices Are Data</h3>
-                <p>Add a controller by writing a JSON profile or capturing one you already own. No per-device source code, no recompile.</p>
+                <h3>Devices Are JSON, Not Hardcoded</h3>
+                <p>Add a controller by writing a data-only JSON profile or capturing one you already own. No per-device source code, no recompile, no hardcoded device classes.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">&#9889;</div>

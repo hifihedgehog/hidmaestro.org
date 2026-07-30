@@ -11,8 +11,16 @@
     <meta property="og:image" content="https://hidmaestro.org/assets/logo.png">
     <meta property="og:url" content="https://hidmaestro.org">
     <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="HIDMaestro: Virtual Game Controllers That Look Like Real Hardware">
+    <meta name="twitter:description" content="User-mode virtual game controllers for Windows. No kernel driver, no network, no reboot. Exact hardware identity across every gaming API.">
+    <meta name="twitter:image" content="https://hidmaestro.org/assets/logo.png">
     <link rel="icon" type="image/png" href="assets/icon.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=7">
+    <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
 
@@ -20,72 +28,235 @@
 <nav class="navbar">
     <div class="container nav-container">
         <a href="#" class="nav-logo">
-            <img src="assets/icon.png" alt="HIDMaestro" width="36" height="36">
+            <img src="assets/icon.png" alt="HIDMaestro" width="32" height="32">
             <span>HIDMaestro</span>
         </a>
         <button class="nav-toggle" aria-label="Toggle navigation">
             <span></span><span></span><span></span>
         </button>
         <ul class="nav-links">
+            <li><a href="#identity">Identity</a></li>
             <li><a href="#latency">Latency</a></li>
+            <li><a href="#apis">APIs</a></li>
             <li><a href="#compare">Compare</a></li>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#download">Get Started</a></li>
-            <li><a href="https://github.com/hifihedgehog/HIDMaestro" class="nav-github" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="#features">Spec sheet</a></li>
+            <li><a href="/docs/" class="nav-docs">Docs</a></li>
+            <li><a href="#download" class="nav-cta">Download</a></li>
         </ul>
     </div>
 </nav>
 
 <!-- Hero -->
 <header class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
     <div class="container hero-content">
-        <img src="assets/logo.png" alt="HIDMaestro Logo" class="hero-logo">
-        <h1>Virtual game controllers that look like real hardware.</h1>
+        <h1 class="hero-title">Virtual controllers.<br>Real identity.</h1>
         <p class="hero-sub">User-mode virtual controllers for Windows. No kernel driver, no network, no reboot. DirectInput, XInput, SDL3, the browser Gamepad API, and WGI all see the exact identity of real hardware, down to the bus type.</p>
         <div class="hero-buttons">
-            <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary" target="_blank" rel="noopener">Download Latest Release</a>
-            <a href="https://github.com/hifihedgehog/HIDMaestro" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
+            <a href="#download" class="btn btn-primary">Download latest release</a>
+            <a href="/docs/" class="btn btn-secondary">Read the docs</a>
+        </div>
+        <figure class="hero-shot reveal">
+            <img src="assets/screenshot-xbox-series-bt.png" alt="A virtual Xbox Series X|S Bluetooth controller shown identically in Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3" fetchpriority="high">
+        </figure>
+        <div class="hero-trust">
+            <a href="https://padforge.org/" class="hero-trust-item" target="_blank" rel="noopener">
+                <span><strong>The engine inside PadForge.</strong> One driver, every virtual pad it creates.</span>
+            </a>
+            <span class="hero-trust-divider" aria-hidden="true"></span>
+            <a href="https://github.com/hifihedgehog/HIDMaestro" class="hero-trust-item" target="_blank" rel="noopener">
+                <span><strong>MIT licensed.</strong> Free and open source, commercial use welcome.</span>
+            </a>
         </div>
     </div>
 </header>
 
-<!-- Latency -->
-<section id="latency" class="latency">
-    <div class="container">
-        <h2>Lower latency, measured</h2>
-        <div class="stat-row">
-            <div class="stat stat-win">
-                <div class="stat-num">~35 &micro;s</div>
-                <div class="stat-label">HIDMaestro median single-press</div>
-            </div>
-            <div class="stat">
-                <div class="stat-num">168 &micro;s</div>
-                <div class="stat-label">VIIPER, published Windows figure</div>
-            </div>
-            <div class="stat stat-win">
-                <div class="stat-num">0.15 ms</div>
-                <div class="stat-label">Rumble/FFB delivery, event-driven (was 9.4 ms polled)</div>
-            </div>
-        </div>
-        <figure class="latency-chart">
-            <img src="assets/latency-chart.svg" alt="Input latency, lower is better: HIDMaestro 0.035 ms versus VIIPER at 0.168 ms localhost, 1 to 5 ms over wired LAN, and 10 to 50 ms over Wi-Fi" loading="lazy">
-            <figcaption>The network bars use the optimistic end of each LAN range. Even granting VIIPER the best case, its Wi-Fi path runs hundreds of times longer than HIDMaestro's shared-memory path.</figcaption>
-        </figure>
-        <p class="latency-note">HIDMaestro talks to its driver through shared memory on the same machine. No socket, no USBIP stack, no kernel transport driver in the path. Both directions are event-driven with no batching cap: input signals the driver per frame, and the driver signals each captured rumble/FFB/LED packet back to the consumer at ~0.15 ms median (over 60x faster than the previous 8 ms polled path), with idle controllers costing zero measurable CPU. Launch is fast too: a same-version driver install completes in about 50 ms, and recovery after a force-closed consumer has the first controller live again in about 2.3 seconds. The input number above is real propagation, measured over 10,000 single-press iterations and reproducible with one command. <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/testing/latency.md" target="_blank" rel="noopener">See the methodology</a>. VIIPER's 168 &micro;s is localhost-only. Running it over an actual network, the thing the project is named for, adds roughly 1 to 5 ms on wired LAN or 10 to 50 ms over Wi-Fi on top of that figure, a caveat its docs mention only in passing.</p>
-        <p class="latency-note">Networking belongs in the application, not in the device driver. Tools built on USB/IP put a kernel USBIP driver and a listening socket in front of every user, even for purely local play. USB/IP can also only present USB devices, so a controller paired over Bluetooth shows up with the wrong bus type. HIDMaestro keeps the device layer local and sets bus type per profile, so a Bluetooth controller presents as Bluetooth. Network play still happens, at the right layer: PadForge, built on HIDMaestro, shares controllers across PCs with its Remote Link feature, both directions with feedback returning to the real device, at no cost to local play.</p>
+<!-- Stat band -->
+<section class="stats" aria-label="HIDMaestro by the numbers">
+    <div class="container stats-row">
+        <div class="stat reveal"><span class="stat-num">225</span><span class="stat-label">device profiles built in</span></div>
+        <div class="stat reveal"><span class="stat-num">32</span><span class="stat-label">vendors covered</span></div>
+        <div class="stat reveal"><span class="stat-num">~35<em>&micro;s</em></span><span class="stat-label">median single-press latency</span></div>
+        <div class="stat reveal"><span class="stat-num">0</span><span class="stat-label">kernel drivers installed</span></div>
     </div>
 </section>
 
-<!-- Compare -->
+<!-- How it works -->
+<section id="how-it-works" class="how">
+    <div class="container">
+        <p class="kicker reveal">Three calls</p>
+        <h2 class="reveal">Install once. Create controllers on demand.</h2>
+        <div class="how-steps">
+            <div class="how-step reveal">
+                <div class="how-num">1</div>
+                <h3>Reference the SDK</h3>
+                <p>One DLL, <span class="chip">HIDMaestro.Core.dll</span>, with the 225-profile catalog, the driver binaries, and the signing tools embedded. Grab it from a release ZIP or build from source.</p>
+            </div>
+            <div class="how-step reveal">
+                <div class="how-num">2</div>
+                <h3>Install the driver</h3>
+                <p><span class="chip">InstallDriver()</span> is self-bootstrapping: it creates a locally trusted certificate, signs the driver, and installs it. No EV certificate, no test-signing mode, no reboot. When the installed driver already matches, the call completes in ~40-60 ms.</p>
+            </div>
+            <div class="how-step reveal">
+                <div class="how-num">3</div>
+                <h3>Create and drive</h3>
+                <p>Pick a profile, call <span class="chip">CreateController</span>, submit input. A single controller is live in about 200 ms. Dispose it and the device disappears, with no leftover PnP state.</p>
+            </div>
+        </div>
+        <div class="chapter-hero reveal" style="margin-top: 2.4rem;">
+            <div class="chapter-hero-copy">
+                <p>The whole lifecycle is one page of C#. The game on the other side sees an Xbox 360 pad indistinguishable from the real thing.</p>
+            </div>
+            <div class="code-panel">
+<pre><span class="ck">using var</span> ctx = <span class="ck">new</span> <span class="ct">HMContext</span>();
+ctx.LoadDefaultProfiles();
+ctx.InstallDriver();
+<span class="ck">using var</span> ctrl = ctx.CreateController(
+    ctx.GetProfile(<span class="cs">"xbox-360-wired"</span>)!);
+ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</span> { Buttons = <span class="ct">HMButton</span>.A });</pre>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ Chapter: Identity ═══ -->
+<section id="identity" class="chapter chapter-alt">
+    <div class="container">
+        <p class="kicker reveal">Identity</p>
+        <h2 class="chapter-title reveal">Exact hardware identity, down to the bus.</h2>
+        <div class="chapter-hero reveal">
+            <div class="chapter-hero-copy">
+                <p>Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name. SDL3's controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name.</p>
+            </div>
+            <figure class="chapter-hero-shot">
+                <img src="assets/screenshot-dualsense.png" alt="A virtual DualSense shown identically in Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3" loading="lazy">
+            </figure>
+        </div>
+        <div class="rail" tabindex="0">
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">225 device profiles</span>
+                <h3>Xbox to HOTAS, out of the box.</h3>
+                <p>Embedded profiles across 32 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code.</p>
+            </article>
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">Devices are JSON</span>
+                <h3>New device, no recompile.</h3>
+                <p>Add a controller by writing a data-only JSON profile or by capturing one you already own. No per-device source code, no recompile, no hardcoded device classes. Adding a controller to a code-per-device emulator means writing and compiling a new device implementation. That difference is the whole point of the profile system.</p>
+            </article>
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">Protocol controllers</span>
+                <h3>A Switch Pro that answers back.</h3>
+                <p>The Switch Pro Controller is not a passive device: hosts drive a Nintendo subcommand handshake and stall without a device that answers. HIDMaestro's driver answers it over the real Bluetooth wire, with a descriptor extracted byte-exact from a live Pro's SDP cache: SPI calibration reads, input-mode switch, 60 Hz full-mode streaming with gyro and accel. SDL3 and Steam Input bind it as a real Bluetooth Pro Controller with motion and rumble.</p>
+            </article>
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">Clone, build, capture</span>
+                <h3>Your controller, or one that never existed.</h3>
+                <p>Clone a DualSense and ship a 16-button variant that Windows, Steam, and games still see as a DualSense. Build a flight stick, racing wheel, or arcade panel from scratch with arbitrary VID/PID, axis count, button count, and resolution. Or point <span class="chip">HMDeviceExtractor</span> at any controller you have plugged in and get a ready-to-deploy profile back.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ Chapter: Latency ═══ -->
+<section id="latency" class="chapter">
+    <div class="container">
+        <p class="kicker reveal">Latency</p>
+        <h2 class="chapter-title reveal">Lower latency, measured.</h2>
+        <div class="chapter-hero reveal">
+            <div class="chapter-hero-copy">
+                <div class="latency-stats">
+                    <div class="stat latency-stat" style="text-align:left;"><span class="stat-num">~35 &micro;s</span><span class="stat-label">HIDMaestro median single-press</span></div>
+                    <div class="stat latency-stat" style="text-align:left;"><span class="stat-num">0.15 ms</span><span class="stat-label">rumble/FFB delivery, event-driven (was 9.4 ms polled)</span></div>
+                </div>
+                <p>The input number is real propagation, measured over 10,000 single-press iterations and reproducible with one command. <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/testing/latency.md" target="_blank" rel="noopener">See the methodology</a>.</p>
+            </div>
+            <figure class="chapter-hero-shot chart-figure">
+                <img src="assets/latency-chart.svg" alt="Input latency, lower is better: HIDMaestro 0.035 ms versus VIIPER at 0.168 ms localhost, 1 to 5 ms over wired LAN, and 10 to 50 ms over Wi-Fi" loading="lazy">
+                <figcaption>The network bars use the optimistic end of each LAN range. Even granting VIIPER the best case, its Wi-Fi path runs hundreds of times longer than HIDMaestro's shared-memory path.</figcaption>
+            </figure>
+        </div>
+        <div class="rail" tabindex="0">
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">Shared memory, both ways</span>
+                <h3>No socket. No batching cap.</h3>
+                <p>HIDMaestro talks to its driver through shared memory on the same machine. No socket, no USBIP stack, no kernel transport driver in the path. Both directions are event-driven with no batching cap: input signals the driver per frame, and the driver signals each captured rumble/FFB/LED packet back to the consumer at ~0.15 ms median, over 60x faster than the previous 8 ms polled path, with idle controllers costing zero measurable CPU.</p>
+            </article>
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">The comparison, honestly</span>
+                <h3>VIIPER's number excludes its own network.</h3>
+                <p>VIIPER's published Windows figure, 168 &micro;s, is localhost-only. Running it over an actual network, the thing the project is named for, adds roughly 1 to 5 ms on wired LAN or 10 to 50 ms over Wi-Fi on top of that figure, a caveat its docs mention only in passing. It also batches reports every millisecond, capping the update rate at 1000 Hz. HIDMaestro's input is event-driven with no fixed cap.</p>
+            </article>
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">The right layer</span>
+                <h3>Networking belongs in the application.</h3>
+                <p>Networking belongs in the application, not in the device driver. Tools built on USB/IP put a kernel USBIP driver and a listening socket in front of every user, even for purely local play. USB/IP can also only present USB devices, so a controller paired over Bluetooth shows up with the wrong bus type. HIDMaestro keeps the device layer local and sets bus type per profile, so a Bluetooth controller presents as Bluetooth. Network play still happens, at the right layer: PadForge, built on HIDMaestro, shares controllers across PCs with its Remote Link feature, both directions with feedback returning to the real device, at no cost to local play.</p>
+            </article>
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">Fast to start, fast to recover</span>
+                <h3>Live in about a second.</h3>
+                <p>When the installed driver already matches, <span class="chip">InstallDriver()</span> completes in ~40-60 ms and a consumer goes from process start to a live controller in about a second. If the consuming app is force-closed mid-session, the next launch evicts the orphaned devices and has the first controller live again in ~2.3 s, measured with an Xbox Series BT profile in the mix, the deepest teardown stack.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ Chapter: Every API ═══ -->
+<section id="apis" class="chapter chapter-alt">
+    <div class="container">
+        <p class="kicker reveal">Every API</p>
+        <h2 class="chapter-title reveal">One device. Every gaming API.</h2>
+        <div class="chapter-hero reveal">
+            <div class="chapter-hero-copy">
+                <p>DirectInput sees correct axes and buttons. XInput sees separate triggers in one slot. SDL3/HIDAPI sees the right identity and bus type. The browser sees a STANDARD GAMEPAD with separate triggers. WGI sees one Gamepad. RawInput sees the same device as all of them, at the same time.</p>
+            </div>
+            <figure class="chapter-hero-shot">
+                <img src="assets/screenshot-xbox-360-wired.png" alt="A virtual Xbox 360 Wired controller shown identically in Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3" loading="lazy">
+            </figure>
+        </div>
+        <div class="rail" tabindex="0">
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">Validated across the stack</span>
+                <h3>41 scenarios, two machines, every change.</h3>
+                <p>A 41-scenario regression battery checks DirectInput, XInput, SDL3, the browser Gamepad API, and WGI on every change, passing on both a 16-core Windows 11 desktop and a low-power Intel Atom Windows 10 machine. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</p>
+            </article>
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">Multi-controller</span>
+                <h3>Six pads, every API, correct order.</h3>
+                <p>No hard limit on simultaneous virtual controllers. Tested with 6 mixed types, correct per-controller ordering across every API. XInput caps Xbox-family profiles at its own 4 slots; non-Xbox profiles run beyond it.</p>
+            </article>
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">Hot-plug</span>
+                <h3>Create, swap, and remove live.</h3>
+                <p>Create and remove controllers on the fly, about 200 ms for a single controller. Live-swap a controller's profile mid-session. No reboots, no leftover devices.</p>
+            </article>
+            <article class="rail-card reveal">
+                <span class="story-eyebrow">Force feedback</span>
+                <h3>FFB games get their answers.</h3>
+                <p>HID PID 1.0 answers for DirectInput force-feedback games, plus rumble and haptic output events the consumer routes to real hardware. The driver accepts the writes and raises them to your application in real time.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- Comparison -->
 <section id="compare" class="compare">
     <div class="container">
-        <h2>How it compares</h2>
-        <div class="compare-wrap">
+        <p class="kicker reveal">Compare</p>
+        <h2 class="reveal">How it compares.</h2>
+        <p class="compare-intro reveal">HIDMaestro is Windows optimized and focused on game controllers and HID game devices. Within that scope it gives you exact hardware identity with no kernel driver, no network layer, and no per-device code.</p>
+        <details class="compare-details reveal">
+            <summary><span>Tool by tool</span></summary>
+        <div class="compare-table-wrapper">
             <table class="compare-table">
+                <colgroup>
+                    <col>
+                    <col class="col-hm">
+                    <col><col><col><col>
+                </colgroup>
                 <thead>
                     <tr>
                         <th></th>
-                        <th class="col-win">HIDMaestro</th>
+                        <th>HIDMaestro</th>
                         <th>VIIPER</th>
                         <th>ViGEmBus</th>
                         <th>vJoy</th>
@@ -93,122 +264,75 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th>Kernel driver required</th>
-                        <td class="col-win">No</td>
-                        <td>Yes (USBIP)</td>
-                        <td>Yes</td>
-                        <td>Yes</td>
-                        <td>No (on VHF)</td>
-                    </tr>
-                    <tr>
-                        <th>Installs without test-signing</th>
-                        <td class="col-win">Yes</td>
-                        <td>Yes</td>
-                        <td>Yes</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <th>Network play</th>
-                        <td class="col-win">App layer via consumers (PadForge Remote Link)</td>
-                        <td>In the driver: +1-5 ms wired, +10-50 ms Wi-Fi</td>
-                        <td>No</td>
-                        <td>No</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <th>Exact identity, incl. Bluetooth bus</th>
-                        <td class="col-win">Yes, 225 profiles</td>
-                        <td>USB only</td>
-                        <td>2 fixed types</td>
-                        <td>Fixed identity</td>
-                        <td>4 presets, USB only</td>
-                    </tr>
-                    <tr>
-                        <th>Add a new device</th>
-                        <td class="col-win">JSON, or capture one you own</td>
-                        <td>Write Go per device</td>
-                        <td>N/A</td>
-                        <td>N/A</td>
-                        <td>Write C, or raw descriptor</td>
-                    </tr>
-                    <tr>
-                        <th>Local single-press latency</th>
-                        <td class="col-win">~35 &micro;s measured</td>
-                        <td>168 &micro;s published</td>
-                        <td>N/A</td>
-                        <td>N/A</td>
-                        <td>Not published</td>
-                    </tr>
-                    <tr>
-                        <th>Status</th>
-                        <td class="col-win">Active</td>
-                        <td>Active</td>
-                        <td>Retired</td>
-                        <td>Stale</td>
-                        <td>Active</td>
-                    </tr>
+                    <tr><td>Kernel driver required</td><td>No</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td><td>No (on VHF)</td></tr>
+                    <tr><td>Installs without test-signing</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+                    <tr><td>Network play</td><td>App layer via consumers (PadForge Remote Link)</td><td>In the driver: +1-5 ms wired, +10-50 ms Wi-Fi</td><td>No</td><td>No</td><td>No</td></tr>
+                    <tr><td>Exact identity, incl. Bluetooth bus</td><td>Yes, 225 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
+                    <tr><td>Add a new device</td><td>JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td><td>Write C, or raw descriptor</td></tr>
+                    <tr><td>Local single-press latency</td><td>~35 &micro;s measured</td><td>168 &micro;s published</td><td>N/A</td><td>N/A</td><td>Not published</td></tr>
+                    <tr><td>Status</td><td>Active</td><td>Active</td><td>Retired</td><td>Stale</td><td>Active</td></tr>
                 </tbody>
             </table>
         </div>
-        <p class="compare-note">HIDMaestro is Windows optimized and focused on game controllers and HID game devices. Within that scope it gives you exact hardware identity with no kernel driver, no network layer, and no per-device code.</p>
+        </details>
     </div>
 </section>
 
-<!-- Features -->
+<!-- The spec sheet -->
 <section id="features" class="features">
     <div class="container">
-        <h2>Features</h2>
+        <p class="kicker reveal">The spec sheet</p>
+        <h2 class="reveal">Every feature, end to end.</h2>
+        <p class="compare-intro reveal">Short punch list. Each card is one feature. The <a href="/docs/">documentation</a> covers each in full.</p>
         <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">&#128274;</div>
-                <h3>No Kernel Driver, No Test-Signing</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.4" width="14" height="9.6" rx="2"/><path d="M8.2 10.4V7.8a3.8 3.8 0 0 1 7.6 0v2.6"/><circle cx="12" cy="15.2" r="1.4" class="e"/></svg></div>
+                <h3>No kernel driver, no test-signing</h3>
                 <p>Runs entirely in user mode via UMDF2, loaded by a locally trusted self-signed certificate. No test-signing mode, no purchased certificate, no reboot. It installs on a normal PC, not just a developer box, and a bug cannot blue-screen the machine.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#128225;</div>
-                <h3>No Network in the Path</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18" class="e"/><path d="M5.5 9.2a9.4 9.4 0 0 1 3.2-2.1"/><path d="M12.6 5.8a9.4 9.4 0 0 1 6 3.4"/><path d="M8.3 12.5a5.4 5.4 0 0 1 1.6-1.2"/><path d="M13.9 11.6a5.4 5.4 0 0 1 1.9 1.6"/><circle cx="12" cy="17" r="1.3"/></svg></div>
+                <h3>No network in the path</h3>
                 <p>Input travels through shared memory on the same machine. No socket, no USBIP stack, no kernel transport driver between your application and the device.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#128270;</div>
-                <h3>Exact Hardware Identity</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.4c-3 0-5.4 2.4-5.4 5.4v2.4c0 2.2-.6 3.8-1.5 5"/><path d="M12 3.4c3 0 5.4 2.4 5.4 5.4v2.4c0 2.2.6 3.8 1.5 5"/><path d="M12 7.4a1.6 1.6 0 0 1 1.6 1.6v3.2" class="e"/><path d="M12 12.8v3.6" class="e"/><path d="M8.6 20.2h6.8"/></svg></div>
+                <h3>Exact hardware identity</h3>
                 <p>Profile-driven VID/PID, product strings, HID descriptors, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#127918;</div>
-                <h3>225 Device Profiles</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 8.2h8a5 5 0 0 1 4.9 6c-.5 2.6-3.4 3.2-4.8 1.6L14.2 14H9.8l-1.9 1.8c-1.4 1.6-4.3 1-4.8-1.6a5 5 0 0 1 4.9-6z"/><path d="M7 11.4v2.6M5.7 12.7h2.6" class="e"/><circle cx="15.8" cy="11.8" r="0.9" class="e"/><circle cx="17.4" cy="13.8" r="0.9" class="e"/></svg></div>
+                <h3>225 device profiles</h3>
                 <p>Embedded profiles across 32 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#127760;</div>
-                <h3>Every Gaming API</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14.4 14.4 0 0 1 0 18" class="e"/><path d="M12 3a14.4 14.4 0 0 0 0 18" class="e"/></svg></div>
+                <h3>Every gaming API</h3>
                 <p>DirectInput, XInput, SDL3/HIDAPI, browser Gamepad, WGI/GameInput, and RawInput all see the same real controller at once.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#9989;</div>
-                <h3>Validated Across the Stack</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 5.8v5.4c0 4.4 2.9 7.4 7 9 4.1-1.6 7-4.6 7-9V5.8L12 3z"/><path d="M8.8 12.1l2.3 2.3 4.1-4.4" class="e"/></svg></div>
+                <h3>Validated across the stack</h3>
                 <p>A 41-scenario regression battery checks DirectInput, XInput, SDL3, the browser Gamepad API, and WGI on every change, passing on both a 16-core Windows 11 desktop and a low-power Intel Atom Windows 10 machine.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#128295;</div>
-                <h3>Devices Are JSON, Not Hardcoded</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 4.5c-2.2 0-2.6 1.4-2.6 3.1 0 2.7-.4 3.6-2.4 4.4 2 0.8 2.4 1.7 2.4 4.4 0 1.7.4 3.1 2.6 3.1"/><path d="M15.5 4.5c2.2 0 2.6 1.4 2.6 3.1 0 2.7.4 3.6 2.4 4.4-2 0.8-2.4 1.7-2.4 4.4 0 1.7-.4 3.1-2.6 3.1"/><circle cx="12" cy="12" r="1.3" class="e"/></svg></div>
+                <h3>Devices are JSON, not hardcoded</h3>
                 <p>Add a controller by writing a data-only JSON profile or capturing one you already own. No per-device source code, no recompile, no hardcoded device classes.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#9889;</div>
-                <h3>Hot-Plug Support</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2.5 4.5 13.8H11l-1 7.7 8.5-11.3H12l1-7.7z" class="e"/></svg></div>
+                <h3>Hot-plug support</h3>
                 <p>Create and remove controllers on the fly. About 200 ms for a single controller. No reboots, no leftover devices.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#127922;</div>
-                <h3>Multi-Controller</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2 4 7.6l8 4.2 8-4.2-8-4.4z" class="e"/><path d="M4 12.2l8 4.2 8-4.2"/><path d="M4 16.6l8 4.2 8-4.2"/></svg></div>
+                <h3>Multi-controller</h3>
                 <p>No hard limit on simultaneous virtual controllers. Tested with 6 mixed types, correct ordering across every API.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#128220;</div>
-                <h3>MIT Licensed</h3>
+            <div class="feature-card reveal">
+                <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3.6h7.4L19 8.2V20.4H7z"/><path d="M14.4 3.6v4.6H19"/><path d="M9.8 12.4h6.4M9.8 15.6h6.4" class="e"/></svg></div>
+                <h3>MIT licensed</h3>
                 <p>Free and open source. Use it in your own projects, commercial or otherwise, with no restrictions.</p>
             </div>
         </div>
@@ -218,8 +342,9 @@
 <!-- Screenshots -->
 <section id="screenshots" class="screenshots">
     <div class="container">
-        <h2>Screenshots</h2>
-        <div class="screenshot-gallery">
+        <p class="kicker reveal">See it</p>
+        <h2 class="reveal">The same controller, everywhere Windows looks.</h2>
+        <div class="screenshot-gallery reveal">
             <div class="screenshot-nav">
                 <button class="screenshot-prev" aria-label="Previous screenshot">&larr;</button>
                 <button class="screenshot-next" aria-label="Next screenshot">&rarr;</button>
@@ -245,15 +370,17 @@
     </div>
 </section>
 
-<!-- Download / Getting Started -->
+<!-- Download -->
 <section id="download" class="download">
+    <div class="download-glow" aria-hidden="true"></div>
     <div class="container download-content">
-        <h2>Get Started</h2>
-        <p>HIDMaestro is a developer platform. Clone the repo or grab a release to get started.</p>
-        <div class="download-buttons">
-            <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary btn-lg" target="_blank" rel="noopener">Download Latest Release</a>
+        <h2 class="download-title reveal">Built to be built on.</h2>
+        <p class="reveal">HIDMaestro is a developer platform: a C# SDK and a matching user-mode driver.<br>Clone the repo or grab a release to get started. MIT licensed, free forever.</p>
+        <div class="download-buttons reveal">
+            <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary btn-lg" target="_blank" rel="noopener">Download latest release</a>
+            <a href="https://github.com/hifihedgehog/HIDMaestro" class="btn btn-secondary btn-lg" target="_blank" rel="noopener">View on GitHub</a>
         </div>
-        <div class="download-info">
+        <div class="download-info reveal">
             <p>Prerequisites:</p>
             <ul>
                 <li><strong>Windows 10 or 11</strong> (x64)</li>
@@ -261,6 +388,7 @@
                 <li><strong>Administrator privileges</strong> for virtual device creation</li>
                 <li><strong>Visual Studio 2022+</strong> to build from source, with Windows SDK/WDK 10.0.26100.0</li>
             </ul>
+            <p>If you want to use HIDMaestro through a UI instead of code, install <a href="https://padforge.org/" target="_blank" rel="noopener">PadForge</a>. It wraps this SDK with a full input-mapping app.</p>
         </div>
     </div>
 </section>
@@ -273,6 +401,7 @@
             <span>HIDMaestro</span>
         </div>
         <div class="footer-links">
+            <a href="/docs/">Docs</a>
             <a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a>
             <a href="https://github.com/hifihedgehog/HIDMaestro/issues" target="_blank" rel="noopener">Issues</a>
             <a href="https://github.com/hifihedgehog/HIDMaestro/discussions" target="_blank" rel="noopener">Discussions</a>
@@ -293,12 +422,29 @@
         toggle.classList.toggle('active');
     });
 
+    // Scroll reveal. Respects reduced-motion: the CSS only hides .reveal
+    // elements when motion is allowed, so without the observer nothing
+    // would stay invisible either way.
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('in');
+                    io.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    } else {
+        document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    }
+
     // Screenshot gallery
     const items = document.querySelectorAll('.screenshot-item');
     const dotsContainer = document.querySelector('.screenshot-dots');
     let current = 0;
 
-    // Create dots
     items.forEach((_, i) => {
         const dot = document.createElement('button');
         dot.classList.add('dot');
@@ -321,17 +467,22 @@
     document.querySelector('.screenshot-prev').addEventListener('click', () => goTo(current - 1));
     document.querySelector('.screenshot-next').addEventListener('click', () => goTo(current + 1));
 
-    // Keyboard nav for gallery
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') goTo(current - 1);
         if (e.key === 'ArrowRight') goTo(current + 1);
     });
 
-    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.addEventListener('click', (e) => {
             e.preventDefault();
-            const target = document.querySelector(a.getAttribute('href'));
+            const href = a.getAttribute('href');
+            if (href.length < 2) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                links.classList.remove('open');
+                toggle.classList.remove('active');
+                return;
+            }
+            const target = document.querySelector(href);
             if (target) {
                 target.scrollIntoView({ behavior: 'smooth' });
                 links.classList.remove('open');
@@ -340,7 +491,6 @@
         });
     });
 
-    // Navbar background on scroll
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', () => {
         navbar.classList.toggle('scrolled', window.scrollY > 50);

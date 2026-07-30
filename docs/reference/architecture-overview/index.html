@@ -1,0 +1,2341 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="HIDMaestro creates virtual game controllers that look like real hardware to Windows. These docs cover everything from the SDK quickstart to wire protocols.">
+      
+      
+      
+        <link rel="canonical" href="https://hidmaestro.org/docs/reference/architecture-overview/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../umdf2-driver-internals/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Architecture Overview - HIDMaestro Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture-overview" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="HIDMaestro Documentation" class="md-header__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HIDMaestro Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../start/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sdk/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  SDK
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../profiles/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Profiles
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Technical Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="HIDMaestro Documentation" class="md-nav__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    HIDMaestro Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sdk/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/sdk-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/hid-descriptor-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HID Descriptor Builder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/force-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Force Feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/output-passthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output Passthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/oem-name-override/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OEM Name Override
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../profiles/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiles
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Profiles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/custom-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-extractor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Extractor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/contributing-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-five-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The five components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The five components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-hidmaestrocoredll-the-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. HIDMaestro.Core.dll: the SDK
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-hidmaestrodll-the-umdf2-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. HIDMaestro.dll: the UMDF2 driver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-hmxinputdll-the-xusb-companion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. HMXInput.dll: the XUSB companion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-hmswdexe-the-swdevice-helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. hmswd.exe: the SwDevice helper
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-the-225-profile-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The 225-profile catalog
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#process-privilege-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Process / privilege model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data flow: input
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data flow: output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-three-architecture-groups-recap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three architecture groups (recap)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-source-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File / source layout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-hidmaestro-is-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What HIDMaestro is not
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to go next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../umdf2-driver-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UMDF2 Driver Internals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xusb-companion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XUSB Companion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../swdevice-and-pnp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SwDevice and PnP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shared-memory-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared Memory Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cross-api-coverage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-API Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lifecycle-and-teardown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle and Teardown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../driver-install-and-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Driver Install and Signing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build-and-release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build and Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-and-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-five-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The five components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The five components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-hidmaestrocoredll-the-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. HIDMaestro.Core.dll: the SDK
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-hidmaestrodll-the-umdf2-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. HIDMaestro.dll: the UMDF2 driver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-hmxinputdll-the-xusb-companion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. HMXInput.dll: the XUSB companion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-hmswdexe-the-swdevice-helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. hmswd.exe: the SwDevice helper
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-the-225-profile-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The 225-profile catalog
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#process-privilege-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Process / privilege model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data flow: input
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data flow: output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-three-architecture-groups-recap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three architecture groups (recap)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-source-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File / source layout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-hidmaestro-is-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What HIDMaestro is not
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to go next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h1>
+<p>The 30,000-foot view of HIDMaestro: every component, what it owns, and how data flows from a consumer's <code>SubmitState</code> call to a game seeing input. Use this page as the starting point for the architecture chapter; the deep-dive subpages cover one component each.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>graph TB
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    subgraph &quot;Consumer process (PadForge, your app, ...)&quot;
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        APP[Consumer code&lt;br/&gt;SubmitState / OutputReceived]
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        SDK[HIDMaestro.Core.dll&lt;br/&gt;HMContext / HMController]
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        OUT[OutputReader thread&lt;br/&gt;~125 Hz poll]
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    end
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    subgraph &quot;Helper process&quot;
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        HMSWD[hmswd.exe&lt;br/&gt;SwDeviceCreate, instance-id, container]
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    end
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    subgraph &quot;Per-controller WUDFHost — main HID&quot;
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        DRV[HIDMaestro.dll&lt;br/&gt;UMDF2 lower filter&lt;br/&gt;EvtIoDeviceControl]
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        WORKER[Worker thread&lt;br/&gt;Event-driven shared-mem reader]
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    end
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    subgraph &quot;Per-controller WUDFHost — XUSB companion (Xbox 360 family only)&quot;
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        COMP[HMXInput.dll&lt;br/&gt;UMDF2 function driver&lt;br/&gt;IOCTL_XUSB_*]
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        PUMP[8 ms WAIT_FOR_INPUT pump]
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    end
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    subgraph &quot;Kernel HID stack&quot;
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>        HIDCLASS[HidClass.sys]
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        MSHID[mshidumdf.sys&lt;br/&gt;HID minidriver proxy]
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        WUDFRD[WUDFRd.sys&lt;br/&gt;UMDF reflector]
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        XINPUTHID[xinputhid.sys&lt;br/&gt;HID upper filter&lt;br/&gt;Xbox Series BT only]
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    end
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    subgraph &quot;Pagefile-backed shared memory&quot;
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>        SHIN[Global\HIDMaestroInput&lt;N&gt;&lt;br/&gt;278 bytes]
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>        SHOUT[Global\HIDMaestroOutput&lt;N&gt;&lt;br/&gt;~16.5 KB ring]
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>        SHPID[Global\HIDMaestroPidState&lt;N&gt;&lt;br/&gt;HID PID 1.0 mirror]
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>    end
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>    subgraph &quot;Downstream consumers&quot;
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>        DI[DirectInput / dinput8.dll]
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>        XI[XInput / xinput1_4.dll]
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>        WGI[Microsoft GameInput / WGI]
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>        SDL[SDL3 / HIDAPI]
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>        BR[Browser Gamepad]
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>    end
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>    APP --&gt; SDK
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>    SDK --&gt; SHIN
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>    SDK --&gt; SHOUT
+<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>    SDK --&gt; SHPID
+<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>    SDK -.-&gt; HMSWD
+<a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a>    HMSWD --&gt; WUDFRD
+<a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>
+<a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a>    SHIN --&gt; WORKER
+<a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>    WORKER --&gt; DRV
+<a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>    DRV --&gt; MSHID
+<a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>    MSHID --&gt; HIDCLASS
+<a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>
+<a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a>    SHIN --&gt; COMP
+<a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a>    COMP --&gt; WUDFRD
+<a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a>    SHOUT --&gt; COMP
+<a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a>
+<a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a>    HIDCLASS --&gt; XINPUTHID
+<a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a>    XINPUTHID --&gt; DI
+<a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a>    XINPUTHID --&gt; XI
+<a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a>    XINPUTHID --&gt; WGI
+<a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>    HIDCLASS --&gt; SDL
+<a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a>    HIDCLASS --&gt; BR
+<a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>    WGI --&gt; XI
+<a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a>
+<a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a>    DRV --&gt; SHOUT
+<a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a>    COMP --&gt; SHOUT
+<a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a>    SHOUT --&gt; OUT
+<a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a>    OUT --&gt; APP
+<a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a>
+<a id="__codelineno-0-72" name="__codelineno-0-72" href="#__codelineno-0-72"></a>    style SDK fill:#fff3e0
+<a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a>    style DRV fill:#f3e5f5
+<a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a>    style COMP fill:#f3e5f5
+<a id="__codelineno-0-75" name="__codelineno-0-75" href="#__codelineno-0-75"></a>    style HMSWD fill:#fff3e0
+<a id="__codelineno-0-76" name="__codelineno-0-76" href="#__codelineno-0-76"></a>    style SHIN fill:#e8f5e9
+<a id="__codelineno-0-77" name="__codelineno-0-77" href="#__codelineno-0-77"></a>    style SHOUT fill:#e8f5e9
+<a id="__codelineno-0-78" name="__codelineno-0-78" href="#__codelineno-0-78"></a>    style SHPID fill:#e8f5e9
+</code></pre></div>
+<hr />
+<h2 id="the-five-components">The five components<a class="headerlink" href="#the-five-components" title="Permanent link">&para;</a></h2>
+<h3 id="1-hidmaestrocoredll-the-sdk">1. <code>HIDMaestro.Core.dll</code>: the SDK<a class="headerlink" href="#1-hidmaestrocoredll-the-sdk" title="Permanent link">&para;</a></h3>
+<p>Lives in the consumer process. Exposes <code>HMContext</code>, <code>HMController</code>, <code>HMProfile</code>, etc. (see <a href="../../sdk/sdk-reference/">SDK Reference</a>).</p>
+<p>Responsibilities:</p>
+<ul>
+<li>Embed and extract the driver payload (driver DLLs, INFs, signing toolchain, <code>hmswd.exe</code>) on first install.</li>
+<li>Generate a self-signed certificate, sign the binaries, run <code>pnputil /add-driver</code>.</li>
+<li>Allocate per-controller indices and orchestrate <code>SetupController</code> (registry write &rarr; <code>SwDeviceCreate</code> or <code>SetupDiCreateDeviceInfoW</code> &rarr; PnP wait &rarr; XInput slot-claim wait).</li>
+<li>Provide the abstract <code>HMGamepadState</code> &rarr; HID descriptor encoding.</li>
+<li>Run the per-controller output-reader background thread that drains the shared output ring at ~125 Hz.</li>
+<li>Manage HID PID 1.0 force-feedback shared state.</li>
+<li>Manage <code>joy.cpl</code> OEM-name overrides with crash-safe restore.</li>
+<li>Embed and load the 225-profile catalog.</li>
+</ul>
+<p>Lines of code: ~4,500 in public surface (<code>HMContext</code> / <code>HMController</code> / <code>HidDescriptorBuilder</code> / <code>HMProfileBuilder</code> / <code>HMDeviceExtractor</code> / <code>HMOemNameOverride</code> / value types) plus ~9,000 in <code>Internal/</code> (<code>DeviceOrchestrator</code>, <code>DeviceManager</code>, <code>SwdDeviceFactory</code>, <code>DriverBuilder</code>, <code>HidDescriptorReconstructor</code>, <code>HidReportBuilder</code>, <code>SharedMemoryIO</code>, <code>OemNameOverrideStore</code>, <code>PnputilHelper</code>, etc.).</p>
+<h3 id="2-hidmaestrodll-the-umdf2-driver">2. <code>HIDMaestro.dll</code>: the UMDF2 driver<a class="headerlink" href="#2-hidmaestrodll-the-umdf2-driver" title="Permanent link">&para;</a></h3>
+<p>Lives in a per-controller <code>WUDFHost.exe</code> instance. Compiled from <code>driver/driver.c</code> (1,574 lines). Acts as a UMDF2 lower filter under <code>mshidumdf.sys</code> &mdash; the standard pattern from Microsoft's <a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2"><code>vhidmini2</code> sample</a>. The HID class stack sees a real HID device; HIDMaestro is the user-mode component that:</p>
+<ul>
+<li>Synthesizes the descriptor from the per-controller registry key written by the SDK at create time.</li>
+<li>Owns a worker thread (<code>WorkerThread</code>) that opens the per-controller shared input section and signals on <code>Global\HIDMaestroInputEvent&lt;N&gt;</code> to wake on each new frame.</li>
+<li>Handles <code>IOCTL_HID_READ_REPORT</code> synchronously when there's new data (seqno gate); otherwise pends in <code>ManualQueue</code> and completes from the worker thread.</li>
+<li>Handles <code>IOCTL_UMDF_HID_GET_FEATURE</code> / <code>_SET_FEATURE</code> / <code>_SET_OUTPUT_REPORT</code> for HID PID 1.0 and for vendor output reports. Output IOCTLs publish into the shared output ring with <code>OutputLock</code> serialization.</li>
+<li>Handles HID string queries (<code>HID_STRING_ID_IPRODUCT</code> / <code>IMANUFACTURER</code> / <code>ISERIALNUMBER</code>) from per-instance fields.</li>
+</ul>
+<p>INF: <code>hidmaestro.inf</code>. Class GUID: <code>{745a17a0-74d3-11d0-b6fe-00a0c90f57da}</code> (HIDClass). <code>LowerFilters = WUDFRd</code>. <code>UmdfHostProcessSharing = ProcessSharingDisabled</code> so each instance gets its own host process.</p>
+<p>Detail: <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>.</p>
+<h3 id="3-hmxinputdll-the-xusb-companion">3. <code>HMXInput.dll</code>: the XUSB companion<a class="headerlink" href="#3-hmxinputdll-the-xusb-companion" title="Permanent link">&para;</a></h3>
+<p>Lives in a separate per-controller <code>WUDFHost.exe</code>. Compiled from <code>driver/companion.c</code> (745 lines). Acts as a UMDF2 function driver under the System setup class. Created <strong>only for non-xinputhid Xbox profiles</strong> (Xbox 360 Wired family). Responsibilities:</p>
+<ul>
+<li>Register the XUSB device interface (<code>{EC87F1E3-...}</code>) for <code>xinput1_4.dll</code> discovery.</li>
+<li>Run an 8 ms <code>WAIT_FOR_INPUT</code> pump that drains pended <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> requests with 29-byte XUSB-state replies. Required for WGI's async input pump (<code>XusbDevice::QueueInputBuffer</code>).</li>
+<li>Translate the 14-byte GIP-format buffer the SDK packs in shared memory into XINPUT_GAMEPAD wire format on <code>IOCTL_XUSB_GET_STATE</code>.</li>
+<li>Capture <code>IOCTL_XUSB_SET_STATE</code> 5-byte vibration packets and publish them into the output ring as <code>HMOutputSource.XInput</code>.</li>
+<li>Carry a registry-string <code>UpperFilters = "xinputhid"</code> &mdash; <strong>not</strong> to load the kernel filter (System class isn't a filter target), but to pass WGI's <code>IsDeviceOrAncestorFilteredBy</code> <code>wcsncmp</code> check that admits the device to WGI's XUSB dispatch path.</li>
+</ul>
+<p>INF: <code>hidmaestro_xusb.inf</code>. Class GUID: <code>{4D36E97D-...}</code> (System). Created via <code>SwDeviceCreate</code> with explicit per-controller ContainerID (shared with the main HID device).</p>
+<p>Detail: <a href="../xusb-companion/">XUSB Companion</a>.</p>
+<h3 id="4-hmswdexe-the-swdevice-helper">4. <code>hmswd.exe</code>: the SwDevice helper<a class="headerlink" href="#4-hmswdexe-the-swdevice-helper" title="Permanent link">&para;</a></h3>
+<p>Standalone native executable (~286 lines C). Created <strong>only because</strong> <code>.NET 10</code>'s P/Invoke to <code>cfgmgr32!SwDeviceCreate</code> returns <code>0x8007007E ERROR_MOD_NOT_FOUND</code> on Win11 26200, while the identical C call succeeds. Neither <code>CoInitializeEx</code>, preloaded DLLs, <code>UnmanagedCallersOnly</code> function pointers, nor explicit function-ptr marshaling fix it. Rather than ship a broken managed migration path, the SDK invokes this small helper via <code>Process.Start</code>.</p>
+<p>Args: <code>create | remove &lt;enumerator&gt; &lt;suffix&gt; &lt;container-guid&gt; &lt;hw-ids&gt; &lt;compat-ids&gt; &lt;description&gt;</code>. Returns the resulting instance ID on stdout for the SDK to record.</p>
+<p>Lifetime: <code>SWDeviceLifetimeParentPresent</code> so the device persists past process exit. <code>remove</code> reconnects to the previously-created device by re-<code>SwDeviceCreate</code>-ing with identical args (the docs guarantee this returns a fresh handle to the existing device), downgrades lifetime to <code>Handle</code>, then <code>SwDeviceClose</code>.</p>
+<p>Detail: <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
+<h3 id="5-the-225-profile-catalog">5. The 225-profile catalog<a class="headerlink" href="#5-the-225-profile-catalog" title="Permanent link">&para;</a></h3>
+<p>Embedded as a JSON resource inside <code>HIDMaestro.Core.dll</code>. 32 vendor folders, ~4-25 profiles each. See <a href="../../profiles/profile-system/">Profile System</a> for the schema and runtime classification.</p>
+<hr />
+<h2 id="process-privilege-model">Process / privilege model<a class="headerlink" href="#process-privilege-model" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Process</th>
+<th>Privilege</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Consumer process</td>
+<td>Admin (or non-admin for read-only operations)</td>
+<td>Hosts <code>HIDMaestro.Core.dll</code>. Drives <code>SubmitState</code> from any thread.</td>
+</tr>
+<tr>
+<td><code>WUDFHost.exe</code> (main HID, per-controller)</td>
+<td>LocalService</td>
+<td>Hosts <code>HIDMaestro.dll</code>. Spawned by <code>WUDFRd.sys</code> per device instance.</td>
+</tr>
+<tr>
+<td><code>WUDFHost.exe</code> (XUSB companion, per-controller)</td>
+<td>LocalService</td>
+<td>Hosts <code>HMXInput.dll</code>. Only spawned for non-xinputhid Xbox profiles.</td>
+</tr>
+<tr>
+<td><code>hmswd.exe</code> (helper, transient)</td>
+<td>Inherits caller's privilege (admin)</td>
+<td>Calls <code>SwDeviceCreate</code>, returns instance ID, exits. Lifetime &lt;1 s per invocation.</td>
+</tr>
+</tbody>
+</table>
+<p><code>UmdfHostProcessSharing = ProcessSharingDisabled</code> in both INFs ensures per-controller hosts. With 6 controllers running you'll see 6-12 <code>WUDFHost.exe</code> instances depending on which profiles are active. ~8 MB RSS, ~10 threads each.</p>
+<p>This was a deliberate fix. Default (<code>ProcessSharingEnabled</code>, the WDF directive defined in INF <code>[...NT.Wdf]</code> sections) funnels every instance into one shared <code>WUDFHost</code>; at 6 controllers that host accumulates 9+ minutes of CPU time vs ~2 seconds per per-instance host. The contention is between writer threads and concurrent <code>XInputGetState</code> reader threads when 2+ virtuals coexist with a real xinputhid device in the same host. See <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a> for the full investigation.</p>
+<hr />
+<h2 id="data-flow-input">Data flow: input<a class="headerlink" href="#data-flow-input" title="Permanent link">&para;</a></h2>
+<p>A consumer's <code>HMController.SubmitState(state)</code> call arrives at every downstream API in this order:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Consumer thread
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  ↓ HMController.SubmitState(state)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>SDK encodes state → HID native bytes via HidReportBuilder
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  ↓
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Writes Data[] + GipData[] + SeqNo to Global\HIDMaestroInput&lt;N&gt;
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  ↓ SetEvent on Global\HIDMaestroInputEvent&lt;N&gt;
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>─────── shared memory boundary ────────
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>Driver worker thread wakes (WaitForMultipleObjects on Stop+Input events)
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  ↓ ProcessSharedInput
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>Reads SeqNo, Data[], DataSize
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  ↓ WdfRequestComplete on pended IOCTL_HID_READ_REPORT (if pending)
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>HidClass.sys delivers to:
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>  ├─ DirectInput consumers (dinput8.dll)
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>  ├─ HIDAPI consumers (Chromium RawInput, SDL3 HIDAPI fallback)
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>  └─ WGI (Windows.Gaming.Input.dll)
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        └─ Browser Gamepad
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>For Xbox-VID profiles, in parallel:
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>GIP buffer is read by the XUSB companion on IOCTL_XUSB_GET_STATE
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>  ↓ companion translates 14-byte GIP → XINPUT_GAMEPAD wire format
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>XInput consumers (xinput1_4.dll → XInputGetState)
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>  └─ via XUSB device interface {EC87F1E3-...}
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>WGI also reads from the XUSB path (admitted via xinputhid UpperFilter tripwire)
+</code></pre></div>
+<p>End-to-end latency from <code>SubmitState</code> to a DirectInput <code>GetDeviceState</code> poll seeing the new bytes: typically &lt;2 ms. The shared-memory write is ~250 ns, the event signal is ~5 µs, the worker wake is ~50 µs, the IOCTL completion is ~100 µs, the consumer's poll cycle is whatever rate they run at.</p>
+<hr />
+<h2 id="data-flow-output">Data flow: output<a class="headerlink" href="#data-flow-output" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Game / DInput PID FFB / Browser put_Vibration / XInputSetState
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  ↓ IOCTL_UMDF_HID_SET_OUTPUT_REPORT (or IOCTL_XUSB_SET_STATE on XUSB companion)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Driver / companion captures bytes
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  ↓ takes OutputLock
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  ↓ increments Head, writes Slots[(Head-1) % 64]
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>─────── shared memory boundary ────────
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>SDK output reader thread on next poll (~8 ms cadence)
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  ↓ TryReadOutputFrame: Head moved, drain new slots in seqlock-safe order
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>Raises HMController.OutputReceived(packet) on poll thread
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  ↓ Consumer handler decodes per (Source, ReportId)
+</code></pre></div>
+<p>Multiple <code>OutputReceived</code> invocations per poll iteration are normal &mdash; PID FFB writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms and all three drain on the next poll.</p>
+<hr />
+<h2 id="the-three-architecture-groups-recap">The three architecture groups (recap)<a class="headerlink" href="#the-three-architecture-groups-recap" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Profiles</th>
+<th>Device tree</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Plain HID</strong></td>
+<td>DualSense, Logitech wheels, Thrustmaster HOTAS, ~204 profiles</td>
+<td><code>ROOT\VID_*&amp;PID_*\NNNN</code></td>
+<td>Lightest stack. No companion.</td>
+</tr>
+<tr>
+<td><strong>Non-xinputhid Xbox</strong></td>
+<td>Xbox 360 Wired family (~6)</td>
+<td><code>ROOT\VID_045E&amp;PID_*&amp;IG_00\NNNN</code> + <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code></td>
+<td>Two device trees. XUSB companion.</td>
+</tr>
+<tr>
+<td><strong>xinputhid Xbox</strong></td>
+<td>Xbox Series BT, Xbox One BT, Xbox Elite v2 BT (~4)</td>
+<td><code>SWD\HIDMAESTRO_VID_045E_PID_*&amp;IG_00\&lt;sid&gt;_NNNN</code></td>
+<td>xinputhid kernel filter binds upstream. SwD-enumerated parent.</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="../../profiles/profile-system/">Profile System</a> for the runtime classification and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> for per-group create/dispose latencies.</p>
+<hr />
+<h2 id="file-source-layout">File / source layout<a class="headerlink" href="#file-source-layout" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>HIDMaestro/
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>├── driver/                        ; native UMDF2 sources
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>│   ├── driver.c                   ; main HID driver (1,574 lines)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>│   ├── driver.h                   ; device context, IOCTL constants, shared-section types
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>│   ├── companion.c                ; XUSB companion (745 lines)
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>│   ├── hidmaestro.inf             ; main HID INF
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>│   ├── hidmaestro_xusb.inf        ; XUSB companion INF
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>│   └── hmswd/hmswd.c              ; SwDevice helper (286 lines)
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>│
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>├── sdk/HIDMaestro.Core/           ; the C# SDK
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>│   ├── HMContext.cs               ; entry point, profile catalog, controller alloc
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>│   ├── HMController.cs            ; live virtual, SubmitState, OutputReceived, PID FFB
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>│   ├── HMProfile.cs               ; immutable profile handle
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>│   ├── HMProfileBuilder.cs        ; fluent profile builder
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>│   ├── HMGamepadState.cs          ; abstract input frame
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>│   ├── HidDescriptorBuilder.cs    ; fluent HID descriptor builder
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>│   ├── HMDeviceExtractor.cs       ; extract from physical HID
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>│   ├── HMOemNameOverride.cs       ; joy.cpl label override
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>│   ├── HMOutputPacket.cs          ; output packet types
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>│   ├── HMPidState.cs              ; PID FFB enums + structs
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>│   ├── HMHidDeviceInfo.cs         ; HID device info from extractor
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>│   ├── Internal/
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>│   │   ├── DeviceOrchestrator.cs  ; SetupController / TeardownController (2,363 lines)
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>│   │   ├── DeviceManager.cs       ; PnP device tree management (1,024 lines)
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>│   │   ├── SwdDeviceFactory.cs    ; hmswd.exe wrapping (397 lines)
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>│   │   ├── DriverBuilder.cs       ; embedded payload extract + sign (509 lines)
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>│   │   ├── HidReportBuilder.cs    ; HID descriptor parse + report encode (600 lines)
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>│   │   ├── HidDescriptorReconstructor.cs  ; preparsed → descriptor (1,002 lines)
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>│   │   ├── SharedMemoryIO.cs      ; shared section wire format (669 lines)
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>│   │   ├── OemNameOverrideStore.cs ; crash-safe OEM name registry writes (325 lines)
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>│   │   ├── PnputilHelper.cs       ; pnputil + devcon shell-out helpers (275 lines)
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>│   │   ├── ControllerProfile.cs   ; internal profile model (321 lines)
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>│   │   ├── HidDeviceEnumerator.cs ; SetupDi enumerate connected HIDs (233 lines)
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>│   │   ├── HidPreparsedData.cs    ; HidD_GetPreparsedData wrapper (150 lines)
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>│   │   ├── DeviceProperties.cs    ; DEVPKEY_* read/write (292 lines)
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>│   │   ├── DeviceNodeCreator.cs   ; SetupDiCreateDeviceInfoW path (335 lines)
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>│   │   ├── EmbeddedManifest.cs    ; SHA-256 of embedded payload
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>│   │   └── TimeoutScale.cs        ; HIDMAESTRO_TIMEOUT_SCALE env var
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a>│   └── Resources/                 ; embedded driver payload
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>│       ├── HIDMaestro.dll          ; main driver
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a>│       ├── HMXInput.dll            ; companion driver
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a>│       ├── hmswd.exe               ; SwDevice helper
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>│       ├── hidmaestro.inf          ; main INF (stamped at build time)
+<a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a>│       ├── hidmaestro_xusb.inf     ; companion INF (stamped at build time)
+<a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a>│       ├── signtool.exe            ; signing
+<a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a>│       ├── Inf2Cat.exe             ; catalog generation
+<a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a>│       └── Microsoft.UniversalStore.HardwareWorkflow.*.dll  ; Inf2Cat dependencies
+<a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a>│
+<a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a>├── tools/HIDMaestroProfileExtractor/  ; standalone WPF extractor GUI
+<a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a>├── example/SdkDemo/                ; minimal SDK consumer
+<a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a>├── test/                           ; HIDMaestroTest CLI + regression battery + probes
+<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>├── profiles/                       ; 225 profile JSONs
+<a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a>├── scripts/                        ; build, signing, verification, multi-pad-check
+<a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a>├── build/                          ; build outputs (driver DLLs, hmswd.exe, stamped INFs)
+<a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a>└── docs/                           ; README screenshots, investigation notes
+</code></pre></div>
+<hr />
+<h2 id="what-hidmaestro-is-not">What HIDMaestro is <strong>not</strong><a class="headerlink" href="#what-hidmaestro-is-not" title="Permanent link">&para;</a></h2>
+<p>For symmetry with PadForge's wiki, here's what's deliberately out of scope:</p>
+<ul>
+<li><strong>A polling engine.</strong> No internal pump thread for input. Consumers drive cadence.</li>
+<li><strong>A controller mapper.</strong> No deadzones, sensitivity curves, button remapping at runtime &mdash; that's the consumer's job. PadForge handles the mapping; HIDMaestro just creates the virtuals.</li>
+<li><strong>A standalone app.</strong> No UI, no settings, no config files of its own. The catalog is JSON in a DLL; the SDK is an API.</li>
+<li><strong>A kernel driver.</strong> Everything is user-mode. UMDF2 + self-signed cert + TrustedPublisher. No EV cert, no <code>bcdedit /set testsigning</code>, no reboot.</li>
+<li><strong>A bus driver.</strong> UMDF2 cannot publish PDOs. The XUSB companion is a peer device under the System class, not a child PDO of the main HID.</li>
+<li><strong>An anti-cheat bypass.</strong> Virtual devices are detectable. HIDMaestro doesn't try to hide.</li>
+<li><strong>A force-feedback synthesizer.</strong> The SDK delivers raw decoded packets. Effect mixing and condition synthesis are the consumer's job.</li>
+</ul>
+<hr />
+<h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Direction</th>
+<th>Read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>The driver code</strong></td>
+<td><a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a></td>
+</tr>
+<tr>
+<td><strong>The XUSB companion</strong></td>
+<td><a href="../xusb-companion/">XUSB Companion</a></td>
+</tr>
+<tr>
+<td><strong>The PnP / SwDevice machinery</strong></td>
+<td><a href="../swdevice-and-pnp/">SwDevice and PnP</a></td>
+</tr>
+<tr>
+<td><strong>The shared-memory wire format</strong></td>
+<td><a href="../shared-memory-protocol/">Shared Memory Protocol</a></td>
+</tr>
+<tr>
+<td><strong>How each downstream API sees the device</strong></td>
+<td><a href="../cross-api-coverage/">Cross-API Coverage</a></td>
+</tr>
+<tr>
+<td><strong>Multi-controller</strong></td>
+<td><a href="../multi-controller/">Multi-Controller</a></td>
+</tr>
+<tr>
+<td><strong>Create / dispose</strong></td>
+<td><a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a></td>
+</tr>
+<tr>
+<td><strong>Driver install + signing</strong></td>
+<td><a href="../driver-install-and-signing/">Driver Install and Signing</a></td>
+</tr>
+<tr>
+<td><strong>Build + release</strong></td>
+<td><a href="../build-and-release/">Build and Release</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Microsoft Learn topics on UMDF2 framework, HID Architecture, and the WUDFRd reflector. Search by topic name on <a href="https://learn.microsoft.com/">learn.microsoft.com</a>.</li>
+<li><a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2">Microsoft <code>vhidmini2</code> sample</a> &mdash; the proven UMDF2 HID minidriver pattern.</li>
+<li><a href="https://github.com/nefarius/DsHidMini">DsHidMini</a> &mdash; Nefarius's UMDF2 + xinputhid project; the architectural ancestor.</li>
+<li><a href="../references/">References</a> &mdash; full source bibliography for every claim in this wiki.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Technical Reference">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Technical Reference
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../umdf2-driver-internals/" class="md-footer__link md-footer__link--next" aria-label="Next: UMDF2 Driver Internals">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                UMDF2 Driver Internals
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

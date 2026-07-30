@@ -1,0 +1,2854 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="HIDMaestro creates virtual game controllers that look like real hardware to Windows. These docs cover everything from the SDK quickstart to wire protocols.">
+      
+      
+      
+        <link rel="canonical" href="https://hidmaestro.org/docs/reference/cross-api-coverage/">
+      
+      
+        <link rel="prev" href="../shared-memory-protocol/">
+      
+      
+        <link rel="next" href="../multi-controller/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Cross-API Coverage - HIDMaestro Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cross-api-coverage" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="HIDMaestro Documentation" class="md-header__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HIDMaestro Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cross-API Coverage
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../start/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sdk/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  SDK
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../profiles/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Profiles
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Technical Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="HIDMaestro Documentation" class="md-nav__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    HIDMaestro Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sdk/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/sdk-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/hid-descriptor-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HID Descriptor Builder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/force-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Force Feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/output-passthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output Passthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/oem-name-override/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OEM Name Override
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../profiles/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiles
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Profiles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/custom-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-extractor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Extractor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/contributing-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../umdf2-driver-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UMDF2 Driver Internals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xusb-companion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XUSB Companion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../swdevice-and-pnp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SwDevice and PnP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shared-memory-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared Memory Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-API Coverage
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-API Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#directinput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DirectInput
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DirectInput">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-vxvy-velocity-usage-trick-every-xbox-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Vx/Vy velocity-usage trick (every Xbox profile)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#xinput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XInput
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="XInput">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-two-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How: two paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-slot-1-skip-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The slot-1-skip fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#switch-pro-directinput-and-the-real-bluetooth-descriptor-issues-353637" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch Pro DirectInput and the real Bluetooth descriptor (issues #35/#36/#37)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-4-slot-cap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 4-slot cap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xinput-slot-claim-wait" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XInput slot-claim wait
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sdl3-hidapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SDL3 / HIDAPI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SDL3 / HIDAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-ig_-enumerator-trick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The &amp;IG_ enumerator trick
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-bthledevice-spoof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The BTHLEDEVICE spoof
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-sdl3-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom SDL3 fork
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#browser-gamepad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser Gamepad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Browser Gamepad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-browser-entry-per-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single browser entry per controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#browser-vibration-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser vibration paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chromiums-controller-order-quirk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chromium's controller order quirk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-firefox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edge / Firefox
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#windowsgaminginput-wgi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows.Gaming.Input (WGI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Windows.Gaming.Input (WGI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-classifier-pass-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The classifier pass-list
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-we-dont-use-xnacomposite-for-the-companion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why we don't use XnaComposite for the companion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-gameinput-registry-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The GameInput registry override
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isdeviceorancestorfilteredby-the-literal-wstring-compare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IsDeviceOrAncestorFilteredBy: the literal wstring compare
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ioctl_xusb_wait_for_input-the-async-input-pump" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOCTL_XUSB_WAIT_FOR_INPUT: the async input pump
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xusb-ioctl_xusb_wait_for_input-29-byte-response-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XUSB IOCTL_XUSB_WAIT_FOR_INPUT 29-byte response format
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rawinput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RawInput
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RawInput">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-phantom-axis-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The phantom-axis trap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#microsoft-gameinput-newer-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft GameInput (newer API)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-archetype-api-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-archetype API summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lifecycle-and-teardown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle and Teardown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../driver-install-and-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Driver Install and Signing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build-and-release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build and Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-and-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#directinput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DirectInput
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DirectInput">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-vxvy-velocity-usage-trick-every-xbox-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Vx/Vy velocity-usage trick (every Xbox profile)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#xinput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XInput
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="XInput">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-two-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How: two paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-slot-1-skip-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The slot-1-skip fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#switch-pro-directinput-and-the-real-bluetooth-descriptor-issues-353637" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch Pro DirectInput and the real Bluetooth descriptor (issues #35/#36/#37)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-4-slot-cap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 4-slot cap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xinput-slot-claim-wait" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XInput slot-claim wait
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sdl3-hidapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SDL3 / HIDAPI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SDL3 / HIDAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-ig_-enumerator-trick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The &amp;IG_ enumerator trick
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-bthledevice-spoof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The BTHLEDEVICE spoof
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-sdl3-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom SDL3 fork
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#browser-gamepad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser Gamepad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Browser Gamepad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-browser-entry-per-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single browser entry per controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#browser-vibration-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser vibration paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chromiums-controller-order-quirk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chromium's controller order quirk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-firefox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edge / Firefox
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#windowsgaminginput-wgi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows.Gaming.Input (WGI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Windows.Gaming.Input (WGI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-classifier-pass-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The classifier pass-list
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-we-dont-use-xnacomposite-for-the-companion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why we don't use XnaComposite for the companion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-gameinput-registry-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The GameInput registry override
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isdeviceorancestorfilteredby-the-literal-wstring-compare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IsDeviceOrAncestorFilteredBy: the literal wstring compare
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ioctl_xusb_wait_for_input-the-async-input-pump" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOCTL_XUSB_WAIT_FOR_INPUT: the async input pump
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xusb-ioctl_xusb_wait_for_input-29-byte-response-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XUSB IOCTL_XUSB_WAIT_FOR_INPUT 29-byte response format
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rawinput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RawInput
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RawInput">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-deliver_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we deliver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-phantom-axis-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The phantom-axis trap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#microsoft-gameinput-newer-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft GameInput (newer API)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-archetype-api-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-archetype API summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="cross-api-coverage">Cross-API Coverage<a class="headerlink" href="#cross-api-coverage" title="Permanent link">&para;</a></h1>
+<p>How a single HIDMaestro virtual device reaches DirectInput, XInput, SDL3 / HIDAPI, browser Gamepad, and Windows.Gaming.Input simultaneously, and the tricks each path requires. Most user-mode virtual-controller projects get one or two of these APIs right; HIDMaestro targets all five.</p>
+<p>This page is the per-API breakdown. The general data flow lives in <a href="../architecture-overview/">Architecture Overview</a>; the underlying device-tree shapes live in <a href="../../profiles/profile-system/">Profile System</a>; the descriptor mechanics live in <a href="../../sdk/hid-descriptor-builder/">HID Descriptor Builder</a>.</p>
+<hr />
+<h2 id="directinput">DirectInput<a class="headerlink" href="#directinput" title="Permanent link">&para;</a></h2>
+<p><code>dinput8.dll</code> reads the HID descriptor directly from the kernel's preparsed data and exposes the device as a "joystick" with a fixed axis enumeration order: X, Y, Z, Rx, Ry, Rz, Slider0, Slider1, plus POVs and buttons.</p>
+<h3 id="what-we-deliver">What we deliver<a class="headerlink" href="#what-we-deliver" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Correct axes for the profile.</strong> Sticks at X/Y, Rx/Ry as the descriptor declares them. <strong>All Xbox profiles</strong> (Xbox 360 Wired, Xbox Series BT, Xbox One BT, Xbox Elite v2 BT) present <strong>combined</strong> triggers in DirectInput &mdash; one Z axis carrying <code>LT - RT</code>, matching real <code>xusb22.sys</code> behavior. Sony profiles (DualSense, DualShock 4) present separate triggers in DI as Z and Rz, matching their native descriptors.</li>
+<li><strong>Correct VID/PID.</strong> Read from <code>HidD_GetAttributes</code>, set per-profile.</li>
+<li><strong>Correct product / manufacturer / serial strings.</strong> Per-instance serial (<code>HM-CTL-&lt;index&gt;</code>) lets DirectInput disambiguate two virtuals with the same VID:PID/ProductString.</li>
+<li><strong>HID PID 1.0 force feedback.</strong> <code>pid.dll</code> discovers the canonical PID block in the descriptor and the round-trip (Pool, Block Load, Set Effect, Effect Operation Start) works. See <a href="../../sdk/force-feedback/">Force Feedback</a>.</li>
+</ul>
+<h3 id="how">How<a class="headerlink" href="#how" title="Permanent link">&para;</a></h3>
+<p><code>mshidumdf.sys</code> is the function driver under HidClass; HIDMaestro.dll is the lower filter. DirectInput pulls preparsed data from the kernel HID stack just like a real device. No DI-specific shenanigans &mdash; just a correct descriptor and <code>IOCTL_UMDF_HID_GET_FEATURE</code> wired to the PID state shared section.</p>
+<h3 id="the-vxvy-velocity-usage-trick-every-xbox-profile">The Vx/Vy velocity-usage trick (every Xbox profile)<a class="headerlink" href="#the-vxvy-velocity-usage-trick-every-xbox-profile" title="Permanent link">&para;</a></h3>
+<p>Real Xbox controllers (360, Series, One, Elite) all expose a <strong>combined</strong> trigger axis (Z) in DirectInput &mdash; that's <code>xusb22.sys</code>'s legacy DI shape. Browsers and WGI need separate trigger values. Previous user-mode virtual solutions had to choose: correct DI (5 axes, combined Z) or correct browser (6 axes, separate triggers).</p>
+<p>HIDMaestro uses HID <strong>velocity usages</strong> (Vx and Vy, Usage Page 0x01, Usages 0x40 and 0x41 per HID Usage Tables 1.5 §4 &mdash; <a href="https://www.usb.org/document-library">usb.org/document-library</a>) to carry separate trigger values in the same HID report. DirectInput does <strong>not</strong> map velocity usages to any axis slot &mdash; it sees 5 axes (X, Y, Rx, Ry, combined Z), matching real <code>xusb22.sys</code> for every Xbox controller. Microsoft GameInput / WGI enumerates Vx/Vy as additional axes and reads separate trigger data via the GameInput registry mapping (see WGI section below).</p>
+<p>Result: 5 axes and combined Z trigger in DirectInput (matching real <code>xusb22.sys</code> for the entire Xbox family), separate triggers in the browser (matching real XInput), all from one HID descriptor.</p>
+<p>The velocity usages are emitted by appending raw bytes via <code>HidDescriptorBuilder.AddRaw</code> &mdash; the fluent <code>AddTrigger</code> doesn't emit Vx/Vy because their byte-alignment validation is different. The catalog Xbox profiles do this manually; custom profiles needing the trick follow the same pattern.</p>
+<hr />
+<h2 id="xinput">XInput<a class="headerlink" href="#xinput" title="Permanent link">&para;</a></h2>
+<p><code>xinput1_4.dll</code> discovers Xbox controllers through the <strong>XUSB device interface GUID</strong> <code>{EC87F1E3-...}</code>, <strong>not</strong> by HID class. Walks <code>SetupDiGetClassDevsW(GUID_DEVINTERFACE_XUSB)</code> and returns up to 4 slots.</p>
+<h3 id="what-we-deliver_1">What we deliver<a class="headerlink" href="#what-we-deliver_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Single-slot allocation contiguously from 0</strong> for Xbox-family profiles.</li>
+<li><strong>Separate triggers</strong> (LT, RT independent).</li>
+<li><strong>Correct button mapping</strong> including Guide via <code>XInputGetStateEx</code> (the undocumented 0x0400 bit).</li>
+<li><strong>D-pad</strong> (fixed in v1.3.3 &mdash; pre-v1.3.3 the SDK never wrote hat bits into the GIP buffer; consumers hitting <code>xusb22</code> directly missed the d-pad).</li>
+<li><strong>Rumble passthrough</strong> via <code>IOCTL_XUSB_SET_STATE</code> &rarr; <code>OutputReceived(HMOutputSource.XInput)</code>.</li>
+</ul>
+<h3 id="how-two-paths">How: two paths<a class="headerlink" href="#how-two-paths" title="Permanent link">&para;</a></h3>
+<p><strong>Path 1: xinputhid Xbox profiles</strong> (Xbox Series BT family). The HID child binds Microsoft's <code>xinputhid.sys</code> as an upper filter. <code>xinputhid</code> natively publishes the XUSB device interface and translates <code>IOCTL_XUSB_*</code> to its own internal HID-out / HID-in path. HIDMaestro just provides the descriptor and bytes.</p>
+<p><strong>Path 2: non-xinputhid Xbox profiles</strong> (Xbox 360 Wired family). The HIDMaestro <strong>XUSB companion</strong> at <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code> registers the XUSB device interface itself. The companion handles every <code>IOCTL_XUSB_*</code> directly, reading the 14-byte GIP buffer the SDK packs in shared memory and translating to <code>XINPUT_GAMEPAD</code> wire format. See <a href="../xusb-companion/">XUSB Companion</a>.</p>
+<h3 id="the-slot-1-skip-fix">The slot-1-skip fix<a class="headerlink" href="#the-slot-1-skip-fix" title="Permanent link">&para;</a></h3>
+<p>Pre-SWD-migration, virtual Xbox controllers were assigned to slots 1, 2, 3 and slot 0 was empty. Cause: the null-sentinel ContainerID <code>{00000000-...-FFFF-FFFFFFFFFFFF}</code> triggered a code path in <code>xinput1_4!FUN_18000de2c</code> that set bit 2 on the device struct and made the fallback slot allocator skip iter 0.</p>
+<p>Fix: assign explicit per-controller ContainerID via <code>SwDeviceCreate</code>. Slots fill 0..3 contiguously. See <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
+<h3 id="switch-pro-directinput-and-the-real-bluetooth-descriptor-issues-353637">Switch Pro DirectInput and the real Bluetooth descriptor (issues #35/#36/#37)<a class="headerlink" href="#switch-pro-directinput-and-the-real-bluetooth-descriptor-issues-353637" title="Permanent link">&para;</a></h3>
+<p>The real Pro Controller's HID descriptor declares a report 0x30 layout that does not match the Nintendo full-mode bytes the controller actually streams, and real hardware hides this by streaming nothing until a host completes the 0x80 handshake. The virtual Pro streams immediately (so SDL's report-ID sniff locks full mode from the first read), which exposed the mismatch to descriptor-driven parsers: joy.cpl showed strobing buttons, wandering axes, and a spinning hat.</p>
+<p>Since v1.3.19 the pre-handshake stream is packed in the layout the descriptor declares (buttons at bytes 1-2, four 16-bit axes, hat nibble), so DirectInput consumers read a working pad, which is strictly better than real hardware's dead pre-handshake pad. The first Switch-protocol write (any 0x80 USB command or 0x01 subcommand) flips the stream permanently to the Nintendo layout. Note that Chromium-based browsers with an active gamepad service speak the Nintendo protocol and initialize the pad within milliseconds of arrival, exactly as they do to real hardware, after which DirectInput sees the same post-handshake stream real hardware produces.</p>
+<p>Since v1.3.20 (issue #36) the responder's SPI analog-stick parameter block serves a ZERO stick dead zone (a real Pro reports ~150 counts, ~10% of the calibration range). Chromium's Nintendo driver reads the dead zone from that block and radially snaps both axes to center inside it, so the virtual pad now delivers the full linear range from center in every browser Gamepad API consumer. SDL and Steam's SDL lineage never read the parameter block (factory and user calibration only) and are unaffected. <code>switch_pro_check</code> asserts the zero on the wire so a future parameter-block refresh from hardware captures cannot silently reintroduce the dead band.</p>
+<p>Since v1.3.21 (issue #37) the virtual Pro ships the real BLUETOOTH descriptor, extracted byte-exact from a live Pro Controller's SDP cache. Report 0x3F is the only report DirectInput can parse (16 buttons, null-state hat, X/Y/Rx/Ry at 16 bits). The full-mode reports 0x21/0x30/0x31-0x33 are vendor blobs. Pre-handshake the driver streams genuine 12-byte 0x3F simple-mode frames, so joy.cpl reads a live pad through a report a real Pro actually declares rather than v1.3.19's synthetic layout. The first 0x01 subcommand flips the stream to the 49-byte Bluetooth full-mode 0x30, which DirectInput ignores entirely. The DInput view freezes at neutral exactly as a real Bluetooth Pro does once Steam or a browser owns it, so the v1.3.19 Chromium caveat is gone: post-handshake bytes can no longer reach descriptor-driven parsers at all. The 0x80 USB-init family is absent from the descriptor (writes fail at HidClass, as on real hardware), so SDL initializes over its Bluetooth path. The profile presents a Bluetooth bus and HID version 0 to match the live pad's enumeration.</p>
+<h3 id="the-4-slot-cap">The 4-slot cap<a class="headerlink" href="#the-4-slot-cap" title="Permanent link">&para;</a></h3>
+<p><code>xinput1_4.dll</code> hard-caps at 4 slots. This <strong>only constrains Xbox-family profiles</strong> (xbox-360-wired, xbox-series-xs-bt, etc.); non-Xbox profiles (DualSense, Switch Pro, wheels, sticks) don't claim XInput slots and can run beyond 4 simultaneously through DInput / HIDAPI / WGI / RawInput / Browser.</p>
+<p>For up-to-date multi-slot testing, use Nefarius's <a href="https://github.com/nefarius/MultiPadTester">MultiPadTester</a> &mdash; the historical 4-slot WGI cap was fixed upstream per <code>nefarius/MultiPadTester#15</code>.</p>
+<h3 id="xinput-slot-claim-wait">XInput slot-claim wait<a class="headerlink" href="#xinput-slot-claim-wait" title="Permanent link">&para;</a></h3>
+<p><code>SetupController</code> runs three wait budgets after device create. The third &mdash; <code>WaitForXInputSlotClaim</code> &mdash; was 15 s pre-v1.3.2. The slot-claim wait was the <strong>dominant cost</strong>: distribution is bimodal (xinputhid publishes the slot in &lt;100 ms when healthy, never publishes when xinputhid's allocator is in a stuck state), so the prior 15 s budget burned the full duration on every stuck case. PadForge users observed 13-14 s freezes on a single Xbox Series BT create.</p>
+<p>The 500 ms cap (post-v1.3.2) sits ~5x above the slowest observed healthy claim and degrades the stuck case to a near-imperceptible pause. Controller stays functional via DI / HIDAPI / Browser / WGI when XInput doesn't pick it up; XInput consumers see the slot appear lazily on their next poll cycle.</p>
+<hr />
+<h2 id="sdl3-hidapi">SDL3 / HIDAPI<a class="headerlink" href="#sdl3-hidapi" title="Permanent link">&para;</a></h2>
+<p>SDL3 detects gamepads through three backends with fallback: XInput, HIDAPI (libusb-mode HID enumeration), and a RawInput fallback. SDL3's controller mapping database (<code>gamecontrollerdb.txt</code>) keys by GUID derived from VID/PID/version.</p>
+<h3 id="what-we-deliver_2">What we deliver<a class="headerlink" href="#what-we-deliver_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Correct identity</strong> via <code>HidD_GetProductString</code> / <code>HidD_GetManufacturerString</code> / <code>HidD_GetSerialNumberString</code>.</li>
+<li><strong>Bluetooth bus type</strong> for BT-mode profiles (via the BTHLEDEVICE spoof).</li>
+<li><strong>Per-instance disambiguation.</strong> Two virtual DualSense with the same VID:PID/ProductString get unique serials (<code>HM-CTL-0001</code>, <code>HM-CTL-0002</code>) so <code>hid_enumerate</code> doesn't bucket them as one device.</li>
+</ul>
+<h3 id="the-ig_-enumerator-trick">The &amp;IG_ enumerator trick<a class="headerlink" href="#the-ig_-enumerator-trick" title="Permanent link">&para;</a></h3>
+<p>By using <code>VID_*&amp;PID_*&amp;IG_00</code> as the device enumerator, the HID child's device path contains <code>&amp;IG_</code>. This has three simultaneous effects:</p>
+<ul>
+<li><strong><a href="https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/raw_input_data_fetcher_win.cc">Chromium RawInput</a></strong> skips it (prevents duplicate gamepad entries).</li>
+<li><strong><a href="https://github.com/libusb/hidapi/blob/master/windows/hid.c">HIDAPI</a></strong> skips it (by design for XInput-handled devices).</li>
+<li><strong><a href="https://github.com/libsdl-org/SDL/tree/main/src/joystick/windows">SDL3</a></strong> still detects it &mdash; it falls through to the RawInput backend and maps by VID/PID.</li>
+</ul>
+<p>One string in a device path controls three different detection paths across three different libraries.</p>
+<h3 id="the-bthledevice-spoof">The BTHLEDEVICE spoof<a class="headerlink" href="#the-bthledevice-spoof" title="Permanent link">&para;</a></h3>
+<p>HIDAPI detects Bluetooth controllers by checking for <code>BTHLEDEVICE</code> in the device's CompatibleIDs (see HIDAPI's Windows backend at <a href="https://github.com/libusb/hidapi/blob/master/windows/hid.c"><code>windows/hid.c</code></a> &mdash; the <code>hid_get_device_info</code> bus-type detection). HIDMaestro sets this property from user mode during device creation, <strong>without Bluetooth hardware</strong> and <strong>without a kernel bus driver</strong>.</p>
+<p>SDL3 then uses its Bluetooth-specific controller parsing path, which handles the descriptor correctly. Without this spoof, SDL3's default parser produces zeros for certain virtual device configurations.</p>
+<p>For BT-mode profiles only (<code>connection: "bluetooth"</code> in the JSON). USB profiles get USB CompatibleIDs.</p>
+<h3 id="custom-sdl3-fork">Custom SDL3 fork<a class="headerlink" href="#custom-sdl3-fork" title="Permanent link">&para;</a></h3>
+<p>PadForge's SDL3 fork (branch <code>feat/hidmaestro-filter</code>) adds a substring filter list at <code>SDL_OpenJoystick</code> so SDL doesn't open HIDMaestro virtuals <strong>as input devices</strong> when PadForge owns those virtuals. This is a <strong>PadForge-side concern</strong> &mdash; PadForge needs to enumerate physical controllers (via SDL) without re-enumerating its own HIDMaestro virtuals as input.</p>
+<p>If you write a different consumer that doesn't need this filter (an emulator that just reads its own HIDMaestro output as gamepads is a corner case), you can use stock SDL3.</p>
+<hr />
+<h2 id="browser-gamepad">Browser Gamepad<a class="headerlink" href="#browser-gamepad" title="Permanent link">&para;</a></h2>
+<p>Chromium's <code>navigator.getGamepads()</code> exposes connected gamepads to web pages. Modern Win10/11 Chromium uses <strong>Windows.Gaming.Input</strong> (WGI) on the input read path and dispatches <code>Gamepad.Vibration</code> through WGI on the rumble write path.</p>
+<h3 id="what-we-deliver_3">What we deliver<a class="headerlink" href="#what-we-deliver_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>STANDARD_GAMEPAD layout</strong> for Xbox-family profiles (<code>mapping = "standard"</code>, axes 0..3 are sticks, axes 4 and 5 are triggers, buttons 0..16 are the standard gamepad layout).</li>
+<li><strong>Separate triggers</strong> in the buttons array (4 / 5 indexes for LT / RT).</li>
+<li><strong><code>put_Vibration</code> round-trip</strong> on Win10/11 through Chromium's WGI vibration path. The motor magnitudes reach <code>HMController.OutputReceived</code>.</li>
+</ul>
+<h3 id="single-browser-entry-per-controller">Single browser entry per controller<a class="headerlink" href="#single-browser-entry-per-controller" title="Permanent link">&para;</a></h3>
+<p>Real controllers expose one entry in Chromium's gamepad list. HIDMaestro's <code>&amp;IG_</code> enumerator skips the duplicate-device condition (Chromium's RawInput backend skips <code>&amp;IG_</code> paths, leaving only the WGI path).</p>
+<h3 id="browser-vibration-paths">Browser vibration paths<a class="headerlink" href="#browser-vibration-paths" title="Permanent link">&para;</a></h3>
+<p>Three different routings depending on architecture group:</p>
+<table>
+<thead>
+<tr>
+<th>Profile group</th>
+<th>Chromium's <code>put_Vibration</code> path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Plain HID</strong> (DualSense, Logitech wheels)</td>
+<td>WGI dispatches a HID Output report to the HID device. Surfaces as <code>HMOutputSource.HidOutput</code>.</td>
+</tr>
+<tr>
+<td><strong>Non-xinputhid Xbox</strong> (Xbox 360 Wired)</td>
+<td>WGI dispatches <code>IOCTL_XUSB_SET_STATE</code> to the XUSB companion via the xinputhid UpperFilter tripwire. Surfaces as <code>HMOutputSource.XInput</code>.</td>
+</tr>
+<tr>
+<td><strong>xinputhid Xbox</strong> (Xbox Series BT)</td>
+<td>WGI dispatches via the HID path; <code>xinputhid.sys</code> translates internally. Surfaces as <code>HMOutputSource.HidOutput</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>In all three cases the consumer's <code>OutputReceived</code> handler fires; only the wire format differs.</p>
+<h3 id="chromiums-controller-order-quirk">Chromium's controller order quirk<a class="headerlink" href="#chromiums-controller-order-quirk" title="Permanent link">&para;</a></h3>
+<p>Chromium uses <strong>alphabetical / lexical GUID ordering</strong> for the gamepad list. Any match to physical creation order is coincidental. If your consumer cares about controller ordering at the browser layer, sort or remap on the consumer side &mdash; the SDK creates virtuals in deterministic order, but Chromium reorders.</p>
+<p>Chromium also caches gamepad slots within a session. Adding/removing controllers during a Chromium session leaves stale duplicate slots with identical inputs. <strong>Restart Chromium to clear.</strong> Not a HIDMaestro bug.</p>
+<h3 id="edge-firefox">Edge / Firefox<a class="headerlink" href="#edge-firefox" title="Permanent link">&para;</a></h3>
+<p>Edge uses Chromium's pipeline so behaves identically. Firefox's Gamepad implementation is also Chromium-derived for the WGI path on Win11.</p>
+<hr />
+<h2 id="windowsgaminginput-wgi">Windows.Gaming.Input (WGI)<a class="headerlink" href="#windowsgaminginput-wgi" title="Permanent link">&para;</a></h2>
+<p>The WinRT API surface that powers <code>Gamepad.Vibration</code>, <code>RawGameController</code>, <code>IGameController</code>, etc. Used by Chromium for browser Gamepad and by UWP / WinUI games. <strong>Most fragile of the five surfaces</strong> &mdash; the most empirical investigation went into making this work.</p>
+<h3 id="what-we-deliver_4">What we deliver<a class="headerlink" href="#what-we-deliver_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>One Gamepad entity per controller.</strong> Not two splitting input/vibration.</li>
+<li><strong>Live input</strong> via the HID path or the XUSB path depending on profile group.</li>
+<li><strong>Working <code>put_Vibration</code></strong> via the same path.</li>
+</ul>
+<h3 id="the-classifier-pass-list">The classifier pass-list<a class="headerlink" href="#the-classifier-pass-list" title="Permanent link">&para;</a></h3>
+<p>Decomp of <code>Windows.Gaming.Input.dll</code> (Win11 26200) shows that <code>ProviderManagerWorker::OnPnpDeviceAdded</code> admits a device into its provider graph if <strong>either</strong>:</p>
+<ol>
+<li>The device's ClassGuid is in a hard-coded four-entry pass-list:</li>
+<li>HIDClass <code>{745A17A0-...}</code></li>
+<li>XnaComposite <code>{D61CA365-...}</code></li>
+<li>Two others (one is a setup class for legacy XBox, one is GameInput-related)</li>
+<li><code>IsDeviceOrAncestorFilteredBy(path, L"xinputhid")</code> returns true.</li>
+</ol>
+<p>Both branches are reverse-engineered from the Win11 26200 binary; the full Ghidra output and ProcMon traces are archived at <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a>.</p>
+<p>Path 1 admits plain HID profiles (HIDClass) automatically. Path 2 is what admits the System-class XUSB companion via the registry-string tripwire &mdash; see <a href="../xusb-companion/">XUSB Companion</a>.</p>
+<p><code>System</code> class is <strong>not</strong> on the pass-list. So plain System-class devices are skipped by WGI unless they also have <code>"xinputhid"</code> in their UpperFilters.</p>
+<h3 id="why-we-dont-use-xnacomposite-for-the-companion">Why we don't use XnaComposite for the companion<a class="headerlink" href="#why-we-dont-use-xnacomposite-for-the-companion" title="Permanent link">&para;</a></h3>
+<p>Initially obvious choice: XnaComposite is on the pass-list. Why pick System?</p>
+<p>XnaComposite triggers classifier branch 1 and creates a WGI Gamepad entity automatically &mdash; which would be a <strong>second</strong> WGI entity alongside the main HID device's HID-path Gamepad. Two WGI Gamepads splitting input and vibration on one logical controller hangs the entire <code>Windows.Gaming.Input</code> subsystem. Recovery: <code>Restart-Service -Force GameInputSvc</code>.</p>
+<p>The System class isn't classified at all, then admitted via the UpperFilter tripwire and dispatched via the XUSB path. Exactly one Gamepad entity per logical controller. See <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md"><code>memory:feedback-one-wgi-device-per-controller.md</code></a>.</p>
+<h3 id="the-gameinput-registry-override">The GameInput registry override<a class="headerlink" href="#the-gameinput-registry-override" title="Permanent link">&para;</a></h3>
+<p>Windows ships a built-in GameInput mapping database for known VID/PIDs at <code>HKLM\SYSTEM\CurrentControlSet\Control\GameInput\Devices\&lt;key&gt;</code>. It tells WGI how to map HID axes/buttons to the Gamepad interface (which axis is leftStickX, which is the trigger, etc.).</p>
+<p>For Xbox profiles using the Vx/Vy velocity-usage trick, the default mapping points trigger axes at the combined Z axis (axis 4). HIDMaestro writes custom GameInput mappings that point trigger axes at Vx/Vy (axes 5 and 6). WGI's Gamepad object then reads actual separate trigger values from the Vx/Vy fields.</p>
+<p>Mapping format is undocumented; HIDMaestro emits the byte sequences empirically determined to work for Xbox 360 / Xbox Series profiles. See <code>DeviceOrchestrator.GameInputMapping*</code> methods.</p>
+<h3 id="isdeviceorancestorfilteredby-the-literal-wstring-compare"><code>IsDeviceOrAncestorFilteredBy</code>: the literal wstring compare<a class="headerlink" href="#isdeviceorancestorfilteredby-the-literal-wstring-compare" title="Permanent link">&para;</a></h3>
+<p>The check is a <code>wcsncmp</code> against <code>"xinputhid"</code>. Doesn't load <code>xinputhid.sys</code>. Doesn't check whether the filter actually attached. Just asks "does any ancestor's UpperFilters MULTI_SZ contain this string". Writing the string in the INF AddReg is sufficient.</p>
+<p>This was discovered by Ghidra-decompiling <code>Windows.Gaming.Input.dll</code> and seeing the literal <code>wcsncmp</code> instruction. See <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a> for the multi-week investigation.</p>
+<h3 id="ioctl_xusb_wait_for_input-the-async-input-pump"><code>IOCTL_XUSB_WAIT_FOR_INPUT</code>: the async input pump<a class="headerlink" href="#ioctl_xusb_wait_for_input-the-async-input-pump" title="Permanent link">&para;</a></h3>
+<p>WGI's <code>XusbDevice::QueueInputBuffer</code> issues <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> async. <strong>Completing it synchronously kills the WGI input pump</strong> &mdash; verified empirically. The XUSB companion has a manual-dispatch queue and an 8 ms periodic timer that drains pended requests with the right 29-byte response format. See <a href="../xusb-companion/">XUSB Companion</a>.</p>
+<h3 id="xusb-ioctl_xusb_wait_for_input-29-byte-response-format">XUSB <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> 29-byte response format<a class="headerlink" href="#xusb-ioctl_xusb_wait_for_input-29-byte-response-format" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0..1</td>
+<td><code>0x01 0x03</code></td>
+<td>Version bytes</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>0x03</code></td>
+<td>RESUMED state</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>0x00</code></td>
+<td>Magic byte that makes <code>XusbInputParser</code>'s built-in Gamepad template match (a prior <code>0x14</code> value here produced an all-zero <code>GetCurrentReading</code> despite input arriving)</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>0x14</code></td>
+<td>Non-zero gate byte</td>
+</tr>
+<tr>
+<td>11..28</td>
+<td>XUSB state</td>
+<td>Buttons / triggers / sticks</td>
+</tr>
+</tbody>
+</table>
+<p>These constants come from Ghidra + binary-search testing. The <code>state[9]=0x00</code> magic byte is the most counterintuitive &mdash; in the Microsoft tooling that generated these state frames, that field would presumably mean something specific, but in our context the only thing that matters is that the <code>XusbInputParser</code> template matches it.</p>
+<hr />
+<h2 id="rawinput">RawInput<a class="headerlink" href="#rawinput" title="Permanent link">&para;</a></h2>
+<p>Chromium and other browsers may fall back to RawInput (<code>Win32 Raw Input API</code>) for device enumeration when the WGI path doesn't fire. RawInput sees every HID device on the system.</p>
+<h3 id="what-we-deliver_5">What we deliver<a class="headerlink" href="#what-we-deliver_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Skipped by default</strong> for Xbox profiles via the <code>&amp;IG_</code> substring blocklist Chromium maintains.</li>
+<li><strong>Visible</strong> for non-XInput profiles.</li>
+</ul>
+<h3 id="the-phantom-axis-trap">The phantom-axis trap<a class="headerlink" href="#the-phantom-axis-trap" title="Permanent link">&para;</a></h3>
+<p>Chromium's RawInput parser surfaces any trailing Const Input item as a phantom axis with a literal value (<code>AXIS 9 = 1227133568</code>). Issue #6.</p>
+<p><code>HidDescriptorBuilder.AddButtons(N)</code> rounds button counts up to a byte boundary instead of emitting a Const padding item. <code>AddTrigger(name, bits)</code> rejects non-byte-aligned bit counts that would force a Const pad. Fluent descriptor authoring eliminates this trap by construction; raw descriptor authoring (via <code>AddRaw</code>) needs to handle it manually.</p>
+<hr />
+<h2 id="microsoft-gameinput-newer-api">Microsoft GameInput (newer API)<a class="headerlink" href="#microsoft-gameinput-newer-api" title="Permanent link">&para;</a></h2>
+<p>The official product name is <strong>Microsoft GameInput</strong> (note the spacing &mdash; no dot, <code>GameInput</code> is one word). The DLL on Windows is <code>GameInput.dll</code>. Distinct from the older <code>Windows.Gaming.Input</code> WinRT surface (WGI), but on current Windows builds both run through the same kernel-side dispatch. Reads device-to-Gamepad mapping from <code>HKLM\SYSTEM\CurrentControlSet\Control\GameInput\Devices\</code>.</p>
+<p>We don't currently target Microsoft GameInput differently from WGI. Investigation in 2026-04 confirmed:</p>
+<ul>
+<li>No user-mode provider model exists.</li>
+<li>Haptics still route through the same kernel drivers as WGI.</li>
+<li>Chromium doesn't use Microsoft GameInput on Win11.</li>
+</ul>
+<p>See <a href="../../start/glossary/">Glossary</a> for the term and <code>docs/investigations/wgi-silent-sink-2026-04/</code> for the rationale. <strong>Not a lever for HIDMaestro work.</strong></p>
+<hr />
+<h2 id="per-archetype-api-summary">Per-archetype API summary<a class="headerlink" href="#per-archetype-api-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Plain HID</th>
+<th>Non-xinputhid Xbox</th>
+<th>xinputhid Xbox</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DirectInput</strong></td>
+<td>descriptor-correct axes, buttons</td>
+<td>5 axes (combined Z; Vx/Vy invisible) + 10 btns</td>
+<td>5 axes (combined Z; Vx/Vy invisible) + 16 btns (xinputhid synth)</td>
+</tr>
+<tr>
+<td><strong>XInput</strong></td>
+<td>not visible</td>
+<td>1 slot, separate triggers, Guide</td>
+<td>1 slot, separate triggers, Guide</td>
+</tr>
+<tr>
+<td><strong>SDL3 / HIDAPI</strong></td>
+<td>HIDAPI direct (USB or BT bus type)</td>
+<td>XInput backend (&amp;IG_ filter)</td>
+<td>XInput backend (&amp;IG_ filter)</td>
+</tr>
+<tr>
+<td><strong>Browser Gamepad</strong></td>
+<td>Detected, separate triggers (where descriptor allows)</td>
+<td>STANDARD_GAMEPAD via WGI&rarr;XUSB</td>
+<td>STANDARD_GAMEPAD via WGI&rarr;HID</td>
+</tr>
+<tr>
+<td><strong>WGI</strong></td>
+<td>1 Gamepad via HID classifier</td>
+<td>1 Gamepad via XUSB tripwire</td>
+<td>1 Gamepad via HID classifier (xinputhid filtered)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<p><code>scripts/verify.py</code> checks all five paths in one pass:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python scripts\verify.py --controllers 4
+</code></pre></div>
+<p>Per-controller:</p>
+<ul>
+<li>XInput slot status (<code>XInputGetState</code>)</li>
+<li>DirectInput axes/buttons (<code>winmm.joyGetDevCapsW</code>)</li>
+<li>HIDAPI enumeration (<code>hid.enumerate</code>)</li>
+<li>Browser Gamepad state (headless Chrome &rarr; <code>navigator.getGamepads()</code>)</li>
+<li>WGI Gamepad state (<code>winrt.windows.gaming.input.RawGameController</code>)</li>
+<li>HID enumeration order (filtered by <code>HM-CTL-</code> serial)</li>
+</ul>
+<p>PASS if every API agrees on slot count, identity, and basic state. Exit 0 / 1.</p>
+<p>See <a href="../testing-and-verification/">Testing and Verification</a> for the regression battery integration.</p>
+<hr />
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../architecture-overview/">Architecture Overview</a> &mdash; the full data flow these per-API mechanics fit into.</li>
+<li><a href="../xusb-companion/">XUSB Companion</a> &mdash; the XInput / WGI dispatch path for non-xinputhid Xbox profiles.</li>
+<li><a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a> &mdash; the driver IOCTLs the kernel HID stack marshals from these APIs.</li>
+<li><a href="../../sdk/hid-descriptor-builder/">HID Descriptor Builder</a> &mdash; the velocity-usage trick + button/trigger byte alignment.</li>
+<li><a href="../../profiles/profile-system/">Profile System</a> &mdash; the three architecture groups that determine which path applies.</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>HID Usage Tables 1.5 &mdash; Vx/Vy usage codes (Generic Desktop §4). Download from <a href="https://www.usb.org/document-library">usb.org/document-library</a>.</li>
+<li><a href="https://www.w3.org/TR/gamepad/">W3C Gamepad API</a> &mdash; STANDARD_GAMEPAD mapping bucket.</li>
+<li><a href="https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/">Chromium gamepad backend</a> &mdash; <code>&amp;IG_</code> skip semantics in RawInput.</li>
+<li><a href="https://github.com/libusb/hidapi">HIDAPI</a> &mdash; the Windows backend at <code>windows/hid.c</code> has bus type detection (<code>BTHLEDEVICE</code> CompatibleIDs check).</li>
+<li><a href="https://github.com/libsdl-org/SDL">SDL3</a> &mdash; XInput / RawInput / HIDAPI fallback hierarchy under <code>src/joystick/windows/</code>.</li>
+<li>XInput documentation &mdash; search Microsoft Learn for "XInput Game Controller APIs". 4-slot cap, <code>XInputGetState</code> semantics.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a> &mdash; Ghidra decomp of WGI's <code>OnPnpDeviceAdded</code> classifier and <code>IsDeviceOrAncestorFilteredBy</code>.</li>
+<li><a href="../references/">References</a> &mdash; full source bibliography for every claim in this wiki.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../shared-memory-protocol/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Shared Memory Protocol">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Shared Memory Protocol
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../multi-controller/" class="md-footer__link md-footer__link--next" aria-label="Next: Multi-Controller">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Multi-Controller
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

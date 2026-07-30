@@ -1,0 +1,2556 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="HIDMaestro creates virtual game controllers that look like real hardware to Windows. These docs cover everything from the SDK quickstart to wire protocols.">
+      
+      
+      
+        <link rel="canonical" href="https://hidmaestro.org/docs/reference/umdf2-driver-internals/">
+      
+      
+        <link rel="prev" href="../architecture-overview/">
+      
+      
+        <link rel="next" href="../xusb-companion/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>UMDF2 Driver Internals - HIDMaestro Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#umdf2-driver-internals" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="HIDMaestro Documentation" class="md-header__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HIDMaestro Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              UMDF2 Driver Internals
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../start/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sdk/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  SDK
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../profiles/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Profiles
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Technical Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="HIDMaestro Documentation" class="md-nav__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    HIDMaestro Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sdk/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/sdk-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/hid-descriptor-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HID Descriptor Builder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/force-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Force Feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/output-passthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output Passthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/oem-name-override/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OEM Name Override
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../profiles/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiles
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Profiles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/custom-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-extractor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Extractor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/contributing-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UMDF2 Driver Internals
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UMDF2 Driver Internals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#driver-position-in-the-hid-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Driver position in the HID stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evtdeviceadd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EvtDeviceAdd
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-hid-descriptor-used-when-no-registry-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default HID descriptor (used when no registry override)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evtiodevicecontrol-the-dispatch-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EvtIoDeviceControl: the dispatch table
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EvtIoDeviceControl: the dispatch table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ioctl-constants-the-v1139-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOCTL constants: the v1.1.39 fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ioctl_hid_read_report-seqno-gate-manual-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOCTL_HID_READ_REPORT: seqno gate + manual queue
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worker-thread" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker thread
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#switch-pro-protocol-responder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch Pro protocol responder
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-ring-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output ring writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pid-ffb-driver-side-ebi-auto-allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PID FFB: driver-side EBI auto-allocation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ioctl_umdf_hid_get_feature-pid-state-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOCTL_UMDF_HID_GET_FEATURE: PID state read
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dacl-on-the-shared-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DACL on the shared sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-cleanup-at-unload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-cleanup at unload
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inf-hidmaestroinf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        INF: hidmaestro.inf
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-contained-no-msvcrt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-contained, no MSVCRT
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-layout-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source layout summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xusb-companion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XUSB Companion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../swdevice-and-pnp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SwDevice and PnP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shared-memory-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared Memory Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cross-api-coverage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-API Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lifecycle-and-teardown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle and Teardown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../driver-install-and-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Driver Install and Signing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build-and-release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build and Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-and-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#driver-position-in-the-hid-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Driver position in the HID stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evtdeviceadd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EvtDeviceAdd
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-hid-descriptor-used-when-no-registry-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default HID descriptor (used when no registry override)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evtiodevicecontrol-the-dispatch-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EvtIoDeviceControl: the dispatch table
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EvtIoDeviceControl: the dispatch table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ioctl-constants-the-v1139-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOCTL constants: the v1.1.39 fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ioctl_hid_read_report-seqno-gate-manual-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOCTL_HID_READ_REPORT: seqno gate + manual queue
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worker-thread" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker thread
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#switch-pro-protocol-responder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch Pro protocol responder
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-ring-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output ring writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pid-ffb-driver-side-ebi-auto-allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PID FFB: driver-side EBI auto-allocation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ioctl_umdf_hid_get_feature-pid-state-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOCTL_UMDF_HID_GET_FEATURE: PID state read
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dacl-on-the-shared-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DACL on the shared sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-cleanup-at-unload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-cleanup at unload
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inf-hidmaestroinf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        INF: hidmaestro.inf
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-contained-no-msvcrt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-contained, no MSVCRT
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-layout-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source layout summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="umdf2-driver-internals">UMDF2 Driver Internals<a class="headerlink" href="#umdf2-driver-internals" title="Permanent link">&para;</a></h1>
+<p><code>HIDMaestro.dll</code> is a UMDF2 lower filter driver under <code>mshidumdf.sys</code>. This page documents the driver's responsibilities, the IOCTL dispatch table, the device context, the worker thread, the seqno-gated <code>READ_REPORT</code> path, and the empirical reasons each design choice exists. UMDF2 framework reference: search Microsoft Learn for "User-Mode Driver Framework version 2".</p>
+<p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.c"><code>driver/driver.c</code></a> (1,574 lines), <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.h"><code>driver/driver.h</code></a> (414 lines).</p>
+<p>For the XUSB companion driver, see <a href="../xusb-companion/">XUSB Companion</a>. For the SDK side that talks to this driver, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../shared-memory-protocol/">Shared Memory Protocol</a>.</p>
+<hr />
+<h2 id="driver-position-in-the-hid-stack">Driver position in the HID stack<a class="headerlink" href="#driver-position-in-the-hid-stack" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────────────┐
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│ Consumer (DInput / XInput / WGI / SDL3 / Browser)   │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>└─────────────────────────────────────────────────────┘
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                        ↓ HID class IOCTLs
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>┌─────────────────────────────────────────────────────┐
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│ HidClass.sys                                         │  Kernel
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│  Owns IOCTL_HID_READ_REPORT pump, preparsed data,    │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│  HID class device interface registration.            │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└─────────────────────────────────────────────────────┘
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                        ↓
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>┌─────────────────────────────────────────────────────┐
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│ xinputhid.sys (xinputhid Xbox profiles only)         │  Kernel filter
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│  16-button HID synthesis, native XInput delivery.    │
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>└─────────────────────────────────────────────────────┘
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                        ↓
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>┌─────────────────────────────────────────────────────┐
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│ mshidumdf.sys (HID minidriver function driver)       │  Kernel
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│  Marshals HID IOCTLs into UMDF2 IRPs.                │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>└─────────────────────────────────────────────────────┘
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                        ↓ IOCTL_UMDF_HID_*
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>┌─────────────────────────────────────────────────────┐
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│ WUDFRd.sys (UMDF reflector)                          │  Kernel
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│  Bridges to the user-mode WUDFHost instance.         │
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>└─────────────────────────────────────────────────────┘
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>                        ↓
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>┌─────────────────────────────────────────────────────┐
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│ HIDMaestro.dll (this driver) — UMDF2 lower filter    │  User mode
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│  EvtIoDeviceControl handles GET_DEVICE_DESCRIPTOR,   │
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>│  GET_REPORT_DESCRIPTOR, READ_REPORT, GET_FEATURE,    │
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>│  SET_OUTPUT_REPORT, GET_STRING.                      │
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>└─────────────────────────────────────────────────────┘
+</code></pre></div>
+<p><strong><code>mshidumdf.sys</code> is the function driver; HIDMaestro.dll is the lower filter.</strong> This is the standard UMDF2 HID minidriver pattern from Microsoft's <a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2"><code>vhidmini2</code> sample</a>. The HID class stack sees a real HID device because mshidumdf services the class queries; HIDMaestro just handles the IOCTLs that mshidumdf marshals down via <code>IOCTL_UMDF_HID_*</code> codes.</p>
+<p>The driver compiles as a DLL (UMDF2 differs from KMDF in this), uses <code>EvtIoDeviceControl</code> (not <code>InternalDeviceControl</code>), and includes <code>&lt;windows.h&gt;</code> (not <code>&lt;ntddk.h&gt;</code>).</p>
+<hr />
+<h2 id="device-context">Device context<a class="headerlink" href="#device-context" title="Permanent link">&para;</a></h2>
+<p><code>DEVICE_CONTEXT</code> is the per-device WDF context allocated by the framework on <code>EvtDeviceAdd</code>. The big picture:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">_DEVICE_CONTEXT</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="n">WDFDEVICE</span><span class="w">   </span><span class="n">Device</span><span class="p">;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="cm">/* HID descriptor — set by user-mode at create time, returned to HID class */</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">       </span><span class="n">ReportDescriptor</span><span class="p">[</span><span class="n">HIDMAESTRO_MAX_DESCRIPTOR_SIZE</span><span class="p">];</span><span class="w">   </span><span class="c1">// 4 KB</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ReportDescriptorSize</span><span class="p">;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="n">HID_DESCRIPTOR</span><span class="w">          </span><span class="n">HidDescriptor</span><span class="p">;</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="n">HID_DEVICE_ATTRIBUTES</span><span class="w">   </span><span class="n">HidDeviceAttributes</span><span class="p">;</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">InputReportByteLength</span><span class="p">;</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">       </span><span class="n">FirstInputReportId</span><span class="p">;</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="cm">/* Latest input report cache (for READ_REPORT) */</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">       </span><span class="n">InputReport</span><span class="p">[</span><span class="n">HIDMAESTRO_MAX_REPORT_SIZE</span><span class="p">];</span><span class="w">   </span><span class="c1">// 1 KB</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">InputReportSize</span><span class="p">;</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="n">BOOLEAN</span><span class="w">     </span><span class="n">InputReportReady</span><span class="p">;</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">LastDeliveredInputSeqNo</span><span class="p">;</span><span class="w">   </span><span class="c1">// seqno gate</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="cm">/* Strings */</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">ProductString</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ProductStringBytes</span><span class="p">;</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">SerialString</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">          </span><span class="c1">// &quot;HM-CTL-NNNN&quot; for SDL3 disambiguation</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">SerialStringBytes</span><span class="p">;</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">    </span><span class="cm">/* Queues */</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">DefaultQueue</span><span class="p">;</span><span class="w">     </span><span class="c1">// parallel — HID IOCTLs</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">ManualQueue</span><span class="p">;</span><span class="w">      </span><span class="c1">// manual — pended READ_REPORT requests</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">    </span><span class="cm">/* Locks */</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">    </span><span class="n">WDFWAITLOCK</span><span class="w"> </span><span class="n">InputLock</span><span class="p">;</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">    </span><span class="n">WDFWAITLOCK</span><span class="w"> </span><span class="n">OutputLock</span><span class="p">;</span>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">    </span><span class="cm">/* Shared memory: input */</span>
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">SharedMemHandle</span><span class="p">;</span>
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">SharedMemPtr</span><span class="p">;</span><span class="w">          </span><span class="c1">// HIDMAESTRO_SHARED_INPUT view</span>
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">SharedMemSeqNo</span><span class="p">;</span>
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">InputDataEvent</span><span class="p">;</span><span class="w">        </span><span class="c1">// OpenEvent on Global\HIDMaestroInputEvent&lt;N&gt;</span>
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">StopEvent</span><span class="p">;</span><span class="w">             </span><span class="c1">// Global\HIDMaestroStopEvent&lt;N&gt;</span>
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">WorkerThread</span><span class="p">;</span>
+<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">InputEventName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">StopEventName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="w">    </span><span class="cm">/* Shared memory: output ring */</span>
+<a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">OutputMemHandle</span><span class="p">;</span>
+<a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">OutputMemPtr</span><span class="p">;</span>
+<a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">OutputSeqNoLocal</span><span class="p">;</span><span class="w">      </span><span class="c1">// last value we wrote (always increment)</span>
+<a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">OutputWriteCount</span><span class="p">;</span><span class="w">      </span><span class="c1">// re-open every 500 writes (#2)</span>
+<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a>
+<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a><span class="w">    </span><span class="cm">/* Shared memory: PID FFB state */</span>
+<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">PidStateMemHandle</span><span class="p">;</span>
+<a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">PidStateMemPtr</span><span class="p">;</span>
+<a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">PidStateMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a>
+<a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a><span class="w">    </span><span class="cm">/* Per-instance identity */</span>
+<a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ControllerIndex</span><span class="p">;</span>
+<a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">ConfigRegPath</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">     </span><span class="c1">// SOFTWARE\HIDMaestro\Controller&lt;N&gt;</span>
+<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">SharedMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroInput&lt;N&gt;</span>
+<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">OutputMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroOutput&lt;N&gt;</span>
+<a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a><span class="p">}</span><span class="w"> </span><span class="n">DEVICE_CONTEXT</span><span class="p">;</span>
+</code></pre></div>
+<p>The full struct is in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.h#L74"><code>driver/driver.h</code></a>.</p>
+<hr />
+<h2 id="evtdeviceadd">EvtDeviceAdd<a class="headerlink" href="#evtdeviceadd" title="Permanent link">&para;</a></h2>
+<p>Called by the framework when PnP binds the driver to a device. Sequence:</p>
+<ol>
+<li><strong>Create the WDF device.</strong></li>
+<li><strong>Initialize per-instance paths</strong> from <code>ControllerIndex</code> (read from the device HW key written by the SDK's <code>SetupController</code>). Builds:</li>
+<li><code>ConfigRegPath = "SOFTWARE\HIDMaestro\Controller&lt;N&gt;"</code></li>
+<li><code>SharedMappingName = "Global\HIDMaestroInput&lt;N&gt;"</code></li>
+<li><code>OutputMappingName = "Global\HIDMaestroOutput&lt;N&gt;"</code></li>
+<li><code>PidStateMappingName = "Global\HIDMaestroPidState&lt;N&gt;"</code></li>
+<li><code>InputEventName = "Global\HIDMaestroInputEvent&lt;N&gt;"</code></li>
+<li><code>StopEventName = "Global\HIDMaestroStopEvent&lt;N&gt;"</code></li>
+<li><code>SerialString = "HM-CTL-&lt;index-zero-padded-to-4-digits&gt;"</code></li>
+<li><strong>Read configuration</strong> from <code>HKLM\SOFTWARE\HIDMaestro\Controller&lt;N&gt;</code>:</li>
+<li><code>ReportDescriptor</code> (REG_BINARY) &rarr; <code>ctx-&gt;ReportDescriptor</code></li>
+<li><code>VendorId</code> / <code>ProductId</code> / <code>VersionNumber</code> (REG_DWORD) &rarr; <code>ctx-&gt;HidDeviceAttributes</code></li>
+<li><code>HidAttrPid</code> (REG_DWORD, optional) &rarr; overrides <code>ProductID</code> in HID attributes only (companion still reads <code>ProductId</code> for XUSB identity). PID 0x0001 is used for xinputhid profiles to prevent GameInput / HIDAPI from claiming the device, so SDL3 falls through to its XInput backend with the correct identity.</li>
+<li><code>ProductString</code> (REG_SZ)</li>
+<li><code>InputReportByteLength</code> (REG_DWORD) for buffer sizing.</li>
+<li><strong>Set HID device attributes</strong> from the values just read.</li>
+<li><strong>Create the parallel default queue</strong> with <code>EvtIoDeviceControl</code> for HID IOCTLs.</li>
+<li><strong>Create the manual queue</strong> for pended <code>READ_REPORT</code> requests.</li>
+<li><strong>Create the input lock and output lock.</strong></li>
+<li><strong>Create the named events</strong> (<code>InputDataEvent</code>, <code>StopEvent</code>).</li>
+<li><strong>Open the shared input mapping</strong> if it exists, <strong>open the output mapping</strong>, <strong>open the PID state mapping</strong> lazily.</li>
+<li><strong>Spawn the worker thread.</strong></li>
+</ol>
+<p>If any of the optional steps fails (e.g. the SDK hasn't created the shared sections yet because we're racing PnP binding against <code>SetupController</code>'s registry-then-create-mapping sequence), the driver continues. Subsequent <code>IOCTL_HID_READ_REPORT</code> calls retry the open, so PnP order races resolve themselves on the next call.</p>
+<hr />
+<h2 id="default-hid-descriptor-used-when-no-registry-override">Default HID descriptor (used when no registry override)<a class="headerlink" href="#default-hid-descriptor-used-when-no-registry-override" title="Permanent link">&para;</a></h2>
+<p>If <code>HKLM\SOFTWARE\HIDMaestro\Controller&lt;N&gt;\ReportDescriptor</code> is missing or empty, the driver falls back to a built-in Xbox 360-shaped descriptor: 6 axes (16-bit), 10 buttons, 1 hat, plus a Vendor-Defined Feature report (Report ID 2) for legacy data-channel use. ~120 bytes.</p>
+<p>The fallback exists to make <code>EvtDeviceAdd</code> succeed even when the SDK is mid-<code>SetupController</code> and hasn't written the registry yet. The driver re-reads the registry on every PnP wake; once the SDK has written the real descriptor, subsequent <code>IOCTL_HID_GET_REPORT_DESCRIPTOR</code> returns the right bytes.</p>
+<p>In normal operation the fallback is never delivered to a consumer because the SDK orchestrates the registry write before binding the driver. It's a safety net for the corner case of a PnP race or a corrupt registry.</p>
+<hr />
+<h2 id="evtiodevicecontrol-the-dispatch-table">EvtIoDeviceControl: the dispatch table<a class="headerlink" href="#evtiodevicecontrol-the-dispatch-table" title="Permanent link">&para;</a></h2>
+<p>Every HID class request marshals through here as one of the <code>IOCTL_UMDF_HID_*</code> codes from <code>&lt;hidport.h&gt;</code>:</p>
+<table>
+<thead>
+<tr>
+<th>IOCTL</th>
+<th>Handler</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IOCTL_HID_GET_DEVICE_DESCRIPTOR</code></td>
+<td>Return <code>ctx-&gt;HidDescriptor</code> (HID descriptor stub pointing at the report descriptor's length).</td>
+</tr>
+<tr>
+<td><code>IOCTL_HID_GET_DEVICE_ATTRIBUTES</code></td>
+<td>Return <code>ctx-&gt;HidDeviceAttributes</code> (VID, PID, VersionNumber).</td>
+</tr>
+<tr>
+<td><code>IOCTL_HID_GET_REPORT_DESCRIPTOR</code></td>
+<td>Copy <code>ctx-&gt;ReportDescriptor</code> to the output buffer.</td>
+</tr>
+<tr>
+<td><code>IOCTL_HID_READ_REPORT</code></td>
+<td>Seqno-gated cache hit OR pend in <code>ManualQueue</code>. See below.</td>
+</tr>
+<tr>
+<td><code>IOCTL_HID_WRITE_REPORT</code></td>
+<td>Capture as <code>HidOutput</code> source &rarr; output ring.</td>
+</tr>
+<tr>
+<td><code>IOCTL_UMDF_HID_GET_FEATURE</code></td>
+<td>Serve PID Pool / Block Load / State from PID state shared section.</td>
+</tr>
+<tr>
+<td><code>IOCTL_UMDF_HID_SET_FEATURE</code></td>
+<td>Capture as <code>HidFeature</code> source &rarr; output ring. Auto-allocate EBI on PID Create New Effect (Report ID 0x11).</td>
+</tr>
+<tr>
+<td><code>IOCTL_UMDF_HID_GET_INPUT_REPORT</code></td>
+<td>Synchronous read from the input cache (rare path; mostly used by HIDAPI).</td>
+</tr>
+<tr>
+<td><code>IOCTL_UMDF_HID_SET_OUTPUT_REPORT</code></td>
+<td>Capture as <code>HidOutput</code> source &rarr; output ring.</td>
+</tr>
+<tr>
+<td><code>IOCTL_HID_GET_STRING</code></td>
+<td>Return product / manufacturer / serial string per <code>HID_STRING_ID_*</code>.</td>
+</tr>
+<tr>
+<td>(anything else)</td>
+<td>Pass through with <code>STATUS_NOT_IMPLEMENTED</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ioctl-constants-the-v1139-fix">IOCTL constants: the v1.1.39 fix<a class="headerlink" href="#ioctl-constants-the-v1139-fix" title="Permanent link">&para;</a></h3>
+<p>Pre-1.1.39, the driver header defined fabricated <code>IOCTL_UMDF_HID_*</code> values:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// WRONG values, pre-1.1.39</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="cp">#define IOCTL_UMDF_HID_SET_FEATURE        0x00210003</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="cp">#define IOCTL_UMDF_HID_GET_FEATURE        0x00210007</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="cp">#define IOCTL_UMDF_HID_SET_OUTPUT_REPORT  0x0021000B</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="cp">#define IOCTL_UMDF_HID_GET_INPUT_REPORT   0x0021000F</span>
+</code></pre></div>
+<p>These don't match what mshidumdf delivers. WDK <code>&lt;hidport.h&gt;</code> provides the real values:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// CORRECT, v1.1.39+</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="cp">#define IOCTL_UMDF_HID_SET_FEATURE        HID_CTL_CODE(20)  </span><span class="c1">// 0x000B0053</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="cp">#define IOCTL_UMDF_HID_GET_FEATURE        HID_CTL_CODE(21)  </span><span class="c1">// 0x000B0057</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="cp">#define IOCTL_UMDF_HID_SET_OUTPUT_REPORT  HID_CTL_CODE(22)  </span><span class="c1">// 0x000B005B</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="cp">#define IOCTL_UMDF_HID_GET_INPUT_REPORT   HID_CTL_CODE(23)  </span><span class="c1">// 0x000B005F</span>
+</code></pre></div>
+<p>Pre-v1.1.39, every <code>SetFeature</code> / <code>GetFeature</code> / <code>SetOutputReport</code> / <code>GetInputReport</code> handler we shipped since v1.1.35 compiled but <strong>never fired</strong> &mdash; the case statement constants didn't match the framework's <code>IoControlCode</code>, so dispatch fell through to the default and returned <code>STATUS_NOT_IMPLEMENTED</code>.</p>
+<p>The fix is to include <code>&lt;hidport.h&gt;</code> in <code>driver.h</code> and let the WDK header own the values. The <code>#ifndef</code> guards in <code>driver.h</code> are kept as a safety net but should never fire on a current WDK.</p>
+<hr />
+<h2 id="ioctl_hid_read_report-seqno-gate-manual-queue"><code>IOCTL_HID_READ_REPORT</code>: seqno gate + manual queue<a class="headerlink" href="#ioctl_hid_read_report-seqno-gate-manual-queue" title="Permanent link">&para;</a></h2>
+<p>The naive design completes every <code>IOCTL_HID_READ_REPORT</code> synchronously from the cached input buffer. That worked, but it caused HidClass.sys to hammer <code>READ_REPORT</code> in a tight loop because every call returned instantly with the same stale data &mdash; <strong>CPU saturation</strong> at scale (issue #3 root cause).</p>
+<p>The fix is a <strong>seqno gate</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">NTSTATUS</span><span class="w"> </span><span class="nf">HandleReadReport</span><span class="p">(</span><span class="n">WDFREQUEST</span><span class="w"> </span><span class="n">Request</span><span class="p">,</span><span class="w"> </span><span class="n">PDEVICE_CONTEXT</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="cm">/* New data since last delivery? Complete synchronously. */</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">SharedMemSeqNo</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">LastDeliveredInputSeqNo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="n">CompleteRequestWithCachedReport</span><span class="p">(</span><span class="n">Request</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="p">);</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">LastDeliveredInputSeqNo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">SharedMemSeqNo</span><span class="p">;</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">STATUS_SUCCESS</span><span class="p">;</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="cm">/* No new data — pend in ManualQueue. The worker thread completes us</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="cm">       on the next ProcessSharedInput tick. */</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">WdfRequestForwardToIoQueue</span><span class="p">(</span><span class="n">Request</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">ManualQueue</span><span class="p">);</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="p">}</span>
+</code></pre></div>
+<p><code>ProcessSharedInput</code> (called by the worker thread on each <code>InputDataEvent</code> signal):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">VOID</span><span class="w"> </span><span class="nf">ProcessSharedInput</span><span class="p">(</span><span class="n">PDEVICE_CONTEXT</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">ReadInputFrameSeqlocked</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span><span class="w">    </span><span class="c1">// updates ctx-&gt;InputReport, ctx-&gt;SharedMemSeqNo</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="cm">/* Drain ManualQueue: every pended READ_REPORT gets the new bytes. */</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="n">WDFREQUEST</span><span class="w"> </span><span class="n">req</span><span class="p">;</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">WdfIoQueueRetrieveNextRequest</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">ManualQueue</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">req</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">STATUS_SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span><span class="n">CompleteRequestWithCachedReport</span><span class="p">(</span><span class="n">req</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="p">);</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">LastDeliveredInputSeqNo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">SharedMemSeqNo</span><span class="p">;</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="p">}</span>
+</code></pre></div>
+<p>Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on <code>WaitForMultipleObjects(StopEvent, InputDataEvent, 50ms)</code> &mdash; the 50 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers <code>SetEvent(InputDataEvent)</code> which wakes the worker immediately.</p>
+<hr />
+<h2 id="worker-thread">Worker thread<a class="headerlink" href="#worker-thread" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">DWORD</span><span class="w"> </span><span class="n">WINAPI</span><span class="w"> </span><span class="n">WorkerThread</span><span class="p">(</span><span class="n">LPVOID</span><span class="w"> </span><span class="n">lpParam</span><span class="p">)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="p">{</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="n">PDEVICE_CONTEXT</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PDEVICE_CONTEXT</span><span class="p">)</span><span class="n">lpParam</span><span class="p">;</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w"> </span><span class="n">waits</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">StopEvent</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">InputDataEvent</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">TRUE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="n">DWORD</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WaitForMultipleObjects</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">waits</span><span class="p">,</span><span class="w"> </span><span class="n">FALSE</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">);</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">WAIT_OBJECT_0</span><span class="p">)</span><span class="w"> </span><span class="k">break</span><span class="p">;</span><span class="w">             </span><span class="c1">// StopEvent</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">WAIT_OBJECT_0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">WAIT_TIMEOUT</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">            </span><span class="n">ProcessSharedInput</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>WAIT_OBJECT_0</strong> &mdash; StopEvent fired; exit.</li>
+<li><strong>WAIT_OBJECT_0 + 1</strong> &mdash; InputDataEvent fired; new frame; process and complete pended requests.</li>
+<li><strong>WAIT_TIMEOUT</strong> &mdash; 50 ms safety tick; process opportunistically.</li>
+</ul>
+<p>Created in <code>EvtDeviceAdd</code> and joined on stop. Cancellation via <code>SetEvent(StopEvent)</code> then <code>WaitForSingleObject(WorkerThread, 5000)</code>.</p>
+<hr />
+<h2 id="switch-pro-protocol-responder">Switch Pro protocol responder<a class="headerlink" href="#switch-pro-protocol-responder" title="Permanent link">&para;</a></h2>
+<p>Most profiles are passive: the SDK submits state, the worker completes read requests. The Nintendo Switch Pro Controller (issue #33) is not. Hosts (SDL's <code>HIDAPI_DriverSwitch</code>, Steam, BetterJoy) drive a Nintendo init-and-subcommand protocol and stall without a device that answers, so the generic report-builder cannot express it. <code>driver.c</code> carries a hardcoded responder keyed on <code>VID 0x057E &amp;&amp; PID 0x2009</code> (<code>ctx-&gt;SwitchProtocol</code>), with protocol in code and layout in JSON, the same split as the Sony vendor-blob work.</p>
+<p>Three pieces:</p>
+<ul>
+<li><strong>USB init.</strong> Commands <code>80 01</code> / <code>80 02</code> / <code>80 03</code> get their <code>81 xx</code> replies, reporting device type Pro and a stable fabricated MAC.</li>
+<li><strong>Subcommands.</strong> Output report <code>0x01</code> gets input-report <code>0x21</code> replies per the nxbt responder table, including SPI-flash reads served from a fabricated image: factory stick calibration (center <code>0x800</code>, range <code>0x600</code>) and IMU coefficients (<code>0x4000</code> accel, <code>0x343B</code> gyro) chosen so SDL's <code>LoadIMUCalibration</code> / <code>LoadStickCalibration</code> math reduces exactly to its own default scales. Unknown subcommands get a generic ACK rather than nxbt's silent ignore, because SDL retries an unanswered subcommand for ~500 ms where the Switch console does not.</li>
+<li><strong>0x30 streaming.</strong> A dedicated <code>SwitchStreamProc</code> thread serves input report <code>0x30</code> at the wire's ~60 Hz cadence (15 ms), reading the latest consumer-submitted body via <code>SwitchFillLatestState</code> and stamping live timer and battery bytes over it. Subcommand replies preempt the stream via <code>SwitchQueueReply</code>.</li>
+</ul>
+<p><code>SwitchStreamProc</code> and the worker thread both touch <code>ctx-&gt;SharedMemPtr</code>. The worker's stale-handle recycle skips the shared-view unmap for <code>SwitchProtocol</code> devices (the view is unmapped only at cleanup, after both threads join) so it can never unmap the mapping out from under the streaming thread mid-read.</p>
+<p>SDK side, <code>SwitchProPacker</code> converts a normal <code>SubmitState</code> into the 48-byte <code>0x30</code> body: layout-mapped buttons, 12-bit nibble-packed sticks, and the calibrated IMU channel. <code>HMGamepadState.AccelG*</code> / <code>GyroDps*</code> are defined in the SDL-standard sensor frame. The packer owns the SDL-to-Switch wire-frame permutation, so a consumer that reads motion from SDL submits it verbatim and the client-side SDL reconstructs the identical vector. HD rumble comes back decoded to coarse <code>leftMotor</code> / <code>rightMotor</code> amplitudes on <code>OutputDecoded</code>, the same lane Sony rumble rides. The <code>test/probes/switch_pro_check</code> probe replays SDL's exact init sequence over raw HID as the release gate, and <code>switch_pro_sdl3_check</code> drives the pad through real SDL3 end to end.</p>
+<hr />
+<h2 id="output-ring-writes">Output ring writes<a class="headerlink" href="#output-ring-writes" title="Permanent link">&para;</a></h2>
+<p>When an output IOCTL arrives (<code>SET_OUTPUT_REPORT</code>, <code>SET_FEATURE</code>, <code>WRITE_REPORT</code>):</p>
+<ol>
+<li>Take <code>OutputLock</code>.</li>
+<li><code>EnsureOutputMapping</code> &mdash; opens the output section if not already; periodic re-open every 500 writes for stale-handle recovery (issue #2). LocalService can't <code>CreateFileMapping(Global\)</code>, so it can only <code>OpenFileMapping</code> the section the elevated SDK created.</li>
+<li>Increment <code>Head</code> to get the new SeqNo.</li>
+<li>Write <code>Slots[(Head - 1) % 64]</code> with <code>Source</code>, <code>ReportId</code>, <code>DataSize</code>, <code>Data</code>.</li>
+<li>Write <code>SeqNo</code> last (memory barrier).</li>
+<li>Release <code>OutputLock</code>.</li>
+</ol>
+<p>The 8 ms SDK-side polling interval has 64 × 8 = 512 ms of headroom before the oldest packet would be overwritten. See <a href="../../sdk/output-passthrough/">Output Passthrough</a>.</p>
+<hr />
+<h2 id="pid-ffb-driver-side-ebi-auto-allocation">PID FFB: driver-side EBI auto-allocation<a class="headerlink" href="#pid-ffb-driver-side-ebi-auto-allocation" title="Permanent link">&para;</a></h2>
+<p>When <code>IOCTL_UMDF_HID_SET_FEATURE</code> arrives with Report ID 0x11 (PID Create New Effect), the driver:</p>
+<ol>
+<li><code>EnsurePidStateMapping</code> &mdash; opens the PID state section R/W (the v1.1.39 fix; pre-v1.1.39 it was opened FILE_MAP_READ which AV'd inside the driver-side write).</li>
+<li>Reads <code>EbiAllocBitmap</code> atomically. Picks the lowest free bit.</li>
+<li><code>InterlockedOr(&amp;bitmap, 1u &lt;&lt; freeBit)</code> to claim the EBI.</li>
+<li>Acquires PID state's seqlock (increment SeqNo; +1 = mid-write, +2 = stable).</li>
+<li>Writes <code>BL_EffectBlockIndex = freeBit + 1</code>, <code>BL_LoadStatus = Success</code>, <code>BL_RAMPoolAvailable</code>.</li>
+<li>Releases seqlock (SeqNo += 1 to even).</li>
+<li>Increments <code>EbiAllocatedCount</code> atomically.</li>
+<li>Returns <code>STATUS_SUCCESS</code>.</li>
+</ol>
+<p><code>pid.dll</code>'s follow-up <code>GetFeature(0x12 BlockLoad)</code> reads from the same shared section, which the driver's IOCTL handler also sources from. The handshake completes within <code>pid.dll</code>'s synchronous IOCTL pair without waiting on user-mode. Mirrors vJoy's <code>Ffb_GetNextFreeEffect</code>. See <a href="../../sdk/force-feedback/">Force Feedback</a> for the SDK side.</p>
+<p>If the bitmap is full when an allocation request arrives, the driver writes <code>BL_LoadStatus = Full</code>, <code>BL_EffectBlockIndex = 0</code>, and returns success. <code>pid.dll</code> propagates this to the game.</p>
+<p><code>PID Block Free</code> (Output 0x1B) writes are captured to the output ring as <code>HidOutput</code> so the consumer's <code>OutputReceived</code> handler gets a chance to wire the EBI back to its own tracking. The driver does <strong>not</strong> auto-clear the bitmap on Block Free &mdash; deliberate; the consumer is responsible for that bookkeeping. Trusting <code>pid.dll</code> to send Block Free for every allocation it released and ignoring the driver-side bitmap maintenance is the canonical pattern.</p>
+<hr />
+<h2 id="ioctl_umdf_hid_get_feature-pid-state-read"><code>IOCTL_UMDF_HID_GET_FEATURE</code>: PID state read<a class="headerlink" href="#ioctl_umdf_hid_get_feature-pid-state-read" title="Permanent link">&para;</a></h2>
+<p>When the consumer pulls a Feature report ID 0x12 / 0x13 / 0x14, the driver reads the PID state section seqlocked:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">static</span><span class="w"> </span><span class="n">BOOLEAN</span><span class="w"> </span><span class="nf">ReadPidState</span><span class="p">(</span><span class="n">PDEVICE_CONTEXT</span><span class="w"> </span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">HIDMAESTRO_SHARED_PID_STATE</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">{</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">PidStateMemPtr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">EnsurePidStateMapping</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">FALSE</span><span class="p">;</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">HIDMAESTRO_SHARED_PID_STATE</span><span class="w"> </span><span class="o">*</span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">PidStateMemPtr</span><span class="p">;</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="n">ULONG</span><span class="w"> </span><span class="n">seq1</span><span class="p">,</span><span class="w"> </span><span class="n">seq2</span><span class="p">;</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">retries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="k">do</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">        </span><span class="n">seq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">seq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// mid-write — re-read once</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">        </span><span class="n">MemoryBarrier</span><span class="p">();</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">        </span><span class="n">out</span><span class="o">-&gt;</span><span class="n">PidEnabled</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">PidEnabled</span><span class="p">;</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">        </span><span class="n">out</span><span class="o">-&gt;</span><span class="n">BL_EffectBlockIndex</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">BL_EffectBlockIndex</span><span class="p">;</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">        </span><span class="c1">// ... copy all fields</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">        </span><span class="n">MemoryBarrier</span><span class="p">();</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="w">        </span><span class="n">seq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">seq2</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">--</span><span class="n">retries</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">seq1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">seq2</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="p">}</span>
+</code></pre></div>
+<p>Standard seqlock read. If the publisher (the SDK consumer's <code>PublishPid*</code> call) is mid-write, <code>seq1 &amp; 1</code>; the snapshot is unstable. Re-read up to 4 times.</p>
+<p>If <code>PidEnabled == 0</code> (consumer hasn't called <code>PublishPidPool</code> yet), the driver returns <code>STATUS_NO_SUCH_DEVICE</code> for the Pool Report (matches vJoy's "FFB not enabled" convention so DInput cleanly concludes "device exists but no FFB" without retrying) and <code>STATUS_NOT_SUPPORTED</code> for Block Load / State.</p>
+<hr />
+<h2 id="dacl-on-the-shared-sections">DACL on the shared sections<a class="headerlink" href="#dacl-on-the-shared-sections" title="Permanent link">&para;</a></h2>
+<p>The SDK creates the shared sections with the SDDL <code>D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)</code> &mdash; SYSTEM, BUILTIN\Administrators, and Everyone get <code>GENERIC_ALL</code>. This is required because:</p>
+<ul>
+<li>The SDK consumer process (admin) writes input frames.</li>
+<li>WUDFHost runs as LocalService (which lacks <code>SeCreateGlobalPrivilege</code>, so the driver can NOT create the section) and must <code>OpenFileMapping</code> to read.</li>
+<li>Unelevated WGI / GameInput consumers also need to read shared sections in some indirect paths.</li>
+</ul>
+<p><code>Everyone GENERIC_ALL</code> looks loose, but the section content is one virtual controller's HID state &mdash; not security-sensitive. The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared section permissions.</p>
+<hr />
+<h2 id="self-cleanup-at-unload">Self-cleanup at unload<a class="headerlink" href="#self-cleanup-at-unload" title="Permanent link">&para;</a></h2>
+<p>When the device is removed (via <code>DIF_REMOVE</code> from the SDK or PnP), <code>EvtDeviceContextCleanup</code> runs:</p>
+<ol>
+<li><code>SetEvent(StopEvent)</code> to wake the worker.</li>
+<li><code>WaitForSingleObject(WorkerThread, 5000)</code>. Join.</li>
+<li><code>CloseHandle(WorkerThread)</code>.</li>
+<li>Unmap and close all three shared sections.</li>
+<li>Close the named events.</li>
+</ol>
+<p>The framework calls <code>EvtDeviceContextCleanup</code> on the final reference release. WUDFHost may exit shortly after if no other devices are left in the host (per-instance host model).</p>
+<hr />
+<h2 id="inf-hidmaestroinf">INF: <code>hidmaestro.inf</code><a class="headerlink" href="#inf-hidmaestroinf" title="Permanent link">&para;</a></h2>
+<p>Class <code>HIDClass</code>, ClassGuid <code>{745a17a0-...}</code>. PnP install matches <code>root\HIDMaestro</code>. The SDK creates devices via <code>SetupDiCreateDeviceInfoW</code> (plain HID profiles) or <code>SwDeviceCreate</code> (xinputhid profiles); both paths produce devnodes that match this INF.</p>
+<p>Key sections:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>[HIDMaestro_Install.NT.HW]
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>HKR,,&quot;LowerFilters&quot;,0x00010008,&quot;WUDFRd&quot;
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>HKR,,Security,,&quot;D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)&quot;
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>[HIDMaestro_Install.NT.Services]
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>AddService = mshidumdf,0x000001fa,mshidumdf_Service
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>AddService = WUDFRd,0x000001f8,WUDFRD_Service
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>[HIDMaestro_Install.NT.Wdf]
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>UmdfService                 = HIDMaestro, HIDMaestro_UmdfService
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>UmdfKernelModeClientPolicy  = AllowKernelModeClients
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>UmdfFileObjectPolicy        = AllowNullAndUnknownFileObjects
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>UmdfMethodNeitherAction     = Copy
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>UmdfFsContextUsePolicy      = CanUseFsContext2
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>UmdfHostProcessSharing      = ProcessSharingDisabled    ← critical
+</code></pre></div>
+<p><code>UmdfHostProcessSharing = ProcessSharingDisabled</code> means each device instance gets its own WUDFHost. Default is <code>ProcessSharingEnabled</code> which pools every instance into one shared host &mdash; we hit non-linear CPU saturation on that path and the per-instance host model is what makes 6 mixed controllers actually scale. See <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a>.</p>
+<p>The INF carries <strong>no <code>xinputhid</code> UpperFilter</strong> at the HID level. The SDK writes that string per-instance after device creation, <strong>only for profiles with an XUSB companion</strong> &mdash; for non-companion profiles (DualSense, Xbox Series BT, Switch Pro), the HID path IS the only WGI Gamepad source, and blocking it with xinputhid would produce zero Gamepads.</p>
+<hr />
+<h2 id="self-contained-no-msvcrt">Self-contained, no MSVCRT<a class="headerlink" href="#self-contained-no-msvcrt" title="Permanent link">&para;</a></h2>
+<p>The driver doesn't link against MSVCRT. <code>swprintf</code> / <code>wsprintf</code> aren't available. The <code>AppendUlongDecimal</code> helper at the top of <code>driver.c</code> is hand-rolled string building. Linking MSVCRT into a UMDF2 driver is technically possible but introduces a dependency on a redistributable that LocalService might not have access to. Self-contained is simpler.</p>
+<hr />
+<h2 id="source-layout-summary">Source layout summary<a class="headerlink" href="#source-layout-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Lines (approx)</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DriverEntry</code></td>
+<td>30</td>
+<td>Framework entry, register <code>EvtDeviceAdd</code></td>
+</tr>
+<tr>
+<td><code>EvtDeviceAdd</code></td>
+<td>250</td>
+<td>Parse registry, create queues/locks/events, spawn worker</td>
+</tr>
+<tr>
+<td><code>InitInstancePaths</code></td>
+<td>80</td>
+<td>Build per-instance section/registry path strings</td>
+</tr>
+<tr>
+<td><code>LoadConfigurationFromRegistry</code></td>
+<td>100</td>
+<td>Read descriptor, VID/PID, version, strings</td>
+</tr>
+<tr>
+<td><code>EvtIoDeviceControl</code></td>
+<td>200</td>
+<td>IOCTL dispatch table</td>
+</tr>
+<tr>
+<td><code>HandleReadReport</code></td>
+<td>80</td>
+<td>Seqno gate, sync complete or pend in ManualQueue</td>
+</tr>
+<tr>
+<td><code>HandleGetFeature</code></td>
+<td>200</td>
+<td>PID FFB state queries from shared section</td>
+</tr>
+<tr>
+<td><code>HandleSetFeature</code></td>
+<td>150</td>
+<td>EBI auto-alloc on Report ID 0x11; output ring publish</td>
+</tr>
+<tr>
+<td><code>HandleSetOutputReport</code></td>
+<td>80</td>
+<td>Output ring publish</td>
+</tr>
+<tr>
+<td><code>WorkerThread</code> + <code>ProcessSharedInput</code></td>
+<td>80</td>
+<td>Event-driven shared-mem read, manual queue drain</td>
+</tr>
+<tr>
+<td><code>EnsureOutputMapping</code> / <code>EnsurePidStateMapping</code> / etc.</td>
+<td>100</td>
+<td>Lazy mapping helpers</td>
+</tr>
+</tbody>
+</table>
+<p>Total: 1,574 lines (driver.c) + 414 lines (driver.h) + 745 lines (companion.c) + 286 lines (hmswd.c).</p>
+<hr />
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../architecture-overview/">Architecture Overview</a> &mdash; the driver's position in the full stack.</li>
+<li><a href="../xusb-companion/">XUSB Companion</a> &mdash; the second UMDF2 driver, for non-xinputhid Xbox profiles.</li>
+<li><a href="../shared-memory-protocol/">Shared Memory Protocol</a> &mdash; wire formats for input, output ring, PID state.</li>
+<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a> &mdash; how device nodes get created and torn down.</li>
+<li><a href="../../sdk/force-feedback/">Force Feedback</a> &mdash; SDK-side counterpart to the PID state read/write protocol.</li>
+<li><a href="../../sdk/output-passthrough/">Output Passthrough</a> &mdash; SDK-side counterpart to the output ring.</li>
+<li><a href="../driver-install-and-signing/">Driver Install and Signing</a> &mdash; how the INF gets registered and the DLL gets signed.</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>UMDF2 framework primer &mdash; search Microsoft Learn for "User-Mode Driver Framework version 2".</li>
+<li><a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2">vhidmini2 sample</a> &mdash; the Microsoft-provided reference HIDMaestro's pattern descends from.</li>
+<li><code>hidport.h</code> &mdash; the WDK header that defines the canonical <code>IOCTL_UMDF_HID_*</code> codes (<code>HID_CTL_CODE(20)</code>, <code>(21)</code>, <code>(22)</code>, <code>(23)</code>).</li>
+<li>WDF directives reference &mdash; search Microsoft Learn for "Specifying WDF Directives in INF Files" (covers <code>UmdfHostProcessSharing</code> and friends).</li>
+<li>HID architecture &mdash; search Microsoft Learn for "HID Architecture".</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a> &mdash; the WUDFHost saturation root cause.</li>
+<li><a href="../references/">References</a> &mdash; full source bibliography.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../architecture-overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Architecture Overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Architecture Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../xusb-companion/" class="md-footer__link md-footer__link--next" aria-label="Next: XUSB Companion">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                XUSB Companion
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,227 @@
+/* =====================================================================
+   HIDMaestro docs design system: the PadForge family identity verbatim
+   (deep steel surfaces, ember accents, telemetry-cyan mono labels).
+   Display: Archivo. Body: Instrument Sans. Code: JetBrains Mono.
+   Fonts load in overrides/main.html; theme font loading is off.
+   Copied from padforge.org/wiki/stylesheets/extra.css, the shipped
+   spec, per the family-uniformity ruling. Do not re-derive tokens.
+   ===================================================================== */
+
+:root {
+  --md-text-font: "Instrument Sans";
+  --md-code-font: "JetBrains Mono";
+
+  /* Ember, shared with the app and the landing page. */
+  --md-primary-fg-color: #d9531c;
+  --md-primary-fg-color--light: #f2652a;
+  --md-primary-fg-color--dark: #b34314;
+  --md-accent-fg-color: #f2652a;
+
+  /* PadForge surface tokens, light scheme. */
+  --pf-panel: #f6f7f9;
+  --pf-border: #e3e6ea;
+  --pf-kicker: #3a7f92;   /* telemetry cyan, darkened for white ground */
+  --pf-steel: #0a0d12;    /* header steel, both schemes */
+  --pf-h1: #14171c;       /* full-strength display ink */
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #f2652a;
+  --md-primary-fg-color--light: #ff7d3d;
+  --md-primary-fg-color--dark: #d9531c;
+  --md-accent-fg-color: #ff8c50;
+
+  /* Deep steel canvas, the landing page's ground. */
+  --md-default-bg-color: #0d1117;
+  --md-code-bg-color: #12171f;
+
+  --pf-panel: #12171f;
+  --pf-border: #212a36;
+  --pf-kicker: #6fc3d6;
+  --pf-h1: #f5f7fb;
+}
+
+/* ---- Header and tabs: steel in both schemes, like the landing nav ---- */
+
+.md-header,
+.md-tabs {
+  background-color: var(--pf-steel);
+  color: #f5f7fb;
+}
+
+.md-header {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.md-header__title,
+.md-header__topic {
+  font-family: "Archivo", var(--md-text-font), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.md-tabs__link {
+  font-family: "Archivo", var(--md-text-font), sans-serif;
+  font-weight: 600;
+  font-size: 0.68rem;
+  opacity: 0.72;
+}
+
+.md-tabs__link--active,
+.md-tabs__link:hover {
+  color: var(--md-primary-fg-color--light);
+  opacity: 1;
+}
+
+/* ---- Typography ---- */
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: "Archivo", var(--md-text-font), sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.md-typeset h1 {
+  font-weight: 800;
+  color: var(--pf-h1);
+}
+
+.md-typeset h2 { font-weight: 700; }
+.md-typeset h3 { font-weight: 700; }
+
+/* ---- Buttons: the landing page's pills ---- */
+
+.md-typeset .md-button {
+  border-radius: 999px;
+  border-width: 1px;
+  font-weight: 600;
+  padding: 0.5em 1.6em;
+  transition: transform 0.15s, filter 0.15s, border-color 0.15s;
+}
+
+.md-typeset .md-button:hover { transform: translateY(-2px); }
+
+.md-typeset .md-button--primary {
+  background: linear-gradient(135deg, #ff8c50 0%, #f2652a 45%, #d9531c 100%);
+  border-color: transparent;
+  color: #fff;
+}
+
+.md-typeset .md-button--primary:hover {
+  filter: brightness(1.08);
+  background: linear-gradient(135deg, #ff8c50 0%, #f2652a 45%, #d9531c 100%);
+  border-color: transparent;
+  color: #fff;
+}
+
+/* ---- Content components ---- */
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 10px;
+  box-shadow: none;
+  border-width: 1px;
+}
+
+.md-typeset pre > code { border-radius: 8px; }
+
+.md-typeset table:not([class]) {
+  border-radius: 10px;
+  box-shadow: none;
+  border: 1px solid var(--pf-border);
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--pf-panel);
+  font-family: "Archivo", var(--md-text-font), sans-serif;
+  font-weight: 700;
+}
+
+/* ---- Home hero ---- */
+
+.pf-hero {
+  padding: clamp(1.5rem, 5vw, 3.5rem) 0 clamp(1rem, 3vw, 2rem);
+  text-align: center;
+}
+
+.pf-kicker {
+  font-family: var(--md-code-font), monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--pf-kicker);
+  margin-bottom: 0.4rem;
+}
+
+.pf-hero h1 {
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.04;
+  margin: 0.2em auto 0.4em;
+  max-width: 18ch;
+}
+
+.pf-hero .pf-lede {
+  max-width: 34rem;
+  margin: 0 auto 1.4rem;
+  font-size: 0.85rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.pf-hero .md-button { margin: 0.2rem 0.3rem; }
+
+/* ---- Home cards: the six paths ---- */
+
+.pf-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.8rem;
+  margin: 1.6rem 0;
+}
+
+.pf-cards > a {
+  display: block;
+  padding: 1.1rem 1.2rem 1.2rem;
+  background: var(--pf-panel);
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  color: var(--md-default-fg-color);
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.pf-cards > a:hover {
+  border-color: var(--md-accent-fg-color);
+  transform: translateY(-2px);
+  color: var(--md-default-fg-color);
+}
+
+.pf-eyebrow {
+  display: block;
+  font-family: var(--md-code-font), monospace;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pf-kicker);
+  margin-bottom: 0.45rem;
+}
+
+.pf-cards h3 {
+  margin: 0 0 0.35rem 0;
+  font-family: "Archivo", var(--md-text-font), sans-serif;
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+  font-size: 0.85rem;
+}
+
+.pf-cards > a:hover h3 { color: var(--md-accent-fg-color); }
+
+.pf-cards p {
+  margin: 0;
+  font-size: 0.68rem;
+  color: var(--md-default-fg-color--light);
+}

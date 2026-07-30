@@ -1,0 +1,104 @@
+site_name: HIDMaestro Documentation
+site_url: https://hidmaestro.org/docs/
+site_description: >-
+  HIDMaestro creates virtual game controllers that look like real hardware
+  to Windows. These docs cover everything from the SDK quickstart to wire
+  protocols.
+repo_url: https://github.com/hifihedgehog/HIDMaestro
+repo_name: hifihedgehog/HIDMaestro
+edit_uri: ""
+
+docs_dir: wiki
+site_dir: docs
+
+theme:
+  name: material
+  custom_dir: wiki/overrides
+  logo: assets/logo.png
+  favicon: assets/icon.png
+  # Fonts load in wiki/overrides/main.html (Archivo, Instrument Sans,
+  # JetBrains Mono, matching the landing page); Material's own Google
+  # Fonts loader stays off.
+  font: false
+  palette:
+    # Light
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    # Dark
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Start:
+      - start/index.md
+      - Installation: start/installation.md
+      - Quickstart: start/quickstart.md
+      - Glossary: start/glossary.md
+  - SDK:
+      - sdk/index.md
+      - SDK Reference: sdk/sdk-reference.md
+      - HID Descriptor Builder: sdk/hid-descriptor-builder.md
+      - Force Feedback: sdk/force-feedback.md
+      - Output Passthrough: sdk/output-passthrough.md
+      - OEM Name Override: sdk/oem-name-override.md
+  - Profiles:
+      - profiles/index.md
+      - Profile System: profiles/profile-system.md
+      - Custom Profiles: profiles/custom-profiles.md
+      - Profile Extractor: profiles/profile-extractor.md
+      - Contributing Profiles: profiles/contributing-profiles.md
+  - Troubleshooting: troubleshooting.md
+  - Technical Reference:
+      - reference/index.md
+      - Architecture Overview: reference/architecture-overview.md
+      - UMDF2 Driver Internals: reference/umdf2-driver-internals.md
+      - XUSB Companion: reference/xusb-companion.md
+      - SwDevice and PnP: reference/swdevice-and-pnp.md
+      - Shared Memory Protocol: reference/shared-memory-protocol.md
+      - Cross-API Coverage: reference/cross-api-coverage.md
+      - Multi-Controller: reference/multi-controller.md
+      - Lifecycle and Teardown: reference/lifecycle-and-teardown.md
+      - Driver Install and Signing: reference/driver-install-and-signing.md
+      - Build and Release: reference/build-and-release.md
+      - Testing and Verification: reference/testing-and-verification.md
+      - References: reference/references.md

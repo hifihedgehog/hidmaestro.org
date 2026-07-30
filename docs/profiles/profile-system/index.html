@@ -1,0 +1,2597 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="HIDMaestro creates virtual game controllers that look like real hardware to Windows. These docs cover everything from the SDK quickstart to wire protocols.">
+      
+      
+      
+        <link rel="canonical" href="https://hidmaestro.org/docs/profiles/profile-system/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../custom-profiles/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Profile System - HIDMaestro Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#profile-system" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="HIDMaestro Documentation" class="md-header__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HIDMaestro Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Profile System
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../start/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sdk/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  SDK
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Profiles
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Technical Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="HIDMaestro Documentation" class="md-nav__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    HIDMaestro Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sdk/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/sdk-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/hid-descriptor-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HID Descriptor Builder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/force-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Force Feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/output-passthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output Passthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/oem-name-override/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OEM Name Override
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiles
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Profiles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile System
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#on-disk-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On-disk layout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vendor-blob-fields-extendedreport-extendedoutputreport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vendor-blob fields (extendedReport / extendedOutputReport)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vendor-blob fields (extendedReport / extendedOutputReport)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-positioning-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field positioning syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crc32-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRC32 scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-extendedreport-vs-leave-it-unset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use extendedReport vs leave it unset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-runtime-architecture-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three runtime architecture groups
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three runtime architecture groups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-plain-hid-200-ms-create-80-ms-dispose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Plain HID (~200 ms create, ~80 ms dispose)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Non-xinputhid Xbox (~200-700 ms create, ~135 ms dispose)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-xinputhid-xbox-150-600-ms-create-500-ms-dispose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. xinputhid Xbox (~150-600 ms create, ~500 ms dispose)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-createcontroller-resolves-a-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How CreateController resolves a profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-the-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading the catalog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-verbatim-profile-dissected-xbox-360-wired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A verbatim profile dissected: Xbox 360 Wired
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#catalog-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catalog statistics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../profile-extractor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Extractor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/architecture-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/umdf2-driver-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UMDF2 Driver Internals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/xusb-companion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XUSB Companion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/swdevice-and-pnp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SwDevice and PnP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/shared-memory-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared Memory Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cross-api-coverage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-API Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/multi-controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/lifecycle-and-teardown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle and Teardown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/driver-install-and-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Driver Install and Signing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/build-and-release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build and Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/testing-and-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#on-disk-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On-disk layout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vendor-blob-fields-extendedreport-extendedoutputreport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vendor-blob fields (extendedReport / extendedOutputReport)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vendor-blob fields (extendedReport / extendedOutputReport)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-positioning-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field positioning syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crc32-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRC32 scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-extendedreport-vs-leave-it-unset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use extendedReport vs leave it unset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-runtime-architecture-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three runtime architecture groups
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three runtime architecture groups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-plain-hid-200-ms-create-80-ms-dispose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Plain HID (~200 ms create, ~80 ms dispose)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Non-xinputhid Xbox (~200-700 ms create, ~135 ms dispose)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-xinputhid-xbox-150-600-ms-create-500-ms-dispose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. xinputhid Xbox (~150-600 ms create, ~500 ms dispose)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-createcontroller-resolves-a-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How CreateController resolves a profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-the-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading the catalog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-verbatim-profile-dissected-xbox-360-wired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A verbatim profile dissected: Xbox 360 Wired
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#catalog-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catalog statistics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="profile-system">Profile System<a class="headerlink" href="#profile-system" title="Permanent link">&para;</a></h1>
+<p>Every controller HIDMaestro can emulate is a JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code>. 225 ship in the embedded catalog across 32 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 16 more). Runtime-built profiles authored via <code>HMProfileBuilder</code> use the identical schema and run through identical machinery.</p>
+<p>This page documents the JSON schema field-by-field, the three runtime architecture groups a profile can fall into, and how the SDK resolves a profile into a deployable virtual device at <code>CreateController</code> time.</p>
+<hr />
+<h2 id="on-disk-layout">On-disk layout<a class="headerlink" href="#on-disk-layout" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>profiles/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  schema.json                       # JSON Schema document for all profiles
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  scraped_descriptors.json          # 50+ raw descriptors recovered from real devices
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  linux-kernel-fixed-descriptors.json  # patched descriptors from the Linux kernel
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  microsoft/
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    xbox-360-wired.json
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    xbox-series-xs-bt.json
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    xbox-elite-v2.json
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    ...22 Microsoft profiles
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  sony/
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    dualsense.json
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    dualsense-edge.json
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    dualshock-4-v1.json
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    dualshock-3.json
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    ...13 Sony profiles
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  nintendo/
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    switch-pro.json
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    switch2-pro.json
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    joycon-l.json
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    joycon-r.json
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    gamecube-adapter.json
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    n64-nso.json
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    snes-nso.json
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    ...12 Nintendo profiles
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>  thrustmaster/
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    t300rs.json
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    t-flight-hotas-4.json
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    t16000m.json
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    ...19 Thrustmaster profiles
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>  ...28 more vendor folders
+</code></pre></div>
+<p>Vendor folder names are slugs of the manufacturer (<code>thrustmaster</code>, <code>8bitdo</code>, <code>vkbsim</code>). File names are slugs of the model (<code>xbox-360-wired</code>, <code>t-flight-hotas-x</code>, <code>dualsense-edge-bt</code>).</p>
+<p>The full vendor list at v1.3.4: 8bitdo, amazon, asetek, cammus, ch-products, fanatec, flydigi, google, heusinkveld, honeycomb, hori, logitech, microsoft, misc, moza, nacon, nintendo, pxn, razer, sega, simagic, simucube, snk, sony, steelseries, taito, thrustmaster, turtle-beach, valve, virpil, vkbsim, winwing.</p>
+<p>The <code>misc/</code> vendor catches everything else &mdash; arcade controllers, niche racing pedals, devices the contributor couldn't slot into a clean vendor namespace.</p>
+<hr />
+<h2 id="schema">Schema<a class="headerlink" href="#schema" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xbox-360-wired&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Xbox 360 Controller (Wired)&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;vendor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Microsoft&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;vid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x045E&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">&quot;pid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x028E&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">&quot;productString&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Controller (XBOX 360 For Windows)&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="nt">&quot;manufacturerString&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;©Microsoft Corporation&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gamepad&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nt">&quot;connection&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;usb&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nt">&quot;descriptor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;05010905a101a10009300931150026ffff350046ffff950275108102c0...&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="nt">&quot;nativeDescriptor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;05010905a101...&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">  </span><span class="nt">&quot;inputReportSize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">18</span><span class="p">,</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="nt">&quot;deviceDescription&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Controller (XBOX 360 For Windows)&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="nt">&quot;triggerMode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">  </span><span class="nt">&quot;driverMode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">  </span><span class="nt">&quot;buttonMap&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span><span class="nt">&quot;axisMap&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">  </span><span class="nt">&quot;triggerButtons&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">  </span><span class="nt">&quot;notes&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="required-fields">Required fields<a class="headerlink" href="#required-fields" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td>Unique slug, e.g. <code>"xbox-360-wired"</code>. Used by <code>HMContext.GetProfile</code>. Must match the filename.</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>Human-readable display name shown in UIs.</td>
+</tr>
+<tr>
+<td><code>vendor</code></td>
+<td>string</td>
+<td>Manufacturer name. Doesn't need to be a slug.</td>
+</tr>
+<tr>
+<td><code>vid</code></td>
+<td>string</td>
+<td>USB Vendor ID as a 4-digit hex string with <code>0x</code> prefix.</td>
+</tr>
+<tr>
+<td><code>pid</code></td>
+<td>string</td>
+<td>USB Product ID, same format.</td>
+</tr>
+<tr>
+<td><code>productString</code></td>
+<td>string</td>
+<td>The string returned by <code>IOCTL_HID_GET_STRING (HID_STRING_ID_IPRODUCT)</code>. <strong>This is what <code>joy.cpl</code> and games see.</strong> Match the real device exactly &mdash; SDL3's controller database keys off this.</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>string</td>
+<td>Controller category. One of: <code>gamepad</code>, <code>wheel</code>, <code>joystick</code>, <code>flightstick</code>, <code>hotas</code>, <code>arcadestick</code>, <code>pedals</code>, <code>other</code>.</td>
+</tr>
+<tr>
+<td><code>connection</code></td>
+<td>string</td>
+<td>Connection type the profile represents. One of: <code>usb</code>, <code>bluetooth</code>, <code>wireless-adapter</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="optional-fields">Optional fields<a class="headerlink" href="#optional-fields" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>manufacturerString</code></td>
+<td>string | null</td>
+<td>null</td>
+<td>The string returned for manufacturer query. Defaults to <code>vendor</code> if null.</td>
+</tr>
+<tr>
+<td><code>descriptor</code></td>
+<td>string | null</td>
+<td>null</td>
+<td>HID report descriptor as a continuous hex string. Null = profile is a placeholder, not deployable.</td>
+</tr>
+<tr>
+<td><code>inputReportSize</code></td>
+<td>int | null</td>
+<td>derived</td>
+<td>Total wire size of the input report in bytes (data <strong>+ 1 for Report ID</strong> if the descriptor declares one). When null, derived at runtime from the descriptor.</td>
+</tr>
+<tr>
+<td><code>nativeDescriptor</code></td>
+<td>string | null</td>
+<td>null</td>
+<td>The original physical device's descriptor before any HIDMaestro-side modifications. Kept as a record; not used at runtime.</td>
+</tr>
+<tr>
+<td><code>deviceDescription</code></td>
+<td>string | null</td>
+<td><code>productString</code></td>
+<td>The Device Manager display name (<code>FriendlyName</code> PnP property). Some catalog profiles (Logitech F310) carry a curated <code>deviceDescription</code> distinct from <code>productString</code>.</td>
+</tr>
+<tr>
+<td><code>triggerMode</code></td>
+<td>string | null</td>
+<td>null</td>
+<td>Profile-level annotation describing the descriptor's trigger encoding: <code>combined</code> (descriptor declares one Z axis carrying <code>LT - RT</code>), <code>separate</code> (descriptor declares independent Z + Rz), or null for non-gamepad. <strong>Note:</strong> every Xbox profile surfaces in DirectInput as 5 axes with combined Z regardless of this annotation &mdash; the velocity-usage trick + xinputhid synthesis collapse separate-trigger descriptors into the canonical <code>xusb22.sys</code> 5-axis shape. WGI / browser see separate triggers via Vx/Vy + GameInput registry mapping.</td>
+</tr>
+<tr>
+<td><code>driverMode</code></td>
+<td>string | null</td>
+<td>null</td>
+<td>One of: <code>xinputhid</code> (binds Microsoft's xinputhid kernel filter for GIP-over-HID profiles like Xbox Series BT / One BT / Elite v2 BT), <code>xusb22</code> (binds the legacy xusb22 upper filter), or null/<code>hid</code> (plain HID via <code>mshidumdf</code>). The catalog's Xbox-VID profiles overwhelmingly use <code>null</code> plus the implicit XUSB companion path; <code>xusb22</code> is supported in the deserializer but rarely needed because the SwD-enumerated companion serves the same role with explicit ContainerID control.</td>
+</tr>
+<tr>
+<td><code>driverPid</code></td>
+<td>string | null</td>
+<td>null</td>
+<td>PID override for hardware-ID matching only. The driver's INF-bind process matches against this PID; applications still see the real <code>pid</code> field via <code>HidD_GetAttributes</code>. Used for xinputhid-bound profiles where the real PID would be claimed by GameInput / HIDAPI &mdash; a sentinel like <code>0x0001</code> here makes those backends skip the device so SDL3 falls through to its XInput backend with the correct identity.</td>
+</tr>
+<tr>
+<td><code>companionOnly</code></td>
+<td>bool</td>
+<td>false</td>
+<td>If true, the runtime skips main-HID-device creation and runs only the XUSB companion. DI reads from XInput (5 axes), browser reads from XInput (separate triggers). Used for cases where real hardware uses xusb22.sys without an HID interface.</td>
+</tr>
+<tr>
+<td><code>buttonMap</code></td>
+<td>int[] | null</td>
+<td>identity</td>
+<td>Optional remapping table. Index = <code>HMButton</code> bit position; value = descriptor button index. Sony profiles use this to swap A/B/X/Y &harr; Cross/Circle/Square/Triangle. <code>-1</code> means "abstract bit not in this descriptor".</td>
+</tr>
+<tr>
+<td><code>axisMap</code></td>
+<td>object | null</td>
+<td>heuristic</td>
+<td>Axis semantic override. Keys are hex HID usage codes (<code>"0x32"</code> for Z); values are semantic names (<code>"leftStickX"</code>, <code>"rightTrigger"</code>). Sony profiles override <code>Z/Rz &amp;rarr; rightStick</code>.</td>
+</tr>
+<tr>
+<td><code>triggerButtons</code></td>
+<td>int[] | null</td>
+<td>null</td>
+<td>Two-element array <code>[LT_button_index, RT_button_index]</code>. When triggers are nonzero, the corresponding buttons engage automatically (DS4/DualSense L2/R2 digital buttons).</td>
+</tr>
+<tr>
+<td><code>extendedReport</code></td>
+<td>object | null</td>
+<td>null</td>
+<td>v1.3.5+. Vendor-blob input layout. When present, <code>HMController.SubmitState</code> packs reports per the field list rather than via the descriptor-driven encoder. Used for profiles where the descriptor declares a single opaque vendor-defined field (Sony BT 0x31, future profiles with similar shape). See section below.</td>
+</tr>
+<tr>
+<td><code>extendedOutputReport</code></td>
+<td>object | null</td>
+<td>null</td>
+<td>v1.3.5+. Vendor-blob output layout. When present, the SDK decodes incoming output reports of the declared report ID and surfaces parsed-field events via <code>HMController.OutputDecoded</code>. Pairs with <code>HMOutputEncoder.Encode</code> for the inverse direction.</td>
+</tr>
+<tr>
+<td><code>notes</code></td>
+<td>string | null</td>
+<td>null</td>
+<td>Implementation notes, descriptor provenance, quirks. Free-form.</td>
+</tr>
+</tbody>
+</table>
+<p>The full JSON Schema lives in <code>profiles/schema.json</code>.</p>
+<hr />
+<h2 id="vendor-blob-fields-extendedreport-extendedoutputreport">Vendor-blob fields (<code>extendedReport</code> / <code>extendedOutputReport</code>)<a class="headerlink" href="#vendor-blob-fields-extendedreport-extendedoutputreport" title="Permanent link">&para;</a></h2>
+<p>Some controllers' descriptors declare their input as a single opaque vendor-defined field — Sony BT (DualSense, DualSense Edge, DS4 BT) is the canonical example, but Switch Pro and various wheels follow the same pattern. The descriptor doesn't say which bytes carry sticks vs buttons vs gyro vs CRC; the wire format is firmware convention.</p>
+<p>Pre-v1.3.5 the SDK couldn't pack these — it would fall back to whatever simpler input report the descriptor declared first (Sony BT: Report 1, 9 bytes), which Steam Input misclassified and parsers like <code>dualsense-tester</code> couldn't read. v1.3.5 makes the byte layout data: profile JSON describes every field's type, position, and bit range; the SDK walks the field list as a generic codec.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&quot;extendedReport&quot;: {
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  &quot;reportId&quot;: &quot;0x31&quot;,     // hex string; emitted as the report ID byte
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  &quot;size&quot;: 78,             // total bytes including report ID at byte 0
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  &quot;fields&quot;: [
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    { &quot;byte&quot;:  1, &quot;type&quot;: &quot;uint8-rolling&quot;, &quot;semantic&quot;: &quot;btSeqTag&quot;, &quot;initial&quot;: 0 },
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    { &quot;byte&quot;:  2, &quot;type&quot;: &quot;uint8-axis&quot;,    &quot;semantic&quot;: &quot;leftStickX&quot;,  &quot;center&quot;: 128 },
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    { &quot;byte&quot;:  3, &quot;type&quot;: &quot;uint8-axis&quot;,    &quot;semantic&quot;: &quot;leftStickY&quot;,  &quot;center&quot;: 128 },
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    { &quot;byte&quot;:  6, &quot;type&quot;: &quot;uint8-trigger&quot;, &quot;semantic&quot;: &quot;leftTrigger&quot; },
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    { &quot;byte&quot;:  9, &quot;bits&quot;: &quot;0-3&quot;, &quot;type&quot;: &quot;hat-octant&quot;, &quot;semantic&quot;: &quot;hat&quot;, &quot;neutralValue&quot;: 8 },
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    { &quot;byte&quot;:  9, &quot;bits&quot;: &quot;4-7&quot;, &quot;type&quot;: &quot;button-mask&quot;, &quot;buttons&quot;: [&quot;X&quot;,&quot;A&quot;,&quot;B&quot;,&quot;Y&quot;] },
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    { &quot;byte&quot;: 10, &quot;type&quot;: &quot;button-mask&quot;,
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>      &quot;buttons&quot;: [&quot;LeftBumper&quot;,&quot;RightBumper&quot;,&quot;_&quot;,&quot;_&quot;,&quot;Back&quot;,&quot;Start&quot;,&quot;LeftStick&quot;,&quot;RightStick&quot;] },
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    { &quot;bytes&quot;: &quot;74-77&quot;, &quot;type&quot;: &quot;crc32-le&quot;,
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>      &quot;scope&quot;: { &quot;prefix&quot;: [161, 49], &quot;from&quot;: 1, &quot;to&quot;: 73 } }
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>  ]
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>}
+</code></pre></div>
+<h3 id="field-types">Field types<a class="headerlink" href="#field-types" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Direction</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>uint8</code></td>
+<td>both</td>
+<td>Plain byte; encode reads <code>Initial</code>, decode returns <code>byte</code></td>
+</tr>
+<tr>
+<td><code>uint8-rolling</code></td>
+<td>both</td>
+<td>Per-controller monotonic counter (input); plain byte (output)</td>
+</tr>
+<tr>
+<td><code>uint8-axis</code></td>
+<td>both</td>
+<td>Bipolar axis. Encode: <code>byte = center + clamp(value, ±1) × 127</code>. Decode: <code>value = (byte - center) / 127.0</code> (returns <code>float</code>)</td>
+</tr>
+<tr>
+<td><code>uint8-trigger</code></td>
+<td>both</td>
+<td>Unipolar 0..255 axis. Encode/decode mirror with /255</td>
+</tr>
+<tr>
+<td><code>hat-octant</code></td>
+<td>both</td>
+<td>4-bit hat in declared bit range. <code>HMHat.None</code> → <code>neutralValue</code> (typically 8); 1..8 → 0..7</td>
+</tr>
+<tr>
+<td><code>button-mask</code></td>
+<td>both</td>
+<td>Named-button bitmask. <code>buttons</code> is an ordered list of <code>HMButton</code> names (LSB-first within the declared bit range). <code>"_"</code> is a placeholder slot</td>
+</tr>
+<tr>
+<td><code>rgb24</code></td>
+<td>output</td>
+<td>3 contiguous bytes packed as R, G, B</td>
+</tr>
+<tr>
+<td><code>crc32-le</code></td>
+<td>both</td>
+<td>CRC-32/ISO-HDLC (poly 0xEDB88320) over <code>scope.prefix</code> + report bytes <code>[scope.from..scope.to]</code>, stored LE in the declared 4-byte range</td>
+</tr>
+<tr>
+<td><code>bytes-passthrough</code></td>
+<td>both</td>
+<td>Opaque byte slice. <code>parsed[semantic]</code> is <code>byte[]</code> of the declared range length</td>
+</tr>
+<tr>
+<td><code>bytes-zero</code></td>
+<td>encode</td>
+<td>Explicit zero-fill (default for unmapped bytes)</td>
+</tr>
+</tbody>
+</table>
+<p><code>semantic</code> is the dictionary key consumers see in <code>OutputDecoded.Fields</code> and pass to <code>HMOutputEncoder.Encode</code>. Pick names per your domain.</p>
+<h3 id="field-positioning-syntax">Field positioning syntax<a class="headerlink" href="#field-positioning-syntax" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>"byte": N</code> — single byte at offset N (0-indexed; byte 0 is the report ID)</li>
+<li><code>"bytes": "N-M"</code> — inclusive range [N..M] (used by <code>crc32-le</code>, <code>rgb24</code>, <code>bytes-passthrough</code>)</li>
+<li><code>"bits": "L-H"</code> — sub-byte bit range [L..H] within the byte/byte-range</li>
+</ul>
+<h3 id="crc32-scope">CRC32 scope<a class="headerlink" href="#crc32-scope" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&quot;scope&quot;: {
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  &quot;prefix&quot;: [161, 49],   // two bytes for Sony BT input: [0xA1, 0x31]
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  &quot;from&quot;: 1,             // first byte covered (after report ID)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>  &quot;to&quot;:   73             // last byte covered (before CRC field)
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>}
+</code></pre></div>
+<p>Sony's wire-format prefixes:
+- Input report CRC: <code>[0xA1, reportId]</code>
+- Output report CRC: <code>[0xA2, reportId]</code>
+- Feature report CRC: <code>[0x53, reportId]</code> (per dualsense-tester reference impl)</p>
+<h3 id="when-to-use-extendedreport-vs-leave-it-unset">When to use <code>extendedReport</code> vs leave it unset<a class="headerlink" href="#when-to-use-extendedreport-vs-leave-it-unset" title="Permanent link">&para;</a></h3>
+<p>Set <code>extendedReport</code> only when the descriptor's first declared input is an opaque vendor blob and the wire format requires firmware-convention byte placement. For controllers whose descriptors fully describe the input report (Xbox 360 wired, DualSense USB, Switch Pro, every plain-HID gamepad), the descriptor-driven encoder packs correctly without an <code>extendedReport</code> block — leave it null/unset.</p>
+<p><code>extendedOutputReport</code> is independent: even when the input descriptor is fully self-describing, declaring an <code>extendedOutputReport</code> lets consumers use <code>HMOutputEncoder.Encode(profile, fields)</code> to produce wire-format bytes for driving real devices without inline byte-packing. v1.3.5 ships output blocks for DS5 USB (Report 0x02), DS5 Edge USB, DS4 v1/v2 USB (Report 0x05), in addition to BT output blocks for the DS5 family (Report 0x31) and DS4 BT (Report 0x11).</p>
+<p>When <code>extendedReport</code> is set, the descriptor should declare the matching report ID first so the kernel HID stack delivers the right ID to consumers. The Sony BT profiles in v1.3.5 reorder their descriptors to put Report 0x31 (DS5 family) or Report 0x11 (DS4 family) INPUT before Report 1.</p>
+<hr />
+<h2 id="three-runtime-architecture-groups">Three runtime architecture groups<a class="headerlink" href="#three-runtime-architecture-groups" title="Permanent link">&para;</a></h2>
+<p>The profile fields determine which of three architecture groups the runtime instance lands in. Disposal speed, device-tree shape, and downstream API mechanics all vary by group. See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the per-group teardown latency table.</p>
+<h3 id="1-plain-hid-200-ms-create-80-ms-dispose">1. Plain HID (~200 ms create, ~80 ms dispose)<a class="headerlink" href="#1-plain-hid-200-ms-create-80-ms-dispose" title="Permanent link">&para;</a></h3>
+<p>Profiles where <code>driverMode</code> is <strong>not</strong> <code>"xinputhid"</code> and <code>vid</code> is <strong>not</strong> Microsoft (<code>0x045E</code>).</p>
+<p>Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 225-profile catalog (~204 profiles).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ROOT\VID_054C&amp;PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  └─ HID\VID_054C&amp;PID_0CE6\...       ← raw HID PDO, no upper filter
+</code></pre></div>
+<p>Lightest stack. One <code>DIF_REMOVE</code> on the ROOT parent tears down the entire tree. No XUSB companion device, no Microsoft upper filter.</p>
+<h3 id="2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose">2. Non-xinputhid Xbox (~200-700 ms create, ~135 ms dispose)<a class="headerlink" href="#2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose" title="Permanent link">&para;</a></h3>
+<p>Xbox-VID profiles (<code>vid == 0x045E</code>) where <code>driverMode</code> is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running <code>HMXInput.dll</code>. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.</p>
+<p>Includes Xbox 360 Wired (<code>xbox-360-wired</code>), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, Xbox Adaptive (with caveats &mdash; this is a 6-profile group).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ROOT\VID_045E&amp;PID_028E&amp;IG_00\NNNN    ← UMDF2 driver (main HID device)
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  │                                    UpperFilters += &quot;xinputhid&quot; per-instance
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  │                                    (SDK-written; blocks WGI from synthesizing
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  │                                    a duplicate HID-backed Gamepad)
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  └─ HID\VID_045E&amp;PID_028E&amp;IG_00\... ← HID child (raw PDO, input.inf)
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN            ← XUSB companion (HMXInput.dll)
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  │                                    SwDeviceCreate, System class, explicit
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  │                                    per-controller ContainerID (shared with main HID).
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>  │                                    UpperFilters = &quot;xinputhid&quot; from INF
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>  │                                    (admits the companion to WGI&#39;s XUSB
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>  │                                    dispatch; xinputhid.sys does not actually
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>  │                                    attach — wrong device class).
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>  └─ XUSB interface → XInput slot + WGI Gamepad
+</code></pre></div>
+<p>Medium stack, fast on both sides post-v1.3.2. Two device trees to tear down. The XUSB companion runs its own WUDFHost instance hosting <code>HMXInput.dll</code>, which needs its own PnP release cycle.</p>
+<h3 id="3-xinputhid-xbox-150-600-ms-create-500-ms-dispose">3. xinputhid Xbox (~150-600 ms create, ~500 ms dispose)<a class="headerlink" href="#3-xinputhid-xbox-150-600-ms-create-500-ms-dispose" title="Permanent link">&para;</a></h3>
+<p>Profiles with <code>driverMode: "xinputhid"</code>. These match <code>xinputhid.inf [GIP_Hid]</code> by hardware ID (<code>HID\VID_045E&amp;PID_0B13&amp;IG_00</code>), which binds Microsoft's <code>xinputhid.sys</code> as an upper filter on the HID child. xinputhid provides XInput delivery and 16-button HID descriptor synthesis natively: no XUSB companion needed, single Device Manager entry.</p>
+<p>Includes Xbox Series BT (<code>xbox-series-xs-bt</code>), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT &mdash; the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\&lt;sid&gt;_NNNN
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  │                                  ← UMDF2 driver via SwDeviceCreate
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  │                                    (mshidumdf host). Explicit non-sentinel
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  │                                    ContainerID closes the slot-1-skip
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  │                                    bit-2 path in xinput1_4!FUN_18000de2c.
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  │                                    Underscore between VID and PID avoids
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>  │                                    the `VID_*&amp;PID_*&amp;IG_*` PnP edge case;
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>  │                                    `&amp;IG_00` retained for HIDAPI/SDL3/Chromium.
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>  └─ HID\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\...
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        │                            ← HID child (xinputhid.inf, xinputhid
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>        │                              upper filter)
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>        ├─ xinputhid.sys              ← Microsoft inbox kernel filter
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>        ├─ XInput delivery (internal)
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        └─ 16-button HID synthesis
+</code></pre></div>
+<p>Both sides fast post-v1.3.2. xinputhid is a Microsoft inbox kernel filter driver; we don't ship it. The SwD-first removal ordering in v1.3.1 closes the SwD parent first, and the children cascade automatically.</p>
+<blockquote>
+<p>The 16-button synthesis is a <strong>known trade-off</strong>. Win11's xinputhid replaces the source descriptor's button declaration with a 15+ button Xbox One layout. This is incompatible with profiles that need the Xbox 360's 10-button fidelity through DirectInput (<code>btnfix.c</code> exists in the repo as an experimental approach but is incomplete &mdash; the trade-off stands as of v1.3.4). For Xbox 360 Wired the catalog profile uses driverMode=null + XUSB companion to keep 10 buttons through DI; for Xbox Series BT it accepts 16 buttons because the source descriptor already has 12 and the +4 are dead bits.</p>
+</blockquote>
+<hr />
+<h2 id="how-createcontroller-resolves-a-profile">How <code>CreateController</code> resolves a profile<a class="headerlink" href="#how-createcontroller-resolves-a-profile" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Index allocation.</strong> Linear scan from 0; first free index wins. Locked.</li>
+<li><strong>Architecture group selection.</strong> Branch on <code>vid == 0x045E</code> and <code>driverMode</code>:</li>
+<li><code>(false, null)</code> &rarr; plain HID</li>
+<li><code>(true, null)</code> &rarr; non-xinputhid Xbox (XUSB companion)</li>
+<li><code>(true, "xinputhid")</code> &rarr; xinputhid Xbox</li>
+<li><strong>Container ID assignment.</strong> Per-controller GUID <code>{48494430-4D41-4553-5452-4F00...&lt;idx&gt;}</code> (ASCII "HIDMAESTRO" + 16-bit index). Shared by the main HID and any companion so xinput1_4 and Settings dedupe them. See <a href="../../reference/swdevice-and-pnp/">SwDevice and PnP</a>.</li>
+<li><strong>Per-instance registry write.</strong> Writes <code>ControllerIndex</code>, <code>Vid</code>, <code>Pid</code>, <code>ProductString</code>, <code>ManufacturerString</code>, <code>DeviceDescription</code>, <code>ReportDescriptor</code> (REG_BINARY), <code>BTHLEDEVICE</code> flag, etc. to <code>HKLM\SOFTWARE\HIDMaestro\Controller&lt;index&gt;</code> and the device's HW key. The driver reads these at <code>EvtDeviceAdd</code>.</li>
+<li><strong>Device creation.</strong> Plain HID via <code>SetupDiCreateDeviceInfoW</code>; SWD profiles via <code>SwDeviceCreate</code> (called through <code>hmswd.exe</code> to bypass a .NET P/Invoke incompat).</li>
+<li><strong>PnP wait.</strong> Polls the HID child for <code>DN_STARTED</code>. Up to 10 s on slow machines; typically &lt;100 ms.</li>
+<li><strong>XInput slot-claim wait</strong> for Xbox profiles. Capped at 500 ms post-v1.3.2 to avoid 13-14 s freezes when xinputhid's allocator is in a stuck state.</li>
+<li><strong>UpperFilter writes</strong> for non-xinputhid Xbox profiles. INF carries it on the companion; SDK writes per-instance on the main HID device.</li>
+<li><strong>Friendly-name application.</strong> Best-effort; finalize via <code>HMContext.FinalizeNames</code> after all controllers are created.</li>
+</ol>
+<p>The full per-archetype sequence lives in <code>DeviceOrchestrator.cs</code>'s <code>SetupController</code> (~600 lines). See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the disposal counterpart.</p>
+<hr />
+<h2 id="loading-the-catalog">Loading the catalog<a class="headerlink" href="#loading-the-catalog" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// Embedded catalog (225 profiles)</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1">// Custom directory of JSON profiles</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-profiles&quot;</span><span class="p">);</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1">// Mix both — embedded first, then custom (custom IDs win on collision)</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-overrides&quot;</span><span class="p">);</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="c1">// Lookup</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="n">HMProfile</span><span class="o">?</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;xbox-360-wired&quot;</span><span class="p">);</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="c1">// Enumerate</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">AllProfiles</span><span class="p">)</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;{profile.Id} — {profile.Name}&quot;</span><span class="p">);</span>
+</code></pre></div>
+<p>Profiles are loaded into the context's catalog. Duplicate IDs are skipped (first wins). Schema files (<code>schema.json</code>) are ignored.</p>
+<p>A consumer that wants to ship a <strong>subset</strong> of the catalog (e.g. only racing wheels) loads just that subset:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-app\racing-wheels-only&quot;</span><span class="p">);</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1">// Don&#39;t call LoadDefaultProfiles</span>
+</code></pre></div>
+<p>Consumers that want to <strong>modify</strong> a built-in profile clone via <code>HMProfileBuilder.FromProfile</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">modded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="p">.</span><span class="n">FromProfile</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">)</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x9999</span><span class="p">)</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;Modded DualSense&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">modded</span><span class="p">);</span><span class="w">   </span><span class="c1">// not loaded into ctx.AllProfiles</span>
+</code></pre></div>
+<p>The modded profile isn't registered in the catalog &mdash; it's used directly for one <code>CreateController</code> call. See <a href="../custom-profiles/">Custom Profiles</a> for the full clone / build / spoof patterns.</p>
+<hr />
+<h2 id="a-verbatim-profile-dissected-xbox-360-wired">A verbatim profile dissected: Xbox 360 Wired<a class="headerlink" href="#a-verbatim-profile-dissected-xbox-360-wired" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xbox-360-wired&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Xbox 360 Controller (Wired)&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="nt">&quot;vendor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Microsoft&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span><span class="nt">&quot;vid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x045E&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span><span class="nt">&quot;pid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x028E&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span><span class="nt">&quot;productString&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Controller (XBOX 360 For Windows)&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span><span class="nt">&quot;manufacturerString&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;©Microsoft Corporation&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gamepad&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">  </span><span class="nt">&quot;connection&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;usb&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">  </span><span class="nt">&quot;descriptor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;05010905a101a10009300931150026ffff350046ffff950275108102c0a10009330934150026ffff350046ffff950275108102c0a1000932150026ffff350046ffff950175108102c0a10009400941150026ffff350046ffff950275108102c005091901290a950a7501810205010939150125083500463b10660e00750495018142750295018103750895028103c0&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">  </span><span class="nt">&quot;nativeDescriptor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;05010905A1018501093009311500270000000075109502810209330934810209320935810205091901290A150025017501950281027506950181010501093915012508350046C03C660E007504950181428503060046ED01950E091001110050B5&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">  </span><span class="nt">&quot;inputReportSize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">18</span><span class="p">,</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">  </span><span class="nt">&quot;deviceDescription&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Controller (XBOX 360 For Windows)&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">  </span><span class="nt">&quot;triggerMode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong><code>descriptor</code></strong> is the HIDMaestro-emitted descriptor. <strong><code>nativeDescriptor</code></strong> is the original from a real Xbox 360 controller. They differ because the catalog version uses Vx/Vy velocity usages to carry separate trigger values without DirectInput recognizing them as axes. The native descriptor declares Z + Rz directly; HIDMaestro's emitted version uses Z (combined trigger) + Vx + Vy (separate triggers) so DirectInput sees 5 axes (matching real xusb22.sys behavior) while WGI / browsers see separate triggers via the GameInput registry mapping. See <a href="../../reference/cross-api-coverage/">Cross-API Coverage</a>.</p>
+<p><strong><code>inputReportSize</code>: 18</strong> is data + 1 Report ID byte (the descriptor declares Report ID 0x01).</p>
+<p><strong><code>triggerMode</code>: "combined"</strong> annotates the descriptor's trigger encoding for this profile. The HIDMaestro-emitted descriptor declares one Z axis carrying <code>LT - RT</code> per real xusb22 DI semantics. <strong>All Xbox profiles</strong> present as 5 axes with combined Z in DirectInput regardless of <code>triggerMode</code> value &mdash; on profiles where <code>triggerMode == "separate"</code> (e.g. Xbox Series BT), xinputhid's synthesis layer collapses the descriptor's separate Z + Rz back into combined Z by the time DI reads the preparsed data. WGI and browser see separate triggers through the Vx/Vy + GameInput-mapping path.</p>
+<p><strong><code>driverMode</code></strong> is <strong>not present</strong> &mdash; null = plain HID via mshidumdf. With <code>vid == 0x045E</code>, this profile lands in <strong>architecture group 2</strong> (non-xinputhid Xbox + XUSB companion).</p>
+<p><strong><code>buttonMap</code></strong> is <strong>not present</strong> &mdash; identity Xbox layout (<code>HMButton.A</code> &rarr; descriptor button 0, etc.).</p>
+<hr />
+<h2 id="catalog-statistics">Catalog statistics<a class="headerlink" href="#catalog-statistics" title="Permanent link">&para;</a></h2>
+<p>As of v1.3.4:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total profiles</td>
+<td>225</td>
+</tr>
+<tr>
+<td>Vendor folders</td>
+<td>32</td>
+</tr>
+<tr>
+<td>Plain HID profiles</td>
+<td>~204</td>
+</tr>
+<tr>
+<td>Non-xinputhid Xbox profiles</td>
+<td>~6</td>
+</tr>
+<tr>
+<td>xinputhid Xbox profiles</td>
+<td>~4</td>
+</tr>
+<tr>
+<td>With FFB descriptors</td>
+<td>~30 (Logitech G-series, Thrustmaster wheels, Fanatec wheels, MOZA, SimuCUBE)</td>
+</tr>
+<tr>
+<td>Bluetooth profiles</td>
+<td>~50</td>
+</tr>
+<tr>
+<td>Wireless-adapter profiles</td>
+<td>~10</td>
+</tr>
+</tbody>
+</table>
+<p>The largest single-vendor folders are Thrustmaster (19), Logitech (24), Microsoft (22), and Sony (13).</p>
+<hr />
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../custom-profiles/">Custom Profiles</a> &mdash; clone, modify, build from scratch, spoof.</li>
+<li><a href="../profile-extractor/">Profile Extractor</a> &mdash; the GUI tool that reads profiles back from real devices.</li>
+<li><a href="../contributing-profiles/">Contributing Profiles</a> &mdash; submit a captured profile via GitHub issue.</li>
+<li><a href="../../reference/cross-api-coverage/">Cross-API Coverage</a> &mdash; the per-API translation a profile drives at runtime.</li>
+<li><a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> &mdash; per-architecture-group teardown latencies.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/profiles/schema.json"><code>profiles/schema.json</code></a> &mdash; the canonical JSON Schema.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Profiles">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Profiles
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../custom-profiles/" class="md-footer__link md-footer__link--next" aria-label="Next: Custom Profiles">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Custom Profiles
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

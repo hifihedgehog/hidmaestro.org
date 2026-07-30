@@ -1,0 +1,2498 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="HIDMaestro creates virtual game controllers that look like real hardware to Windows. These docs cover everything from the SDK quickstart to wire protocols.">
+      
+      
+      
+        <link rel="canonical" href="https://hidmaestro.org/docs/reference/lifecycle-and-teardown/">
+      
+      
+        <link rel="prev" href="../multi-controller/">
+      
+      
+        <link rel="next" href="../driver-install-and-signing/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Lifecycle and Teardown - HIDMaestro Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lifecycle-and-teardown" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="HIDMaestro Documentation" class="md-header__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HIDMaestro Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Lifecycle and Teardown
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../start/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sdk/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  SDK
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../profiles/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Profiles
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Technical Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="HIDMaestro Documentation" class="md-nav__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    HIDMaestro Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sdk/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/sdk-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/hid-descriptor-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HID Descriptor Builder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/force-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Force Feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/output-passthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output Passthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/oem-name-override/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OEM Name Override
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../profiles/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiles
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Profiles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/custom-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-extractor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Extractor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/contributing-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../umdf2-driver-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UMDF2 Driver Internals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xusb-companion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XUSB Companion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../swdevice-and-pnp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SwDevice and PnP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shared-memory-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared Memory Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cross-api-coverage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-API Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle and Teardown
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle and Teardown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-setupcontroller-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create: SetupController orchestration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-wait-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three wait gates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three wait gates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gate-1-waitforhidchild-10-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate 1: WaitForHidChild (10 s)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gate-2-waitfordevicestarted-5-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate 2: WaitForDeviceStarted (5 s)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gate-3-waitforxinputslotclaim-500-ms-post-v132" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate 3: WaitForXInputSlotClaim (500 ms post-v1.3.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-archetype-create-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-archetype create latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-step-install-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-step install breakdown
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-healing-on-init" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-healing on init
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dispose-teardowncontroller-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispose: TeardownController orchestration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#swd-first-removal-ordering-v131" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SwD-first removal ordering (v1.3.1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SwD-first removal ordering (v1.3.1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-v131-hid-children-first-broken" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-v1.3.1: HID-children-first (broken)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v131-swd-parent-first-fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1.3.1+: SwD-parent-first (fast)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-archetype-dispose-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-archetype dispose latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batch-teardown-disposecontrollersinparallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batch teardown: DisposeControllersInParallel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batch teardown: DisposeControllersInParallel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-element-empty-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-element / empty input
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#live-profile-switch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Live profile switch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hot-plug-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hot-plug API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-kill-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Force-kill recovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-pattern-pnputil-delete-driver-uninstall-force-on-the-active-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-pattern: pnputil /delete-driver /uninstall /force on the active driver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../driver-install-and-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Driver Install and Signing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build-and-release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build and Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-and-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-setupcontroller-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create: SetupController orchestration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-wait-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three wait gates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three wait gates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gate-1-waitforhidchild-10-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate 1: WaitForHidChild (10 s)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gate-2-waitfordevicestarted-5-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate 2: WaitForDeviceStarted (5 s)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gate-3-waitforxinputslotclaim-500-ms-post-v132" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate 3: WaitForXInputSlotClaim (500 ms post-v1.3.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-archetype-create-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-archetype create latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-step-install-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-step install breakdown
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-healing-on-init" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-healing on init
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dispose-teardowncontroller-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispose: TeardownController orchestration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#swd-first-removal-ordering-v131" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SwD-first removal ordering (v1.3.1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SwD-first removal ordering (v1.3.1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-v131-hid-children-first-broken" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-v1.3.1: HID-children-first (broken)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v131-swd-parent-first-fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1.3.1+: SwD-parent-first (fast)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-archetype-dispose-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-archetype dispose latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batch-teardown-disposecontrollersinparallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batch teardown: DisposeControllersInParallel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batch teardown: DisposeControllersInParallel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-element-empty-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-element / empty input
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#live-profile-switch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Live profile switch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hot-plug-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hot-plug API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-kill-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Force-kill recovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-pattern-pnputil-delete-driver-uninstall-force-on-the-active-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-pattern: pnputil /delete-driver /uninstall /force on the active driver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="lifecycle-and-teardown">Lifecycle and Teardown<a class="headerlink" href="#lifecycle-and-teardown" title="Permanent link">&para;</a></h1>
+<p>The full create / dispose orchestration. Per-archetype create budget, the three wait gates (<code>WaitForHidChild</code>, <code>WaitForDeviceStarted</code>, <code>WaitForXInputSlotClaim</code>), the SwD-first removal ordering, batch teardown, and the self-heal <code>RemoveAllVirtualControllers</code> that runs on <code>InstallDriver</code>.</p>
+<p>The mechanics here are what make multi-controller create / dispose / live-swap responsive enough for real consumer apps. The README's "Startup and Hot-Plug Timing" table summarizes the latencies; this page is the why.</p>
+<p>For the SDK-side API, see <a href="../../sdk/sdk-reference/">SDK Reference</a>. For the underlying PnP machinery, see <a href="../swdevice-and-pnp/">SwDevice and PnP</a>. For the multi-controller scenarios, see <a href="../multi-controller/">Multi-Controller</a>.</p>
+<hr />
+<h2 id="create-setupcontroller-orchestration">Create: <code>SetupController</code> orchestration<a class="headerlink" href="#create-setupcontroller-orchestration" title="Permanent link">&para;</a></h2>
+<p><code>HMContext.CreateController(profile)</code> runs <code>Internal.DeviceOrchestrator.SetupController(index, profile, infPath)</code>. The sequence:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>1. RemoveAllVirtualControllers (one-shot self-heal, first call only)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>2. Index allocation (from HMContext._lock)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>3. Per-instance registry write
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   HKLM\SOFTWARE\HIDMaestro\Controller&lt;N&gt;:
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>     ReportDescriptor (REG_BINARY)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>     VendorId / ProductId / VersionNumber (REG_DWORD)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>     ProductString (REG_SZ)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>     InputReportByteLength (REG_DWORD)
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>     [profile-specific extras]
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>4. Per-instance shared sections + named events
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>   Global\HIDMaestroInput&lt;N&gt;          (created)
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   Global\HIDMaestroOutput&lt;N&gt;         (created)
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>   Global\HIDMaestroInputEvent&lt;N&gt;     (created)
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   Global\HIDMaestroStopEvent&lt;N&gt;      (created)
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>   PID state section is lazy — only created on first PublishPidPool
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>5. ContainerID computation
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>   {48494430-4D41-4553-5452-4F00 + 16-bit index}
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>6. Device creation:
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>   plain HID profiles:    SetupDiCreateDeviceInfoW under ROOT\
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>   xinputhid profiles:    hmswd.exe create SWD\HIDMAESTRO_VID_*_PID_*&amp;IG_00\&lt;sid&gt;_NNNN
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>   non-xinputhid Xbox:    SetupDiCreateDeviceInfoW (main HID) + hmswd.exe create (XUSB companion)
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>7. WaitForHidChild       (10 s budget)
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>8. WaitForDeviceStarted  (5 s budget)
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>9. WaitForXInputSlotClaim (500 ms budget post-v1.3.2)
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>10. Per-instance UpperFilter writes (xinputhid-companion-XOR-tripwire profiles only)
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>11. Friendly-name application (best-effort; FinalizeNames runs the polled re-apply)
+</code></pre></div>
+<p>The driver wakes on PnP binding and reads its configuration from the registry written in step 3. The shared sections from step 4 are opened lazily by the driver (LocalService can't <code>CreateFileMapping(Global\)</code>, only <code>OpenFileMapping</code> what the SDK already created).</p>
+<p>If any step fails after step 3, <code>TeardownController</code> is run as a best-effort cleanup. The throw rethrows to the consumer.</p>
+<hr />
+<h2 id="three-wait-gates">Three wait gates<a class="headerlink" href="#three-wait-gates" title="Permanent link">&para;</a></h2>
+<p>After <code>SwDeviceCreate</code> (or <code>SetupDiCreateDeviceInfoW</code>) returns success, the device isn't fully usable yet. Three wait gates ensure we only return to the consumer when downstream APIs can read the device.</p>
+<h3 id="gate-1-waitforhidchild-10-s">Gate 1: <code>WaitForHidChild</code> (10 s)<a class="headerlink" href="#gate-1-waitforhidchild-10-s" title="Permanent link">&para;</a></h3>
+<p>PnP creates the HID child node under the parent we just created. Polls <code>CM_Locate_DevNodeW</code> for the expected child instance ID. Typical: &lt;100 ms warm. Slow machines (Atom Z8350): up to 2 s. Cap at 10 s.</p>
+<p>If this times out, <code>SetupController</code> throws <code>InvalidOperationException</code> and best-effort cleanup runs. Cause: usually a corrupt INF or DriverStore inconsistency &mdash; rerun <code>RemoveAllVirtualControllers</code> then <code>InstallDriver</code> to repair.</p>
+<h3 id="gate-2-waitfordevicestarted-5-s">Gate 2: <code>WaitForDeviceStarted</code> (5 s)<a class="headerlink" href="#gate-2-waitfordevicestarted-5-s" title="Permanent link">&para;</a></h3>
+<p>Polls the HID child's <code>DEVPKEY_Device_DevNodeStatus</code> for <code>DN_STARTED</code>. The driver isn't fully bound until this status flips. Typical: &lt;50 ms warm. Cap at 5 s.</p>
+<p>Without this gate, an immediate <code>SubmitState</code> after <code>CreateController</code> returns could land before the driver has opened the shared section &mdash; the seqno never increments and no input reaches the consumer.</p>
+<h3 id="gate-3-waitforxinputslotclaim-500-ms-post-v132">Gate 3: <code>WaitForXInputSlotClaim</code> (500 ms post-v1.3.2)<a class="headerlink" href="#gate-3-waitforxinputslotclaim-500-ms-post-v132" title="Permanent link">&para;</a></h3>
+<p>For Xbox-family profiles only. Polls <code>XInputGetState</code> to confirm the controller has been assigned an XInput slot.</p>
+<p>This gate <strong>was 15 s pre-v1.3.2</strong> and was the dominant cost. Distribution is bimodal:</p>
+<ul>
+<li><strong>Healthy claim</strong>: &lt;100 ms.</li>
+<li><strong>Stuck case</strong>: never publishes (kernel state issue, prior-session residue).</li>
+</ul>
+<p>The 15 s budget burned the full duration on every stuck case. PadForge users observed 13-14 s freezes on a single Xbox Series BT create.</p>
+<p>The 500 ms cap (post-v1.3.2) sits ~5x above the slowest observed healthy claim. Stuck cases now degrade to a near-imperceptible pause. Controller stays functional via DI / HIDAPI / Browser / WGI when XInput doesn't pick it up; XInput consumers see the slot appear lazily on their next poll cycle.</p>
+<p>For non-Xbox profiles this gate is skipped entirely.</p>
+<hr />
+<h2 id="per-archetype-create-latency">Per-archetype create latency<a class="headerlink" href="#per-archetype-create-latency" title="Permanent link">&para;</a></h2>
+<p>Warm-start (driver already in DriverStore):</p>
+<table>
+<thead>
+<tr>
+<th>Profile group</th>
+<th>Median</th>
+<th>Worst</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Plain HID</strong></td>
+<td>~200 ms</td>
+<td>~400 ms</td>
+<td>One device, no companion, no XInput</td>
+</tr>
+<tr>
+<td><strong>Non-xinputhid Xbox</strong></td>
+<td>~300 ms</td>
+<td>~700 ms</td>
+<td>Two devices (main HID + XUSB companion). XInput slot-claim wait ≤500 ms post-v1.3.2</td>
+</tr>
+<tr>
+<td><strong>xinputhid Xbox</strong></td>
+<td>~250 ms</td>
+<td>~600 ms</td>
+<td>One SwD device; xinputhid kernel filter binds. XInput slot-claim wait ≤500 ms post-v1.3.2</td>
+</tr>
+</tbody>
+</table>
+<p>Multi-controller (sequential):</p>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 plain HID</td>
+<td>~200 ms</td>
+</tr>
+<tr>
+<td>4 mixed (2 BT + 2 wired)</td>
+<td>~2.2-2.8 s</td>
+</tr>
+<tr>
+<td>6 mixed</td>
+<td>~3.5 s</td>
+</tr>
+</tbody>
+</table>
+<p>Cold-start (first run on machine, includes cert generation + signing + install): ~18 s for the install + create-1 step. Subsequent creates are warm-start cost.</p>
+<hr />
+<h2 id="per-step-install-breakdown">Per-step install breakdown<a class="headerlink" href="#per-step-install-breakdown" title="Permanent link">&para;</a></h2>
+<p>Visible in stdout when <code>HMContext.InstallDriver</code> runs:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Extract embedded payload to <code>%TEMP%</code></td>
+<td>~20 ms</td>
+</tr>
+<tr>
+<td>Remove old packages (idempotent guard)</td>
+<td>~100 ms</td>
+</tr>
+<tr>
+<td>Sign DLLs and INFs</td>
+<td>~130 ms</td>
+</tr>
+<tr>
+<td>Generate <code>.cat</code> catalogs (largest single step, AV-sensitive)</td>
+<td>~840 ms</td>
+</tr>
+<tr>
+<td><code>pnputil /add-driver</code></td>
+<td>~580 ms</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>~1.7 s</strong></td>
+</tr>
+</tbody>
+</table>
+<p>On corporate workstations with hundreds of devices in the PnP tree, total install can stretch to 5-20 s. HIDMaestro deliberately doesn't run <code>pnputil /scan-devices</code> (it's a no-op for our INFs and was the largest variable contributor in profiling).</p>
+<hr />
+<h2 id="self-healing-on-init">Self-healing on init<a class="headerlink" href="#self-healing-on-init" title="Permanent link">&para;</a></h2>
+<p><code>HMContext.InstallDriver</code> calls <code>RemoveAllVirtualControllers</code> <strong>first thing</strong>, before the actual install logic:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">public</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">InstallDriver</span><span class="p">()</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="n">Internal</span><span class="p">.</span><span class="n">DeviceOrchestrator</span><span class="p">.</span><span class="n">RemoveAllVirtualControllers</span><span class="p">();</span><span class="w">   </span><span class="c1">// self-heal</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">DriverBuilder</span><span class="p">.</span><span class="n">FullDeploy</span><span class="p">())</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">InvalidOperationException</span><span class="p">(</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">            </span><span class="s">&quot;Driver install failed. Run elevated and check pnputil output.&quot;</span><span class="p">);</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
+</code></pre></div>
+<p>Without this, when a prior process crashed or was force-killed (Dispose never ran), its virtual controllers + HIDMAESTRO PnP entries stay live and <strong>remain bound to the old INF</strong>. On the next launch:</p>
+<ul>
+<li><code>DriverBuilder.FullDeploy</code> calls <code>pnputil /delete-driver /uninstall /force</code>.</li>
+<li>That fails with "One or more devices are presently installed using the specified INF" and leaves the old INF + stale DLL bytes in DriverStore.</li>
+<li>The subsequent <code>/add-driver</code> then sees package-already-present + "Needed repairing" and <strong>restores the stale bytes from <code>pnputil</code>'s internal cache</strong> rather than installing the fresh extracted binary.</li>
+<li>Net effect: every launch since the first one serves the stale driver forever, the v1.1.5 self-heal code never actually loads, input keeps hanging, and the only escape is manual <code>devcon</code> + TrustedInstaller <code>takeown</code> of the FileRepository subdirectory (which users do not have).</li>
+</ul>
+<p>Running the sweep here FIRST removes the bound devices via <code>devcon</code> (returning "Removed on reboot" is sufficient &mdash; the INF becomes eligible for package deletion immediately), so <code>FullDeploy</code>'s <code>/delete-driver</code> call actually succeeds and the fresh extracted binary replaces the DriverStore contents.</p>
+<p>The same call is exposed publicly as <code>HMContext.RemoveAllVirtualControllers()</code> for consumers who want explicit defensive cleanup (e.g. on app exit). In normal operation, individual <code>HMController.Dispose()</code> is sufficient &mdash; there is no per-process cleanup obligation on shutdown.</p>
+<hr />
+<h2 id="dispose-teardowncontroller-orchestration">Dispose: <code>TeardownController</code> orchestration<a class="headerlink" href="#dispose-teardowncontroller-orchestration" title="Permanent link">&para;</a></h2>
+<p><code>HMController.Dispose()</code> runs <code>Internal.DeviceOrchestrator.TeardownController(index, instanceId)</code>. Sequence:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>1. Cancel the output reader thread, join (5 s timeout)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>2. Dispose the output cancellation token
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>3. Notify the context (HMContext.OnControllerDisposing)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>4. Per-archetype removal:
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>   plain HID:           DIF_REMOVE on the ROOT\ device
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>   non-xinputhid Xbox:  hmswd.exe remove (XUSB companion) + DIF_REMOVE (main HID)
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>   xinputhid Xbox:      hmswd.exe remove (SwD parent) + cascade waits
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>5. Wait CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED (per device)
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>6. Close shared memory mappings
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>7. Free per-controller registry path
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>8. Release the index back to the context&#39;s free pool
+</code></pre></div>
+<p>For SwD-enumerated devices, step 4 uses the SwD-first ordering (see below). For plain HID devices, <code>DIF_REMOVE</code> and the per-device removal wait are sufficient.</p>
+<hr />
+<h2 id="swd-first-removal-ordering-v131">SwD-first removal ordering (v1.3.1)<a class="headerlink" href="#swd-first-removal-ordering-v131" title="Permanent link">&para;</a></h2>
+<p>Two of the three architecture groups own a SwDevice-enumerated parent: Xbox 360 Wired (XUSB companion is SwD) and Xbox Series BT (main HID is SwD). SwDevice lifetimes are anchored to the <code>HSWDEVICE</code> handle, <strong>not</strong> the PnP devnode &mdash; children of a SwD parent cannot fully unwind their query-remove cascade until the parent's handle drops its kernel refcount.</p>
+<h3 id="pre-v131-hid-children-first-broken">Pre-v1.3.1: HID-children-first (broken)<a class="headerlink" href="#pre-v131-hid-children-first-broken" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>1. DIF_REMOVE on every HID child first
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>2. WaitForDeviceRemoval per child (2,000 ms timeout each — always times out
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>   because the parent is still holding the lifetime lock)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>3. Finally close the SwDevice handle
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>Net cost: ~5,700 ms for Xbox 360 Wired
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>          ~11,000 ms for Xbox Series BT
+</code></pre></div>
+<p>PadForge users with Xbox Series BT virtuals saw 11+ second "Disposing controller..." pauses. Unacceptable for live profile-switching.</p>
+<h3 id="v131-swd-parent-first-fast">v1.3.1+: SwD-parent-first (fast)<a class="headerlink" href="#v131-swd-parent-first-fast" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>1. Close the SwDevice handle FIRST via hmswd.exe remove
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>2. Block on CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED for the parent
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>3. Mop up any HID children that survived the cascade
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>   (usually zero — the SwD parent&#39;s release fires its children&#39;s removal in one cascade)
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Net cost: ~135 ms for Xbox 360 Wired
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>          ~500 ms for Xbox Series BT
+</code></pre></div>
+<p><code>CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED</code> is the kernel-side guarantee that the cascade has propagated, not just that the handle closed. Critical for callers that immediately follow with a recreate (live profile switch &mdash; the new controller's <code>SetupController</code> would race the old one's cleanup if we returned too early).</p>
+<p>A second optimization in the same change: when a HIDMAESTRO sweep walks registry entries that exist only as <code>PHANTOM</code> (registry residue from prior sessions, no live devnode), skip the <code>hmswd.exe</code> <code>SwDeviceCreate</code>-reconnect roundtrip entirely. Saves ~50-75 ms per stale entry and prevents creep across same-process recreation cycles.</p>
+<hr />
+<h2 id="per-archetype-dispose-latency">Per-archetype dispose latency<a class="headerlink" href="#per-archetype-dispose-latency" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Profile group</th>
+<th>Pre-v1.3.1</th>
+<th>Post-v1.3.1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Plain HID</strong></td>
+<td>~80 ms</td>
+<td>~80 ms</td>
+</tr>
+<tr>
+<td><strong>Non-xinputhid Xbox</strong></td>
+<td>~5,700 ms</td>
+<td><strong>~135 ms</strong></td>
+</tr>
+<tr>
+<td><strong>xinputhid Xbox</strong></td>
+<td>~11,000 ms</td>
+<td><strong>~500 ms</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The plain HID path was already fast pre-v1.3.1 because there's no SwD parent. The two SwD-bearing groups got the dramatic improvement.</p>
+<p>Round-trip (dispose + recreate) latencies:</p>
+<table>
+<thead>
+<tr>
+<th>Profile pair</th>
+<th>Latency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DualSense ↔ DualShock 4</strong></td>
+<td>~280 ms</td>
+</tr>
+<tr>
+<td><strong>DualSense ↔ Xbox 360 Wired</strong></td>
+<td>~350-850 ms</td>
+</tr>
+<tr>
+<td><strong>DualSense ↔ Xbox Series BT</strong></td>
+<td>~650-1100 ms</td>
+</tr>
+<tr>
+<td><strong>Xbox Series BT ↔ Xbox 360 Wired</strong></td>
+<td>~750-1300 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Down from ~6.4 s and ~11 s respectively pre-v1.3.1. PadForge user-reported: virtually instantaneous create and swap on the post-v1.3.1 path.</p>
+<hr />
+<h2 id="batch-teardown-disposecontrollersinparallel">Batch teardown: <code>DisposeControllersInParallel</code><a class="headerlink" href="#batch-teardown-disposecontrollersinparallel" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">public</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">DisposeControllersInParallel</span><span class="p">(</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">IEnumerable</span><span class="o">&lt;</span><span class="n">HMController</span><span class="o">&gt;</span><span class="w"> </span><span class="n">controllers</span><span class="p">,</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">Action</span><span class="o">&lt;</span><span class="n">HMController</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="o">&gt;?</span><span class="w"> </span><span class="n">perControllerCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">null</span><span class="p">);</span>
+</code></pre></div>
+<p>Disposes a set of controllers concurrently with the per-controller HID orphan sweep <strong>suppressed</strong> and run <strong>once at the end</strong> instead of per-controller.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">ctx</span><span class="p">.</span><span class="n">DisposeControllersInParallel</span><span class="p">(</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="k">new</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">ctrl0</span><span class="p">,</span><span class="w"> </span><span class="n">ctrl1</span><span class="p">,</span><span class="w"> </span><span class="n">ctrl2</span><span class="p">,</span><span class="w"> </span><span class="n">ctrl3</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="n">perControllerCallback</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Logger</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">$&quot;  {c.Profile.Id}: {ms} ms&quot;</span><span class="p">));</span>
+</code></pre></div>
+<p>Internal sequence:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>1. Set _batchDisposing = true
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>2. Parallel.ForEach: each controller&#39;s Dispose runs concurrently
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>   (each takes its own per-controller lock; no contention)
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>3. Set _batchDisposing = false
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>4. RemoveOrphanHidChildrenBatch — single sweep
+</code></pre></div>
+<p>The per-controller <code>Dispose</code> checks <code>_batchDisposing</code>; when set, it skips the per-controller orphan sweep that would otherwise run inside each <code>TeardownController</code>.</p>
+<p>For 4-6 mixed controllers the cleanup typically completes in 1.5-4 s end to end.</p>
+<p><code>HMContext.Dispose()</code> itself uses an equivalent path internally &mdash; consumers don't need to call <code>DisposeControllersInParallel</code> explicitly unless they want the per-controller wall-clock telemetry.</p>
+<h3 id="single-element-empty-input">Single-element / empty input<a class="headerlink" href="#single-element-empty-input" title="Permanent link">&para;</a></h3>
+<p>Single-element inputs degrade to a plain serial dispose (no parallelism overhead). Empty inputs are no-ops. The implementation:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">Length</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">Length</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="p">{</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">sw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Stopwatch</span><span class="p">.</span><span class="n">StartNew</span><span class="p">();</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">Dispose</span><span class="p">();</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="n">perControllerCallback</span><span class="o">?.</span><span class="n">Invoke</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">sw</span><span class="p">.</span><span class="n">ElapsedMilliseconds</span><span class="p">);</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="p">}</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="c1">// ... parallel path for ≥2 controllers</span>
+</code></pre></div>
+<hr />
+<h2 id="live-profile-switch">Live profile switch<a class="headerlink" href="#live-profile-switch" title="Permanent link">&para;</a></h2>
+<p>Switching a slot's profile mid-session (<code>HMController.Dispose()</code> then <code>HMContext.CreateControllerAt(index, newProfile)</code>) is <strong>synchronous</strong> by design. Slot-allocation determinism requires the old devnode fully gone before the new one is created &mdash; otherwise the new device would race the old one's removal and might land in a slot the old one hasn't released yet.</p>
+<p>Round-trip latencies are the dispose + create numbers above. PadForge's user-perceived "switch slot 1 from DualSense to Xbox 360 Wired" is ~850 ms post-v1.3.x.</p>
+<hr />
+<h2 id="hot-plug-api">Hot-plug API<a class="headerlink" href="#hot-plug-api" title="Permanent link">&para;</a></h2>
+<p>Each controller is independently disposable. Removing one does not disturb the others:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMContext</span><span class="p">();</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">ctx</span><span class="p">.</span><span class="n">InstallDriver</span><span class="p">();</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="kt">var</span><span class="w"> </span><span class="n">ctrl0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">);</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="kt">var</span><span class="w"> </span><span class="n">ctrl1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;xbox-360-wired&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">);</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="kt">var</span><span class="w"> </span><span class="n">ctrl2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;switch-pro&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">);</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">ctrl1</span><span class="p">.</span><span class="n">Dispose</span><span class="p">();</span><span class="w">    </span><span class="c1">// dispose middle one — others stay live, slots renumber</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="c1">// ctrl0 still works at index 0</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="c1">// ctrl2 still works at index 2</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="c1">// indices 1 is free; next CreateController fills it</span>
+</code></pre></div>
+<p>Slot indices don't compact automatically. If you want sparse-to-dense compaction (after disposing index 1, want index 2 to become index 1), you have to dispose index 2 and recreate at index 1. The XInput user-index allocator handles this on its side independently &mdash; an XInput slot-N controller becoming slot-1 means a brief disconnect/reconnect at the XInput level for slot 2 consumers.</p>
+<p>PadForge does this compaction explicitly via the "bubble-up cascade" in its Step 5 InputManager &mdash; see PadForge's wiki for the consumer-side implementation. The SDK doesn't enforce a particular scheme.</p>
+<hr />
+<h2 id="force-kill-recovery">Force-kill recovery<a class="headerlink" href="#force-kill-recovery" title="Permanent link">&para;</a></h2>
+<p>If the consumer process crashes without disposing controllers, the next process's <code>HMContext.InstallDriver</code> calls <code>RemoveAllVirtualControllers</code> first thing as a self-heal. Typically:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1">// Process A creates 3 controllers, then crashes</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1">// Process B starts:</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMContext</span><span class="p">();</span><span class="w">   </span><span class="c1">// constructor doesn&#39;t sweep yet</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="n">ctx</span><span class="p">.</span><span class="n">InstallDriver</span><span class="p">();</span><span class="w">   </span><span class="c1">// ← RemoveAllVirtualControllers runs here, sweeps process A&#39;s orphans</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">ctrl0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(...);</span><span class="w">   </span><span class="c1">// fresh state</span>
+</code></pre></div>
+<p>The regression battery's S12_ForceKill_Recovery and S17_ForceKill_MidCascade scenarios validate this end-to-end. See <a href="../testing-and-verification/">Testing and Verification</a>.</p>
+<p>For deliberate cleanup (e.g. uninstalling HIDMaestro entirely), use:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>HIDMaestroTest.exe cleanup
+</code></pre></div>
+<p>Which calls <code>RemoveAllVirtualControllers</code> + driver package uninstall. Don't reach for raw <code>pnputil /remove-device</code> or <code>devcon</code> &mdash; the cleanup command is the right interface.</p>
+<hr />
+<h2 id="anti-pattern-pnputil-delete-driver-uninstall-force-on-the-active-driver">Anti-pattern: <code>pnputil /delete-driver /uninstall /force</code> on the active driver<a class="headerlink" href="#anti-pattern-pnputil-delete-driver-uninstall-force-on-the-active-driver" title="Permanent link">&para;</a></h2>
+<p><strong>Don't.</strong> Leaves devices in Code 14 ("restart required"). Always:</p>
+<ol>
+<li><code>HIDMaestroTest cleanup</code> (or <code>HMContext.RemoveAllVirtualControllers()</code>) FIRST to evict the devices.</li>
+<li>Plain <code>pnputil /delete-driver</code> (no <code>/uninstall</code>) if a package delete is even needed.</li>
+</ol>
+<p><code>InstallDriver</code> is <strong>idempotent across version bumps</strong> &mdash; manual uninstall before reinstall is almost never the right move.</p>
+<p>The cleanup command does the right thing because:</p>
+<ul>
+<li>It walks every HIDMaestro PnP entry by enumerator name (<code>SWD\HIDMAESTRO*</code>, <code>ROOT\VID_*&amp;PID_*&amp;IG_00</code>).</li>
+<li>It calls <code>hmswd.exe remove</code> for SWD entries (the only documented teardown for <code>SWDeviceLifetimeParentPresent</code>).</li>
+<li>It calls <code>DIF_REMOVE</code> for ROOT entries.</li>
+<li>After the sweep, if a driver-package delete is desired, it runs <code>pnputil /delete-driver</code> (no force flags).</li>
+</ul>
+<hr />
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../sdk/sdk-reference/">SDK Reference</a> &mdash; the public API that drives all of this.</li>
+<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a> &mdash; the per-controller PnP machinery.</li>
+<li><a href="../multi-controller/">Multi-Controller</a> &mdash; multi-controller create / dispose patterns.</li>
+<li><a href="../driver-install-and-signing/">Driver Install and Signing</a> &mdash; the InstallDriver step.</li>
+<li><a href="../testing-and-verification/">Testing and Verification</a> &mdash; the regression battery that validates this end-to-end.</li>
+<li><a href="../../troubleshooting/">Troubleshooting</a> &mdash; lifecycle-related symptoms and fixes.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../multi-controller/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Multi-Controller">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Multi-Controller
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../driver-install-and-signing/" class="md-footer__link md-footer__link--next" aria-label="Next: Driver Install and Signing">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Driver Install and Signing
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

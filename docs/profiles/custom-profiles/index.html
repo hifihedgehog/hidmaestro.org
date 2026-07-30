@@ -1,0 +1,2486 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="HIDMaestro creates virtual game controllers that look like real hardware to Windows. These docs cover everything from the SDK quickstart to wire protocols.">
+      
+      
+      
+        <link rel="canonical" href="https://hidmaestro.org/docs/profiles/custom-profiles/">
+      
+      
+        <link rel="prev" href="../profile-system/">
+      
+      
+        <link rel="next" href="../profile-extractor/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Custom Profiles - HIDMaestro Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#custom-profiles" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="HIDMaestro Documentation" class="md-header__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HIDMaestro Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Custom Profiles
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../start/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sdk/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  SDK
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Profiles
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Technical Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="HIDMaestro Documentation" class="md-nav__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    HIDMaestro Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sdk/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/sdk-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/hid-descriptor-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HID Descriptor Builder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/force-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Force Feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/output-passthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output Passthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/oem-name-override/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OEM Name Override
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiles
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Profiles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../profile-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Profiles
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pattern-1-clone-and-modify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 1: Clone and modify
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pattern 1: Clone and modify">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-case-a-same-controller-custom-product-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use case A: same controller, custom product string
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-b-extra-button-on-an-existing-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use case B: extra button on an existing controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-c-change-the-pid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use case C: change the PID
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pattern-2-build-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 2: Build from scratch
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pattern 2: Build from scratch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-flight-stick-with-16-position-hat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom flight stick with 16-position hat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#more-than-4-sticks-2-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        More than 4 sticks + 2 triggers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-force-feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding force feedback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-xbox-shape-gamepad-no-descriptor-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Xbox-shape gamepad (no descriptor work)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pattern-3-spoof-a-known-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 3: Spoof a known controller
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pattern 3: Spoof a known controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-spoof-when-you-have-the-descriptor-bytes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual spoof (when you have the descriptor bytes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-spoof-from-a-connected-device" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic spoof from a connected device
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-spoof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why spoof?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caveats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-archetype-custom-profile-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-archetype custom profile patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Per-archetype custom profile patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-plain-hid-gamepad-most-common" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom plain-HID gamepad (most common)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-xbox-vid-gamepad-gets-xusb-companion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Xbox-VID gamepad (gets XUSB companion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-xinputhid-bound-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom xinputhid-bound profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-hotas-wheel-pedals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom HOTAS / wheel / pedals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submitting-input-to-a-custom-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Submitting input to a custom profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../profile-extractor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Extractor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/architecture-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/umdf2-driver-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UMDF2 Driver Internals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/xusb-companion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XUSB Companion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/swdevice-and-pnp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SwDevice and PnP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/shared-memory-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared Memory Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cross-api-coverage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-API Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/multi-controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/lifecycle-and-teardown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle and Teardown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/driver-install-and-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Driver Install and Signing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/build-and-release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build and Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/testing-and-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pattern-1-clone-and-modify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 1: Clone and modify
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pattern 1: Clone and modify">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-case-a-same-controller-custom-product-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use case A: same controller, custom product string
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-b-extra-button-on-an-existing-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use case B: extra button on an existing controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-c-change-the-pid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use case C: change the PID
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pattern-2-build-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 2: Build from scratch
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pattern 2: Build from scratch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-flight-stick-with-16-position-hat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom flight stick with 16-position hat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#more-than-4-sticks-2-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        More than 4 sticks + 2 triggers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-force-feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding force feedback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-xbox-shape-gamepad-no-descriptor-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Xbox-shape gamepad (no descriptor work)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pattern-3-spoof-a-known-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 3: Spoof a known controller
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pattern 3: Spoof a known controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-spoof-when-you-have-the-descriptor-bytes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual spoof (when you have the descriptor bytes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-spoof-from-a-connected-device" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic spoof from a connected device
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-spoof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why spoof?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caveats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-archetype-custom-profile-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-archetype custom profile patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Per-archetype custom profile patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-plain-hid-gamepad-most-common" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom plain-HID gamepad (most common)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-xbox-vid-gamepad-gets-xusb-companion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Xbox-VID gamepad (gets XUSB companion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-xinputhid-bound-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom xinputhid-bound profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-hotas-wheel-pedals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom HOTAS / wheel / pedals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submitting-input-to-a-custom-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Submitting input to a custom profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="custom-profiles">Custom Profiles<a class="headerlink" href="#custom-profiles" title="Permanent link">&para;</a></h1>
+<p>Three patterns for building controllers that aren't in the 225-profile catalog: clone-and-modify, build-from-scratch, and spoof. All three use <code>HMProfileBuilder</code> plus optionally <code>HidDescriptorBuilder</code>. Resulting profiles deploy through the same <code>HMContext.CreateController</code> path as catalog entries with no special-casing.</p>
+<p>For the underlying APIs, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../../sdk/hid-descriptor-builder/">HID Descriptor Builder</a>. This page is the cookbook.</p>
+<hr />
+<h2 id="pattern-1-clone-and-modify">Pattern 1: Clone and modify<a class="headerlink" href="#pattern-1-clone-and-modify" title="Permanent link">&para;</a></h2>
+<p>Take an existing profile, change a few fields, deploy. Best when you want most of an existing controller's behavior with one or two adjustments.</p>
+<h3 id="use-case-a-same-controller-custom-product-string">Use case A: same controller, custom product string<a class="headerlink" href="#use-case-a-same-controller-custom-product-string" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">modded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="p">.</span><span class="n">FromProfile</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;dualsense-custom-label&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;My Custom Controller&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">modded</span><span class="p">);</span>
+</code></pre></div>
+<p>Windows still sees DualSense (VID/PID unchanged), Steam's controller database still matches, but <code>joy.cpl</code> and DirectInput show "My Custom Controller". For a <code>joy.cpl</code> label change without modifying the profile, see <a href="../../sdk/oem-name-override/">OEM Name Override</a> &mdash; that's the right tool when the VID/PID can't change.</p>
+<h3 id="use-case-b-extra-button-on-an-existing-controller">Use case B: extra button on an existing controller<a class="headerlink" href="#use-case-b-extra-button-on-an-existing-controller" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">existing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kt">var</span><span class="w"> </span><span class="n">custom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="p">.</span><span class="n">FromProfile</span><span class="p">(</span><span class="n">existing</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;dualsense-16btn&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="p">.</span><span class="n">Descriptor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HidDescriptorBuilder</span><span class="p">()</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="p">.</span><span class="n">Gamepad</span><span class="p">()</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">        </span><span class="p">.</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">).</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="p">.</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">).</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="p">.</span><span class="n">AddButtons</span><span class="p">(</span><span class="mi">16</span><span class="p">).</span><span class="n">AddHat</span><span class="p">()</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="p">.</span><span class="n">Build</span><span class="p">())</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="p">.</span><span class="n">InputReportSize</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">custom</span><span class="p">);</span>
+</code></pre></div>
+<p>VID/PID and product string are preserved (Windows / Steam / games still see "DualSense"), but the descriptor declares 16 buttons instead of 15. The extra bit is real wire data &mdash; submit <code>HMButton.Touchpad</code> (bit 11) or any custom bit and the consumer reads it via DirectInput / SDL3 / Browser like any other button.</p>
+<p>This pattern works for axis count, trigger resolution, hat positions, and FFB declarations. Whatever the descriptor says, that's what consumers see.</p>
+<h3 id="use-case-c-change-the-pid">Use case C: change the PID<a class="headerlink" href="#use-case-c-change-the-pid" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">modded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="p">.</span><span class="n">FromProfile</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;dualsense-clone&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="p">.</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x1234</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</code></pre></div>
+<p>Less useful in practice. Most consumers (Windows, Steam, games) match by VID:PID, so changing the PID makes the device unrecognizable. Either change PID <strong>and</strong> the product string for a clean spoof, or use <a href="../../sdk/oem-name-override/">OEM Name Override</a> to relabel without changing VID/PID.</p>
+<hr />
+<h2 id="pattern-2-build-from-scratch">Pattern 2: Build from scratch<a class="headerlink" href="#pattern-2-build-from-scratch" title="Permanent link">&para;</a></h2>
+<p>Define a controller that doesn't exist anywhere &mdash; arbitrary VID/PID, custom descriptor, custom product string. Best when emulating a niche device or constructing a custom-shaped controller (16-axis flight panel, DJ deck with 8 sliders + 4 jog wheels).</p>
+<h3 id="custom-flight-stick-with-16-position-hat">Custom flight stick with 16-position hat<a class="headerlink" href="#custom-flight-stick-with-16-position-hat" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">stick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;custom-hotas&quot;</span><span class="p">).</span><span class="n">Name</span><span class="p">(</span><span class="s">&quot;My HOTAS&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Vendor</span><span class="p">(</span><span class="s">&quot;MyCo&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="p">.</span><span class="n">Vid</span><span class="p">(</span><span class="mh">0x0483</span><span class="p">).</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x0001</span><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;Custom HOTAS&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="p">.</span><span class="n">Type</span><span class="p">(</span><span class="s">&quot;hotas&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="p">.</span><span class="n">Connection</span><span class="p">(</span><span class="s">&quot;usb&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="p">.</span><span class="n">FromDescriptorBuilder</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HidDescriptorBuilder</span><span class="p">()</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">        </span><span class="p">.</span><span class="n">Joystick</span><span class="p">()</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">        </span><span class="p">.</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span><span class="w">            </span><span class="c1">// X/Y, 16-bit each</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">        </span><span class="p">.</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w">           </span><span class="c1">// throttle</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">        </span><span class="p">.</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w">          </span><span class="c1">// brake</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">        </span><span class="p">.</span><span class="n">AddButtons</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">        </span><span class="p">.</span><span class="n">AddHat</span><span class="p">(</span><span class="n">positions</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">))</span><span class="w">          </span><span class="c1">// 22.5° hat</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMContext</span><span class="p">();</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span><span class="w">   </span><span class="c1">// optional — gives us catalog access too</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="n">ctx</span><span class="p">.</span><span class="n">InstallDriver</span><span class="p">();</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">stick</span><span class="p">);</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="c1">// Drive the hat at full descriptor resolution</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">SubmitState</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HMGamepadState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">HatDegrees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">22.5f</span><span class="w"> </span><span class="p">});</span><span class="w">    </span><span class="c1">// ENE</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">SubmitState</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HMGamepadState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">HatHundredths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">11250</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">// 112.5° = ESE</span>
+</code></pre></div>
+<p><code>FromDescriptorBuilder</code> derives <code>InputReportSize</code> correctly &mdash; including the +1 byte for the Report ID prefix that <code>AddPidFfbBlock</code> would inject if you called it. See <a href="../../sdk/hid-descriptor-builder/">HID Descriptor Builder</a>.</p>
+<h3 id="more-than-4-sticks-2-triggers">More than 4 sticks + 2 triggers<a class="headerlink" href="#more-than-4-sticks-2-triggers" title="Permanent link">&para;</a></h3>
+<p>Profiles whose descriptor declares analog axes beyond the standard 4 sticks + 2 triggers &mdash; throttle quadrants, racing wheels with separate brake/throttle/clutch pedals, HOTAS systems with rudder pedals &mdash; declare each by HID usage with <code>AddAxis</code> and consumers drive them through the same <code>state.Axes</code> dict as everything else.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">quadrant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;custom-throttle-quadrant&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Vid</span><span class="p">(</span><span class="mh">0x0483</span><span class="p">).</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x0010</span><span class="p">)</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;Throttle Quadrant&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Type</span><span class="p">(</span><span class="s">&quot;hotas&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="p">.</span><span class="n">FromDescriptorBuilder</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HidDescriptorBuilder</span><span class="p">()</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="p">.</span><span class="n">Joystick</span><span class="p">()</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">        </span><span class="p">.</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span><span class="w">                  </span><span class="c1">// primary X/Y</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="p">.</span><span class="n">AddAxis</span><span class="p">(</span><span class="n">HMAxis</span><span class="p">.</span><span class="n">Slider</span><span class="p">,</span><span class="w">   </span><span class="n">bits</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w">     </span><span class="c1">// throttle slider 1</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">        </span><span class="p">.</span><span class="n">AddAxis</span><span class="p">(</span><span class="n">HMAxis</span><span class="p">.</span><span class="n">Throttle</span><span class="p">,</span><span class="w"> </span><span class="n">bits</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w">     </span><span class="c1">// throttle 2</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">        </span><span class="p">.</span><span class="n">AddAxis</span><span class="p">(</span><span class="n">HMAxis</span><span class="p">.</span><span class="n">Rudder</span><span class="p">,</span><span class="w">   </span><span class="n">bits</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w">     </span><span class="c1">// rudder pedal</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">        </span><span class="p">.</span><span class="n">AddAxis</span><span class="p">(</span><span class="n">HMAxis</span><span class="p">.</span><span class="n">Brake</span><span class="p">,</span><span class="w">    </span><span class="n">bits</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w">     </span><span class="c1">// toe brake</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">        </span><span class="p">.</span><span class="n">AddButtons</span><span class="p">(</span><span class="mi">20</span><span class="p">).</span><span class="n">AddHat</span><span class="p">())</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">quadrant</span><span class="p">);</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="c1">// Discovery: list every axis the descriptor exposes</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">quadrant</span><span class="p">.</span><span class="n">AvailableAxes</span><span class="p">)</span><span class="w"> </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;  {a}&quot;</span><span class="p">);</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="c1">// Drive every axis in one frame. Allocate the dictionary once and reuse —</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="c1">// null on the hot path is free (encoder skips the dict walk).</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="kt">var</span><span class="w"> </span><span class="n">axes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Dictionary</span><span class="o">&lt;</span><span class="n">HMAxis</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="p">{</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="w">    </span><span class="na">[HMAxis.X]</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mf">0.55f</span><span class="p">,</span><span class="w">   </span><span class="c1">// stick X, slightly right of center</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="w">    </span><span class="na">[HMAxis.Y]</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mf">0.35f</span><span class="p">,</span><span class="w">   </span><span class="c1">// stick Y, slightly below center</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="w">    </span><span class="na">[HMAxis.Slider]</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mf">0.75f</span><span class="p">,</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="w">    </span><span class="na">[HMAxis.Throttle]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.00f</span><span class="p">,</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="w">    </span><span class="na">[HMAxis.Rudder]</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mf">0.25f</span><span class="p">,</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="w">    </span><span class="na">[HMAxis.Brake]</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mf">0.00f</span><span class="p">,</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="p">};</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">SubmitState</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HMGamepadState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Axes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">axes</span><span class="w"> </span><span class="p">});</span>
+</code></pre></div>
+<p>Every analog input lives in <code>state.Axes</code> keyed by <code>HMAxis</code> &mdash; sticks, triggers, sliders, pedals, simulation usages all share the same surface. Setting an entry whose usage isn't declared is a no-op, so consumer UIs can populate every axis they track without checking which ones the active profile actually exposes. See <a href="../../sdk/sdk-reference/">SDK Reference</a> for the <code>HMAxis</code> enum and the full <code>Layout</code> schema for kind-aware discovery.</p>
+<h3 id="adding-force-feedback">Adding force feedback<a class="headerlink" href="#adding-force-feedback" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">ffbStick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;custom-ffb-stick&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Vid</span><span class="p">(</span><span class="mh">0x0483</span><span class="p">).</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x5740</span><span class="p">)</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;Custom FFB Stick&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Type</span><span class="p">(</span><span class="s">&quot;hotas&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="p">.</span><span class="n">FromDescriptorBuilder</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HidDescriptorBuilder</span><span class="p">()</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="p">.</span><span class="n">Joystick</span><span class="p">()</span><span class="w">                        </span><span class="c1">// REQUIRED for FFB — Gamepad TLC AVs pid.dll</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span><span class="p">.</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">        </span><span class="p">.</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">).</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">        </span><span class="p">.</span><span class="n">AddButtons</span><span class="p">(</span><span class="mi">12</span><span class="p">).</span><span class="n">AddHat</span><span class="p">()</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">        </span><span class="p">.</span><span class="n">AddPidFfbBlock</span><span class="p">())</span><span class="w">                 </span><span class="c1">// canonical PID 1.0 block</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ffbStick</span><span class="p">);</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="c1">// Required to enable FFB</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">PublishPidPool</span><span class="p">(</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">    </span><span class="n">ramPoolSize</span><span class="p">:</span><span class="w"> </span><span class="mh">0x0400</span><span class="p">,</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span><span class="n">simultaneousEffectsMax</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">    </span><span class="n">deviceManagedPool</span><span class="p">:</span><span class="w"> </span><span class="k">false</span><span class="p">,</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">    </span><span class="n">sharedParameterBlocks</span><span class="p">:</span><span class="w"> </span><span class="k">false</span><span class="p">);</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">OutputReceived</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">packet</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">RouteFfbToPhysicalHardware</span><span class="p">(</span><span class="n">packet</span><span class="p">);</span>
+</code></pre></div>
+<p>DirectInput games will see this as a fully PID-FFB-capable HOTAS. See <a href="../../sdk/force-feedback/">Force Feedback</a> for the publish/read protocol and the canonical <code>pid.dll</code> packet flow.</p>
+<h3 id="custom-xbox-shape-gamepad-no-descriptor-work">Custom Xbox-shape gamepad (no descriptor work)<a class="headerlink" href="#custom-xbox-shape-gamepad-no-descriptor-work" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">gamepad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;custom-pad&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Vid</span><span class="p">(</span><span class="mh">0x1234</span><span class="p">).</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x5678</span><span class="p">)</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;Custom Pad&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Type</span><span class="p">(</span><span class="s">&quot;gamepad&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="p">.</span><span class="n">Connection</span><span class="p">(</span><span class="s">&quot;usb&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="p">.</span><span class="n">FromDescriptorBuilder</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HidDescriptorBuilder</span><span class="p">()</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="p">.</span><span class="n">Gamepad</span><span class="p">()</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="p">.</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">).</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">        </span><span class="p">.</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">).</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">        </span><span class="p">.</span><span class="n">AddButtons</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="n">AddHat</span><span class="p">())</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</code></pre></div>
+<p>This produces a generic 10-button Xbox-shape gamepad with separate triggers. SDL3 will recognize it as a gamepad (TopLevelUsage = 0x05); browsers will surface it as a STANDARD_GAMEPAD if the layout matches Chromium's expectations.</p>
+<p>For full XInput support (XUSB companion + WGI vibration via Chromium <code>put_Vibration</code>), the VID <strong>must</strong> be <code>0x045E</code> (Microsoft) so the runtime allocates an XUSB companion. Custom-VID gamepads can still XInput-rumble via SetState wired through the consumer's own physical-hardware path, but won't receive <code>IOCTL_XUSB_SET_STATE</code> from Chromium directly.</p>
+<hr />
+<h2 id="pattern-3-spoof-a-known-controller">Pattern 3: Spoof a known controller<a class="headerlink" href="#pattern-3-spoof-a-known-controller" title="Permanent link">&para;</a></h2>
+<p>You know a real device's VID, PID, and product string but you don't own one. HIDMaestro can present as that device without owning it.</p>
+<h3 id="manual-spoof-when-you-have-the-descriptor-bytes">Manual spoof (when you have the descriptor bytes)<a class="headerlink" href="#manual-spoof-when-you-have-the-descriptor-bytes" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// &quot;Mad Catz Pro Race FFB Wheel&quot; — VID 0x0738, PID 0xCB29, descriptor known</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kt">var</span><span class="w"> </span><span class="n">spoof</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;madcatz-pro-race&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="p">.</span><span class="n">Vendor</span><span class="p">(</span><span class="s">&quot;Mad Catz&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Vid</span><span class="p">(</span><span class="mh">0x0738</span><span class="p">).</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0xCB29</span><span class="p">)</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;Pro Race FFB Wheel&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="p">.</span><span class="n">Type</span><span class="p">(</span><span class="s">&quot;wheel&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="p">.</span><span class="n">Connection</span><span class="p">(</span><span class="s">&quot;usb&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="p">.</span><span class="n">Descriptor</span><span class="p">(</span><span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="s">@&quot;C:\descriptors\madcatz-pro-race.bin&quot;</span><span class="p">))</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="p">.</span><span class="n">InputReportSize</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</code></pre></div>
+<p>Windows pre-populates a clone label for many VID:PIDs, which can show up in <code>joy.cpl</code> even with the spoof active &mdash; combine with <code>HMOemNameOverride.Set</code> if you need the joy.cpl label to match. See <a href="../../sdk/oem-name-override/">OEM Name Override</a>.</p>
+<h3 id="automatic-spoof-from-a-connected-device">Automatic spoof from a connected device<a class="headerlink" href="#automatic-spoof-from-a-connected-device" title="Permanent link">&para;</a></h3>
+<p>If the device you want to spoof is currently plugged into the same machine, <code>HMDeviceExtractor</code> reads it back and produces a ready-to-deploy profile:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HMDeviceExtractor</span><span class="p">.</span><span class="n">ListDevices</span><span class="p">()</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="p">.</span><span class="n">First</span><span class="p">(</span><span class="n">d</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">VendorId</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mh">0x046D</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">ProductId</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mh">0xC216</span><span class="p">);</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">HMProfile</span><span class="w"> </span><span class="n">extracted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HMDeviceExtractor</span><span class="p">.</span><span class="n">Extract</span><span class="p">(</span><span class="n">device</span><span class="p">);</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">extracted</span><span class="p">);</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="c1">// Virtual now presents with the real device&#39;s descriptor, VID/PID,</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="c1">// product string — identical to what the physical device reports.</span>
+</code></pre></div>
+<p>The descriptor is reconstructed from <code>HidD_GetPreparsedData</code> via the libusb/hidapi C# port. Output is logically equivalent to the original (same report IDs, field layouts, logical ranges, usage pages) but not byte-for-byte identical. For HIDMaestro's purpose (creating a virtual that behaves the same as the physical), logical equivalence is the right fidelity bar.</p>
+<p>For a UI-driven extract flow, use the standalone <code>HIDMaestroProfileExtractor.exe</code> &mdash; see <a href="../profile-extractor/">Profile Extractor</a>.</p>
+<h3 id="why-spoof">Why spoof?<a class="headerlink" href="#why-spoof" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Game compatibility databases.</strong> Some games match controllers by VID:PID (Final Fantasy XIV recognizes a specific list of FFB wheels; Forza Motorsport whitelists pro racing rigs). Spoof to gain access.</li>
+<li><strong>Steam controller mappings.</strong> Steam's controller database maps VID:PIDs to button layouts; spoof a known controller to inherit its mapping without needing manual configuration.</li>
+<li><strong>SDL3 controller mappings.</strong> SDL3's <code>gamecontrollerdb</code> keys by GUID derived from VID:PID. Spoof to get auto-mappings.</li>
+<li><strong>Browser STANDARD_GAMEPAD.</strong> Chromium maps known VID:PIDs to its STANDARD_GAMEPAD layout; spoof an Xbox 360 to inherit that mapping.</li>
+</ul>
+<h3 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cryptographic auth chips.</strong> PS4 / PS5 online play, Switch Online, some racing wheels for console use hardware authentication. Spoof presents the descriptor and identity but cannot replicate the auth chip. Offline use works; online use of these protected devices typically does not.</li>
+<li><strong>Vendor private protocols.</strong> Logitech G HUB, Thrustmaster TARGET, Fanatec ControlPanel use proprietary feature reports for calibration / firmware / config. The spoof carries the standard descriptor; vendor extensions need per-controller decoder work in the consumer.</li>
+<li><strong>Anti-cheat detection.</strong> Virtual devices are detectable by kernel-level anti-cheat (the device path and bus type differ from real USB). HIDMaestro doesn't try to evade detection. A spoofed identity is for app/game <strong>compatibility</strong>, not for evading anti-cheat.</li>
+</ul>
+<hr />
+<h2 id="per-archetype-custom-profile-patterns">Per-archetype custom profile patterns<a class="headerlink" href="#per-archetype-custom-profile-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="custom-plain-hid-gamepad-most-common">Custom plain-HID gamepad (most common)<a class="headerlink" href="#custom-plain-hid-gamepad-most-common" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">new</span><span class="w"> </span><span class="nf">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;my-pad&quot;</span><span class="p">).</span><span class="n">Vid</span><span class="p">(</span><span class="mh">0x1234</span><span class="p">).</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x5678</span><span class="p">)</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;My Pad&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="p">.</span><span class="n">Type</span><span class="p">(</span><span class="s">&quot;gamepad&quot;</span><span class="p">).</span><span class="n">Connection</span><span class="p">(</span><span class="s">&quot;usb&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="p">.</span><span class="n">FromDescriptorBuilder</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HidDescriptorBuilder</span><span class="p">()</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">        </span><span class="p">.</span><span class="n">Gamepad</span><span class="p">()</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">        </span><span class="p">.</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">).</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">        </span><span class="p">.</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">).</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">        </span><span class="p">.</span><span class="n">AddButtons</span><span class="p">(</span><span class="n">N</span><span class="p">).</span><span class="n">AddHat</span><span class="p">())</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</code></pre></div>
+<p>Lands in architecture group 1 (plain HID). DirectInput, SDL3 / HIDAPI, browser RawInput-fallback all see it. <strong>No XInput</strong> (custom VID, no XUSB companion). <strong>No xinputhid</strong> (no <code>driverMode</code>).</p>
+<h3 id="custom-xbox-vid-gamepad-gets-xusb-companion">Custom Xbox-VID gamepad (gets XUSB companion)<a class="headerlink" href="#custom-xbox-vid-gamepad-gets-xusb-companion" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">new</span><span class="w"> </span><span class="nf">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;my-xbox-clone&quot;</span><span class="p">)</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Vid</span><span class="p">(</span><span class="mh">0x045E</span><span class="p">).</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x0291</span><span class="p">)</span><span class="w">               </span><span class="c1">// Microsoft VID, Xbox 360 family PID</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;My Xbox Clone&quot;</span><span class="p">)</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Type</span><span class="p">(</span><span class="s">&quot;gamepad&quot;</span><span class="p">).</span><span class="n">Connection</span><span class="p">(</span><span class="s">&quot;usb&quot;</span><span class="p">)</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="p">.</span><span class="n">TriggerMode</span><span class="p">(</span><span class="s">&quot;combined&quot;</span><span class="p">)</span><span class="w">                </span><span class="c1">// matches real xusb22 DI behavior</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="p">.</span><span class="n">FromDescriptorBuilder</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</code></pre></div>
+<p>Lands in architecture group 2 (non-xinputhid Xbox + XUSB companion). XInput, WGI vibration via XUSB companion, separate triggers in browser via Vx/Vy + GameInput registry mapping. Note: only specific PIDs in the <code>[Standard.NTamd64]</code> section of <code>hidmaestro_xusb.inf</code> get the dedicated PID-aliased install &mdash; new PIDs fall through to the generic <code>root\HIDMaestroXUSB</code> alias which still works but isn't bound to a specific VID:PID.</p>
+<h3 id="custom-xinputhid-bound-profile">Custom xinputhid-bound profile<a class="headerlink" href="#custom-xinputhid-bound-profile" title="Permanent link">&para;</a></h3>
+<p>This requires hardware IDs that match <code>xinputhid.inf [GIP_Hid]</code>. Not portable to arbitrary VID:PIDs &mdash; xinputhid binds by hardware ID, and adding new IDs to <code>xinputhid.inf</code> requires modifying a Microsoft inbox driver (which we can't ship). Custom xinputhid profiles aren't supported in v1.3.4.</p>
+<p>If you need 16-button + native XInput + WGI vibration over Bluetooth, use one of the catalog Xbox Series / One / Elite v2 BT profiles directly.</p>
+<h3 id="custom-hotas-wheel-pedals">Custom HOTAS / wheel / pedals<a class="headerlink" href="#custom-hotas-wheel-pedals" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">new</span><span class="w"> </span><span class="nf">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;my-hotas&quot;</span><span class="p">).</span><span class="n">Vid</span><span class="p">(</span><span class="mh">0x0483</span><span class="p">).</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0xABCD</span><span class="p">)</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;My HOTAS&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="p">.</span><span class="n">Type</span><span class="p">(</span><span class="s">&quot;hotas&quot;</span><span class="p">).</span><span class="n">Connection</span><span class="p">(</span><span class="s">&quot;usb&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="p">.</span><span class="n">FromDescriptorBuilder</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HidDescriptorBuilder</span><span class="p">()</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">        </span><span class="p">.</span><span class="n">Joystick</span><span class="p">()</span><span class="w">                          </span><span class="c1">// REQUIRED for FFB</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">        </span><span class="p">.</span><span class="n">AddStick</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span><span class="w">                </span><span class="c1">// X / Y</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">        </span><span class="p">.</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">).</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w">   </span><span class="c1">// throttles or pedals</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">        </span><span class="p">.</span><span class="n">AddButtons</span><span class="p">(</span><span class="mi">20</span><span class="p">).</span><span class="n">AddHat</span><span class="p">(</span><span class="n">positions</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">        </span><span class="p">.</span><span class="n">AddPidFfbBlock</span><span class="p">())</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</code></pre></div>
+<p>Lands in architecture group 1. DirectInput PID FFB enabled; consumer must call <code>PublishPidPool</code> once to enable FFB.</p>
+<hr />
+<h2 id="submitting-input-to-a-custom-profile">Submitting input to a custom profile<a class="headerlink" href="#submitting-input-to-a-custom-profile" title="Permanent link">&para;</a></h2>
+<p><code>HMGamepadState</code> works the same regardless of profile shape:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">SubmitState</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HMGamepadState</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="p">{</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="n">Axes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HMGamepadStateHelpers</span><span class="p">.</span><span class="n">StandardAxes</span><span class="p">(</span><span class="n">ctrl</span><span class="p">.</span><span class="n">Profile</span><span class="p">,</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">        </span><span class="n">leftStickX</span><span class="p">:</span><span class="w"> </span><span class="mf">0.75f</span><span class="p">,</span><span class="w">           </span><span class="c1">// [0..1] uniform; 0.5 = center</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">        </span><span class="n">leftStickY</span><span class="p">:</span><span class="w"> </span><span class="mf">0.15f</span><span class="p">,</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">        </span><span class="n">leftTrigger</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3f</span><span class="p">),</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">    </span><span class="n">Buttons</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HMButton</span><span class="p">.</span><span class="n">A</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">HMButton</span><span class="p">.</span><span class="n">LeftBumper</span><span class="p">,</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="n">HatDegrees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">90f</span><span class="p">,</span><span class="w">                </span><span class="c1">// East</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="p">});</span>
+</code></pre></div>
+<p>For features the abstract struct doesn't model (DualSense touchpad coordinates, Switch Pro motion, vendor-specific report extensions), assemble bytes per the descriptor and use <code>SubmitRawReport</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kt">byte</span><span class="p">[]</span><span class="w"> </span><span class="n">dualsenseRawReport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AssembleDualSenseInputReport</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">touchpad</span><span class="p">,</span><span class="w"> </span><span class="n">gyro</span><span class="p">,</span><span class="w"> </span><span class="n">accel</span><span class="p">);</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">SubmitRawReport</span><span class="p">(</span><span class="n">dualsenseRawReport</span><span class="p">);</span>
+</code></pre></div>
+<p>Pass <strong>data bytes only</strong> &mdash; the SDK prepends the Report ID automatically based on what the descriptor declared.</p>
+<p>For a custom descriptor where you need bit-exact axis encoding:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1">// Query the descriptor&#39;s hat field bounds</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kt">ushort?</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctrl</span><span class="p">.</span><span class="n">Profile</span><span class="p">.</span><span class="n">HatLogicalMin</span><span class="p">.</span><span class="n">HasValue</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span><span class="kt">ushort</span><span class="p">)</span><span class="n">ctrl</span><span class="p">.</span><span class="n">Profile</span><span class="p">.</span><span class="n">HatLogicalMin</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="k">null</span><span class="p">;</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kt">ushort?</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctrl</span><span class="p">.</span><span class="n">Profile</span><span class="p">.</span><span class="n">HatLogicalMax</span><span class="p">.</span><span class="n">HasValue</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span><span class="kt">ushort</span><span class="p">)</span><span class="n">ctrl</span><span class="p">.</span><span class="n">Profile</span><span class="p">.</span><span class="n">HatLogicalMax</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="k">null</span><span class="p">;</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="c1">// Bit-exact value</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">SubmitState</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HMGamepadState</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="p">{</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="n">HatRaw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">ushort</span><span class="p">)((</span><span class="n">min</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w">    </span><span class="c1">// 7 positions in</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="p">});</span>
+</code></pre></div>
+<p>The encoder picks the first non-null in the priority chain <code>HatDegrees &gt; HatHundredths &gt; HatRaw &gt; Hat</code>.</p>
+<hr />
+<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
+<p>A custom profile fails <code>HMContext.CreateController</code> if:</p>
+<ul>
+<li><strong>VID is 0.</strong> <code>HMProfileBuilder.Build()</code> throws <code>InvalidOperationException</code>.</li>
+<li><strong>PID is 0.</strong> Same.</li>
+<li><strong><code>IsDeployable</code> is false</strong> (descriptor missing). <code>CreateController</code> throws <code>ArgumentException</code>.</li>
+<li><strong>Descriptor is malformed.</strong> The driver fails to bind; <code>CreateController</code> throws <code>InvalidOperationException</code> after the PnP wait times out.</li>
+</ul>
+<p>Test custom profiles against <code>scripts/verify.py</code> before shipping:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>HIDMaestroTest.exe make-custom-profile C:\my-profiles
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>HIDMaestroTest.exe emulate --profile-dir C:\my-profiles my-pad
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>:: in another terminal:
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>python scripts\verify.py --controllers 1
+</code></pre></div>
+<p>The regression battery's S21-S23 scenarios cover runtime-built custom profiles end-to-end &mdash; create + idle, swap-cycle through Xbox / DualSense / Custom, and a real PadForge-shape consumer config. See <a href="../../reference/testing-and-verification/">Testing and Verification</a>.</p>
+<hr />
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../sdk/sdk-reference/">SDK Reference</a> &mdash; <code>HMProfileBuilder</code> API and <code>FromDescriptorBuilder</code> mechanics.</li>
+<li><a href="../../sdk/hid-descriptor-builder/">HID Descriptor Builder</a> &mdash; the fluent descriptor authoring API.</li>
+<li><a href="../profile-system/">Profile System</a> &mdash; the JSON schema your custom profile maps to.</li>
+<li><a href="../profile-extractor/">Profile Extractor</a> &mdash; the GUI tool for capturing profiles from real connected devices.</li>
+<li><a href="../../sdk/force-feedback/">Force Feedback</a> &mdash; the FFB descriptor + publish/read protocol.</li>
+<li><a href="../../sdk/oem-name-override/">OEM Name Override</a> &mdash; relabel <code>joy.cpl</code> without changing VID:PID.</li>
+<li><a href="../contributing-profiles/">Contributing Profiles</a> &mdash; submit a custom profile back to the catalog.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../profile-system/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Profile System">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Profile System
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../profile-extractor/" class="md-footer__link md-footer__link--next" aria-label="Next: Profile Extractor">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Profile Extractor
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

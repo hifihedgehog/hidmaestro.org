@@ -14,7 +14,9 @@ site_dir: docs
 theme:
   name: material
   custom_dir: wiki/overrides
-  logo: assets/logo.png
+  # The header is steel in both schemes (extra.css), so the light logo
+  # variant is the right mark in both.
+  logo: assets/logo-light.png
   favicon: assets/icon.png
   # Fonts load in wiki/overrides/main.html (Archivo, Instrument Sans,
   # JetBrains Mono, matching the landing page); Material's own Google

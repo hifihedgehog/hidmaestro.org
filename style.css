@@ -836,8 +836,16 @@ a:hover { color: var(--text-hi); }
 .code-panel .cc { color: var(--text-dim); }         /* comments */
 
 /* Latency chart: an SVG instrument panel, not a photo, so no crop
-   frame. The figcaption reads as a caption strip. */
-.chart-figure { margin: 0; }
+   frame. The figcaption sits below the panel, so the figure must not
+   clip (chapter-hero-shot's overflow would cut the caption off). */
+.chapter-hero-shot.chart-figure {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    box-shadow: none;
+}
+
 .chart-figure img { width: 100%; }
 
 .chart-figure figcaption {

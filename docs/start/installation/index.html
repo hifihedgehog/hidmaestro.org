@@ -1861,7 +1861,7 @@
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">&lt;/Reference&gt;</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nt">&lt;/ItemGroup&gt;</span>
 </code></pre></div>
-<p>The DLL is single-file: 225 profile JSONs, the UMDF2 driver binaries (<code>HIDMaestro.dll</code>, <code>HMXInput.dll</code>), the helper EXE (<code>hmswd.exe</code>), the signing toolchain (<code>signtool.exe</code>, <code>Inf2Cat.exe</code>, the Microsoft hardware-workflow catalog assemblies), and both INFs are all embedded as resources. You ship the SDK; the SDK ships everything else.</p>
+<p>The DLL is single-file: 228 profile JSONs, the UMDF2 driver binaries (<code>HIDMaestro.dll</code>, <code>HMXInput.dll</code>), the helper EXE (<code>hmswd.exe</code>), the signing toolchain (<code>signtool.exe</code>, <code>Inf2Cat.exe</code>, the Microsoft hardware-workflow catalog assemblies), and both INFs are all embedded as resources. You ship the SDK; the SDK ships everything else.</p>
 <p>Target frameworks the consuming <code>csproj</code> needs:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;PropertyGroup&gt;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;TargetFramework&gt;</span>net10.0-windows10.0.26100.0<span class="nt">&lt;/TargetFramework&gt;</span>

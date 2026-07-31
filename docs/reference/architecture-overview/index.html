@@ -1273,10 +1273,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-the-225-profile-catalog" class="md-nav__link">
+  <a href="#5-the-228-profile-catalog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. The 225-profile catalog
+        5. The 228-profile catalog
       
     </span>
   </a>
@@ -1783,10 +1783,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-the-225-profile-catalog" class="md-nav__link">
+  <a href="#5-the-228-profile-catalog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. The 225-profile catalog
+        5. The 228-profile catalog
       
     </span>
   </a>
@@ -1997,7 +1997,7 @@
 <li>Run the per-controller output-reader background thread that drains the shared output ring at ~125 Hz.</li>
 <li>Manage HID PID 1.0 force-feedback shared state.</li>
 <li>Manage <code>joy.cpl</code> OEM-name overrides with crash-safe restore.</li>
-<li>Embed and load the 225-profile catalog.</li>
+<li>Embed and load the 228-profile catalog.</li>
 </ul>
 <p>Lines of code: ~4,500 in public surface (<code>HMContext</code> / <code>HMController</code> / <code>HidDescriptorBuilder</code> / <code>HMProfileBuilder</code> / <code>HMDeviceExtractor</code> / <code>HMOemNameOverride</code> / value types) plus ~9,000 in <code>Internal/</code> (<code>DeviceOrchestrator</code>, <code>DeviceManager</code>, <code>SwdDeviceFactory</code>, <code>DriverBuilder</code>, <code>HidDescriptorReconstructor</code>, <code>HidReportBuilder</code>, <code>SharedMemoryIO</code>, <code>OemNameOverrideStore</code>, <code>PnputilHelper</code>, etc.).</p>
 <h3 id="2-hidmaestrodll-the-umdf2-driver">2. <code>HIDMaestro.dll</code>: the UMDF2 driver<a class="headerlink" href="#2-hidmaestrodll-the-umdf2-driver" title="Permanent link">&para;</a></h3>
@@ -2027,7 +2027,7 @@
 <p>Args: <code>create | remove &lt;enumerator&gt; &lt;suffix&gt; &lt;container-guid&gt; &lt;hw-ids&gt; &lt;compat-ids&gt; &lt;description&gt;</code>. Returns the resulting instance ID on stdout for the SDK to record.</p>
 <p>Lifetime: <code>SWDeviceLifetimeParentPresent</code> so the device persists past process exit. <code>remove</code> reconnects to the previously-created device by re-<code>SwDeviceCreate</code>-ing with identical args (the docs guarantee this returns a fresh handle to the existing device), downgrades lifetime to <code>Handle</code>, then <code>SwDeviceClose</code>.</p>
 <p>Detail: <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
-<h3 id="5-the-225-profile-catalog">5. The 225-profile catalog<a class="headerlink" href="#5-the-225-profile-catalog" title="Permanent link">&para;</a></h3>
+<h3 id="5-the-228-profile-catalog">5. The 228-profile catalog<a class="headerlink" href="#5-the-228-profile-catalog" title="Permanent link">&para;</a></h3>
 <p>Embedded as a JSON resource inside <code>HIDMaestro.Core.dll</code>. 32 vendor folders, ~4-25 profiles each. See <a href="../../profiles/profile-system/">Profile System</a> for the schema and runtime classification.</p>
 <hr />
 <h2 id="process-privilege-model">Process / privilege model<a class="headerlink" href="#process-privilege-model" title="Permanent link">&para;</a></h2>
@@ -2192,7 +2192,7 @@
 <a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a>├── tools/HIDMaestroProfileExtractor/  ; standalone WPF extractor GUI
 <a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a>├── example/SdkDemo/                ; minimal SDK consumer
 <a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a>├── test/                           ; HIDMaestroTest CLI + regression battery + probes
-<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>├── profiles/                       ; 225 profile JSONs
+<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>├── profiles/                       ; 228 profile JSONs
 <a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a>├── scripts/                        ; build, signing, verification, multi-pad-check
 <a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a>├── build/                          ; build outputs (driver DLLs, hmswd.exe, stamped INFs)
 <a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a>└── docs/                           ; README screenshots, investigation notes

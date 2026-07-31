@@ -842,10 +842,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#opt-in-backend-usbip-win2" class="md-nav__link">
+  <a href="#nothing-to-install" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Opt-in backend: usbip-win2
+        Nothing to install
       
     </span>
   </a>
@@ -1600,10 +1600,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#opt-in-backend-usbip-win2" class="md-nav__link">
+  <a href="#nothing-to-install" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Opt-in backend: usbip-win2
+        Nothing to install
       
     </span>
   </a>
@@ -1650,7 +1650,7 @@
 
 
 <h1 id="controller-audio-composite-usb-personas">Controller Audio (Composite USB Personas)<a class="headerlink" href="#controller-audio-composite-usb-personas" title="Permanent link">&para;</a></h1>
-<p>A real USB DualSense presents four interfaces: USB Audio Class speaker/haptics out, microphone in, and HID. The standard <code>dualsense</code> profile presents the HID interface only, because that is the one interface UMDF2 can create. Two profiles present the full composite:</p>
+<p>A real USB DualSense presents four interfaces: USB Audio Class speaker/haptics out, microphone in, and HID. The standard <code>dualsense</code> profile presents the HID interface only, because that is the one interface UMDF2 can create. Three profiles present the full composite:</p>
 <table>
 <thead>
 <tr>
@@ -1668,6 +1668,12 @@
 <td><strong>Yes</strong></td>
 </tr>
 <tr>
+<td><code>dualsense-edge-composite</code></td>
+<td>Same 4-ch stream as the base pad, with the Edge's 1 ms USB input polling</td>
+<td>2 ch / 48 kHz microphone</td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr>
 <td><code>dualshock-4-v2-composite</code></td>
 <td>2 ch / 16-bit / 32 kHz headset</td>
 <td>1 ch / 16 kHz microphone</td>
@@ -1675,41 +1681,58 @@
 </tr>
 </tbody>
 </table>
-<p>Every descriptor byte comes verbatim from a real pad's hardware dump, and the UAC volume/mute ranges are the real pad's wire values captured from live control transfers. Windows surfaces the same audio endpoints it would for the physical controller: <strong>Speakers (Wireless Controller)</strong> and <strong>Headset Microphone (Wireless Controller)</strong>.</p>
+<p>Every descriptor byte comes verbatim from a real pad's hardware dump, and the UAC volume/mute ranges are real wire values captured from live control transfers. Windows surfaces the same audio endpoints it would for the physical controller: <strong>Speakers (Wireless Controller)</strong> and <strong>Headset Microphone (Wireless Controller)</strong>.</p>
 <p>The 4-channel OUT stream matters because channels 3/4 are the DualSense's voice-coil actuators. That stream is the only path on Windows by which a game hands a controller its authored haptic waveforms. Games that render audio to the controller endpoint reach the SDK, and the consumer routes the haptic lanes to real hardware.</p>
+<p>The original DS4 v1 (054C:05C4) has no composite variant deliberately: real hardware probes show a single HID interface over USB and no audio class. USB audio arrived with the v2.</p>
 <hr />
-<h2 id="opt-in-backend-usbip-win2">Opt-in backend: usbip-win2<a class="headerlink" href="#opt-in-backend-usbip-win2" title="Permanent link">&para;</a></h2>
-<p>The composite profiles declare <code>"backend": "usbip"</code> and require <a href="https://github.com/vadimgrn/usbip-win2">usbip-win2</a> <strong>0.9.7.7</strong> installed. usbip-win2 is a third-party, BSD-2, WHLK-certified signed kernel driver providing a virtual USB host controller. A Windows audio endpoint requires a driver-backed USB device, and no user-mode API can create one, so this is the one capability that cannot ride UMDF2.</p>
-<p>The rules:</p>
+<h2 id="nothing-to-install">Nothing to install<a class="headerlink" href="#nothing-to-install" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMContext</span><span class="p">();</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">ctx</span><span class="p">.</span><span class="n">InstallDriver</span><span class="p">();</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense-composite&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">);</span>
+</code></pre></div>
+<p>That is the entire setup. A composite persona is created the same way as any other profile.</p>
+<p>Composite personas need a driver-backed USB device for their audio endpoints, since no user-mode API can create a Windows audio endpoint. HIDMaestro ships that transport, <a href="https://github.com/vadimgrn/usbip-win2">usbip-win2</a> 0.9.7.7, <strong>inside <code>HIDMaestro.Core.dll</code></strong> and deploys it on the first composite create, exactly the way it already ships and deploys its own UMDF2 driver. There is no second package, no separate download, and nothing for a user to go find.</p>
+<p>What that means in practice:</p>
 <ul>
-<li><strong>HIDMaestro never installs or bundles usbip-win2.</strong> Users opt in by installing it themselves.</li>
-<li><strong>Nothing changes without it.</strong> Standard profiles keep working with zero dependencies. <code>CreateController</code> on a composite profile throws <code>NotSupportedException</code> with install guidance.</li>
-<li><strong>Gate your picker</strong> on <code>HMContext.IsUsbipBackendAvailable</code> (a pure presence probe) plus <code>HMProfile.RequiresUsbipBackend</code>.</li>
-<li><strong>The version is pinned at 0.9.7.7.</strong> 0.9.7.8 has two open kernel-pool-corruption reports (<a href="https://github.com/vadimgrn/usbip-win2/issues/180">#180</a>, <a href="https://github.com/vadimgrn/usbip-win2/issues/181">#181</a>). Gate any bump on those closing.</li>
+<li><strong>The install is one-time and automatic.</strong> It needs the same elevation <code>InstallDriver</code> needs. On every later create it is a no-op.</li>
+<li><strong>USB blinks once.</strong> usbip-win2's extension INF matches the generic USB 3.0 root-hub hardware ID, so PnP re-enumerates the root hubs during install. That happens once per machine, on the very first composite controller it ever creates, and again only if the pinned version changes.</li>
+<li><strong>The binary is verified twice.</strong> Its SHA256 is checked against the upstream release's published digest when the SDK is built, and again on the extracted copy before it is executed. A mismatch fails rather than running an unverified installer.</li>
+<li><strong>The license notice ships with it.</strong> usbip-win2 is BSD-2-Clause and redistributed unmodified. The required notice is embedded in the assembly and written to disk beside the binary at deploy time.</li>
+<li><strong>The version pin is deliberate.</strong> 0.9.7.8 has two open kernel-pool-corruption reports (<a href="https://github.com/vadimgrn/usbip-win2/issues/180">#180</a>, <a href="https://github.com/vadimgrn/usbip-win2/issues/181">#181</a>). Any bump waits on those closing.</li>
 </ul>
-<p>The SDK runs an in-process USB/IP device server on loopback (fixed port range 18509-18524). Every device behavior stays in user space: descriptor service, HID reports through the same shared-memory contract as UMDF2 profiles, and a highest-priority pacing thread that completes isochronous URBs at the endpoint's 1 ms service interval. Installing usbip-win2 restarts the USB root hubs once (its extension INF re-enumerates them), so expect a brief input blink at install time and on its version updates. Measured idle cost with the driver installed and no device attached: indistinguishable from baseline (0.35% vs 0.24% CPU on an Atom Z8350).</p>
+<p>Two optional APIs exist for consumers that want control over <em>when</em> the one-time install happens:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Informational: has this machine already got the transport?</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kt">bool</span><span class="w"> </span><span class="n">ready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HMContext</span><span class="p">.</span><span class="n">IsUsbipBackendAvailable</span><span class="p">;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">// Do the one-time install now (onboarding step, settings toggle) instead</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">// of on the first composite create. Idempotent.</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">HMContext</span><span class="p">.</span><span class="n">InstallUsbipBackend</span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">status</span><span class="p">));</span>
+</code></pre></div>
+<p>Neither is a gate. <code>CreateController</code> works either way. <code>HMProfile.RequiresUsbipBackend</code> marks which profiles are composites, useful for labeling picker entries that bring controller audio.</p>
+<p>Everything else stays in HIDMaestro's own user-mode code. The SDK runs an in-process USB/IP device server on loopback (fixed port range 18509-18524): descriptor service, HID reports through the same shared-memory contract every other profile uses, and a highest-priority pacing thread completing isochronous URBs at the endpoint's 1 ms service interval. Measured idle cost with the transport installed and no device attached: indistinguishable from baseline (0.35% vs 0.24% CPU on an Atom Z8350).</p>
 <p><code>HMController.SubmitState</code>, <code>SubmitRawReport</code>, <code>OutputReceived</code>, <code>OutputDecoded</code>, and the Sony feature-report behavior are identical across backends. The HID interface of each composite is byte-identical to its UMDF2 sibling.</p>
 <hr />
 <h2 id="the-audio-surfaces">The audio surfaces<a class="headerlink" href="#the-audio-surfaces" title="Permanent link">&para;</a></h2>
 <p>Composite controllers expose <code>HMController.UsbAudio</code> (null on every UMDF2 profile):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">controller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense-composite&quot;</span><span class="p">));</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kt">var</span><span class="w"> </span><span class="n">audio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">UsbAudio</span><span class="o">!</span><span class="p">;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">// Host → consumer: the game&#39;s speaker + haptic PCM, paced at the wire rate.</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">audio</span><span class="p">.</span><span class="n">Output</span><span class="p">.</span><span class="n">FramesReceived</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="n">pcm</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">{</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="c1">// Interleaved 16-bit little-endian PCM. output.ChannelRoles maps the</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="c1">// channels: [&quot;speakerLeft&quot;, &quot;speakerRight&quot;, &quot;hapticLeft&quot;, &quot;hapticRight&quot;].</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="c1">// The memory is only valid during the callback; copy to retain.</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">};</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">audio</span><span class="p">.</span><span class="n">Output</span><span class="p">.</span><span class="n">StreamingChanged</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">open</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* audio session opened/parked */</span><span class="w"> </span><span class="p">};</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1">// Consumer → host: feed the microphone. Silence when the buffer runs dry.</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="n">audio</span><span class="p">.</span><span class="n">Microphone</span><span class="p">.</span><span class="n">Submit</span><span class="p">(</span><span class="n">pcmBytes</span><span class="p">);</span><span class="w">   </span><span class="c1">// interleaved 16-bit LE at the declared format</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1">// Volume/mute writes from Windows (volume mixer, control panel):</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="n">audio</span><span class="p">.</span><span class="n">ControlChanged</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;{e.Function}: {(e.IsMute ? $&quot;</span><span class="n">mute</span><span class="o">=</span><span class="p">{</span><span class="n">e</span><span class="p">.</span><span class="n">MuteValue</span><span class="p">}</span><span class="s">&quot; : $&quot;</span><span class="p">{</span><span class="n">e</span><span class="p">.</span><span class="n">VolumeDb</span><span class="p">:</span><span class="n">F1</span><span class="p">}</span><span class="w"> </span><span class="n">dB</span><span class="s">&quot;)}&quot;</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">audio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">UsbAudio</span><span class="o">!</span><span class="p">;</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1">// Host → consumer: the game&#39;s speaker + haptic PCM, paced at the wire rate.</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">audio</span><span class="p">.</span><span class="n">Output</span><span class="p">.</span><span class="n">FramesReceived</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="n">pcm</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">{</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="c1">// Interleaved 16-bit little-endian PCM. output.ChannelRoles maps the</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="c1">// channels: [&quot;speakerLeft&quot;, &quot;speakerRight&quot;, &quot;hapticLeft&quot;, &quot;hapticRight&quot;].</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="c1">// The memory is only valid during the callback; copy to retain.</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">};</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">audio</span><span class="p">.</span><span class="n">Output</span><span class="p">.</span><span class="n">StreamingChanged</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">open</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* audio session opened/parked */</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1">// Consumer → host: feed the microphone. Silence when the buffer runs dry.</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="n">audio</span><span class="p">.</span><span class="n">Microphone</span><span class="p">.</span><span class="n">Submit</span><span class="p">(</span><span class="n">pcmBytes</span><span class="p">);</span><span class="w">   </span><span class="c1">// interleaved 16-bit LE at the declared format</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1">// Volume/mute writes from Windows (volume mixer, control panel):</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="n">audio</span><span class="p">.</span><span class="n">ControlChanged</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;{e.Function}: {(e.IsMute ? $&quot;</span><span class="n">mute</span><span class="o">=</span><span class="p">{</span><span class="n">e</span><span class="p">.</span><span class="n">MuteValue</span><span class="p">}</span><span class="s">&quot; : $&quot;</span><span class="p">{</span><span class="n">e</span><span class="p">.</span><span class="n">VolumeDb</span><span class="p">:</span><span class="n">F1</span><span class="p">}</span><span class="w"> </span><span class="n">dB</span><span class="s">&quot;)}&quot;</span><span class="p">);</span>
 </code></pre></div>
 <p><code>FramesReceived</code> fires on the backend's pacing thread with a few milliseconds of PCM per window, at the cadence the host renders. Handlers must be quick and thread-safe, the same contract as <code>OutputReceived</code>.</p>
 <p>One fidelity note worth knowing: Windows persists per-endpoint enable/disable state by device identity. Because the composite presents the real pad's exact identity, it inherits whatever state the machine last had for the real controller's endpoints. If the real pad's speaker endpoint was ever disabled in the Sound control panel, the virtual one arrives disabled too. Re-enable it there once.</p>
@@ -1717,8 +1740,8 @@
 <h2 id="profile-schema">Profile schema<a class="headerlink" href="#profile-schema" title="Permanent link">&para;</a></h2>
 <p>Composite personas add two fields to the profile JSON:</p>
 <ul>
-<li><code>"backend": "usbip"</code> marks the instantiation path. It is a property of the device, never a mode toggle on an existing profile: a profile that presented four interfaces with the backend and one without would name a device plus a machine state.</li>
-<li><code>"usbConfiguration"</code> carries the full USB identity: the structured interface/endpoint model the backend routes with, plus the verbatim wire blobs (<code>deviceDescriptor</code>, <code>configurationDescriptor</code>, <code>otherSpeedConfigurationDescriptor</code>), the <code>busSpeed</code>, and <code>audioControls</code> with the real pad's UAC volume ranges. The blobs are served byte-for-byte and cross-checked against the structured model at create time.</li>
+<li><code>"backend": "usbip"</code> selects the create path. It is a property of the device, never a mode toggle on an existing profile: a profile that presented four interfaces on some machines and one on others would name a device plus a machine state.</li>
+<li><code>"usbConfiguration"</code> carries the full USB identity: the structured interface/endpoint model the backend routes with, plus the verbatim wire blobs (<code>deviceDescriptor</code>, <code>configurationDescriptor</code>, <code>otherSpeedConfigurationDescriptor</code>), the <code>busSpeed</code>, and <code>audioControls</code> with the pad's real UAC volume ranges. The blobs are served byte-for-byte and cross-checked against the structured model at create time.</li>
 </ul>
 <p>See <a href="../../profiles/profile-system/">Profile System</a> for the rest of the schema.</p>
 

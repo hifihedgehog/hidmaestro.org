@@ -59,7 +59,7 @@ public int LoadProfilesFromDirectory(string profilesDir);
 
 `GetProfile(id)` looks up by stable ID slug (e.g. `"xbox-360-wired"`, `"dualsense"`, `"thrustmaster-t300rs"`). Returns null if no such profile is loaded. Case-insensitive.
 
-`LoadDefaultProfiles` loads the embedded catalog (225 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
+`LoadDefaultProfiles` loads the embedded catalog (228 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
 
 `LoadProfilesFromDirectory(path)` loads `*.json` from a directory matching the [Profile System](../profiles/profile-system.md) schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (`schema.json`) are skipped. Does not auto-load the embedded catalog &mdash; call both if you want catalog + custom.
 

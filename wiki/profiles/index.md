@@ -4,7 +4,7 @@ title: Profiles
 
 # Profiles
 
-Every controller HIDMaestro can emulate is a JSON file. 225 ship in the
+Every controller HIDMaestro can emulate is a JSON file. 228 ship in the
 embedded catalog across 32 vendors, and runtime-built profiles authored
 via `HMProfileBuilder` work identically.
 

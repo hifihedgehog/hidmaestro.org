@@ -21,6 +21,11 @@ The public C# surface a consumer talks to, in `HIDMaestro.Core.dll`.
 - **[Output Passthrough](output-passthrough.md)**: the output ring buffer,
   `OutputReceived` and `OutputDecoded` events, and encoding output in the
   other direction.
+- **[Controller Audio (Composite USB)](usb-audio-composite.md)**: the
+  four-interface Sony personas, the 4-channel stream whose channels 3 and
+  4 are the DualSense's voice-coil actuators, `HMController.UsbAudio` for
+  speaker and haptic PCM and the microphone, and the USB transport that
+  ships inside the DLL and deploys itself.
 - **[OEM Name Override](oem-name-override.md)**: make `joy.cpl` and
   DirectInput consumers show the label you want, transactionally and
   crash-safe.

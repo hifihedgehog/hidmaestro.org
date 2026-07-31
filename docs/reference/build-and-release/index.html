@@ -2258,10 +2258,10 @@
 <ol>
 <li><strong><code>[1/4]</code> Build.</strong> <code>scripts\build_all.cmd</code> plus the test app, profile extractor, and both Switch Pro probes. Aborts with exit 2 if any build fails.</li>
 <li><strong><code>[2/4]</code> Switch Pro protocol checks (issue #33).</strong> <code>switch_pro_check</code> replays SDL's exact USB init + subcommand sequence over raw HID (43 asserts), then <code>switch_pro_sdl3_check</code> drives the pad end to end through real SDL3 when the sibling <code>SDL3-build</code> checkout is present (SKIPs cleanly when absent). A FAIL here aborts with exit 1.</li>
-<li><strong><code>[3/4]</code> <code>test\regression\swap_regression.ps1</code>.</strong> The 41-scenario live-swap battery. Must report 41/41 PASS. A non-zero battery exit aborts with exit 1.</li>
+<li><strong><code>[3/4]</code> <code>test\regression\swap_regression.ps1</code>.</strong> The 45-scenario live-swap battery. Must report 45/45 PASS. A non-zero battery exit aborts with exit 1.</li>
 <li><strong><code>[4/4]</code> Cleanup + verdict.</strong> Confirms no leftover devnodes and prints the safe-to-tag banner.</li>
 </ol>
-<p>Total: ~30-40 minutes wall time. The regression battery dominates (devbox 41/41 in ~12 min, Atom Z8350 scale=2 in ~22 min).</p>
+<p>Total: ~30-40 minutes wall time. The regression battery dominates (devbox 45/45 in ~12 min, Atom Z8350 scale=2 in ~22 min).</p>
 <p>The script aborts on first failure with the diagnostic. Don't tag if any step fails.</p>
 <hr />
 <h2 id="release-recipe">Release recipe<a class="headerlink" href="#release-recipe" title="Permanent link">&para;</a></h2>
@@ -2371,7 +2371,7 @@
 </tr>
 <tr>
 <td><code>profiles/</code></td>
-<td>225 profile JSONs across 32 vendor folders</td>
+<td>228 profile JSONs across 32 vendor folders</td>
 </tr>
 <tr>
 <td><code>scripts/</code></td>

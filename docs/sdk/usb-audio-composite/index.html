@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://hidmaestro.org/docs/sdk/oem-name-override/">
+        <link rel="canonical" href="https://hidmaestro.org/docs/sdk/usb-audio-composite/">
       
       
-        <link rel="prev" href="../usb-audio-composite/">
+        <link rel="prev" href="../output-passthrough/">
       
       
-        <link rel="next" href="../../profiles/">
+        <link rel="next" href="../oem-name-override/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>OEM Name Override - HIDMaestro Documentation</title>
+        <title>Controller Audio (Composite USB) - HIDMaestro Documentation</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#oem-name-override" class="md-skip">
+        <a href="#controller-audio-composite-usb-personas" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              OEM Name Override
+              Controller Audio (Composite USB)
             
           </span>
         </div>
@@ -779,34 +779,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../usb-audio-composite/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Controller Audio (Composite USB)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -826,7 +798,7 @@
   <span class="md-ellipsis">
     
   
-    OEM Name Override
+    Controller Audio (Composite USB)
   
 
     
@@ -844,7 +816,7 @@
   <span class="md-ellipsis">
     
   
-    OEM Name Override
+    Controller Audio (Composite USB)
   
 
     
@@ -870,10 +842,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-three-label-sources" class="md-nav__link">
+  <a href="#opt-in-backend-usbip-win2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The three label sources
+        Opt-in backend: usbip-win2
       
     </span>
   </a>
@@ -881,71 +853,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#api" class="md-nav__link">
+  <a href="#the-audio-surfaces" class="md-nav__link">
     <span class="md-ellipsis">
       
-        API
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="API">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#setvid-pid-label" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Set(vid, pid, label)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#clearvid-pid" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Clear(vid, pid)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#recoverorphans" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        RecoverOrphans()
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#listactive" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ListActive()
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#crash-safety" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Crash safety
+        The audio surfaces
       
     </span>
   </a>
@@ -953,104 +864,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage-pattern" class="md-nav__link">
+  <a href="#profile-schema" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Usage pattern
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#caveats" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Caveats
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Caveats">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#system-wide-visibility" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        System-wide visibility
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#per-user-vs-per-machine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Per-user vs per-machine
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cache-lifetime-in-directinput-joycpl" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cache lifetime in DirectInput / joy.cpl
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#admin-requirement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Admin requirement
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#why-not-just-write-hklmdirectinput" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why not just write HKLM\...\DirectInput\...
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#see-also" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        See also
+        Profile schema
       
     </span>
   </a>
@@ -1061,6 +878,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../oem-name-override/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OEM Name Override
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1755,10 +1600,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-three-label-sources" class="md-nav__link">
+  <a href="#opt-in-backend-usbip-win2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The three label sources
+        Opt-in backend: usbip-win2
       
     </span>
   </a>
@@ -1766,71 +1611,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#api" class="md-nav__link">
+  <a href="#the-audio-surfaces" class="md-nav__link">
     <span class="md-ellipsis">
       
-        API
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="API">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#setvid-pid-label" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Set(vid, pid, label)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#clearvid-pid" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Clear(vid, pid)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#recoverorphans" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        RecoverOrphans()
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#listactive" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ListActive()
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#crash-safety" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Crash safety
+        The audio surfaces
       
     </span>
   </a>
@@ -1838,104 +1622,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage-pattern" class="md-nav__link">
+  <a href="#profile-schema" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Usage pattern
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#caveats" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Caveats
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Caveats">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#system-wide-visibility" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        System-wide visibility
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#per-user-vs-per-machine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Per-user vs per-machine
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cache-lifetime-in-directinput-joycpl" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cache lifetime in DirectInput / joy.cpl
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#admin-requirement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Admin requirement
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#why-not-just-write-hklmdirectinput" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why not just write HKLM\...\DirectInput\...
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#see-also" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        See also
+        Profile schema
       
     </span>
   </a>
@@ -1959,172 +1649,78 @@
 
 
 
-<h1 id="oem-name-override">OEM Name Override<a class="headerlink" href="#oem-name-override" title="Permanent link">&para;</a></h1>
-<p><code>HMOemNameOverride</code> overrides the label <code>joy.cpl</code> and DirectInput consumers show for a given USB VID:PID. Use it when you want a HIDMaestro virtual (or any device sharing that VID:PID) to display a specific name in <code>joy.cpl</code> and DirectInput, overriding any Windows-shipped pre-populated label.</p>
-<p>The implementation is more involved than "write one registry value" because Windows pre-populates clone PIDs in registry locations the obvious-looking write doesn't reach. The API exists because there is <strong>no</strong> simpler reliable way to override the label.</p>
-<hr />
-<h2 id="the-three-label-sources">The three label sources<a class="headerlink" href="#the-three-label-sources" title="Permanent link">&para;</a></h2>
-<p>The DirectInput / <code>joy.cpl</code> label is sourced from <strong>three</strong> registry locations. Windows pre-populates at least one of them for many common clone PIDs (e.g. <code>VID_0079&amp;PID_0006</code> ships with the label "PC TWIN SHOCK Gamepad"). To reliably override, all three must be written:</p>
+<h1 id="controller-audio-composite-usb-personas">Controller Audio (Composite USB Personas)<a class="headerlink" href="#controller-audio-composite-usb-personas" title="Permanent link">&para;</a></h1>
+<p>A real USB DualSense presents four interfaces: USB Audio Class speaker/haptics out, microphone in, and HID. The standard <code>dualsense</code> profile presents the HID interface only, because that is the one interface UMDF2 can create. Two profiles present the full composite:</p>
 <table>
 <thead>
 <tr>
-<th>Location</th>
-<th>Value name</th>
-<th>Reader</th>
+<th>Profile</th>
+<th>Audio out</th>
+<th>Audio in</th>
+<th>Haptics lane</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>HKLM\SYSTEM\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\VID_####&amp;PID_####\OEM\</code></td>
-<td><code>"OEM Name"</code> (with space)</td>
-<td>DirectInput consumers</td>
+<td><code>dualsense-composite</code></td>
+<td>4 ch / 16-bit / 48 kHz (channels 1/2 speaker, 3/4 voice-coil actuators)</td>
+<td>2 ch / 48 kHz microphone</td>
+<td><strong>Yes</strong></td>
 </tr>
 <tr>
-<td><code>HKLM\SYSTEM\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM\VID_####&amp;PID_####\</code></td>
-<td><code>"OEMName"</code> (no space)</td>
-<td>MME <code>joy.cpl</code></td>
-</tr>
-<tr>
-<td><code>HKCU\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM\VID_####&amp;PID_####\</code></td>
-<td><code>"OEMName"</code> (no space)</td>
-<td>per-user <code>joy.cpl</code> (preloaded by Windows for clone PIDs)</td>
+<td><code>dualshock-4-v2-composite</code></td>
+<td>2 ch / 16-bit / 32 kHz headset</td>
+<td>1 ch / 16 kHz microphone</td>
+<td>No (hardware has none)</td>
 </tr>
 </tbody>
 </table>
-<p>Per-user (HKCU) takes precedence over HKLM <code>Joystick</code> and is the <strong>first place Windows checks</strong> for many clone PIDs. Writing only the HKLM <code>DirectInput</code> path leaves the HKCU clone label intact, and <code>joy.cpl</code> continues showing the wrong name.</p>
-<p><code>HMOemNameOverride.Set</code> writes all three under a global mutex, capturing the prior value of each before any are mutated.</p>
+<p>Every descriptor byte comes verbatim from a real pad's hardware dump, and the UAC volume/mute ranges are the real pad's wire values captured from live control transfers. Windows surfaces the same audio endpoints it would for the physical controller: <strong>Speakers (Wireless Controller)</strong> and <strong>Headset Microphone (Wireless Controller)</strong>.</p>
+<p>The 4-channel OUT stream matters because channels 3/4 are the DualSense's voice-coil actuators. That stream is the only path on Windows by which a game hands a controller its authored haptic waveforms. Games that render audio to the controller endpoint reach the SDK, and the consumer routes the haptic lanes to real hardware.</p>
 <hr />
-<h2 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">HMOemNameOverride</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">{</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">Set</span><span class="p">(</span><span class="kt">ushort</span><span class="w"> </span><span class="n">vid</span><span class="p">,</span><span class="w"> </span><span class="kt">ushort</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">label</span><span class="p">);</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">Clear</span><span class="p">(</span><span class="kt">ushort</span><span class="w"> </span><span class="n">vid</span><span class="p">,</span><span class="w"> </span><span class="kt">ushort</span><span class="w"> </span><span class="n">pid</span><span class="p">);</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w">  </span><span class="nf">RecoverOrphans</span><span class="p">();</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">IReadOnlyList</span><span class="o">&lt;</span><span class="n">HMOemNameOverrideEntry</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ListActive</span><span class="p">();</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="k">public</span><span class="w"> </span><span class="k">sealed</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">HMOemNameOverrideEntry</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">{</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">string</span><span class="w">  </span><span class="n">VidPid</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">string?</span><span class="w"> </span><span class="n">OriginalOemName</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">bool</span><span class="w">    </span><span class="n">OriginalKeyExisted</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="p">}</span>
-</code></pre></div>
-<p>All methods require admin (HKLM write access). Throw <code>UnauthorizedAccessException</code> if the calling process isn't elevated.</p>
-<h3 id="setvid-pid-label"><code>Set(vid, pid, label)</code><a class="headerlink" href="#setvid-pid-label" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">Set</span><span class="p">(</span><span class="mh">0x0079</span><span class="p">,</span><span class="w"> </span><span class="mh">0x0006</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;My Custom Gamepad&quot;</span><span class="p">);</span>
-</code></pre></div>
-<p>Writes all three registry locations with the new label, in a single transaction under a global mutex. Captures the prior value of each target to a HIDMaestro-owned pending record at <code>HKLM\SOFTWARE\HIDMaestroOemOverrides\VID_xxxx&amp;PID_xxxx</code> <strong>before</strong> any target is mutated.</p>
-<p>If a prior <code>Set</code> for this VID:PID is already active, this replaces the label but <strong>keeps the originally-captured value</strong> for restore purposes. Re-calling <code>Set</code> is safe and cumulative.</p>
-<p>Throws <code>ArgumentNullException</code> if <code>label</code> is null.</p>
-<h3 id="clearvid-pid"><code>Clear(vid, pid)</code><a class="headerlink" href="#clearvid-pid" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">Clear</span><span class="p">(</span><span class="mh">0x0079</span><span class="p">,</span><span class="w"> </span><span class="mh">0x0006</span><span class="p">);</span>
-</code></pre></div>
-<p>Restores the pre-Set DirectInput OEM-name label for <code>(vid, pid)</code>. Replays the pending record to restore all three target locations independently. If no prior <code>Set</code> is tracked for this VID:PID, this is a no-op.</p>
-<p>For each target, the restore matches what Set captured:</p>
+<h2 id="opt-in-backend-usbip-win2">Opt-in backend: usbip-win2<a class="headerlink" href="#opt-in-backend-usbip-win2" title="Permanent link">&para;</a></h2>
+<p>The composite profiles declare <code>"backend": "usbip"</code> and require <a href="https://github.com/vadimgrn/usbip-win2">usbip-win2</a> <strong>0.9.7.7</strong> installed. usbip-win2 is a third-party, BSD-2, WHLK-certified signed kernel driver providing a virtual USB host controller. A Windows audio endpoint requires a driver-backed USB device, and no user-mode API can create one, so this is the one capability that cannot ride UMDF2.</p>
+<p>The rules:</p>
 <ul>
-<li>If the target key <strong>existed</strong> with a value, the value is reset to the original.</li>
-<li>If the target key <strong>existed</strong> without the named value, the named value is deleted (key remains).</li>
-<li>If the target key <strong>did not exist</strong>, the entire subkey is deleted.</li>
+<li><strong>HIDMaestro never installs or bundles usbip-win2.</strong> Users opt in by installing it themselves.</li>
+<li><strong>Nothing changes without it.</strong> Standard profiles keep working with zero dependencies. <code>CreateController</code> on a composite profile throws <code>NotSupportedException</code> with install guidance.</li>
+<li><strong>Gate your picker</strong> on <code>HMContext.IsUsbipBackendAvailable</code> (a pure presence probe) plus <code>HMProfile.RequiresUsbipBackend</code>.</li>
+<li><strong>The version is pinned at 0.9.7.7.</strong> 0.9.7.8 has two open kernel-pool-corruption reports (<a href="https://github.com/vadimgrn/usbip-win2/issues/180">#180</a>, <a href="https://github.com/vadimgrn/usbip-win2/issues/181">#181</a>). Gate any bump on those closing.</li>
 </ul>
-<p>After all three restores succeed, the pending record at <code>HKLM\SOFTWARE\HIDMaestroOemOverrides\VID_xxxx&amp;PID_xxxx</code> is deleted.</p>
-<h3 id="recoverorphans"><code>RecoverOrphans()</code><a class="headerlink" href="#recoverorphans" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">int</span><span class="w"> </span><span class="n">restored</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">RecoverOrphans</span><span class="p">();</span>
+<p>The SDK runs an in-process USB/IP device server on loopback (fixed port range 18509-18524). Every device behavior stays in user space: descriptor service, HID reports through the same shared-memory contract as UMDF2 profiles, and a highest-priority pacing thread that completes isochronous URBs at the endpoint's 1 ms service interval. Installing usbip-win2 restarts the USB root hubs once (its extension INF re-enumerates them), so expect a brief input blink at install time and on its version updates. Measured idle cost with the driver installed and no device attached: indistinguishable from baseline (0.35% vs 0.24% CPU on an Atom Z8350).</p>
+<p><code>HMController.SubmitState</code>, <code>SubmitRawReport</code>, <code>OutputReceived</code>, <code>OutputDecoded</code>, and the Sony feature-report behavior are identical across backends. The HID interface of each composite is byte-identical to its UMDF2 sibling.</p>
+<hr />
+<h2 id="the-audio-surfaces">The audio surfaces<a class="headerlink" href="#the-audio-surfaces" title="Permanent link">&para;</a></h2>
+<p>Composite controllers expose <code>HMController.UsbAudio</code> (null on every UMDF2 profile):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">controller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense-composite&quot;</span><span class="p">));</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kt">var</span><span class="w"> </span><span class="n">audio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">UsbAudio</span><span class="o">!</span><span class="p">;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">// Host → consumer: the game&#39;s speaker + haptic PCM, paced at the wire rate.</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">audio</span><span class="p">.</span><span class="n">Output</span><span class="p">.</span><span class="n">FramesReceived</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="n">pcm</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">{</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="c1">// Interleaved 16-bit little-endian PCM. output.ChannelRoles maps the</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="c1">// channels: [&quot;speakerLeft&quot;, &quot;speakerRight&quot;, &quot;hapticLeft&quot;, &quot;hapticRight&quot;].</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="c1">// The memory is only valid during the callback; copy to retain.</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">};</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">audio</span><span class="p">.</span><span class="n">Output</span><span class="p">.</span><span class="n">StreamingChanged</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">open</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* audio session opened/parked */</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1">// Consumer → host: feed the microphone. Silence when the buffer runs dry.</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="n">audio</span><span class="p">.</span><span class="n">Microphone</span><span class="p">.</span><span class="n">Submit</span><span class="p">(</span><span class="n">pcmBytes</span><span class="p">);</span><span class="w">   </span><span class="c1">// interleaved 16-bit LE at the declared format</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1">// Volume/mute writes from Windows (volume mixer, control panel):</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="n">audio</span><span class="p">.</span><span class="n">ControlChanged</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;{e.Function}: {(e.IsMute ? $&quot;</span><span class="n">mute</span><span class="o">=</span><span class="p">{</span><span class="n">e</span><span class="p">.</span><span class="n">MuteValue</span><span class="p">}</span><span class="s">&quot; : $&quot;</span><span class="p">{</span><span class="n">e</span><span class="p">.</span><span class="n">VolumeDb</span><span class="p">:</span><span class="n">F1</span><span class="p">}</span><span class="w"> </span><span class="n">dB</span><span class="s">&quot;)}&quot;</span><span class="p">);</span>
 </code></pre></div>
-<p>Scans the pending hive at <code>HKLM\SOFTWARE\HIDMaestroOemOverrides</code> and restores every prior override left behind by a crashed, force-killed, or otherwise uncleanly-exited consumer. Returns the count restored.</p>
-<p><strong>Safe to call on every consumer startup.</strong> No-op if no orphan records exist.</p>
-<h3 id="listactive"><code>ListActive()</code><a class="headerlink" href="#listactive" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">ListActive</span><span class="p">())</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">{</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;  {entry.VidPid} (was: {entry.OriginalOemName ?? &quot;</span><span class="o">&lt;</span><span class="n">no</span><span class="w"> </span><span class="n">original</span><span class="w"> </span><span class="k">value</span><span class="o">&gt;</span><span class="s">&quot;})&quot;</span><span class="p">);</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">}</span>
-</code></pre></div>
-<p>Enumerates every override currently tracked by the pending hive. Useful for diagnostics or for showing the user which virtuals are currently overriding their <code>joy.cpl</code> label.</p>
-<p><code>HMOemNameOverrideEntry</code>:</p>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>VidPid</code></td>
-<td>Canonical registry form, e.g. <code>"VID_0079&amp;PID_0006"</code>.</td>
-</tr>
-<tr>
-<td><code>OriginalOemName</code></td>
-<td>The label captured before <code>Set</code> ran. Null if the OEM key existed without the named value.</td>
-</tr>
-<tr>
-<td><code>OriginalKeyExisted</code></td>
-<td>True if the DirectInput OEM subkey existed when Set first ran. False means the subkey will be deleted on restore.</td>
-</tr>
-</tbody>
-</table>
+<p><code>FramesReceived</code> fires on the backend's pacing thread with a few milliseconds of PCM per window, at the cadence the host renders. Handlers must be quick and thread-safe, the same contract as <code>OutputReceived</code>.</p>
+<p>One fidelity note worth knowing: Windows persists per-endpoint enable/disable state by device identity. Because the composite presents the real pad's exact identity, it inherits whatever state the machine last had for the real controller's endpoints. If the real pad's speaker endpoint was ever disabled in the Sound control panel, the virtual one arrives disabled too. Re-enable it there once.</p>
 <hr />
-<h2 id="crash-safety">Crash safety<a class="headerlink" href="#crash-safety" title="Permanent link">&para;</a></h2>
-<p>The pending hive at <code>HKLM\SOFTWARE\HIDMaestroOemOverrides</code> is written <strong>before</strong> any registry mutation. The state machine looks like this:</p>
-<ol>
-<li><strong>Consumer calls <code>Set(vid, pid, "label")</code>.</strong> Acquires global mutex.</li>
-<li><strong>Pending record written</strong> capturing all three targets' prior values.</li>
-<li><strong>All three targets written</strong> with the new label.</li>
-<li><strong>Mutex released.</strong></li>
-<li>...consumer runs, virtual is live, <code>joy.cpl</code> shows "label"...</li>
-<li><strong>Consumer calls <code>Clear(vid, pid)</code></strong> (or process ends).</li>
-<li>Acquires global mutex.</li>
-<li>Reads pending record.</li>
-<li>Replays each target: reset value, delete value, or delete subkey per <code>OriginalKeyExisted</code>.</li>
-<li>Pending record deleted.</li>
-<li>Mutex released.</li>
-</ol>
-<p>If the process dies between steps 4 and 6 &mdash; that is, the override is in place but <code>Clear</code> never ran &mdash; the pending hive still has the record. The next <code>RecoverOrphans()</code> call replays the record and restores the original.</p>
-<p>Steps 2 and 3 happen under the same mutex, so a crash mid-sequence leaves the system in a recoverable state: either step 2 didn't complete (no override in effect, no orphan record &mdash; nothing to recover) or step 3 partially completed (<code>RecoverOrphans</code> restores what step 3 mutated even if only some of the three writes landed).</p>
-<p>The captured per-target state lets <code>Clear</code> and <code>RecoverOrphans</code> restore each target independently, which matters when only one of the three keys existed pre-<code>Set</code>.</p>
-<hr />
-<h2 id="usage-pattern">Usage pattern<a class="headerlink" href="#usage-pattern" title="Permanent link">&para;</a></h2>
-<p>The canonical pattern in a consumer with multiple virtuals is:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Once at consumer startup, before creating any virtuals:</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kt">int</span><span class="w"> </span><span class="n">restored</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">RecoverOrphans</span><span class="p">();</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">restored</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">Logger</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">$&quot;Recovered {restored} orphan OEM-name override(s) from prior session&quot;</span><span class="p">);</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1">// For each virtual where you want a custom joy.cpl label:</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">Set</span><span class="p">(</span><span class="n">profile</span><span class="p">.</span><span class="n">VendorId</span><span class="p">,</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">ProductId</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;PadForge Slot 0&quot;</span><span class="p">);</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile</span><span class="p">);</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1">// At virtual teardown:</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">Dispose</span><span class="p">();</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">Clear</span><span class="p">(</span><span class="n">profile</span><span class="p">.</span><span class="n">VendorId</span><span class="p">,</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">ProductId</span><span class="p">);</span>
-</code></pre></div>
-<p>For consumers that lock to single-instance execution (PadForge does), <code>RecoverOrphans</code> at startup plus a paired <code>Set</code>/<code>Clear</code> per virtual covers the full lifecycle.</p>
-<p>For consumers that may run multiple instances simultaneously, the global mutex serializes write attempts. The pending record is per-VID:PID, so two consumers overriding two different VID:PIDs don't conflict; two consumers fighting over the same VID:PID will have whichever <code>Set</code> call ran last win, and the other consumer's <code>Clear</code> will restore the original (skipping the intermediate label).</p>
-<hr />
-<h2 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h2>
-<h3 id="system-wide-visibility">System-wide visibility<a class="headerlink" href="#system-wide-visibility" title="Permanent link">&para;</a></h3>
-<p>The HKLM <code>DirectInput</code> and HKLM <code>Joystick</code> targets are system-wide per VID:PID. If a real device with that VID:PID is connected while your override is active, DirectInput consumers see the override label for it too.</p>
-<p>For VID:PIDs where you have a virtual but no real device connected (e.g. an Xbox 360 controller spoofed when no physical 360 is attached), this is exactly what you want. For VID:PIDs that might collide with a connected real device, choose your label accordingly.</p>
-<h3 id="per-user-vs-per-machine">Per-user vs per-machine<a class="headerlink" href="#per-user-vs-per-machine" title="Permanent link">&para;</a></h3>
-<p>The HKCU <code>Joystick</code> target is per-calling-user. On a single-user workstation that matches the DirectInput scope visually; on a multi-user machine, only the user who called <code>Set</code> sees the <code>joy.cpl</code> label change &mdash; the HKLM paths still carry the override for DirectInput consumers regardless of user.</p>
-<h3 id="cache-lifetime-in-directinput-joycpl">Cache lifetime in DirectInput / <code>joy.cpl</code><a class="headerlink" href="#cache-lifetime-in-directinput-joycpl" title="Permanent link">&para;</a></h3>
-<p>Both DirectInput and <code>joy.cpl</code> cache OEM names per-process on first enumeration. A <code>joy.cpl</code> window that was already open when the override changes keeps showing the stale label until it is closed and re-opened. Games that were already running behave the same way. <strong>Set before opening <code>joy.cpl</code> or launching games.</strong></p>
-<h3 id="admin-requirement">Admin requirement<a class="headerlink" href="#admin-requirement" title="Permanent link">&para;</a></h3>
-<p>All four methods require admin (HKLM write access). Read-only diagnostics like <code>ListActive</code> could in principle work without elevation but the API is admin-only for consistency &mdash; if you can't write, you also can't recover orphans, so denying the read closes a confusing failure mode where listing reports overrides the consumer can't actually clear.</p>
-<hr />
-<h2 id="why-not-just-write-hklmdirectinput">Why not just write <code>HKLM\...\DirectInput\...</code><a class="headerlink" href="#why-not-just-write-hklmdirectinput" title="Permanent link">&para;</a></h2>
-<p>The naive approach &mdash; write <code>HKLM\...\DirectInput\VID_xxxx&amp;PID_xxxx\OEM\"OEM Name"</code> and call it done &mdash; works for VID:PIDs Windows hasn't preloaded. Most clones come with a preloaded HKCU label that wins the precedence battle, and the user sees no change.</p>
-<p>Writing only HKLM <code>DirectInput</code> was the v1.x.0 implementation. Real-world bug reports came in for clone-PID controllers showing pre-populated names like "PC TWIN SHOCK Gamepad" even after Set was called. The fix is the three-target write under a global mutex, captured before mutation. Issue #7.</p>
-<hr />
-<h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
-<p>The full sequence lives in <code>OemNameOverrideStore.cs</code> (~325 lines). The API surface is <code>HMOemNameOverride.cs</code> (~150 lines). Three named registry-key constants, three target descriptors, a global mutex, and the pending-hive layout. Read those files for the byte-level details.</p>
-<hr />
-<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<h2 id="profile-schema">Profile schema<a class="headerlink" href="#profile-schema" title="Permanent link">&para;</a></h2>
+<p>Composite personas add two fields to the profile JSON:</p>
 <ul>
-<li><a href="../sdk-reference/">SDK Reference</a> &mdash; the raw <code>HMOemNameOverride</code> API surface in context.</li>
-<li><a href="../../start/quickstart/">Quickstart</a> &mdash; usage in the example/SdkDemo walkthrough (Step 0 + Step 3a).</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/oem-name-override.md"><code>docs/oem-name-override.md</code></a> &mdash; the long-form rationale doc shipped in the repo.</li>
+<li><code>"backend": "usbip"</code> marks the instantiation path. It is a property of the device, never a mode toggle on an existing profile: a profile that presented four interfaces with the backend and one without would name a device plus a machine state.</li>
+<li><code>"usbConfiguration"</code> carries the full USB identity: the structured interface/endpoint model the backend routes with, plus the verbatim wire blobs (<code>deviceDescriptor</code>, <code>configurationDescriptor</code>, <code>otherSpeedConfigurationDescriptor</code>), the <code>busSpeed</code>, and <code>audioControls</code> with the real pad's UAC volume ranges. The blobs are served byte-for-byte and cross-checked against the structured model at create time.</li>
 </ul>
+<p>See <a href="../../profiles/profile-system/">Profile System</a> for the rest of the schema.</p>
 
 
 
@@ -2162,7 +1758,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../usb-audio-composite/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Controller Audio (Composite USB)">
+          <a href="../output-passthrough/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Output Passthrough">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2172,20 +1768,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Controller Audio (Composite USB)
+                Output Passthrough
               </div>
             </div>
           </a>
         
         
           
-          <a href="../../profiles/" class="md-footer__link md-footer__link--next" aria-label="Next: Profiles">
+          <a href="../oem-name-override/" class="md-footer__link md-footer__link--next" aria-label="Next: OEM Name Override">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Profiles
+                OEM Name Override
               </div>
             </div>
             <div class="md-footer__button md-icon">

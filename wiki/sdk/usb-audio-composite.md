@@ -88,6 +88,19 @@ audio.ControlChanged += (_, e) =>
 
 `Submit` returns the bytes it accepted. The microphone buffer holds roughly a quarter second, and a producer that outruns the 1 ms service interval will eventually fill it, at which point the excess is dropped rather than allowed to grow capture latency without bound. Feeding one continuous stream is what the buffer expects, so chunk sizes need not be frame-aligned and a sample may span two calls. What a short return means is that audio was lost, and a consumer that wants to know should compare it against the length submitted. Bytes are only ever dropped on a sample-frame boundary, so a full buffer costs you a click, never a permanently misaligned stream.
 
+## Recognising your own persona
+
+A composite persona is byte-for-byte a real Sony pad at every level a filter can inspect. That is what the USB Audio Class driver binds against, so it cannot carry a HIDMaestro marker of its own. An application that enumerates HID devices will therefore see the persona as an ordinary controller, which for a host that created it means seeing itself: SDL, for one, will treat it as a second gamepad and drive the lightbar and player pips from its index.
+
+The token lives on the one node HIDMaestro owns, the emulated host controller the persona sits behind:
+
+```
+ROOT\USB\0000   HardwareIds = ROOT\USBIP_WIN2\UDE
+                              ROOT\HIDMAESTRO_UDE
+```
+
+It is added alongside the upstream id, never in place of it, so driver binding is unchanged. A consumer that already filters its own virtual pads by testing hardware IDs for `HIDMAESTRO` needs only to walk far enough up the device tree: from the persona's HID interface, that node is four parents away, so a depth limit of five or more finds it. Filtering on the transport's `usbip2_ude` service instead would also catch an unrelated usbip install, and would break outright if the backend is ever replaced.
+
 One fidelity note worth knowing: Windows persists per-endpoint enable/disable state by device identity. Because the composite presents the real pad's exact identity, it inherits whatever state the machine last had for the real controller's endpoints. If the real pad's speaker endpoint was ever disabled in the Sound control panel, the virtual one arrives disabled too. Re-enable it there once.
 
 ---

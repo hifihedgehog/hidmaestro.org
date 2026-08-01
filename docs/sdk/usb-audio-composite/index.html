@@ -1681,6 +1681,7 @@
 </tr>
 </tbody>
 </table>
+<p>In a profile picker these are the entries marked <strong>Full</strong>, which is how the catalog flags the most capable profile for a given device. A device never has more than one.</p>
 <p>Every descriptor byte comes verbatim from a real pad's hardware dump, and the UAC volume/mute ranges are real wire values captured from live control transfers. Windows surfaces the same audio endpoints it would for the physical controller: <strong>Speakers (Wireless Controller)</strong> and <strong>Headset Microphone (Wireless Controller)</strong>.</p>
 <p>The 4-channel OUT stream matters because channels 3/4 are the DualSense's voice-coil actuators. That stream is the only path on Windows by which a game hands a controller its authored haptic waveforms. Games that render audio to the controller endpoint reach the SDK, and the consumer routes the haptic lanes to real hardware.</p>
 <p>The original DS4 v1 (054C:05C4) has no composite variant deliberately: real hardware probes show a single HID interface over USB and no audio class. USB audio arrived with the v2.</p>

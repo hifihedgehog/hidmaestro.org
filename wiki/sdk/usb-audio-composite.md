@@ -8,6 +8,8 @@ A real USB DualSense presents four interfaces: USB Audio Class speaker/haptics o
 | `dualsense-edge-composite` | Same 4-ch stream as the base pad, with the Edge's 1 ms USB input polling | 2 ch / 48 kHz microphone | **Yes** |
 | `dualshock-4-v2-composite` | 2 ch / 16-bit / 32 kHz headset | 1 ch / 16 kHz microphone | No (hardware has none) |
 
+In a profile picker these are the entries marked **Full**, which is how the catalog flags the most capable profile for a given device. A device never has more than one.
+
 Every descriptor byte comes verbatim from a real pad's hardware dump, and the UAC volume/mute ranges are real wire values captured from live control transfers. Windows surfaces the same audio endpoints it would for the physical controller: **Speakers (Wireless Controller)** and **Headset Microphone (Wireless Controller)**.
 
 The 4-channel OUT stream matters because channels 3/4 are the DualSense's voice-coil actuators. That stream is the only path on Windows by which a game hands a controller its authored haptic waveforms. Games that render audio to the controller endpoint reach the SDK, and the consumer routes the haptic lanes to real hardware.

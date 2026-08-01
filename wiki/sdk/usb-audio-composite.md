@@ -74,7 +74,8 @@ audio.Output.FramesReceived += (output, pcm) =>
 audio.Output.StreamingChanged += (_, open) => { /* audio session opened/parked */ };
 
 // Consumer → host: feed the microphone. Silence when the buffer runs dry.
-audio.Microphone.Submit(pcmBytes);   // interleaved 16-bit LE at the declared format
+int accepted = audio.Microphone.Submit(pcmBytes);  // interleaved 16-bit LE at the declared format
+if (accepted < pcmBytes.Length) { /* buffer full: the rest was dropped */ }
 
 // Volume/mute writes from Windows (volume mixer, control panel):
 audio.ControlChanged += (_, e) =>
@@ -82,6 +83,8 @@ audio.ControlChanged += (_, e) =>
 ```
 
 `FramesReceived` fires on the backend's pacing thread with a few milliseconds of PCM per window, at the cadence the host renders. Handlers must be quick and thread-safe, the same contract as `OutputReceived`.
+
+`Submit` returns the bytes it accepted. The microphone buffer holds roughly a quarter second, and a producer that outruns the 1 ms service interval will eventually fill it, at which point the excess is dropped rather than allowed to grow capture latency without bound. Feeding one continuous stream is what the buffer expects, so chunk sizes need not be frame-aligned and a sample may span two calls. What a short return means is that audio was lost, and a consumer that wants to know should compare it against the length submitted. Bytes are only ever dropped on a sample-frame boundary, so a full buffer costs you a click, never a permanently misaligned stream.
 
 One fidelity note worth knowing: Windows persists per-endpoint enable/disable state by device identity. Because the composite presents the real pad's exact identity, it inherits whatever state the machine last had for the real controller's endpoints. If the real pad's speaker endpoint was ever disabled in the Sound control panel, the virtual one arrives disabled too. Re-enable it there once.
 

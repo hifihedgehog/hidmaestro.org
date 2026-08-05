@@ -1372,6 +1372,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#the-dualshock-4s-pairing-read-0x12-v147" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The DualShock 4's pairing read, 0x12 (v1.4.7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-the-edge-needs-its-own-firmware-line-v147" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the Edge needs its own firmware line (v1.4.7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-full-sony-startup-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The full Sony startup surface
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1948,6 +1981,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#the-dualshock-4s-pairing-read-0x12-v147" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The DualShock 4's pairing read, 0x12 (v1.4.7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-the-edge-needs-its-own-firmware-line-v147" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the Edge needs its own firmware line (v1.4.7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-full-sony-startup-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The full Sony startup surface
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2449,6 +2515,44 @@ when byte 0 is not <code>0x22</code>.</p>
 <p>Both lanes assert the 64 bytes against a literal spelled out in each probe
 (S43 for the composite backend, S46 for UMDF2), so the two copies cannot
 drift apart silently.</p>
+<h3 id="the-dualshock-4s-pairing-read-0x12-v147">The DualShock 4's pairing read, <code>0x12</code> (v1.4.7)<a class="headerlink" href="#the-dualshock-4s-pairing-read-0x12-v147" title="Permanent link">&para;</a></h3>
+<p>The DS4's equivalent of <code>0x09</code>, and the one Sony read whose absence is
+fatal rather than cosmetic. Every USB DualShock 4 profile declares it at 16
+bytes and the driver did not serve it until v1.4.7, so a declared report
+answered <code>STATUS_NOT_SUPPORTED</code>.</p>
+<p><code>hid-playstation.c</code> requests it in <code>dualshock4_get_mac_address</code> on USB, and
+the caller returns <code>ERR_PTR</code> when it fails, so the device is never created.
+The <code>0xA3</code> firmware read directly below it only warns and continues. SDL
+reads the same report as <code>k_ePS4FeatureReportIdSerialNumber</code> and rejects an
+all-zero address, so a zero-filled reply would not have satisfied it
+either. Both take the MAC from bytes 1..6.</p>
+<p>It serves the same stable per-controller locally-administered address the
+<code>0x09</code> path synthesises. Bluetooth deliberately does not get it:
+<code>hid-playstation</code> takes the DS4's BT address from HIDP's <code>hdev-&gt;uniq</code>, and
+a real <code>dualshock-4-v2-bt</code> descriptor does not declare <code>0x12</code>.</p>
+<h3 id="why-the-edge-needs-its-own-firmware-line-v147">Why the Edge needs its own firmware line (v1.4.7)<a class="headerlink" href="#why-the-edge-needs-its-own-firmware-line-v147" title="Permanent link">&para;</a></h3>
+<p>The <code>0x20</code> capture came from a base DualSense, and the gate keys on
+VendorID with no PID branch, so Edge personas served it verbatim and
+claimed the base pad's identity.</p>
+<p>Sony's firmware-updater data records the base pad as Type <code>0004</code> and the
+Edge as Type <code>0044</code>. The captured blob carries <code>swSeries</code> <code>0x0004</code> and
+<code>updateVersion</code> <code>0x0630</code>, matching Sony's "DualSense, Type 0004, version
+0x0630" entry exactly. That agreement is what identifies those two offsets
+rather than inferring them from field names, and independently confirms the
+capture is genuine. PID <code>0x0DF2</code> now reports <code>0x0044</code> and <code>0x0217</code>.</p>
+<p>Everything else in the Edge's blob is still the base pad's. No public dump
+of an Edge <code>0x20</code> exists, and dualshock-tools does not map the Edge's
+<code>hwinfo</code> at all, skipping Board Model when <code>is_edge</code>. Nothing observed
+reads those fields on an Edge, since <code>hid-playstation</code> derives
+<code>use_vibration_v2</code> and <code>is_edge</code> from the PID and dualsense-tester's Edge
+page hardcodes its traceability gate, but that argues the inheritance is
+harmless rather than correct.</p>
+<h3 id="the-full-sony-startup-surface">The full Sony startup surface<a class="headerlink" href="#the-full-sony-startup-surface" title="Permanent link">&para;</a></h3>
+<p><code>0x02</code>, <code>0x05</code>, <code>0x09</code>, <code>0x12</code>, <code>0x20</code>, <code>0x22</code> and <code>0xA3</code>, each served on
+both backends. Feature <code>0x03</code> (capabilities) is deliberately absent: SDL
+reads it only on its third-party detection path, and both its PS4 and PS5
+drivers return early for a genuine Sony VID/PID, so a pad carrying Sony IDs
+is never asked for it.</p>
 <hr />
 <h2 id="switch-pro-protocol-responder">Switch Pro protocol responder<a class="headerlink" href="#switch-pro-protocol-responder" title="Permanent link">&para;</a></h2>
 <p>Most profiles are passive: the SDK submits state, the worker completes read requests. The Nintendo Switch Pro Controller (issue #33) is not. Hosts (SDL's <code>HIDAPI_DriverSwitch</code>, Steam, BetterJoy) drive a Nintendo init-and-subcommand protocol and stall without a device that answers, so the generic report-builder cannot express it. <code>driver.c</code> carries a hardcoded responder keyed on <code>VID 0x057E &amp;&amp; PID 0x2009</code> (<code>ctx-&gt;SwitchProtocol</code>), with protocol in code and layout in JSON, the same split as the Sony vendor-blob work.</p>

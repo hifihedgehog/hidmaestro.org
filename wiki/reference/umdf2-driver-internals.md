@@ -381,6 +381,54 @@ Both lanes assert the 64 bytes against a literal spelled out in each probe
 (S43 for the composite backend, S46 for UMDF2), so the two copies cannot
 drift apart silently.
 
+### The DualShock 4's pairing read, `0x12` (v1.4.7)
+
+The DS4's equivalent of `0x09`, and the one Sony read whose absence is
+fatal rather than cosmetic. Every USB DualShock 4 profile declares it at 16
+bytes and the driver did not serve it until v1.4.7, so a declared report
+answered `STATUS_NOT_SUPPORTED`.
+
+`hid-playstation.c` requests it in `dualshock4_get_mac_address` on USB, and
+the caller returns `ERR_PTR` when it fails, so the device is never created.
+The `0xA3` firmware read directly below it only warns and continues. SDL
+reads the same report as `k_ePS4FeatureReportIdSerialNumber` and rejects an
+all-zero address, so a zero-filled reply would not have satisfied it
+either. Both take the MAC from bytes 1..6.
+
+It serves the same stable per-controller locally-administered address the
+`0x09` path synthesises. Bluetooth deliberately does not get it:
+`hid-playstation` takes the DS4's BT address from HIDP's `hdev->uniq`, and
+a real `dualshock-4-v2-bt` descriptor does not declare `0x12`.
+
+### Why the Edge needs its own firmware line (v1.4.7)
+
+The `0x20` capture came from a base DualSense, and the gate keys on
+VendorID with no PID branch, so Edge personas served it verbatim and
+claimed the base pad's identity.
+
+Sony's firmware-updater data records the base pad as Type `0004` and the
+Edge as Type `0044`. The captured blob carries `swSeries` `0x0004` and
+`updateVersion` `0x0630`, matching Sony's "DualSense, Type 0004, version
+0x0630" entry exactly. That agreement is what identifies those two offsets
+rather than inferring them from field names, and independently confirms the
+capture is genuine. PID `0x0DF2` now reports `0x0044` and `0x0217`.
+
+Everything else in the Edge's blob is still the base pad's. No public dump
+of an Edge `0x20` exists, and dualshock-tools does not map the Edge's
+`hwinfo` at all, skipping Board Model when `is_edge`. Nothing observed
+reads those fields on an Edge, since `hid-playstation` derives
+`use_vibration_v2` and `is_edge` from the PID and dualsense-tester's Edge
+page hardcodes its traceability gate, but that argues the inheritance is
+harmless rather than correct.
+
+### The full Sony startup surface
+
+`0x02`, `0x05`, `0x09`, `0x12`, `0x20`, `0x22` and `0xA3`, each served on
+both backends. Feature `0x03` (capabilities) is deliberately absent: SDL
+reads it only on its third-party detection path, and both its PS4 and PS5
+drivers return early for a genuine Sony VID/PID, so a pad carrying Sony IDs
+is never asked for it.
+
 ---
 
 ## Switch Pro protocol responder

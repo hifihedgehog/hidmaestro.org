@@ -1626,6 +1626,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Force-kill recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composite-personas-are-swept-by-a-separate-route-v145" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite personas are swept by a separate route (v1.4.5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2018,6 +2035,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Force-kill recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composite-personas-are-swept-by-a-separate-route-v145" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite personas are swept by a separate route (v1.4.5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2392,6 +2426,14 @@
 <a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">ctrl0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(...);</span><span class="w">   </span><span class="c1">// fresh state</span>
 </code></pre></div>
 <p>The regression battery's S12_ForceKill_Recovery and S17_ForceKill_MidCascade scenarios validate this end-to-end. See <a href="../testing-and-verification/">Testing and Verification</a>.</p>
+<h3 id="composite-personas-are-swept-by-a-separate-route-v145">Composite personas are swept by a separate route (v1.4.5)<a class="headerlink" href="#composite-personas-are-swept-by-a-separate-route-v145" title="Permanent link">&para;</a></h3>
+<p>The sweep walks the ROOT and SWD enumerators removing devices whose hardware IDs carry the <code>HIDMAESTRO</code> token. A <a href="../../sdk/usb-audio-composite/">composite persona</a> carries no such token by design, because the USB Audio Class driver binds against an exact Sony identity, so the enumerator walk cannot reach one. Before v1.4.5 an orphaned persona survived the self-heal: a USB DualSense stayed enumerated with nothing left running to feed it.</p>
+<p><code>RemoveAllVirtualControllers</code> now detaches every persona this SDK owns from the emulated host controller, then walks the enumerators as before. Two consequences worth knowing:</p>
+<ul>
+<li>Personas belonging to another live process are detached too. A consumer asking for a clean machine gets one, which is the same contract the enumerator walk has always had for UMDF2 controllers.</li>
+<li>The detach runs before the walk, and before it detaches anything it disposes this process's own emulated devices to join their input pump threads. Those pumps map the shared input sections directly and take no part in the stop-event drain, so a pump still running when the sweep unmaps its section is an access violation on a background thread, not a leak. Consumers calling the public API get this ordering for free.</li>
+</ul>
+<p><strong>Dispose your controllers before sweeping.</strong> The sweep ends by releasing every shared-memory mapping the process holds, and it does not stop a live <code>HMController</code>. That controller's output poll loop is stopped only by <code>Dispose</code>, so it keeps reading a view the sweep has unmapped and the process dies with <code>0xC0000005</code> on a thread unrelated to the call you made. Tracked as <a href="https://github.com/hifihedgehog/HIDMaestro/issues/45">#45</a>, open as of v1.4.5.</p>
 <p>For deliberate cleanup (e.g. uninstalling HIDMaestro entirely), use:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>HIDMaestroTest.exe cleanup
 </code></pre></div>

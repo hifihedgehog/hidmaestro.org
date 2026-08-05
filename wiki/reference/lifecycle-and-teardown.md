@@ -325,6 +325,17 @@ ctrl0 = ctx.CreateController(...);   // fresh state
 
 The regression battery's S12_ForceKill_Recovery and S17_ForceKill_MidCascade scenarios validate this end-to-end. See [Testing and Verification](testing-and-verification.md).
 
+### Composite personas are swept by a separate route (v1.4.5)
+
+The sweep walks the ROOT and SWD enumerators removing devices whose hardware IDs carry the `HIDMAESTRO` token. A [composite persona](../sdk/usb-audio-composite.md) carries no such token by design, because the USB Audio Class driver binds against an exact Sony identity, so the enumerator walk cannot reach one. Before v1.4.5 an orphaned persona survived the self-heal: a USB DualSense stayed enumerated with nothing left running to feed it.
+
+`RemoveAllVirtualControllers` now detaches every persona this SDK owns from the emulated host controller, then walks the enumerators as before. Two consequences worth knowing:
+
+- Personas belonging to another live process are detached too. A consumer asking for a clean machine gets one, which is the same contract the enumerator walk has always had for UMDF2 controllers.
+- The detach runs before the walk, and before it detaches anything it disposes this process's own emulated devices to join their input pump threads. Those pumps map the shared input sections directly and take no part in the stop-event drain, so a pump still running when the sweep unmaps its section is an access violation on a background thread, not a leak. Consumers calling the public API get this ordering for free.
+
+**Dispose your controllers before sweeping.** The sweep ends by releasing every shared-memory mapping the process holds, and it does not stop a live `HMController`. That controller's output poll loop is stopped only by `Dispose`, so it keeps reading a view the sweep has unmapped and the process dies with `0xC0000005` on a thread unrelated to the call you made. Tracked as [#45](https://github.com/hifihedgehog/HIDMaestro/issues/45), open as of v1.4.5.
+
 For deliberate cleanup (e.g. uninstalling HIDMaestro entirely), use:
 
 ```cmd

@@ -84,7 +84,7 @@ The `misc/` vendor catches everything else &mdash; arcade controllers, niche rac
 | `vendor` | string | Manufacturer name. Doesn't need to be a slug. |
 | `vid` | string | USB Vendor ID as a 4-digit hex string with `0x` prefix. |
 | `pid` | string | USB Product ID, same format. |
-| `productString` | string | The string returned by `IOCTL_HID_GET_STRING (HID_STRING_ID_IPRODUCT)`. **This is what `joy.cpl` and games see.** Match the real device exactly &mdash; SDL3's controller database keys off this. |
+| `productString` | string | The string returned by `IOCTL_HID_GET_STRING (HID_STRING_ID_IPRODUCT)`. **This is what `joy.cpl` and games see.** Match the real device exactly. SDL3's controller database keys off this. See [when revisions disagree](#when-hardware-revisions-disagree). |
 | `type` | string | Controller category. One of: `gamepad`, `wheel`, `joystick`, `flightstick`, `hotas`, `arcadestick`, `pedals`, `other`. |
 | `connection` | string | Connection type the profile represents. One of: `usb`, `bluetooth`, `wireless-adapter`. |
 
@@ -109,6 +109,14 @@ The `misc/` vendor catches everything else &mdash; arcade controllers, niche rac
 | `notes` | string \| null | null | Implementation notes, descriptor provenance, quirks. Free-form. |
 
 The full JSON Schema lives in `profiles/schema.json`.
+
+### When hardware revisions disagree
+
+"Match the real device exactly" stops being a complete instruction when a manufacturer changes a string mid-life and leaves nothing on the wire to tell the revisions apart. A DualSense sold in 2020 reports `Wireless Controller`. One sold today reports `DualSense Wireless Controller`. Both report `bcdDevice` 0x0100 and the same 054C:0CE6, so no field a profile could branch on distinguishes them, and a profile serves one string or the other.
+
+HIDMaestro's rule for that case is that the current revision wins, since a consumer keyed to a retired string is already broken against real hardware a user can buy. As of v1.4.5 `dualsense` and `dualsense-composite` serve `DualSense Wireless Controller`. The launch string remains available on `dualsense-bt`, whose `dualsense-bt-full` sibling carries the current one, so both are reachable from the catalog and a consumer that needs the older identity can ask for it by profile id.
+
+Write the reasoning into `notes` when you make this call in a profile of your own. The next person to compare the profile against a descriptor dump will find the mismatch and needs to know it was a decision.
 
 ---
 

@@ -1024,6 +1024,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#when-hardware-revisions-disagree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When hardware revisions disagree
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1827,6 +1838,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#when-hardware-revisions-disagree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When hardware revisions disagree
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2116,7 +2138,7 @@
 <tr>
 <td><code>productString</code></td>
 <td>string</td>
-<td>The string returned by <code>IOCTL_HID_GET_STRING (HID_STRING_ID_IPRODUCT)</code>. <strong>This is what <code>joy.cpl</code> and games see.</strong> Match the real device exactly &mdash; SDL3's controller database keys off this.</td>
+<td>The string returned by <code>IOCTL_HID_GET_STRING (HID_STRING_ID_IPRODUCT)</code>. <strong>This is what <code>joy.cpl</code> and games see.</strong> Match the real device exactly. SDL3's controller database keys off this. See <a href="#when-hardware-revisions-disagree">when revisions disagree</a>.</td>
 </tr>
 <tr>
 <td><code>type</code></td>
@@ -2234,6 +2256,10 @@
 </tbody>
 </table>
 <p>The full JSON Schema lives in <code>profiles/schema.json</code>.</p>
+<h3 id="when-hardware-revisions-disagree">When hardware revisions disagree<a class="headerlink" href="#when-hardware-revisions-disagree" title="Permanent link">&para;</a></h3>
+<p>"Match the real device exactly" stops being a complete instruction when a manufacturer changes a string mid-life and leaves nothing on the wire to tell the revisions apart. A DualSense sold in 2020 reports <code>Wireless Controller</code>. One sold today reports <code>DualSense Wireless Controller</code>. Both report <code>bcdDevice</code> 0x0100 and the same 054C:0CE6, so no field a profile could branch on distinguishes them, and a profile serves one string or the other.</p>
+<p>HIDMaestro's rule for that case is that the current revision wins, since a consumer keyed to a retired string is already broken against real hardware a user can buy. As of v1.4.5 <code>dualsense</code> and <code>dualsense-composite</code> serve <code>DualSense Wireless Controller</code>. The launch string remains available on <code>dualsense-bt</code>, whose <code>dualsense-bt-full</code> sibling carries the current one, so both are reachable from the catalog and a consumer that needs the older identity can ask for it by profile id.</p>
+<p>Write the reasoning into <code>notes</code> when you make this call in a profile of your own. The next person to compare the profile against a descriptor dump will find the mismatch and needs to know it was a decision.</p>
 <hr />
 <h2 id="vendor-blob-fields-extendedreport-extendedoutputreport">Vendor-blob fields (<code>extendedReport</code> / <code>extendedOutputReport</code>)<a class="headerlink" href="#vendor-blob-fields-extendedreport-extendedoutputreport" title="Permanent link">&para;</a></h2>
 <p>Some controllers' descriptors declare their input as a single opaque vendor-defined field — Sony BT (DualSense, DualSense Edge, DS4 BT) is the canonical example, but Switch Pro and various wheels follow the same pattern. The descriptor doesn't say which bytes carry sticks vs buttons vs gyro vs CRC; the wire format is firmware convention.</p>

@@ -101,6 +101,10 @@ ROOT\USB\0000   HardwareIds = ROOT\USBIP_WIN2\UDE
 
 It is added alongside the upstream id, never in place of it, so driver binding is unchanged. A consumer that already filters its own virtual pads by testing hardware IDs for `HIDMAESTRO` needs only to walk far enough up the device tree: from the persona's HID interface, that node is four parents away, so a depth limit of five or more finds it. Filtering on the transport's `usbip2_ude` service instead would also catch an unrelated usbip install, and would break outright if the backend is ever replaced.
 
+The same absence of a marker changes how a persona is cleaned up. The device sweep behind `RemoveAllVirtualControllers` walks the ROOT and SWD enumerators looking for exactly that `HIDMAESTRO` token, so it can never see a composite, and before v1.4.5 a consumer that created one and exited left a USB DualSense enumerated on the machine with nothing left running to feed it. The sweep now detaches every persona this SDK owns from the emulated host controller before it walks the enumerators. Personas owned by another live process are detached too, which is the point of asking for a clean machine.
+
+The order matters and is not an implementation detail a consumer can ignore. A persona's input pump maps the shared input section directly and reads it in a loop, taking no part in the stop-event drain the UMDF2 controllers use, so the pump has to be joined before the sweep destroys those sections. Detaching without stopping it first is not a leak, it is an access violation on a background thread that takes the process down. If you build your own teardown path over the internals rather than calling the SDK's, stop the pumps first.
+
 One fidelity note worth knowing: Windows persists per-endpoint enable/disable state by device identity. Because the composite presents the real pad's exact identity, it inherits whatever state the machine last had for the real controller's endpoints. If the real pad's speaker endpoint was ever disabled in the Sound control panel, the virtual one arrives disabled too. Re-enable it there once.
 
 ---

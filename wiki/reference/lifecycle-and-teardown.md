@@ -334,7 +334,9 @@ The sweep walks the ROOT and SWD enumerators removing devices whose hardware IDs
 - Personas belonging to another live process are detached too. A consumer asking for a clean machine gets one, which is the same contract the enumerator walk has always had for UMDF2 controllers.
 - The detach runs before the walk, and before it detaches anything it disposes this process's own emulated devices to join their input pump threads. Those pumps map the shared input sections directly and take no part in the stop-event drain, so a pump still running when the sweep unmaps its section is an access violation on a background thread, not a leak. Consumers calling the public API get this ordering for free.
 
-**Dispose your controllers before sweeping.** The sweep ends by releasing every shared-memory mapping the process holds, and it does not stop a live `HMController`. That controller's output poll loop is stopped only by `Dispose`, so it keeps reading a view the sweep has unmapped and the process dies with `0xC0000005` on a thread unrelated to the call you made. Tracked as [#45](https://github.com/hifihedgehog/HIDMaestro/issues/45), open as of v1.4.5.
+**Sweeping with a live controller is safe as of v1.4.6.** Until then it was not: the sweep released every shared-memory mapping the process held without stopping a live `HMController`, whose output poll loop is cancelled only by `Dispose`. The loop kept reading a view that had just been unmapped and the process died with `0xC0000005` on a thread unrelated to the call that was made ([#45](https://github.com/hifihedgehog/HIDMaestro/issues/45)).
+
+Poll threads now register with the shared-memory layer, and every unmap path cancels and joins them first, so this is handled inside the SDK rather than being a rule callers have to remember. Disposing controllers before a sweep is still the tidier shape, and on older versions it is the only safe one.
 
 For deliberate cleanup (e.g. uninstalling HIDMaestro entirely), use:
 

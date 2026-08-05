@@ -1347,6 +1347,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Sony feature reports and why calibration cannot be zeros">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#firmware-info-0x20-is-validated-too-not-just-read-v146" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firmware info (0x20) is validated too, not just read (v1.4.6)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serving-real-values-in-0x20-forced-0x22-to-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serving real values in 0x20 forced 0x22 to answer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1895,6 +1923,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Sony feature reports and why calibration cannot be zeros">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#firmware-info-0x20-is-validated-too-not-just-read-v146" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firmware info (0x20) is validated too, not just read (v1.4.6)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serving-real-values-in-0x20-forced-0x22-to-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serving real values in 0x20 forced 0x22 to answer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2352,6 +2408,47 @@ two payload copies are asserted byte-identical. A consumer reading
 calibration from a composite must see exactly what the plain profile
 serves. <code>sony_feature_gate_check</code> (battery scenario S46) drives the real
 UMDF2 path and computes the denominators the way SDL and Linux do.</p>
+<h3 id="firmware-info-0x20-is-validated-too-not-just-read-v146">Firmware info (<code>0x20</code>) is validated too, not just read (v1.4.6)<a class="headerlink" href="#firmware-info-0x20-is-validated-too-not-just-read-v146" title="Permanent link">&para;</a></h3>
+<p>Calibration was not the only degenerate blob. Report <code>0x20</code>, the DS5
+firmware info, was zero-filled apart from one byte, on the reasoning that
+the only consumer known at the time read nothing else. A game with native
+PlayStation support proved otherwise: a USB capture of F1 22's startup
+shows it issuing <code>0x09</code>, the report descriptor twice, then <code>0x20</code>, and on
+a zeroed reply it abandons the device and repeats the whole sequence every
+500 ms indefinitely. It dies before calibration is ever requested, which
+is why fixing <code>0x05</code> changed nothing for it.</p>
+<p><code>0x20</code> now serves a real 64-byte blob captured from physical hardware,
+verbatim. Which field the game validates is not known, so no byte is
+synthesised. Two independent consumers agree on the layout:
+<code>hid-playstation.c</code> reads <code>hw_version</code> at le32 <code>buf[24]</code>, <code>fw_version</code> at
+le32 <code>buf[28]</code> and <code>update_version</code> at le16 <code>buf[44]</code>, while
+dualsense-tester reads the build date at 1..11, the time at 12..19,
+<code>fwType</code> le16 at 20, <code>hwInfo</code> le32 at 24, <code>mainFwVersion</code> le32 at 28 and
+<code>updateVersion</code> le16 at 44.</p>
+<p>WinUHid ships its own default blob and it is deliberately not used here.
+It reports <code>fwType</code> 4, which fails dualsense-tester's <code>fwType ∈ {2,3}</code>
+render gate. The captured blob reports 3 and satisfies both consumers.</p>
+<p>The cost of serving hardware's own bytes is that the build date belongs to
+the pad they came from, so every virtual DualSense reports it. WinUHid
+makes the same trade with a single fixed default for every emulated pad.</p>
+<h3 id="serving-real-values-in-0x20-forced-0x22-to-answer">Serving real values in <code>0x20</code> forced <code>0x22</code> to answer<a class="headerlink" href="#serving-real-values-in-0x20-forced-0x22-to-answer" title="Permanent link">&para;</a></h3>
+<p>Worth stating because it is the kind of coupling that turns one fix into
+one fix and one regression. dualsense-tester runs a traceability branch
+when <code>hwInfo &amp; 0xFFFF &gt;= 777</code> and <code>mainFwVersion &gt;= 65655</code>. Both are true
+of the real blob and both were false of the zeros, so that branch was
+previously unreachable. It opens by reading feature <code>0x22</code>, and every
+report ID outside the Sony gate falls through to <code>STATUS_NOT_SUPPORTED</code>.</p>
+<p>Shipping <code>0x20</code> alone would therefore have fixed the game by breaking the
+Factory Info panel that already worked. <code>0x22</code> is now served on both
+backends at the 64 bytes the descriptor declares. Its payload is zero past
+the report ID, and that is the honest value rather than a stub:
+<code>getBtPatchInfo</code> reads a le32 at offset 31 and its caller drops the row
+when the result is falsy, so zero reads as "this pad carries no Bluetooth
+patch". The report ID itself must be present, because that function bails
+when byte 0 is not <code>0x22</code>.</p>
+<p>Both lanes assert the 64 bytes against a literal spelled out in each probe
+(S43 for the composite backend, S46 for UMDF2), so the two copies cannot
+drift apart silently.</p>
 <hr />
 <h2 id="switch-pro-protocol-responder">Switch Pro protocol responder<a class="headerlink" href="#switch-pro-protocol-responder" title="Permanent link">&para;</a></h2>
 <p>Most profiles are passive: the SDK submits state, the worker completes read requests. The Nintendo Switch Pro Controller (issue #33) is not. Hosts (SDL's <code>HIDAPI_DriverSwitch</code>, Steam, BetterJoy) drive a Nintendo init-and-subcommand protocol and stall without a device that answers, so the generic report-builder cannot express it. <code>driver.c</code> carries a hardcoded responder keyed on <code>VID 0x057E &amp;&amp; PID 0x2009</code> (<code>ctx-&gt;SwitchProtocol</code>), with protocol in code and layout in JSON, the same split as the Sony vendor-blob work.</p>

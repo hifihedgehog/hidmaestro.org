@@ -331,6 +331,56 @@ calibration from a composite must see exactly what the plain profile
 serves. `sony_feature_gate_check` (battery scenario S46) drives the real
 UMDF2 path and computes the denominators the way SDL and Linux do.
 
+### Firmware info (`0x20`) is validated too, not just read (v1.4.6)
+
+Calibration was not the only degenerate blob. Report `0x20`, the DS5
+firmware info, was zero-filled apart from one byte, on the reasoning that
+the only consumer known at the time read nothing else. A game with native
+PlayStation support proved otherwise: a USB capture of F1 22's startup
+shows it issuing `0x09`, the report descriptor twice, then `0x20`, and on
+a zeroed reply it abandons the device and repeats the whole sequence every
+500 ms indefinitely. It dies before calibration is ever requested, which
+is why fixing `0x05` changed nothing for it.
+
+`0x20` now serves a real 64-byte blob captured from physical hardware,
+verbatim. Which field the game validates is not known, so no byte is
+synthesised. Two independent consumers agree on the layout:
+`hid-playstation.c` reads `hw_version` at le32 `buf[24]`, `fw_version` at
+le32 `buf[28]` and `update_version` at le16 `buf[44]`, while
+dualsense-tester reads the build date at 1..11, the time at 12..19,
+`fwType` le16 at 20, `hwInfo` le32 at 24, `mainFwVersion` le32 at 28 and
+`updateVersion` le16 at 44.
+
+WinUHid ships its own default blob and it is deliberately not used here.
+It reports `fwType` 4, which fails dualsense-tester's `fwType ∈ {2,3}`
+render gate. The captured blob reports 3 and satisfies both consumers.
+
+The cost of serving hardware's own bytes is that the build date belongs to
+the pad they came from, so every virtual DualSense reports it. WinUHid
+makes the same trade with a single fixed default for every emulated pad.
+
+### Serving real values in `0x20` forced `0x22` to answer
+
+Worth stating because it is the kind of coupling that turns one fix into
+one fix and one regression. dualsense-tester runs a traceability branch
+when `hwInfo & 0xFFFF >= 777` and `mainFwVersion >= 65655`. Both are true
+of the real blob and both were false of the zeros, so that branch was
+previously unreachable. It opens by reading feature `0x22`, and every
+report ID outside the Sony gate falls through to `STATUS_NOT_SUPPORTED`.
+
+Shipping `0x20` alone would therefore have fixed the game by breaking the
+Factory Info panel that already worked. `0x22` is now served on both
+backends at the 64 bytes the descriptor declares. Its payload is zero past
+the report ID, and that is the honest value rather than a stub:
+`getBtPatchInfo` reads a le32 at offset 31 and its caller drops the row
+when the result is falsy, so zero reads as "this pad carries no Bluetooth
+patch". The report ID itself must be present, because that function bails
+when byte 0 is not `0x22`.
+
+Both lanes assert the 64 bytes against a literal spelled out in each probe
+(S43 for the composite backend, S46 for UMDF2), so the two copies cannot
+drift apart silently.
+
 ---
 
 ## Switch Pro protocol responder

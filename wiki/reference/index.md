@@ -30,6 +30,6 @@ stack. Read the first five in order for the full picture.
 - **[Build and Release](build-and-release.md)**: the two-phase build and
   the release recipe.
 - **[Testing and Verification](testing-and-verification.md)**:
-  `scripts/verify.py` and the 45-scenario regression battery.
+  `scripts/verify.py` and the 46-scenario regression battery.
 - **[References](references.md)**: authoritative sources for every
   load-bearing claim in these docs.

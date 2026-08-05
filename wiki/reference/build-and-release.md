@@ -188,10 +188,10 @@ Which runs, in order (`[N/4]` matches the script's own progress labels):
 
 1. **`[1/4]` Build.** `scripts\build_all.cmd` plus the test app, profile extractor, and both Switch Pro probes. Aborts with exit 2 if any build fails.
 2. **`[2/4]` Switch Pro protocol checks (issue #33).** `switch_pro_check` replays SDL's exact USB init + subcommand sequence over raw HID (43 asserts), then `switch_pro_sdl3_check` drives the pad end to end through real SDL3 when the sibling `SDL3-build` checkout is present (SKIPs cleanly when absent). A FAIL here aborts with exit 1.
-3. **`[3/4]` `test\regression\swap_regression.ps1`.** The 45-scenario live-swap battery. Must report 45/45 PASS. A non-zero battery exit aborts with exit 1.
+3. **`[3/4]` `test\regression\swap_regression.ps1`.** The 46-scenario live-swap battery. Must report 46/46 PASS. A non-zero battery exit aborts with exit 1.
 4. **`[4/4]` Cleanup + verdict.** Confirms no leftover devnodes and prints the safe-to-tag banner.
 
-Total: ~30-40 minutes wall time. The regression battery dominates (devbox 45/45 in ~12 min, Atom Z8350 scale=2 in ~22 min).
+Total: ~30-40 minutes wall time. The regression battery dominates (devbox 46/46 in ~12 min, Atom Z8350 scale=2 in ~22 min).
 
 The script aborts on first failure with the diagnostic. Don't tag if any step fails.
 

@@ -275,6 +275,64 @@ Created in `EvtDeviceAdd` and joined on stop. Cancellation via `SetEvent(StopEve
 
 ---
 
+## Sony feature reports and why calibration cannot be zeros
+
+`driver.c` answers the Sony arm-handshake feature reads (`0x05`, `0x09`,
+`0x20`, `0x02`, `0xA3`), gated on VID `0x054C` so the IDs cannot collide
+with an unrelated profile's own feature reports. Report `0x02` is also the
+Feature Report ID the default Xbox 360 descriptor declares, which is
+exactly the collision that gate prevents.
+
+Those payloads were zero-filled until v1.4.4 (issue #43), and for the
+calibration reports that was a defect rather than a shortcut. **Calibration
+is a divisor, not decoration.** Every parser builds a sensitivity from the
+plus/minus pairs, so a zero blob yields a zero denominator:
+
+- SDL's `HIDAPI_DriverPS5_LoadCalibrationData` computes
+  `(plus + minus) * RES / (pitchPlus - pitchMinus)`, which is `0.0f / 0`,
+  so the sensitivity becomes NaN. SDL still enumerates the pad, because
+  NaN gyro does not stop buttons or sticks. That is why SDL-based
+  consumers looked unaffected while native-PlayStation titles rejected the
+  device.
+- Linux's `hid-playstation.c` checks `sens_denom == 0` at four sites, warns
+  `"Invalid gyro calibration data for axis (%d), disabling calibration"`,
+  and substitutes `S16_MAX`. The canonical driver defends against exactly
+  what this driver used to emit.
+
+The served payload is the neutral calibration from
+[WinUHid](https://github.com/cgutman/WinUHid), a working virtual PS4/PS5
+for Windows, with field offsets verified against `hid-playstation.c`: bias
+at `buf[1..6]`, plus/minus at `buf[7..18]`, speed at `buf[19..22]`, accel
+at `buf[23..34]`. Gyro and accel denominators come out at 20000 and
+`speed_2x` at 1000.
+
+It is deliberately order-agnostic. `hid-playstation.c` parses a DS4 over
+USB as `pitch+ pitch- yaw+ yaw- roll+ roll-` but over Bluetooth as
+`pitch+ yaw+ roll+ pitch- yaw- roll-`. Because every plus is +10000 and
+every minus is -10000, one payload reads correctly under both orderings,
+so the 37-versus-41-byte split needs no ordering branch.
+
+Two sizing details worth keeping:
+
+- **Report `0x09` is 20 bytes, not 17.** That is what the real DualSense
+  descriptor declares and what `hid-playstation.c` requests, and
+  `ps_get_report` requires the transferred count to equal the requested
+  size exactly. A short reply fails on size before its contents are ever
+  examined. The MAC sits at bytes 1..6 and is synthesised per controller
+  in the locally-administered range, so it cannot collide with a real
+  pad's globally-assigned address.
+- **CRC is a Bluetooth-only gate.** `ps_get_report` verifies the trailing
+  CRC32 only when `hdev->bus == BUS_BLUETOOTH`, so USB paths, including
+  every composite persona, never reach it.
+
+`UsbipEmulatedDevice` reproduces this table for composite personas, and the
+two payload copies are asserted byte-identical. A consumer reading
+calibration from a composite must see exactly what the plain profile
+serves. `sony_feature_gate_check` (battery scenario S46) drives the real
+UMDF2 path and computes the denominators the way SDL and Linux do.
+
+---
+
 ## Switch Pro protocol responder
 
 Most profiles are passive: the SDK submits state, the worker completes read requests. The Nintendo Switch Pro Controller (issue #33) is not. Hosts (SDL's `HIDAPI_DriverSwitch`, Steam, BetterJoy) drive a Nintendo init-and-subcommand protocol and stall without a device that answers, so the generic report-builder cannot express it. `driver.c` carries a hardcoded responder keyed on `VID 0x057E && PID 0x2009` (`ctx->SwitchProtocol`), with protocol in code and layout in JSON, the same split as the Sony vendor-blob work.

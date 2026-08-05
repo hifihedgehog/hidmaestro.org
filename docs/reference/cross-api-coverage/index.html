@@ -1513,6 +1513,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sony-motion-calibration-issue-43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sony motion calibration (issue #43)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#the-ig_-enumerator-trick" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2177,6 +2188,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sony-motion-calibration-issue-43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sony motion calibration (issue #43)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#the-ig_-enumerator-trick" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2548,6 +2570,25 @@
 <li><strong>Bluetooth bus type</strong> for BT-mode profiles (via the BTHLEDEVICE spoof).</li>
 <li><strong>Per-instance disambiguation.</strong> Two virtual DualSense with the same VID:PID/ProductString get unique serials (<code>HM-CTL-0001</code>, <code>HM-CTL-0002</code>) so <code>hid_enumerate</code> doesn't bucket them as one device.</li>
 </ul>
+<h3 id="sony-motion-calibration-issue-43">Sony motion calibration (issue #43)<a class="headerlink" href="#sony-motion-calibration-issue-43" title="Permanent link">&para;</a></h3>
+<p>A DualSense or DualShock 4 profile answers the Sony calibration feature
+report with real, non-degenerate values. Consumers derive a gyro and accel
+sensitivity from the plus/minus pairs it carries, so the zero-filled blob
+served before v1.4.4 produced a zero denominator: SDL's PS5 driver landed
+on NaN, and Linux's <code>hid-playstation.c</code> classified the report as invalid
+and disabled calibration outright.</p>
+<p>The split this created is worth knowing when triaging a report. A consumer
+that never reads calibration (joy.cpl, DirectInput, Steam Input,
+dualsense-tester) behaved correctly the whole time, and SDL kept
+enumerating the pad because NaN gyro does not stop buttons or sticks. What
+broke was titles with native PlayStation support, which read the
+calibration and rejected the device. "Works in Steam, rejected by the game"
+is the signature of this class of problem.</p>
+<p>Denominators are now 20000 with <code>speed_2x</code> at 1000, and the payload is
+order-agnostic so it reads correctly under both the USB and Bluetooth field
+orders. Report <code>0x09</code> also grew from 17 to the 20 bytes the descriptor
+declares, since <code>ps_get_report</code> requires an exact size match and rejected
+the short reply before looking at it.</p>
 <h3 id="the-ig_-enumerator-trick">The &amp;IG_ enumerator trick<a class="headerlink" href="#the-ig_-enumerator-trick" title="Permanent link">&para;</a></h3>
 <p>By using <code>VID_*&amp;PID_*&amp;IG_00</code> as the device enumerator, the HID child's device path contains <code>&amp;IG_</code>. This has three simultaneous effects:</p>
 <ul>

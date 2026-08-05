@@ -91,6 +91,29 @@ SDL3 detects gamepads through three backends with fallback: XInput, HIDAPI (libu
 - **Bluetooth bus type** for BT-mode profiles (via the BTHLEDEVICE spoof).
 - **Per-instance disambiguation.** Two virtual DualSense with the same VID:PID/ProductString get unique serials (`HM-CTL-0001`, `HM-CTL-0002`) so `hid_enumerate` doesn't bucket them as one device.
 
+### Sony motion calibration (issue #43)
+
+A DualSense or DualShock 4 profile answers the Sony calibration feature
+report with real, non-degenerate values. Consumers derive a gyro and accel
+sensitivity from the plus/minus pairs it carries, so the zero-filled blob
+served before v1.4.4 produced a zero denominator: SDL's PS5 driver landed
+on NaN, and Linux's `hid-playstation.c` classified the report as invalid
+and disabled calibration outright.
+
+The split this created is worth knowing when triaging a report. A consumer
+that never reads calibration (joy.cpl, DirectInput, Steam Input,
+dualsense-tester) behaved correctly the whole time, and SDL kept
+enumerating the pad because NaN gyro does not stop buttons or sticks. What
+broke was titles with native PlayStation support, which read the
+calibration and rejected the device. "Works in Steam, rejected by the game"
+is the signature of this class of problem.
+
+Denominators are now 20000 with `speed_2x` at 1000, and the payload is
+order-agnostic so it reads correctly under both the USB and Bluetooth field
+orders. Report `0x09` also grew from 17 to the 20 bytes the descriptor
+declares, since `ps_get_report` requires an exact size match and rejected
+the short reply before looking at it.
+
 ### The &amp;IG_ enumerator trick
 
 By using `VID_*&PID_*&IG_00` as the device enumerator, the HID child's device path contains `&IG_`. This has three simultaneous effects:

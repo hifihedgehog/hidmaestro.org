@@ -1339,6 +1339,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#sony-feature-reports-and-why-calibration-cannot-be-zeros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sony feature reports and why calibration cannot be zeros
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#switch-pro-protocol-responder" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1876,6 +1887,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#sony-feature-reports-and-why-calibration-cannot-be-zeros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sony feature reports and why calibration cannot be zeros
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#switch-pro-protocol-responder" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2278,6 +2300,58 @@
 <li><strong>WAIT_TIMEOUT</strong> &mdash; 50 ms safety tick; process opportunistically.</li>
 </ul>
 <p>Created in <code>EvtDeviceAdd</code> and joined on stop. Cancellation via <code>SetEvent(StopEvent)</code> then <code>WaitForSingleObject(WorkerThread, 5000)</code>.</p>
+<hr />
+<h2 id="sony-feature-reports-and-why-calibration-cannot-be-zeros">Sony feature reports and why calibration cannot be zeros<a class="headerlink" href="#sony-feature-reports-and-why-calibration-cannot-be-zeros" title="Permanent link">&para;</a></h2>
+<p><code>driver.c</code> answers the Sony arm-handshake feature reads (<code>0x05</code>, <code>0x09</code>,
+<code>0x20</code>, <code>0x02</code>, <code>0xA3</code>), gated on VID <code>0x054C</code> so the IDs cannot collide
+with an unrelated profile's own feature reports. Report <code>0x02</code> is also the
+Feature Report ID the default Xbox 360 descriptor declares, which is
+exactly the collision that gate prevents.</p>
+<p>Those payloads were zero-filled until v1.4.4 (issue #43), and for the
+calibration reports that was a defect rather than a shortcut. <strong>Calibration
+is a divisor, not decoration.</strong> Every parser builds a sensitivity from the
+plus/minus pairs, so a zero blob yields a zero denominator:</p>
+<ul>
+<li>SDL's <code>HIDAPI_DriverPS5_LoadCalibrationData</code> computes
+  <code>(plus + minus) * RES / (pitchPlus - pitchMinus)</code>, which is <code>0.0f / 0</code>,
+  so the sensitivity becomes NaN. SDL still enumerates the pad, because
+  NaN gyro does not stop buttons or sticks. That is why SDL-based
+  consumers looked unaffected while native-PlayStation titles rejected the
+  device.</li>
+<li>Linux's <code>hid-playstation.c</code> checks <code>sens_denom == 0</code> at four sites, warns
+  <code>"Invalid gyro calibration data for axis (%d), disabling calibration"</code>,
+  and substitutes <code>S16_MAX</code>. The canonical driver defends against exactly
+  what this driver used to emit.</li>
+</ul>
+<p>The served payload is the neutral calibration from
+<a href="https://github.com/cgutman/WinUHid">WinUHid</a>, a working virtual PS4/PS5
+for Windows, with field offsets verified against <code>hid-playstation.c</code>: bias
+at <code>buf[1..6]</code>, plus/minus at <code>buf[7..18]</code>, speed at <code>buf[19..22]</code>, accel
+at <code>buf[23..34]</code>. Gyro and accel denominators come out at 20000 and
+<code>speed_2x</code> at 1000.</p>
+<p>It is deliberately order-agnostic. <code>hid-playstation.c</code> parses a DS4 over
+USB as <code>pitch+ pitch- yaw+ yaw- roll+ roll-</code> but over Bluetooth as
+<code>pitch+ yaw+ roll+ pitch- yaw- roll-</code>. Because every plus is +10000 and
+every minus is -10000, one payload reads correctly under both orderings,
+so the 37-versus-41-byte split needs no ordering branch.</p>
+<p>Two sizing details worth keeping:</p>
+<ul>
+<li><strong>Report <code>0x09</code> is 20 bytes, not 17.</strong> That is what the real DualSense
+  descriptor declares and what <code>hid-playstation.c</code> requests, and
+  <code>ps_get_report</code> requires the transferred count to equal the requested
+  size exactly. A short reply fails on size before its contents are ever
+  examined. The MAC sits at bytes 1..6 and is synthesised per controller
+  in the locally-administered range, so it cannot collide with a real
+  pad's globally-assigned address.</li>
+<li><strong>CRC is a Bluetooth-only gate.</strong> <code>ps_get_report</code> verifies the trailing
+  CRC32 only when <code>hdev-&gt;bus == BUS_BLUETOOTH</code>, so USB paths, including
+  every composite persona, never reach it.</li>
+</ul>
+<p><code>UsbipEmulatedDevice</code> reproduces this table for composite personas, and the
+two payload copies are asserted byte-identical. A consumer reading
+calibration from a composite must see exactly what the plain profile
+serves. <code>sony_feature_gate_check</code> (battery scenario S46) drives the real
+UMDF2 path and computes the denominators the way SDL and Linux do.</p>
 <hr />
 <h2 id="switch-pro-protocol-responder">Switch Pro protocol responder<a class="headerlink" href="#switch-pro-protocol-responder" title="Permanent link">&para;</a></h2>
 <p>Most profiles are passive: the SDK submits state, the worker completes read requests. The Nintendo Switch Pro Controller (issue #33) is not. Hosts (SDL's <code>HIDAPI_DriverSwitch</code>, Steam, BetterJoy) drive a Nintendo init-and-subcommand protocol and stall without a device that answers, so the generic report-builder cannot express it. <code>driver.c</code> carries a hardcoded responder keyed on <code>VID 0x057E &amp;&amp; PID 0x2009</code> (<code>ctx-&gt;SwitchProtocol</code>), with protocol in code and layout in JSON, the same split as the Sony vendor-blob work.</p>

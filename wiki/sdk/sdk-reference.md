@@ -334,12 +334,22 @@ For a 16-position HOTAS hat, `HatDegrees = 22.5f` snaps to ENE. For a 360-positi
     Touchpad     = 1u << 11,   // PS touchpad click
     Share        = 1u << 12,   // Xbox Series Share button
 
+    RightPaddle  = 1u << 13,   // rear paddle, right side
+    LeftPaddle   = 1u << 14,   // rear paddle, left side
+    Misc1        = 1u << 15,   // vendor button with no cross-vendor role
+
     Cross    = A,    // Sony alias
     Circle   = B,
     Square   = X,
     Triangle = Y,
 }
 ```
+
+`RightPaddle` and `LeftPaddle` are named by side rather than by number, because the pads that have them disagree on numbering and agree on side. SDL splits them the same way with `SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1` and `LEFT_PADDLE1`. The Switch 2 Pro's GR and GL map here.
+
+`Misc1` is a vendor button with no cross-vendor meaning, currently the Switch 2 family's C button, which opens GameChat on real hardware. SDL models it the same way rather than forcing it into one of the standard roles.
+
+All three were added in v1.5.0 as bits 13 to 15. They are additive, so a consumer only needs to care if it switches exhaustively over the enum.
 
 The SDK applies the active profile's `buttonMap` (where present) to translate from the abstract `HMButton` bit position to the descriptor button index. Sony profiles remap so `HMButton.A &rarr; Cross`, `HMButton.X &rarr; Square`, etc. Xbox profiles use identity mapping.
 

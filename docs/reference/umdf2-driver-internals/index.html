@@ -1422,6 +1422,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#switch-2-pro-no-responder-needed-v150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch 2 Pro: no responder needed (v1.5.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#output-ring-writes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2031,6 +2042,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#switch-2-pro-no-responder-needed-v150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch 2 Pro: no responder needed (v1.5.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#output-ring-writes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2564,6 +2586,13 @@ is never asked for it.</p>
 </ul>
 <p><code>SwitchStreamProc</code> and the worker thread both touch <code>ctx-&gt;SharedMemPtr</code>. The worker's stale-handle recycle skips the shared-view unmap for <code>SwitchProtocol</code> devices (the view is unmapped only at cleanup, after both threads join) so it can never unmap the mapping out from under the streaming thread mid-read.</p>
 <p>SDK side, <code>SwitchProPacker</code> converts a normal <code>SubmitState</code> into the 48-byte <code>0x30</code> body: layout-mapped buttons, 12-bit nibble-packed sticks, and the calibrated IMU channel. <code>HMGamepadState.AccelG*</code> / <code>GyroDps*</code> are defined in the SDL-standard sensor frame. The packer owns the SDL-to-Switch wire-frame permutation, so a consumer that reads motion from SDL submits it verbatim and the client-side SDL reconstructs the identical vector. HD rumble comes back decoded to coarse <code>leftMotor</code> / <code>rightMotor</code> amplitudes on <code>OutputDecoded</code>, the same lane Sony rumble rides. The <code>test/probes/switch_pro_check</code> probe replays SDL's exact init sequence over raw HID as the release gate, and <code>switch_pro_sdl3_check</code> drives the pad through real SDL3 end to end.</p>
+<hr />
+<h2 id="switch-2-pro-no-responder-needed-v150">Switch 2 Pro: no responder needed (v1.5.0)<a class="headerlink" href="#switch-2-pro-no-responder-needed-v150" title="Permanent link">&para;</a></h2>
+<p>The Switch 2 Pro Controller (<code>057E:2069</code>) is a protocol device like its predecessor, but unlike the Switch Pro it does <strong>not</strong> need a driver-side responder, and that difference is worth understanding before anyone adds one.</p>
+<p>A Switch 2 Pro declares three reports. <code>0x05</code> is a 63-byte vendor blob that a Nintendo protocol host reads, <code>0x09</code> is a structured gamepad view with 21 buttons and four 12-bit axes, and <code>0x02</code> is output. The device powers up emitting <code>0x09</code> and switches to <code>0x05</code> only when a host sends the <code>subUSBSelectReport</code> subcommand. So the pad is a complete, usable gamepad over plain HID before any handshake happens, which is exactly what the profile targets: report <code>0x09</code>, no protocol code, no <code>driver.c</code> changes.</p>
+<p>The whole format was reconstructed from source rather than captured from hardware. VIIPER's <code>device/ns2pro</code> supplies the descriptor item list and the report builders, SDL's <code>SDL_hidapi_switch2.c</code> independently confirms the button bits, and switch2-controllers-linux confirms them a third time. The predecessor profile's note claiming a hardware capture was required was simply wrong.</p>
+<p><strong>What the profile cannot reach.</strong> SDL routes this VID/PID to its own Switch 2 driver, whose USB init needs libusb plus the controller's second interface bound to WinUSB through MS OS 2.0 descriptors. A UMDF2 HID profile presents one HID interface, so that init fails and SDL releases the device. Getting there would mean the composite USB backend, which this profile deliberately does not use. DirectInput, joy.cpl and WGI are unaffected: they read the descriptor and see the full 21-button, 4-axis pad.</p>
+<p><strong>Two encoder features exist because of this pad.</strong> <code>stick12-pair</code> packs two 12-bit axes into three shared bytes, and it is one field rather than two because the middle byte carries X's high nibble alongside Y's low nibble. <code>DPAD_UP</code> / <code>DOWN</code> / <code>LEFT</code> / <code>RIGHT</code> are button-mask sentinels sourced from <code>HMHat</code>, because report <code>0x09</code> spells the d-pad as four discrete bits with no hat. Diagonals set both components.</p>
 <hr />
 <h2 id="output-ring-writes">Output ring writes<a class="headerlink" href="#output-ring-writes" title="Permanent link">&para;</a></h2>
 <p>When an output IOCTL arrives (<code>SET_OUTPUT_REPORT</code>, <code>SET_FEATURE</code>, <code>WRITE_REPORT</code>):</p>

@@ -447,20 +447,6 @@ SDK side, `SwitchProPacker` converts a normal `SubmitState` into the 48-byte `0x
 
 ---
 
-## Switch 2 Pro: no responder needed (v1.5.0)
-
-The Switch 2 Pro Controller (`057E:2069`) is a protocol device like its predecessor, but unlike the Switch Pro it does **not** need a driver-side responder, and that difference is worth understanding before anyone adds one.
-
-A Switch 2 Pro declares three reports. `0x05` is a 63-byte vendor blob that a Nintendo protocol host reads, `0x09` is a structured gamepad view with 21 buttons and four 12-bit axes, and `0x02` is output. The device powers up emitting `0x09` and switches to `0x05` only when a host sends the `subUSBSelectReport` subcommand. So the pad is a complete, usable gamepad over plain HID before any handshake happens, which is exactly what the profile targets: report `0x09`, no protocol code, no `driver.c` changes.
-
-The whole format was reconstructed from source rather than captured from hardware. VIIPER's `device/ns2pro` supplies the descriptor item list and the report builders, SDL's `SDL_hidapi_switch2.c` independently confirms the button bits, and switch2-controllers-linux confirms them a third time. The predecessor profile's note claiming a hardware capture was required was simply wrong.
-
-**What the profile cannot reach.** SDL routes this VID/PID to its own Switch 2 driver, whose USB init needs libusb plus the controller's second interface bound to WinUSB through MS OS 2.0 descriptors. A UMDF2 HID profile presents one HID interface, so that init fails and SDL releases the device. Getting there would mean the composite USB backend, which this profile deliberately does not use. DirectInput, joy.cpl and WGI are unaffected: they read the descriptor and see the full 21-button, 4-axis pad.
-
-**Two encoder features exist because of this pad.** `stick12-pair` packs two 12-bit axes into three shared bytes, and it is one field rather than two because the middle byte carries X's high nibble alongside Y's low nibble. `DPAD_UP` / `DOWN` / `LEFT` / `RIGHT` are button-mask sentinels sourced from `HMHat`, because report `0x09` spells the d-pad as four discrete bits with no hat. Diagonals set both components.
-
----
-
 ## Output ring writes
 
 When an output IOCTL arrives (`SET_OUTPUT_REPORT`, `SET_FEATURE`, `WRITE_REPORT`):

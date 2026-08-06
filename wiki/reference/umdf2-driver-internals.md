@@ -447,6 +447,24 @@ SDK side, `SwitchProPacker` converts a normal `SubmitState` into the 48-byte `0x
 
 ---
 
+## Switch 2 Pro: no responder needed (v1.5.0)
+
+The Switch 2 Pro Controller (`057E:2069`) is a protocol device like its predecessor, but unlike the Switch Pro it does **not** need a driver-side responder, and that difference is worth understanding before anyone adds one.
+
+A Switch 2 Pro declares three reports. `0x05` is a 63-byte vendor blob that a Nintendo protocol host reads, `0x09` is a structured gamepad view with 21 buttons and four 12-bit axes, and `0x02` is output. The device powers up emitting `0x09` and switches to `0x05` only when a host sends the `subUSBSelectReport` subcommand. So the pad is a complete, usable gamepad over plain HID before any handshake happens, which is exactly what the profile targets: report `0x09`, no protocol code, no `driver.c` changes. The profile marks its `extendedReport` `alwaysArmed` for the same reason. There is no handshake to wait for, and the descriptor's first declared report is the opaque `0x05` blob, so a profile that waited would present a live device that never moves.
+
+The whole format was reconstructed from source rather than captured from hardware. VIIPER's `device/ns2pro` supplies the descriptor item list and the report builders, SDL's `SDL_hidapi_switch2.c` independently confirms the button bits, and switch2-controllers-linux confirms them a third time. The predecessor profile's note claiming a hardware capture was required was simply wrong.
+
+**What SDL does with it, measured rather than assumed.** SDL routes this VID/PID to its own Switch 2 driver, and that driver is out of reach: `HIDAPI_DriverSwitch2_InitUSB` wants libusb or WinUSB on the controller's second interface, and `HIDAPI_DriverSwitch2_InitBluetooth` is an unimplemented stub upstream that returns "Nintendo Switch2 controllers not supported over Bluetooth". A UMDF2 HID profile presents one HID interface and can offer neither, so `InitDevice` fails.
+
+What happens next is the part the withdrawn first cut of v1.5.0 asserted without testing. SDL cleans the driver up, the pad falls through to SDL's Windows backend, and it does arrive at the joystick layer with all 21 buttons and 4 axes carrying live input. It is not promoted to the gamepad layer, though, because SDL synthesizes mappings only for its HIDAPI, RawInput, WGI and XInput devices, and this pad is too new for `SDL_gamepad_db.h`. The profile's `sdlMapping` field closes that: a consumer prepends the runtime GUID and registers it, and SDL then reports a full gamepad including GR, GL and C. Gyro, accelerometer and HD rumble stay unavailable through SDL, since those ride the switch2 driver. `test/probes/switch2_pro_sdl3_check` gates all of it against a real SDL3 with a Switch Pro virtual as the same-window positive control.
+
+**Two encoder features exist because of this pad.** `stick12-pair` packs two 12-bit axes into three shared bytes, and it is one field rather than two because the middle byte carries X's high nibble alongside Y's low nibble. `DPAD_UP` / `DOWN` / `LEFT` / `RIGHT` are button-mask sentinels sourced from `HMHat`, because report `0x09` spells the d-pad as four discrete bits with no hat. Diagonals set both components.
+
+**The axis map is load-bearing.** The canonical trigger axes default to Z and Rz, and Rz is this pad's right stick Y. Without an `axisMap` pointing `leftTrigger` and `rightTrigger` at Z and Ry, usages this descriptor does not declare, a consumer pushing the right stick down would also assert ZR.
+
+---
+
 ## Output ring writes
 
 When an output IOCTL arrives (`SET_OUTPUT_REPORT`, `SET_FEATURE`, `WRITE_REPORT`):

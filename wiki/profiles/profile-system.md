@@ -103,6 +103,7 @@ The `misc/` vendor catches everything else &mdash; arcade controllers, niche rac
 | `companionOnly` | bool | false | If true, the runtime skips main-HID-device creation and runs only the XUSB companion. DI reads from XInput (5 axes), browser reads from XInput (separate triggers). Used for cases where real hardware uses xusb22.sys without an HID interface. |
 | `buttonMap` | int[] \| null | identity | Optional remapping table. Index = `HMButton` bit position; value = descriptor button index. Sony profiles use this to swap A/B/X/Y &harr; Cross/Circle/Square/Triangle. `-1` means "abstract bit not in this descriptor". |
 | `axisMap` | object \| null | heuristic | Axis semantic override. Keys are hex HID usage codes (`"0x32"` for Z); values are semantic names (`"leftStickX"`, `"rightTrigger"`). Sony profiles override `Z/Rz &rarr; rightStick`. |
+| `sdlMapping` | string \| null | null | v1.5.0+. SDL gamepad mapping body, everything after the GUID and name, trailing comma included. Set it for pads SDL reaches through DirectInput and has no database entry for, which SDL would otherwise expose as roleless joysticks. See [SDK Reference](../sdk/sdk-reference.md) for the consumer side. |
 | `triggerButtons` | int[] \| null | null | Two-element array `[LT_button_index, RT_button_index]`. When triggers are nonzero, the corresponding buttons engage automatically (DS4/DualSense L2/R2 digital buttons). |
 | `extendedReport` | object \| null | null | v1.3.5+. Vendor-blob input layout. When present, `HMController.SubmitState` packs reports per the field list rather than via the descriptor-driven encoder. Used for profiles where the descriptor declares a single opaque vendor-defined field (Sony BT 0x31, future profiles with similar shape). See section below. |
 | `extendedOutputReport` | object \| null | null | v1.3.5+. Vendor-blob output layout. When present, the SDK decodes incoming output reports of the declared report ID and surfaces parsed-field events via `HMController.OutputDecoded`. Pairs with `HMOutputEncoder.Encode` for the inverse direction. |
@@ -182,6 +183,29 @@ Sony's wire-format prefixes:
 - Input report CRC: `[0xA1, reportId]`
 - Output report CRC: `[0xA2, reportId]`
 - Feature report CRC: `[0x53, reportId]` (per dualsense-tester reference impl)
+
+### Arming: `armOn` and `alwaysArmed`
+
+A vendor blob is not always what the controller emits first. Sony BT pads power up on the short legacy report and only switch to `0x31` / `0x11` once a host reads feature `0x05`, `0x09` or `0x20`, which is the same handshake real firmware uses. `armOn` lists those triggers, and until one fires the SDK takes the descriptor-driven path so joy.cpl and RawInput still see structured axes.
+
+```jsonc
+"armOn": [
+  { "type": "featureRead", "reportId": "0x05" },
+  { "type": "featureRead", "reportId": "0x09" }
+]
+```
+
+Trigger types are `featureRead`, `featureWrite` and `outputWrite`.
+
+Some controllers have no handshake to wait for. A Switch 2 Pro streams its structured report `0x09` from power-on and leaves it only when a host asks for the vendor blob instead, so waiting would be wrong in both directions: nothing would ever arm, and the descriptor's first declared report is the opaque `0x05` blob with no buttons or axes in it. Those profiles set `alwaysArmed` and emit the vendor report from the first frame.
+
+```jsonc
+"extendedReport": { "reportId": "0x09", "size": 64, "alwaysArmed": true, "fields": [ ... ] }
+```
+
+A profile with neither `armOn` nor `alwaysArmed` never runs the codec on the input direction, which is the correct default for every USB Sony profile and every plain-HID gamepad. The output direction ignores both fields.
+
+---
 
 ### When to use `extendedReport` vs leave it unset
 

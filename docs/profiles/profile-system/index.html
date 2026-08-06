@@ -1086,6 +1086,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#arming-armon-and-alwaysarmed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arming: armOn and alwaysArmed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#when-to-use-extendedreport-vs-leave-it-unset" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1900,6 +1911,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#arming-armon-and-alwaysarmed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arming: armOn and alwaysArmed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#when-to-use-extendedreport-vs-leave-it-unset" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2230,6 +2252,12 @@
 <td>Axis semantic override. Keys are hex HID usage codes (<code>"0x32"</code> for Z); values are semantic names (<code>"leftStickX"</code>, <code>"rightTrigger"</code>). Sony profiles override <code>Z/Rz &amp;rarr; rightStick</code>.</td>
 </tr>
 <tr>
+<td><code>sdlMapping</code></td>
+<td>string | null</td>
+<td>null</td>
+<td>v1.5.0+. SDL gamepad mapping body, everything after the GUID and name, trailing comma included. Set it for pads SDL reaches through DirectInput and has no database entry for, which SDL would otherwise expose as roleless joysticks. See <a href="../../sdk/sdk-reference/">SDK Reference</a> for the consumer side.</td>
+</tr>
+<tr>
 <td><code>triggerButtons</code></td>
 <td>int[] | null</td>
 <td>null</td>
@@ -2361,6 +2389,19 @@
 - Input report CRC: <code>[0xA1, reportId]</code>
 - Output report CRC: <code>[0xA2, reportId]</code>
 - Feature report CRC: <code>[0x53, reportId]</code> (per dualsense-tester reference impl)</p>
+<h3 id="arming-armon-and-alwaysarmed">Arming: <code>armOn</code> and <code>alwaysArmed</code><a class="headerlink" href="#arming-armon-and-alwaysarmed" title="Permanent link">&para;</a></h3>
+<p>A vendor blob is not always what the controller emits first. Sony BT pads power up on the short legacy report and only switch to <code>0x31</code> / <code>0x11</code> once a host reads feature <code>0x05</code>, <code>0x09</code> or <code>0x20</code>, which is the same handshake real firmware uses. <code>armOn</code> lists those triggers, and until one fires the SDK takes the descriptor-driven path so joy.cpl and RawInput still see structured axes.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&quot;armOn&quot;: [
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  { &quot;type&quot;: &quot;featureRead&quot;, &quot;reportId&quot;: &quot;0x05&quot; },
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  { &quot;type&quot;: &quot;featureRead&quot;, &quot;reportId&quot;: &quot;0x09&quot; }
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>]
+</code></pre></div>
+<p>Trigger types are <code>featureRead</code>, <code>featureWrite</code> and <code>outputWrite</code>.</p>
+<p>Some controllers have no handshake to wait for. A Switch 2 Pro streams its structured report <code>0x09</code> from power-on and leaves it only when a host asks for the vendor blob instead, so waiting would be wrong in both directions: nothing would ever arm, and the descriptor's first declared report is the opaque <code>0x05</code> blob with no buttons or axes in it. Those profiles set <code>alwaysArmed</code> and emit the vendor report from the first frame.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&quot;extendedReport&quot;: { &quot;reportId&quot;: &quot;0x09&quot;, &quot;size&quot;: 64, &quot;alwaysArmed&quot;: true, &quot;fields&quot;: [ ... ] }
+</code></pre></div>
+<p>A profile with neither <code>armOn</code> nor <code>alwaysArmed</code> never runs the codec on the input direction, which is the correct default for every USB Sony profile and every plain-HID gamepad. The output direction ignores both fields.</p>
+<hr />
 <h3 id="when-to-use-extendedreport-vs-leave-it-unset">When to use <code>extendedReport</code> vs leave it unset<a class="headerlink" href="#when-to-use-extendedreport-vs-leave-it-unset" title="Permanent link">&para;</a></h3>
 <p>Set <code>extendedReport</code> only when the descriptor's first declared input is an opaque vendor blob and the wire format requires firmware-convention byte placement. For controllers whose descriptors fully describe the input report (Xbox 360 wired, DualSense USB, Switch Pro, every plain-HID gamepad), the descriptor-driven encoder packs correctly without an <code>extendedReport</code> block — leave it null/unset.</p>
 <p><code>extendedOutputReport</code> is independent: even when the input descriptor is fully self-describing, declaring an <code>extendedOutputReport</code> lets consumers use <code>HMOutputEncoder.Encode(profile, fields)</code> to produce wire-format bytes for driving real devices without inline byte-packing. v1.3.5 ships output blocks for DS5 USB (Report 0x02), DS5 Edge USB, DS4 v1/v2 USB (Report 0x05), in addition to BT output blocks for the DS5 family (Report 0x31) and DS4 BT (Report 0x11).</p>
@@ -2371,45 +2412,45 @@
 <h3 id="1-plain-hid-200-ms-create-80-ms-dispose">1. Plain HID (~200 ms create, ~80 ms dispose)<a class="headerlink" href="#1-plain-hid-200-ms-create-80-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Profiles where <code>driverMode</code> is <strong>not</strong> <code>"xinputhid"</code> and <code>vid</code> is <strong>not</strong> Microsoft (<code>0x045E</code>).</p>
 <p>Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 228-profile catalog (~204 profiles).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ROOT\VID_054C&amp;PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  └─ HID\VID_054C&amp;PID_0CE6\...       ← raw HID PDO, no upper filter
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ROOT\VID_054C&amp;PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  └─ HID\VID_054C&amp;PID_0CE6\...       ← raw HID PDO, no upper filter
 </code></pre></div>
 <p>Lightest stack. One <code>DIF_REMOVE</code> on the ROOT parent tears down the entire tree. No XUSB companion device, no Microsoft upper filter.</p>
 <h3 id="2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose">2. Non-xinputhid Xbox (~200-700 ms create, ~135 ms dispose)<a class="headerlink" href="#2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Xbox-VID profiles (<code>vid == 0x045E</code>) where <code>driverMode</code> is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running <code>HMXInput.dll</code>. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.</p>
 <p>Includes Xbox 360 Wired (<code>xbox-360-wired</code>), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, Xbox Adaptive (with caveats &mdash; this is a 6-profile group).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ROOT\VID_045E&amp;PID_028E&amp;IG_00\NNNN    ← UMDF2 driver (main HID device)
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  │                                    UpperFilters += &quot;xinputhid&quot; per-instance
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  │                                    (SDK-written; blocks WGI from synthesizing
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  │                                    a duplicate HID-backed Gamepad)
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  └─ HID\VID_045E&amp;PID_028E&amp;IG_00\... ← HID child (raw PDO, input.inf)
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN            ← XUSB companion (HMXInput.dll)
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  │                                    SwDeviceCreate, System class, explicit
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  │                                    per-controller ContainerID (shared with main HID).
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>  │                                    UpperFilters = &quot;xinputhid&quot; from INF
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>  │                                    (admits the companion to WGI&#39;s XUSB
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>  │                                    dispatch; xinputhid.sys does not actually
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>  │                                    attach — wrong device class).
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>  └─ XUSB interface → XInput slot + WGI Gamepad
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ROOT\VID_045E&amp;PID_028E&amp;IG_00\NNNN    ← UMDF2 driver (main HID device)
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  │                                    UpperFilters += &quot;xinputhid&quot; per-instance
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  │                                    (SDK-written; blocks WGI from synthesizing
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  │                                    a duplicate HID-backed Gamepad)
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>  └─ HID\VID_045E&amp;PID_028E&amp;IG_00\... ← HID child (raw PDO, input.inf)
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN            ← XUSB companion (HMXInput.dll)
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>  │                                    SwDeviceCreate, System class, explicit
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>  │                                    per-controller ContainerID (shared with main HID).
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>  │                                    UpperFilters = &quot;xinputhid&quot; from INF
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>  │                                    (admits the companion to WGI&#39;s XUSB
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>  │                                    dispatch; xinputhid.sys does not actually
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>  │                                    attach — wrong device class).
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>  └─ XUSB interface → XInput slot + WGI Gamepad
 </code></pre></div>
 <p>Medium stack, fast on both sides post-v1.3.2. Two device trees to tear down. The XUSB companion runs its own WUDFHost instance hosting <code>HMXInput.dll</code>, which needs its own PnP release cycle.</p>
 <h3 id="3-xinputhid-xbox-150-600-ms-create-500-ms-dispose">3. xinputhid Xbox (~150-600 ms create, ~500 ms dispose)<a class="headerlink" href="#3-xinputhid-xbox-150-600-ms-create-500-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Profiles with <code>driverMode: "xinputhid"</code>. These match <code>xinputhid.inf [GIP_Hid]</code> by hardware ID (<code>HID\VID_045E&amp;PID_0B13&amp;IG_00</code>), which binds Microsoft's <code>xinputhid.sys</code> as an upper filter on the HID child. xinputhid provides XInput delivery and 16-button HID descriptor synthesis natively: no XUSB companion needed, single Device Manager entry.</p>
 <p>Includes Xbox Series BT (<code>xbox-series-xs-bt</code>), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT &mdash; the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\&lt;sid&gt;_NNNN
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  │                                  ← UMDF2 driver via SwDeviceCreate
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  │                                    (mshidumdf host). Explicit non-sentinel
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  │                                    ContainerID closes the slot-1-skip
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  │                                    bit-2 path in xinput1_4!FUN_18000de2c.
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  │                                    Underscore between VID and PID avoids
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>  │                                    the `VID_*&amp;PID_*&amp;IG_*` PnP edge case;
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>  │                                    `&amp;IG_00` retained for HIDAPI/SDL3/Chromium.
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>  └─ HID\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\...
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        │                            ← HID child (xinputhid.inf, xinputhid
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>        │                              upper filter)
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>        ├─ xinputhid.sys              ← Microsoft inbox kernel filter
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>        ├─ XInput delivery (internal)
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        └─ 16-button HID synthesis
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\&lt;sid&gt;_NNNN
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  │                                  ← UMDF2 driver via SwDeviceCreate
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  │                                    (mshidumdf host). Explicit non-sentinel
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>  │                                    ContainerID closes the slot-1-skip
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>  │                                    bit-2 path in xinput1_4!FUN_18000de2c.
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>  │                                    Underscore between VID and PID avoids
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>  │                                    the `VID_*&amp;PID_*&amp;IG_*` PnP edge case;
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>  │                                    `&amp;IG_00` retained for HIDAPI/SDL3/Chromium.
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>  └─ HID\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\...
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>        │                            ← HID child (xinputhid.inf, xinputhid
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>        │                              upper filter)
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>        ├─ xinputhid.sys              ← Microsoft inbox kernel filter
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>        ├─ XInput delivery (internal)
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>        └─ 16-button HID synthesis
 </code></pre></div>
 <p>Both sides fast post-v1.3.2. xinputhid is a Microsoft inbox kernel filter driver; we don't ship it. The SwD-first removal ordering in v1.3.1 closes the SwD parent first, and the children cascade automatically.</p>
 <blockquote>
@@ -2434,56 +2475,56 @@
 <p>The full per-archetype sequence lives in <code>DeviceOrchestrator.cs</code>'s <code>SetupController</code> (~600 lines). See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the disposal counterpart.</p>
 <hr />
 <h2 id="loading-the-catalog">Loading the catalog<a class="headerlink" href="#loading-the-catalog" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// Embedded catalog (228 profiles)</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1">// Custom directory of JSON profiles</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-profiles&quot;</span><span class="p">);</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1">// Mix both — embedded first, then custom (custom IDs win on collision)</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-overrides&quot;</span><span class="p">);</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="c1">// Lookup</span>
-<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="n">HMProfile</span><span class="o">?</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;xbox-360-wired&quot;</span><span class="p">);</span>
-<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>
-<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="c1">// Enumerate</span>
-<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">AllProfiles</span><span class="p">)</span>
-<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;{profile.Id} — {profile.Name}&quot;</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">// Embedded catalog (228 profiles)</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1">// Custom directory of JSON profiles</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-profiles&quot;</span><span class="p">);</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1">// Mix both — embedded first, then custom (custom IDs win on collision)</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-overrides&quot;</span><span class="p">);</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="c1">// Lookup</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="n">HMProfile</span><span class="o">?</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;xbox-360-wired&quot;</span><span class="p">);</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="c1">// Enumerate</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">AllProfiles</span><span class="p">)</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;{profile.Id} — {profile.Name}&quot;</span><span class="p">);</span>
 </code></pre></div>
 <p>Profiles are loaded into the context's catalog. Duplicate IDs are skipped (first wins). Schema files (<code>schema.json</code>) are ignored.</p>
 <p>A consumer that wants to ship a <strong>subset</strong> of the catalog (e.g. only racing wheels) loads just that subset:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-app\racing-wheels-only&quot;</span><span class="p">);</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1">// Don&#39;t call LoadDefaultProfiles</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-app\racing-wheels-only&quot;</span><span class="p">);</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1">// Don&#39;t call LoadDefaultProfiles</span>
 </code></pre></div>
 <p>Consumers that want to <strong>modify</strong> a built-in profile clone via <code>HMProfileBuilder.FromProfile</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">modded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="p">.</span><span class="n">FromProfile</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">)</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x9999</span><span class="p">)</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;Modded DualSense&quot;</span><span class="p">)</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">modded</span><span class="p">);</span><span class="w">   </span><span class="c1">// not loaded into ctx.AllProfiles</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">modded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMProfileBuilder</span><span class="p">()</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="p">.</span><span class="n">FromProfile</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">)</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x9999</span><span class="p">)</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="p">.</span><span class="n">ProductString</span><span class="p">(</span><span class="s">&quot;Modded DualSense&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">modded</span><span class="p">);</span><span class="w">   </span><span class="c1">// not loaded into ctx.AllProfiles</span>
 </code></pre></div>
 <p>The modded profile isn't registered in the catalog &mdash; it's used directly for one <code>CreateController</code> call. See <a href="../custom-profiles/">Custom Profiles</a> for the full clone / build / spoof patterns.</p>
 <hr />
 <h2 id="a-verbatim-profile-dissected-xbox-360-wired">A verbatim profile dissected: Xbox 360 Wired<a class="headerlink" href="#a-verbatim-profile-dissected-xbox-360-wired" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xbox-360-wired&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Xbox 360 Controller (Wired)&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="nt">&quot;vendor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Microsoft&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span><span class="nt">&quot;vid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x045E&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span><span class="nt">&quot;pid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x028E&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span><span class="nt">&quot;productString&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Controller (XBOX 360 For Windows)&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span><span class="nt">&quot;manufacturerString&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;©Microsoft Corporation&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gamepad&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">  </span><span class="nt">&quot;connection&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;usb&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">  </span><span class="nt">&quot;descriptor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;05010905a101a10009300931150026ffff350046ffff950275108102c0a10009330934150026ffff350046ffff950275108102c0a1000932150026ffff350046ffff950175108102c0a10009400941150026ffff350046ffff950275108102c005091901290a950a7501810205010939150125083500463b10660e00750495018142750295018103750895028103c0&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">  </span><span class="nt">&quot;nativeDescriptor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;05010905A1018501093009311500270000000075109502810209330934810209320935810205091901290A150025017501950281027506950181010501093915012508350046C03C660E007504950181428503060046ED01950E091001110050B5&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">  </span><span class="nt">&quot;inputReportSize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">18</span><span class="p">,</span>
-<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">  </span><span class="nt">&quot;deviceDescription&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Controller (XBOX 360 For Windows)&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">  </span><span class="nt">&quot;triggerMode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span>
-<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xbox-360-wired&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Xbox 360 Controller (Wired)&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="nt">&quot;vendor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Microsoft&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span><span class="nt">&quot;vid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x045E&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">  </span><span class="nt">&quot;pid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x028E&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">  </span><span class="nt">&quot;productString&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Controller (XBOX 360 For Windows)&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">  </span><span class="nt">&quot;manufacturerString&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;©Microsoft Corporation&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gamepad&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">  </span><span class="nt">&quot;connection&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;usb&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">  </span><span class="nt">&quot;descriptor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;05010905a101a10009300931150026ffff350046ffff950275108102c0a10009330934150026ffff350046ffff950275108102c0a1000932150026ffff350046ffff950175108102c0a10009400941150026ffff350046ffff950275108102c005091901290a950a7501810205010939150125083500463b10660e00750495018142750295018103750895028103c0&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">  </span><span class="nt">&quot;nativeDescriptor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;05010905A1018501093009311500270000000075109502810209330934810209320935810205091901290A150025017501950281027506950181010501093915012508350046C03C660E007504950181428503060046ED01950E091001110050B5&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">  </span><span class="nt">&quot;inputReportSize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">18</span><span class="p">,</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">  </span><span class="nt">&quot;deviceDescription&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Controller (XBOX 360 For Windows)&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">  </span><span class="nt">&quot;triggerMode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="p">}</span>
 </code></pre></div>
 <p><strong><code>descriptor</code></strong> is the HIDMaestro-emitted descriptor. <strong><code>nativeDescriptor</code></strong> is the original from a real Xbox 360 controller. They differ because the catalog version uses Vx/Vy velocity usages to carry separate trigger values without DirectInput recognizing them as axes. The native descriptor declares Z + Rz directly; HIDMaestro's emitted version uses Z (combined trigger) + Vx + Vy (separate triggers) so DirectInput sees 5 axes (matching real xusb22.sys behavior) while WGI / browsers see separate triggers via the GameInput registry mapping. See <a href="../../reference/cross-api-coverage/">Cross-API Coverage</a>.</p>
 <p><strong><code>inputReportSize</code>: 18</strong> is data + 1 Report ID byte (the descriptor declares Report ID 0x01).</p>

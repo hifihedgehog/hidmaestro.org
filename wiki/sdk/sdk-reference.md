@@ -334,12 +334,23 @@ For a 16-position HOTAS hat, `HatDegrees = 22.5f` snaps to ENE. For a 360-positi
     Touchpad     = 1u << 11,   // PS touchpad click
     Share        = 1u << 12,   // Xbox Series Share button
 
+    RightPaddle  = 1u << 13,   // rear paddle, right side
+    LeftPaddle   = 1u << 14,   // rear paddle, left side
+    Misc1        = 1u << 15,   // vendor button with no cross-vendor role
+
+
     Cross    = A,    // Sony alias
     Circle   = B,
     Square   = X,
     Triangle = Y,
 }
 ```
+
+`RightPaddle` and `LeftPaddle` are named by side rather than by number, because the pads that have them disagree on numbering and agree on side. SDL splits them the same way with `SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1` and `LEFT_PADDLE1`. The Switch 2 Pro's GR and GL map here.
+
+`Misc1` is a vendor button with no cross-vendor meaning, currently the Switch 2 family's C button, which opens GameChat on real hardware. SDL models it the same way rather than forcing it into one of the standard roles.
+
+All three were added in v1.5.0 as bits 13 to 15. They are additive, so a consumer only needs to care if it switches exhaustively over the enum.
 
 The SDK applies the active profile's `buttonMap` (where present) to translate from the abstract `HMButton` bit position to the descriptor button index. Sony profiles remap so `HMButton.A &rarr; Cross`, `HMButton.X &rarr; Square`, etc. Xbox profiles use identity mapping.
 
@@ -411,6 +422,7 @@ public sealed class HMProfile
     // Customization tables
     public int[]?                       ButtonMap { get; }
     public Dictionary<string,string>?   AxisMap { get; }
+    public string?                      SdlMapping { get; }
     public string?                      Notes { get; }
 
     // Vendor-blob layout (null when the profile JSON has none)
@@ -430,6 +442,19 @@ Profiles are immutable. Mutation goes through `HMProfileBuilder.FromProfile(exis
 `ButtonMap` is the optional remapping table from `HMButton` bit position (index into the array) to descriptor button index (the value). Null = identity (Xbox layout). Sony's table reorders so Cross/Circle/Square/Triangle land at the right bit.
 
 `AxisMap` is the optional axis semantic override. Keys are hex HID usage codes (e.g. `"0x32"` for Z), values are semantic names (`"leftStickX"`, `"rightTrigger"`, etc.). Sony profiles override `Z/Rz &rarr; rightStick` and `Rx/Ry &rarr; triggers` because Sony's descriptor uses Generic Desktop usages differently from Xbox's.
+
+`SdlMapping` is the profile's SDL gamepad mapping, or null when SDL already knows the device. It matters for one specific case. SDL only exposes a joystick through its gamepad API when a mapping exists for that device's GUID, and it synthesizes one only for devices its HIDAPI, RawInput, WGI or XInput backends claim. A pad that reaches SDL through DirectInput gets a mapping from SDL's built-in database or from nowhere. So a controller newer than the SDL build in use, or one whose vendor protocol SDL drives over a transport a HID profile cannot present, arrives with axes and buttons but no roles: no A/B/X/Y, no triggers, no dpad. The Switch 2 Pro is the shipped example.
+
+The string is everything after the GUID and the name, trailing comma included, because the GUID is per-device and only exists once SDL has enumerated the pad. A consumer prepends the two device-specific fields:
+
+```csharp
+// once per joystick SDL reports, before opening it as a gamepad
+var guid = FormatSdlGuid(SDL_GetJoystickGUIDForID(id));   // 32 lowercase hex chars
+if (profile.SdlMapping != null)
+    SDL_AddGamepadMapping($"{guid},{profile.Name},{profile.SdlMapping}");
+```
+
+Registering it is idempotent and safe even when SDL already has a mapping for that GUID, since SDL replaces the entry. Consumers that never touch SDL can ignore the property.
 
 `AxisCount` is the count of every analog input axis the descriptor declares. For SideWinder Force Feedback 2 that's `4` (X, Y, Rz, Slider); for a Logitech G29 with three pedals, `4` (X plus three 8-bit pedals); for an Xbox 360 Wired with the Vx/Vy hidden-trigger pair, `7`.
 

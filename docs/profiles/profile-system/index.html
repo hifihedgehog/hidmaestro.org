@@ -2243,7 +2243,7 @@
 <td><code>buttonMap</code></td>
 <td>int[] | null</td>
 <td>identity</td>
-<td>Optional remapping table. Index = <code>HMButton</code> bit position; value = descriptor button index. Sony profiles use this to swap A/B/X/Y &harr; Cross/Circle/Square/Triangle. <code>-1</code> means "abstract bit not in this descriptor".</td>
+<td>Optional remapping table. Index = <code>HMButton</code> bit position; value = descriptor button index. Sony profiles use this to swap A/B/X/Y &harr; Cross/Circle/Square/Triangle. <code>-1</code> means "abstract bit not in this descriptor" (the bit is dropped, never identity-mapped). Values at or past the declared button count address the contiguous 1-bit vendor run continuing the button array, where the DualSense Edge's paddles and Fn buttons live on real hardware (v1.5.1, issue #48).</td>
 </tr>
 <tr>
 <td><code>axisMap</code></td>

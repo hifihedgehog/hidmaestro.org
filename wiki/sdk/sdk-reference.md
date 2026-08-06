@@ -336,7 +336,10 @@ For a 16-position HOTAS hat, `HatDegrees = 22.5f` snaps to ENE. For a 360-positi
 
     RightPaddle  = 1u << 13,   // rear paddle, right side
     LeftPaddle   = 1u << 14,   // rear paddle, left side
-    Misc1        = 1u << 15,   // vendor button with no cross-vendor role
+    Misc1        = 1u << 15,   // vendor-extra slot (Switch 2 C, DualSense mic mute)
+
+    RightPaddle2 = 1u << 16,   // second paddle pair, right side (Edge right Fn)
+    LeftPaddle2  = 1u << 17,   // second paddle pair, left side (Edge left Fn)
 
 
     Cross    = A,    // Sony alias
@@ -350,7 +353,11 @@ For a 16-position HOTAS hat, `HatDegrees = 22.5f` snaps to ENE. For a 360-positi
 
 `Misc1` is a vendor button with no cross-vendor meaning, currently the Switch 2 family's C button, which opens GameChat on real hardware. SDL models it the same way rather than forcing it into one of the standard roles.
 
-All three were added in v1.5.0 as bits 13 to 15. They are additive, so a consumer only needs to care if it switches exhaustively over the enum.
+`Misc1` is the vendor-extra slot with no cross-vendor meaning: the Switch 2 family's C button (opens GameChat on real hardware) and the DualSense's mic mute. SDL models both as `SDL_GAMEPAD_BUTTON_MISC1`.
+
+`RightPaddle2` and `LeftPaddle2` are the second paddle pair, added in v1.5.1 for the DualSense Edge's front Fn buttons. SDL folds those into `RIGHT_PADDLE2` / `LEFT_PADDLE2` in its PS5 Edge mapping.
+
+Bits 13 to 15 were added in v1.5.0 and bits 16 to 17 in v1.5.1. All are additive, so a consumer only needs to care if it switches exhaustively over the enum.
 
 The SDK applies the active profile's `buttonMap` (where present) to translate from the abstract `HMButton` bit position to the descriptor button index. Sony profiles remap so `HMButton.A &rarr; Cross`, `HMButton.X &rarr; Square`, etc. Xbox profiles use identity mapping.
 
@@ -440,6 +447,8 @@ Profiles are immutable. Mutation goes through `HMProfileBuilder.FromProfile(exis
 `HatLogicalMin` / `HatLogicalMax` are the HID-spec values declared in the descriptor. For an octant hat, `Min=0 Max=7` (or equivalents); for a 16-position hat `Min=0 Max=15`; for a 360-position continuous hat `Min=0 Max=359`. The count of distinct positions is `Max - Min + 1`.
 
 `ButtonMap` is the optional remapping table from `HMButton` bit position (index into the array) to descriptor button index (the value). Null = identity (Xbox layout). Sony's table reorders so Cross/Circle/Square/Triangle land at the right bit.
+
+Two extensions since v1.5.1. A `-1` entry means the profile does not carry that button: the bit is dropped instead of falling through to identity, which is what stopped `HMButton.Share` from aliasing onto the PS button on Sony pads. And a value at or past the declared button count addresses the contiguous 1-bit vendor-page run that continues the button array, when the descriptor has one. The DualSense family declares 15 buttons and then a 13x1-bit vendor field, and the Edge's back paddles and Fn buttons live in that field's bits on real hardware, invisible to DirectInput but read from the raw report by SDL, Steam Input and DS4Windows. The Edge profiles map them there (16 = left Fn 0x10 through 19 = right paddle 0x80), so the descriptor stays byte-identical to a real Edge's.
 
 `AxisMap` is the optional axis semantic override. Keys are hex HID usage codes (e.g. `"0x32"` for Z), values are semantic names (`"leftStickX"`, `"rightTrigger"`, etc.). Sony profiles override `Z/Rz &rarr; rightStick` and `Rx/Ry &rarr; triggers` because Sony's descriptor uses Generic Desktop usages differently from Xbox's.
 

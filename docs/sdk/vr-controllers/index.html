@@ -10,31 +10,31 @@
       
       
       
-        <link rel="canonical" href="https://hidmaestro.org/docs/reference/">
+        <link rel="canonical" href="https://hidmaestro.org/docs/sdk/vr-controllers/">
       
       
-        <link rel="prev" href="../troubleshooting/">
+        <link rel="prev" href="../sdk-reference/">
       
       
-        <link rel="next" href="architecture-overview/">
+        <link rel="next" href="../hid-descriptor-builder/">
       
       
         
       
       
-      <link rel="icon" href="../assets/icon.png">
+      <link rel="icon" href="../../assets/icon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Technical Reference - HIDMaestro Documentation</title>
+        <title>VR Controllers - HIDMaestro Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,9 +49,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
     
-      <link rel="stylesheet" href="../stylesheets/extra.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#technical-reference" class="md-skip">
+        <a href="#vr-controllers" class="md-skip">
           Skip to content
         </a>
       
@@ -90,9 +90,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="HIDMaestro Documentation" class="md-header__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+    <a href="../.." title="HIDMaestro Documentation" class="md-header__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
       
-  <img src="../assets/logo-light.png" alt="logo">
+  <img src="../../assets/logo-light.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Technical Reference
+              VR Controllers
             
           </span>
         </div>
@@ -222,7 +222,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -243,7 +243,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../start/" class="md-tabs__link">
+        <a href="../../start/" class="md-tabs__link">
           
   
   
@@ -261,11 +261,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../sdk/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -287,7 +289,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../profiles/" class="md-tabs__link">
+        <a href="../../profiles/" class="md-tabs__link">
           
   
   
@@ -307,7 +309,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../troubleshooting/" class="md-tabs__link">
+      <a href="../../troubleshooting/" class="md-tabs__link">
         
   
   
@@ -324,13 +326,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
           
   
   
@@ -366,9 +366,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="HIDMaestro Documentation" class="md-nav__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+    <a href="../.." title="HIDMaestro Documentation" class="md-nav__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
       
-  <img src="../assets/logo-light.png" alt="logo">
+  <img src="../../assets/logo-light.png" alt="logo">
 
     </a>
     HIDMaestro Documentation
@@ -395,7 +395,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -451,7 +451,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../start/" class="md-nav__link ">
+            <a href="../../start/" class="md-nav__link ">
               
   
   
@@ -495,7 +495,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../start/installation/" class="md-nav__link">
+      <a href="../../start/installation/" class="md-nav__link">
         
   
   
@@ -523,7 +523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../start/quickstart/" class="md-nav__link">
+      <a href="../../start/quickstart/" class="md-nav__link">
         
   
   
@@ -551,7 +551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../start/glossary/" class="md-nav__link">
+      <a href="../../start/glossary/" class="md-nav__link">
         
   
   
@@ -583,6 +583,8 @@
       
   
   
+    
+  
   
   
     
@@ -610,20 +612,23 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../sdk/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -641,13 +646,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -667,7 +672,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sdk/sdk-reference/" class="md-nav__link">
+      <a href="../sdk-reference/" class="md-nav__link">
         
   
   
@@ -692,10 +697,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../sdk/vr-controllers/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VR Controllers
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -711,6 +743,92 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-is-not-an-hmcontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this is not an HMController
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dependency-stated-plainly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The dependency, stated plainly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle-and-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle and ordering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-status-v160" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification status (v1.6.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-generic-controller-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The generic controller identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -723,7 +841,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sdk/hid-descriptor-builder/" class="md-nav__link">
+      <a href="../hid-descriptor-builder/" class="md-nav__link">
         
   
   
@@ -751,7 +869,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sdk/force-feedback/" class="md-nav__link">
+      <a href="../force-feedback/" class="md-nav__link">
         
   
   
@@ -779,7 +897,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sdk/output-passthrough/" class="md-nav__link">
+      <a href="../output-passthrough/" class="md-nav__link">
         
   
   
@@ -807,7 +925,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sdk/usb-audio-composite/" class="md-nav__link">
+      <a href="../usb-audio-composite/" class="md-nav__link">
         
   
   
@@ -835,7 +953,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sdk/oem-name-override/" class="md-nav__link">
+      <a href="../oem-name-override/" class="md-nav__link">
         
   
   
@@ -901,7 +1019,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../profiles/" class="md-nav__link ">
+            <a href="../../profiles/" class="md-nav__link ">
               
   
   
@@ -945,7 +1063,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../profiles/profile-system/" class="md-nav__link">
+      <a href="../../profiles/profile-system/" class="md-nav__link">
         
   
   
@@ -973,7 +1091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../profiles/custom-profiles/" class="md-nav__link">
+      <a href="../../profiles/custom-profiles/" class="md-nav__link">
         
   
   
@@ -1001,7 +1119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../profiles/profile-extractor/" class="md-nav__link">
+      <a href="../../profiles/profile-extractor/" class="md-nav__link">
         
   
   
@@ -1029,7 +1147,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../profiles/contributing-profiles/" class="md-nav__link">
+      <a href="../../profiles/contributing-profiles/" class="md-nav__link">
         
   
   
@@ -1064,7 +1182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../troubleshooting/" class="md-nav__link">
+      <a href="../../troubleshooting/" class="md-nav__link">
         
   
   
@@ -1088,8 +1206,6 @@
       
   
   
-    
-  
   
   
     
@@ -1127,23 +1243,20 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../../reference/" class="md-nav__link ">
               
   
   
@@ -1161,13 +1274,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_6" id="__nav_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1187,7 +1300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="architecture-overview/" class="md-nav__link">
+      <a href="../../reference/architecture-overview/" class="md-nav__link">
         
   
   
@@ -1215,7 +1328,7 @@
   
   
     <li class="md-nav__item">
-      <a href="umdf2-driver-internals/" class="md-nav__link">
+      <a href="../../reference/umdf2-driver-internals/" class="md-nav__link">
         
   
   
@@ -1243,7 +1356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="xusb-companion/" class="md-nav__link">
+      <a href="../../reference/xusb-companion/" class="md-nav__link">
         
   
   
@@ -1271,7 +1384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="swdevice-and-pnp/" class="md-nav__link">
+      <a href="../../reference/swdevice-and-pnp/" class="md-nav__link">
         
   
   
@@ -1299,7 +1412,7 @@
   
   
     <li class="md-nav__item">
-      <a href="shared-memory-protocol/" class="md-nav__link">
+      <a href="../../reference/shared-memory-protocol/" class="md-nav__link">
         
   
   
@@ -1327,7 +1440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="cross-api-coverage/" class="md-nav__link">
+      <a href="../../reference/cross-api-coverage/" class="md-nav__link">
         
   
   
@@ -1355,7 +1468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="multi-controller/" class="md-nav__link">
+      <a href="../../reference/multi-controller/" class="md-nav__link">
         
   
   
@@ -1383,7 +1496,7 @@
   
   
     <li class="md-nav__item">
-      <a href="lifecycle-and-teardown/" class="md-nav__link">
+      <a href="../../reference/lifecycle-and-teardown/" class="md-nav__link">
         
   
   
@@ -1411,7 +1524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="driver-install-and-signing/" class="md-nav__link">
+      <a href="../../reference/driver-install-and-signing/" class="md-nav__link">
         
   
   
@@ -1439,7 +1552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="build-and-release/" class="md-nav__link">
+      <a href="../../reference/build-and-release/" class="md-nav__link">
         
   
   
@@ -1467,7 +1580,7 @@
   
   
     <li class="md-nav__item">
-      <a href="testing-and-verification/" class="md-nav__link">
+      <a href="../../reference/testing-and-verification/" class="md-nav__link">
         
   
   
@@ -1495,7 +1608,7 @@
   
   
     <li class="md-nav__item">
-      <a href="references/" class="md-nav__link">
+      <a href="../../reference/references/" class="md-nav__link">
         
   
   
@@ -1543,6 +1656,80 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-is-not-an-hmcontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this is not an HMController
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dependency-stated-plainly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The dependency, stated plainly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle-and-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle and ordering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-status-v160" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification status (v1.6.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-generic-controller-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The generic controller identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1558,46 +1745,57 @@
 
 
 
-<h1 id="technical-reference">Technical Reference<a class="headerlink" href="#technical-reference" title="Permanent link">&para;</a></h1>
-<p>Every layer of HIDMaestro from the C# SDK down to the kernel-side HID
-stack. Read the first five in order for the full picture.</p>
-<ul>
-<li><strong><a href="architecture-overview/">Architecture Overview</a></strong>: the stack diagram
-  from SDK to driver, per-controller WUDFHost processes, and the three
-  architecture groups.</li>
-<li><strong><a href="umdf2-driver-internals/">UMDF2 Driver Internals</a></strong>: <code>driver.c</code>, the
-  IOCTL dispatch table, the device context, and the event-driven worker.</li>
-<li><strong><a href="xusb-companion/">XUSB Companion</a></strong>: how Xbox-family profiles get
-  XInput without a kernel driver.</li>
-<li><strong><a href="swdevice-and-pnp/">SwDevice and PnP</a></strong>: device creation, container
-  IDs, and the XInput slot-0 story.</li>
-<li><strong><a href="shared-memory-protocol/">Shared Memory Protocol</a></strong>: the three
-  sections per controller, the seqlock, and the named events.</li>
-<li><strong><a href="cross-api-coverage/">Cross-API Coverage</a></strong>: how DirectInput,
-  XInput, SDL3/HIDAPI, the browser Gamepad API, and WGI are each
-  satisfied.</li>
-<li><strong><a href="multi-controller/">Multi-Controller</a></strong>: verified mixed-type
-  operation and per-API ordering.</li>
-<li><strong><a href="lifecycle-and-teardown/">Lifecycle and Teardown</a></strong>: create paths,
-  removal ordering, and round-trip latencies by archetype.</li>
-<li><strong><a href="driver-install-and-signing/">Driver Install and Signing</a></strong>: the
-  embedded payload, certificate generation, and the idempotent install.</li>
-<li><strong><a href="build-and-release/">Build and Release</a></strong>: the two-phase build and
-  the release recipe.</li>
-<li><strong><a href="testing-and-verification/">Testing and Verification</a></strong>:
-  <code>scripts/verify.py</code> and the 46-scenario regression battery.</li>
-<li><strong><a href="references/">References</a></strong>: authoritative sources for every
-  load-bearing claim in these docs.</li>
-</ul>
+<h1 id="vr-controllers">VR Controllers<a class="headerlink" href="#vr-controllers" title="Permanent link">&para;</a></h1>
+<p><code>HMVRController</code> instantiates a pair of virtual VR motion controllers inside SteamVR (HIDMaestro issue #32). This page covers the mental model, the API, the dependency story, and precisely what is and is not verified.</p>
+<p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/driver/openvr"><code>driver/openvr/</code></a> (the native OpenVR driver), <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/sdk/HIDMaestro.Core/HMVRController.cs"><code>HMVRController.cs</code></a>, <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/sdk/HIDMaestro.Core/HMVR.cs"><code>HMVR.cs</code></a>.</p>
+<hr />
+<h2 id="why-this-is-not-an-hmcontroller">Why this is not an HMController<a class="headerlink" href="#why-this-is-not-an-hmcontroller" title="Permanent link">&para;</a></h2>
+<p>A VR controller is not an OS device. It exists only inside a VR runtime's session: games never enumerate it, they ask the runtime "where is the left hand, and what is its trigger doing." So HIDMaestro's VR support is an <strong>OpenVR driver DLL that SteamVR's vrserver loads</strong>, embedded in <code>HIDMaestro.Core.dll</code> and registered with <code>vrpathreg</code> on first use. Nothing UMDF2, nothing PnP, no descriptor.</p>
+<p>OpenVR's driver API is the one public door on Windows. It is not in competition with OpenXR: OpenXR standardizes the game-to-runtime boundary, deliberately left the runtime-to-device boundary to each vendor (the planned device plugin layer never shipped after 1.0), and SteamVR is itself an OpenXR runtime. One OpenVR driver therefore serves native OpenVR games AND OpenXR games running on SteamVR, which is the default PCVR configuration. Out of reach: Oculus-native titles and OpenXR sessions pinned to Meta's runtime, both closed to third-party devices.</p>
+<h2 id="the-dependency-stated-plainly">The dependency, stated plainly<a class="headerlink" href="#the-dependency-stated-plainly" title="Permanent link">&para;</a></h2>
+<p>SteamVR is required, free, and almost always already present on a machine that plays PCVR (for lighthouse headsets it IS the headset driver). HIDMaestro never installs it, never launches a user's copy, and machines without it are untouched: <code>HMVR.IsSteamVRInstalled</code> reports false and everything else works as before.</p>
+<p>For a machine without the Steam client there is a verified Steam-free install path using Valve's own command-line tool, no account needed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl -L -o steamcmd.zip https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>steamcmd +force_install_dir &quot;C:\SteamVR&quot; +login anonymous +app_update 250820 validate +quit
+</code></pre></div>
+<p>Discovery handles both shapes: Steam-client installs are found through the registry, steamcmd installs through <code>HMVR.SetSteamVRPathHint</code> or the conventional <code>C:\SteamVR</code>.</p>
+<h2 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">HMVR</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">IsSteamVRInstalled</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">IsSteamVRRunning</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">string?</span><span class="w"> </span><span class="n">SteamVRPath</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">SetSteamVRPathHint</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">steamVrDir</span><span class="p">);</span><span class="w">   </span><span class="c1">// admin</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">EnsureDriverRegistered</span><span class="p">();</span><span class="w">                </span><span class="c1">// admin</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">UnregisterDriver</span><span class="p">();</span><span class="w">                      </span><span class="c1">// admin</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">}</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="k">public</span><span class="w"> </span><span class="k">sealed</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">HMVRController</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IDisposable</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="p">{</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="nf">HMVRController</span><span class="p">();</span><span class="w">                       </span><span class="c1">// creates + claims the IPC channel</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">DriverConnected</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">           </span><span class="c1">// driver attached inside vrserver</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">ControllersLive</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">           </span><span class="c1">// both hands registered</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">SubmitState</span><span class="p">(</span><span class="k">in</span><span class="w"> </span><span class="n">HMVRState</span><span class="w"> </span><span class="n">state</span><span class="p">);</span><span class="w">   </span><span class="c1">// both hands, once per frame</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">event</span><span class="w"> </span><span class="n">EventHandler</span><span class="o">&lt;</span><span class="n">HMVRHapticEventArgs</span><span class="o">&gt;</span><span class="w"> </span><span class="n">HapticReceived</span><span class="p">;</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">HMVRHmdPose</span><span class="w"> </span><span class="nf">GetHmdPose</span><span class="p">();</span><span class="w">               </span><span class="c1">// real headset pose, for head-as-input</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="p">}</span>
+</code></pre></div>
+<p><code>HMVRState</code> carries per hand: an <code>HMVRButton</code> mask (System, A, B with touch variants, trigger/grip/stick clicks), trigger and grip <code>[0..1]</code>, stick X/Y <code>[-1..+1]</code>, and an optional pose override (meters + unit quaternion, SteamVR standing universe). With no override the driver anchors the hands ahead of the headset, so pointing works by looking. With an override the consumer owns hand placement, which is how stick-driven or gyro-driven virtual hands are built.</p>
+<p><code>GetHmdPose</code> is the reverse direction: the driver publishes the real headset pose every server frame, so a consumer can map head lean onto any flat-game input (the PadForge #49 request) without FreePIE-class tooling.</p>
+<p><code>EnsureDriverRegistered</code> extracts the embedded driver to <code>%ProgramData%\HIDMaestro\openvr\hidmaestro</code> (a stable path, because vrpathreg stores absolute paths), registers it, and is content-hash idempotent. Registration hot-plugs into a running SteamVR. Controllers appear only while a consumer holds the channel: no consumer, no phantom devices, and a dead consumer flips them to disconnected within seconds.</p>
+<h2 id="lifecycle-and-ordering">Lifecycle and ordering<a class="headerlink" href="#lifecycle-and-ordering" title="Permanent link">&para;</a></h2>
+<p>Any start order works. The driver (loaded whenever SteamVR runs) polls for the consumer's shared-memory channel, and the consumer's properties (<code>DriverConnected</code>, <code>ControllersLive</code>) report progress. Dispose releases the channel claim.</p>
+<h2 id="verification-status-v160">Verification status (v1.6.0)<a class="headerlink" href="#verification-status-v160" title="Permanent link">&para;</a></h2>
+<p>Machine-verified end-to-end on a headless rig (real SteamVR, null HMD, no headset, no Steam client), by <code>test/probes/vr_controller_smoke</code> (battery scenario S50): payload extraction, vrpathreg registration, vrserver loading the driver, deferred device registration, both controllers enumerating as connected <code>TrackedDeviceClass_Controller</code> with HIDMaestro serials through Valve's own <code>openvr_api</code>, and a haptic pulse round-tripping client → vrserver → driver → <code>HapticReceived</code> with correct hand attribution. The IPC protocol is additionally pinned byte-for-byte between the C# and C++ mirrors, both by S50's driver-role phase and by <code>static_assert</code>s compiled into the driver.</p>
+<p>Not verified without a headset, and stated here rather than implied: input values read back through the SteamVR Input action-binding system (the driver updates its components, but no client-side assert exists without bindings), in-game interaction feel, and the elevated-consumer/medium-integrity-vrserver ACL case (the rig runs vrserver elevated, while the SDDL grants Interactive explicitly for the real case). Real-hardware reports belong in HIDMaestro #32.</p>
+<h2 id="the-generic-controller-identity">The generic controller identity<a class="headerlink" href="#the-generic-controller-identity" title="Permanent link">&para;</a></h2>
+<p>The controllers present as <code>hidmaestro_controller</code> (manufacturer HIDMaestro, serials <code>HMVR-LEFT-0001</code> / <code>HMVR-RIGHT-0001</code>) with a full input profile: system, A, B, trigger, grip, joystick, haptics. Games that use SteamVR Input rebinding work with it directly. Games that only ship bindings for specific controller types (Index, Vive, Touch) may need a community binding or SteamVR's controller rebinding UI. Impersonating an Index controller identity is deliberately not done in this release: partial impersonation (without skeletal input) risks breaking the games it aims to help, and the honest generic identity is rebindable everywhere.</p>
 
 
 
 
 
 
-
-  
-  
 
 
 
@@ -1629,7 +1827,7 @@ stack. Read the first five in order for the full picture.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../troubleshooting/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Troubleshooting">
+          <a href="../sdk-reference/" class="md-footer__link md-footer__link--prev" aria-label="Previous: SDK Reference">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1639,20 +1837,20 @@ stack. Read the first five in order for the full picture.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Troubleshooting
+                SDK Reference
               </div>
             </div>
           </a>
         
         
           
-          <a href="architecture-overview/" class="md-footer__link md-footer__link--next" aria-label="Next: Architecture Overview">
+          <a href="../hid-descriptor-builder/" class="md-footer__link md-footer__link--next" aria-label="Next: HID Descriptor Builder">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Architecture Overview
+                HID Descriptor Builder
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1689,10 +1887,10 @@ stack. Read the first five in order for the full picture.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

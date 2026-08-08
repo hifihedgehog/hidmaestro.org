@@ -79,6 +79,7 @@ nav:
   - SDK:
       - sdk/index.md
       - SDK Reference: sdk/sdk-reference.md
+      - VR Controllers: sdk/vr-controllers.md
       - HID Descriptor Builder: sdk/hid-descriptor-builder.md
       - Force Feedback: sdk/force-feedback.md
       - Output Passthrough: sdk/output-passthrough.md

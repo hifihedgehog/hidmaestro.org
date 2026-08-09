@@ -793,6 +793,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#hand-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hand roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifecycle-and-ordering" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1696,6 +1707,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#hand-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hand roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifecycle-and-ordering" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1783,6 +1805,15 @@
 <p><code>HMVRState</code> carries per hand: an <code>HMVRButton</code> mask (System, A, B with touch variants, trigger/grip/stick clicks), trigger and grip <code>[0..1]</code>, stick X/Y <code>[-1..+1]</code>, and an optional pose override (meters + unit quaternion, SteamVR standing universe). With no override the driver anchors the hands ahead of the headset, so pointing works by looking. With an override the consumer owns hand placement, which is how stick-driven or gyro-driven virtual hands are built.</p>
 <p><code>GetHmdPose</code> is the reverse direction: the driver publishes the real headset pose every server frame, so a consumer can map head lean onto any flat-game input (the PadForge #49 request) without FreePIE-class tooling.</p>
 <p><code>EnsureDriverRegistered</code> extracts the embedded driver to <code>%ProgramData%\HIDMaestro\openvr\hidmaestro</code> (a stable path, because vrpathreg stores absolute paths), registers it, and is content-hash idempotent. Registration hot-plugs into a running SteamVR. Controllers appear only while a consumer holds the channel: no consumer, no phantom devices, and a dead consumer flips them to disconnected within seconds.</p>
+<h2 id="hand-roles">Hand roles<a class="headerlink" href="#hand-roles" title="Permanent link">&para;</a></h2>
+<p>SteamVR distinguishes a <em>device</em> from a <em>hand</em>. Haptics and the "Waiting" window address devices. <code>/user/hand/left</code>, <code>/user/hand/right</code>, and SteamVR's own Test Controller page address roles, and the runtime decides which device holds each role. <code>Prop_ControllerRoleHint_Int32</code> only hints. The property that actually influences the decision is <code>Prop_ControllerHandSelectionPriority_Int32</code>, which the driver sets on both hands at activation (HIDMaestro issue #51).</p>
+<p>The default is <code>1000</code>, matching VRCHOTAS's mapped-controller value. Left unset the property reads back <code>0</code>, the same value SteamVR's own Index profile ends up with, which leaves the winner to an unstated runtime tiebreak on a machine that has both. A positive value states the answer.</p>
+<p>That default means the virtual hands take the roles from real controllers while a consumer is live. On a machine where the real hardware should keep them, set the priority negative in <code>steamvr.vrsettings</code>, the same register Valve's own Oculus Touch profile uses with <code>hand_priority: -1</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&quot;driver_hidmaestro&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">   </span><span class="nt">&quot;hand_selection_priority&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-1000</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">}</span>
+</code></pre></div>
+<p>The driver logs the value it used and whether it came from settings or its built-in fallback, so <code>vrserver.txt</code> answers "which number is live" directly.</p>
 <h2 id="lifecycle-and-ordering">Lifecycle and ordering<a class="headerlink" href="#lifecycle-and-ordering" title="Permanent link">&para;</a></h2>
 <p>Any start order works. The driver (loaded whenever SteamVR runs) polls for the consumer's shared-memory channel, and the consumer's properties (<code>DriverConnected</code>, <code>ControllersLive</code>) report progress. Dispose releases the channel claim.</p>
 <h2 id="verification-status-v160">Verification status (v1.6.0)<a class="headerlink" href="#verification-status-v160" title="Permanent link">&para;</a></h2>

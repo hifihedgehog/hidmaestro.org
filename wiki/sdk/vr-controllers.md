@@ -55,6 +55,22 @@ public sealed class HMVRController : IDisposable
 
 `EnsureDriverRegistered` extracts the embedded driver to `%ProgramData%\HIDMaestro\openvr\hidmaestro` (a stable path, because vrpathreg stores absolute paths), registers it, and is content-hash idempotent. Registration hot-plugs into a running SteamVR. Controllers appear only while a consumer holds the channel: no consumer, no phantom devices, and a dead consumer flips them to disconnected within seconds.
 
+## Hand roles
+
+SteamVR distinguishes a *device* from a *hand*. Haptics and the "Waiting" window address devices. `/user/hand/left`, `/user/hand/right`, and SteamVR's own Test Controller page address roles, and the runtime decides which device holds each role. `Prop_ControllerRoleHint_Int32` only hints. The property that actually influences the decision is `Prop_ControllerHandSelectionPriority_Int32`, which the driver sets on both hands at activation (HIDMaestro issue #51).
+
+The default is `1000`, matching VRCHOTAS's mapped-controller value. Left unset the property reads back `0`, the same value SteamVR's own Index profile ends up with, which leaves the winner to an unstated runtime tiebreak on a machine that has both. A positive value states the answer.
+
+That default means the virtual hands take the roles from real controllers while a consumer is live. On a machine where the real hardware should keep them, set the priority negative in `steamvr.vrsettings`, the same register Valve's own Oculus Touch profile uses with `hand_priority: -1`:
+
+```json
+"driver_hidmaestro": {
+   "hand_selection_priority": -1000
+}
+```
+
+The driver logs the value it used and whether it came from settings or its built-in fallback, so `vrserver.txt` answers "which number is live" directly.
+
 ## Lifecycle and ordering
 
 Any start order works. The driver (loaded whenever SteamVR runs) polls for the consumer's shared-memory channel, and the consumer's properties (`DriverConnected`, `ControllersLive`) report progress. Dispose releases the channel claim.

@@ -804,6 +804,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-legacy-input-lane-getcontrollerstate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The legacy input lane (GetControllerState)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifecycle-and-ordering" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -815,10 +826,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#verification-status-v160" class="md-nav__link">
+  <a href="#verification-status-v162" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verification status (v1.6.0)
+        Verification status (v1.6.2)
       
     </span>
   </a>
@@ -1718,6 +1729,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-legacy-input-lane-getcontrollerstate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The legacy input lane (GetControllerState)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifecycle-and-ordering" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1729,10 +1751,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#verification-status-v160" class="md-nav__link">
+  <a href="#verification-status-v162" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verification status (v1.6.0)
+        Verification status (v1.6.2)
       
     </span>
   </a>
@@ -1814,11 +1836,49 @@
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">}</span>
 </code></pre></div>
 <p>The driver logs the value it used and whether it came from settings or its built-in fallback, so <code>vrserver.txt</code> answers "which number is live" directly.</p>
+<h2 id="the-legacy-input-lane-getcontrollerstate">The legacy input lane (<code>GetControllerState</code>)<a class="headerlink" href="#the-legacy-input-lane-getcontrollerstate" title="Permanent link">&para;</a></h2>
+<p>Two client APIs read controller input from SteamVR. Games on the modern SteamVR Input system read <em>actions</em> through their action manifest. Background tools and older titles read the <em>legacy</em> API, <code>IVRSystem::GetControllerState</code>, and that lane only carries data vrserver generates through the controller profile's <code>legacy_binding</code>. The driver ships one (<code>legacy_bindings_hidmaestro.json</code>, HIDMaestro issue #55), mapped by the convention every Valve-shipped binding uses:</p>
+<table>
+<thead>
+<tr>
+<th>Legacy slot</th>
+<th>Virtual control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>axis0</td>
+<td>joystick position (+ <code>k_EButton_Axis0</code> on stick click)</td>
+</tr>
+<tr>
+<td>axis1</td>
+<td>trigger pull (+ <code>k_EButton_Axis1</code> on trigger click)</td>
+</tr>
+<tr>
+<td>axis2</td>
+<td>grip pull (+ <code>k_EButton_Axis2</code> and <code>k_EButton_Grip</code> on grip click)</td>
+</tr>
+<tr>
+<td><code>k_EButton_A</code> / <code>k_EButton_ApplicationMenu</code></td>
+<td>A / B, with touch</td>
+</tr>
+<tr>
+<td><code>k_EButton_System</code></td>
+<td>system</td>
+</tr>
+</tbody>
+</table>
+<p>The driver also declares <code>Prop_Axis0Type_Int32</code> through <code>Prop_Axis2Type_Int32</code> (joystick, trigger, trigger), because vrserver does not synthesize those for <code>IVRDriverInput</code> drivers and legacy consumers classify axes by them.</p>
+<p>Two behaviors of this lane worth knowing before debugging an "empty state" report, both measured:</p>
+<ul>
+<li><strong>Legacy state follows SteamVR's input focus.</strong> A client that reads all-zero state with <code>unPacketNum</code> frozen at 0 while poses stream fine should check <code>IVRSystem::IsInputAvailable()</code>. On a headless rig with no scene application, nothing holds input focus and background clients read zeros indefinitely, while the same read from a scene application (one that pumps <code>WaitGetPoses</code>) streams within milliseconds. On a normal rig with a game running, background readers see the state whenever input is not captured.</li>
+<li><strong>The binding routes by <code>/user/hand/left|right</code>,</strong> so a hand without an assigned role reads empty even with the binding present. Check roles first (see Hand roles above).</li>
+</ul>
 <h2 id="lifecycle-and-ordering">Lifecycle and ordering<a class="headerlink" href="#lifecycle-and-ordering" title="Permanent link">&para;</a></h2>
 <p>Any start order works. The driver (loaded whenever SteamVR runs) polls for the consumer's shared-memory channel, and the consumer's properties (<code>DriverConnected</code>, <code>ControllersLive</code>) report progress. Dispose releases the channel claim.</p>
-<h2 id="verification-status-v160">Verification status (v1.6.0)<a class="headerlink" href="#verification-status-v160" title="Permanent link">&para;</a></h2>
-<p>Machine-verified end-to-end on a headless rig (real SteamVR, null HMD, no headset, no Steam client), by <code>test/probes/vr_controller_smoke</code> (battery scenario S50): payload extraction, vrpathreg registration, vrserver loading the driver, deferred device registration, both controllers enumerating as connected <code>TrackedDeviceClass_Controller</code> with HIDMaestro serials through Valve's own <code>openvr_api</code>, and a haptic pulse round-tripping client → vrserver → driver → <code>HapticReceived</code> with correct hand attribution. The IPC protocol is additionally pinned byte-for-byte between the C# and C++ mirrors, both by S50's driver-role phase and by <code>static_assert</code>s compiled into the driver.</p>
-<p>Not verified without a headset, and stated here rather than implied: input values read back through the SteamVR Input action-binding system (the driver updates its components, but no client-side assert exists without bindings), in-game interaction feel, and the elevated-consumer/medium-integrity-vrserver ACL case (the rig runs vrserver elevated, while the SDDL grants Interactive explicitly for the real case). Real-hardware reports belong in HIDMaestro #32.</p>
+<h2 id="verification-status-v162">Verification status (v1.6.2)<a class="headerlink" href="#verification-status-v162" title="Permanent link">&para;</a></h2>
+<p>Machine-verified end-to-end on two headless rigs (real SteamVR, null HMD, no headset, no Steam client), by <code>test/probes/vr_controller_smoke</code> (battery scenario S50): payload extraction, vrpathreg registration, vrserver loading the driver, deferred device registration, both controllers enumerating as connected <code>TrackedDeviceClass_Controller</code> with HIDMaestro serials through Valve's own <code>openvr_api</code>, hand roles held by both hands, the legacy axis-type declarations, a haptic pulse round-tripping client → vrserver → driver → <code>HapticReceived</code> with correct hand attribution, the consumer-restart cycle, and the legacy lane: a spawned scene-app reader observes <code>GetControllerState</code> packets advancing at 90 Hz with every axis tracking the submitted state and every mapped button landing on its legacy bit. The IPC protocol is additionally pinned byte-for-byte between the C# and C++ mirrors, both by S50's driver-role phase and by <code>static_assert</code>s compiled into the driver.</p>
+<p>Not verified without a headset, and stated here rather than implied: input values read back through the SteamVR Input action-binding system under a real game's action manifest, in-game interaction feel, and the elevated-consumer/medium-integrity-vrserver ACL case (the rig runs vrserver elevated, while the SDDL grants Interactive explicitly for the real case). Real-hardware reports belong in HIDMaestro #32.</p>
 <h2 id="the-generic-controller-identity">The generic controller identity<a class="headerlink" href="#the-generic-controller-identity" title="Permanent link">&para;</a></h2>
 <p>The controllers present as <code>hidmaestro_controller</code> (manufacturer HIDMaestro, serials <code>HMVR-LEFT-0001</code> / <code>HMVR-RIGHT-0001</code>) with a full input profile: system, A, B, trigger, grip, joystick, haptics. Games that use SteamVR Input rebinding work with it directly. Games that only ship bindings for specific controller types (Index, Vive, Touch) may need a community binding or SteamVR's controller rebinding UI. Impersonating an Index controller identity is deliberately not done in this release: partial impersonation (without skeletal input) risks breaking the games it aims to help, and the honest generic identity is rebindable everywhere.</p>
 

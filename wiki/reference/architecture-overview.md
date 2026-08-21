@@ -100,7 +100,7 @@ Responsibilities:
 - Run the per-controller output-reader background thread that drains the shared output ring at ~125 Hz.
 - Manage HID PID 1.0 force-feedback shared state.
 - Manage `joy.cpl` OEM-name overrides with crash-safe restore.
-- Embed and load the 231-profile catalog.
+- Embed and load the 234-profile catalog.
 
 Lines of code: ~4,500 in public surface (`HMContext` / `HMController` / `HidDescriptorBuilder` / `HMProfileBuilder` / `HMDeviceExtractor` / `HMOemNameOverride` / value types) plus ~9,000 in `Internal/` (`DeviceOrchestrator`, `DeviceManager`, `SwdDeviceFactory`, `DriverBuilder`, `HidDescriptorReconstructor`, `HidReportBuilder`, `SharedMemoryIO`, `OemNameOverrideStore`, `PnputilHelper`, etc.).
 
@@ -142,7 +142,7 @@ Lifetime: `SWDeviceLifetimeParentPresent` so the device persists past process ex
 
 Detail: [SwDevice and PnP](swdevice-and-pnp.md).
 
-### 5. The 231-profile catalog
+### 5. The 234-profile catalog
 
 Embedded as a JSON resource inside `HIDMaestro.Core.dll`. 32 vendor folders, ~4-25 profiles each. See [Profile System](../profiles/profile-system.md) for the schema and runtime classification.
 
@@ -282,7 +282,7 @@ HIDMaestro/
 ├── tools/HIDMaestroProfileExtractor/  ; standalone WPF extractor GUI
 ├── example/SdkDemo/                ; minimal SDK consumer
 ├── test/                           ; HIDMaestroTest CLI + regression battery + probes
-├── profiles/                       ; 231 profile JSONs
+├── profiles/                       ; 234 profile JSONs
 ├── scripts/                        ; build, signing, verification, multi-pad-check
 ├── build/                          ; build outputs (driver DLLs, hmswd.exe, stamped INFs)
 └── docs/                           ; README screenshots, investigation notes

@@ -35,7 +35,7 @@ The SDK is distributed as `HIDMaestro.Core.dll`. Until a NuGet feed is published
 </ItemGroup>
 ```
 
-The DLL is single-file: 231 profile JSONs, the UMDF2 driver binaries (`HIDMaestro.dll`, `HMXInput.dll`), the helper EXE (`hmswd.exe`), the signing toolchain (`signtool.exe`, `Inf2Cat.exe`, the Microsoft hardware-workflow catalog assemblies), and both INFs are all embedded as resources. You ship the SDK; the SDK ships everything else.
+The DLL is single-file: 234 profile JSONs, the UMDF2 driver binaries (`HIDMaestro.dll`, `HMXInput.dll`), the helper EXE (`hmswd.exe`), the signing toolchain (`signtool.exe`, `Inf2Cat.exe`, the Microsoft hardware-workflow catalog assemblies), and both INFs are all embedded as resources. You ship the SDK; the SDK ships everything else.
 
 Target frameworks the consuming `csproj` needs:
 

@@ -316,7 +316,7 @@ Embedding glob ran before `PackResources` finished. Symptom: the embedded driver
 | `tools/HIDMaestroProfileExtractor/` | Standalone WPF profile extractor |
 | `test/` | `HIDMaestroTest.exe` CLI + `regression/` battery + `probes/` investigation tools |
 | `example/SdkDemo/` | Minimal SDK consumer for documentation |
-| `profiles/` | 231 profile JSONs across 32 vendor folders |
+| `profiles/` | 234 profile JSONs across 32 vendor folders |
 | `scripts/` | `build_all.cmd`, `verify.py`, `stamp_inf.ps1`, `pre-tag-validate.cmd`, helpers |
 | `build/` | Build outputs (gitignored) |
 | `docs/` | README assets, investigation logs |

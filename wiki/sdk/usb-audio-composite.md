@@ -167,3 +167,11 @@ The feature answers are grounded on two independent reads of real hardware that 
 Its input frame is the 54-byte `TritonMTUFull_t` on report `0x42`, packed by `extendedReport` so an ordinary `SubmitState` drives it; consumers can still submit it whole through `SubmitRawReport`. Steam's haptic writes arrive on `OutputReceived` as output reports `0x80` and up.
 
 SDL binds Triton on any interface of a wired unit, so nothing here depends on interface numbering the way the 2015 controller does.
+
+### Using them without Steam
+
+These pads speak only Valve's vendor protocol. Nothing generic reads it: not DirectInput, not XInput, not `joy.cpl`. That is equally true of real hardware, which is what lizard mode exists to cover. What makes a real Steam Controller work with Steam closed is SDL, which implements the protocol directly and turns lizard mode off itself.
+
+The personas never emit keyboard or mouse reports at all, so they sit permanently in the gamepad state and nothing needs disabling. An SDL application reads them with Steam not running.
+
+Battery scenario S52 proves this without a client: it creates each persona, drives it through `SubmitState`, reads the frame back off the real HID stack, and decodes it with SDL's own per-device arithmetic, asserting both stick extremes and a trigger pulled and released. `ValveWireCheck.exe --monitor <persona>` runs the same path interactively and prints what an SDL application would read.

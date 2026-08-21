@@ -130,7 +130,7 @@ The audio personas above exist because UMDF2 can present exactly one HID interfa
 
 The plain `steam-deck` profile carries Valve's real ids over a standard gamepad descriptor. Steam files it under Generic DirectInput, and none of Steam Input's Valve-device treatment applies: no gyro lane, no trackpads, no HD haptics, no Valve button prompts. The ids alone are not what earns that treatment; the device behind them is.
 
-So the persona presents the device. Three HID interfaces, as the real Deck does: the controller's vendor-page interface (`06 FF FF`, 64-byte input and feature reports) on interface 2 at endpoint 0x83, and the keyboard and mouse interfaces its lizard mode drives on 0 and 1. All three report descriptors are verbatim from one physical Deck, and the endpoint addresses, packet sizes, full-speed enumeration and 4 ms input cadence are that same device's.
+So the persona presents the device, reproduced from a real unit's `lsusb` dump rather than assembled, because the identity Steam inspects is the whole configuration and not just the controller interface: `bcdDevice` 3.00, product string `Steam Controller`, a serial string at index 3, `bmAttributes` 0x80, `wTotalLength` 150 and five interfaces. Mouse on 0 (endpoint 0x81), keyboard on 1 (0x82, boot protocol), the vendor-page controller on 2 (`06 FF FF`, 0x83, 64-byte input and feature reports), then an Interface Association Descriptor and the CDC ACM pair on 3 and 4. An earlier revision of this page described a three-interface device with `bcdDevice` 2.00 and the product string `Steam Deck Controller`, taken from a different unit's dump with the CDC pair dropped. Steam claimed that device, read its attributes and named it, and then decoded every input as zero.
 
 #### The interrogation
 
@@ -140,7 +140,7 @@ That is what `featureStubs` answers, keyed `match: "lastMessage"` so a lookup fo
 
 #### Driving it
 
-The persona's input report is the 64-byte Neptune frame (`ID_CONTROLLER_DECK_STATE`, type `0x09`), which carries more than `HMGamepadState` models: two sticks, two trackpads with pressure, analog triggers, four back grips, and a 6-axis IMU. Consumers submit it whole through `SubmitRawReport`, the same path the Sony vendor-blob packers use. Steam's rumble (`0xEB`), haptic (`0xEA`) and pulse (`0x8F`) writes arrive as HID feature output on `OutputReceived`.
+The persona's input report is the 64-byte Neptune frame (`ID_CONTROLLER_DECK_STATE`, type `0x09`), and `extendedReport` packs it from `SteamDeckStatePacket_t`, so an ordinary `SubmitState` call drives it. That matters more than it sounds: a profile whose descriptor is an opaque vendor blob declares no axes, and every layer that keys off declared axes will quietly emit nothing rather than fail. The profile must also set `alwaysArmed`, or the encoder is built and never armed and `SubmitState` falls through to the descriptor-driven builder, which has nothing to fill. Consumers can still submit the frame whole through `SubmitRawReport`. Steam's rumble (`0xEB`), haptic (`0xEA`) and pulse (`0x8F`) writes arrive as HID feature output on `OutputReceived`.
 
 The real device also exposes a CDC ACM debug serial pair, which the persona omits: it carries no controller data and nothing in the input stack reads it.
 
@@ -148,7 +148,7 @@ The real device also exposes a CDC ACM debug serial pair, which the persona omit
 
 `steam-controller-composite` is the wired D0G at `28DE:1102`, and it presents three interfaces for a blunter reason than the Deck's: SDL's driver refuses the pad on any interface but number 2. A single-interface profile carrying the same descriptor and the same ids is skipped outright. So the persona reproduces the real unit's whole configuration from its `lsusb` dump, `wTotalLength` 0x54 and all: keyboard on interface 0 (endpoint 0x81, 8 bytes, `bInterval` 10), mouse on interface 1 (0x82, 4 bytes, interval 6), and the controller on interface 2 (0x83, 64 bytes, interval 6), which is where the driver looks.
 
-The controller's report descriptor is the same 33-byte vendor-page descriptor the plain `steam-controller` profile already recorded from hardware, byte for byte. The keyboard and mouse descriptors are standard boot-protocol ones rather than Valve's own: no public capture of the wired unit's lizard descriptors exists, and `lsusb` marks both UNAVAILABLE. They are there to put the controller on interface 2, which is the part that matters. The profile's `notes` say so.
+Every descriptor is verbatim from a real unit: the device and configuration blobs, the 63-byte keyboard and 56-byte mouse report descriptors its lizard mode drives, and the 33-byte vendor-page controller descriptor. Its input frame is `ValveControllerStatePacket_t`. The pad has one stick and the wire carries no separate stick field: with `STEAM_LEFTPAD_FINGERDOWN` clear, SDL's `FormatStatePacketUntilGyro` reads `sLeftPadX/Y` as the joystick, so that is where the stick is written. Its analog triggers come from the 8-bit values inside the `ButtonTriggerData` union, which SDL remaps against 26000 rather than full scale, not from the redundant 16-bit copy further down the packet.
 
 Its `featureStubs` answer the same `0x83` interrogation the Deck's do, since both speak the same Valve protocol with no report ids, keyed off the message the preceding `SET_REPORT` carried. The attribute block carries three records in the order two real Valve captures use: the product id, a zero capabilities word (zero on both of those real devices too), and the 9000 µs connection interval, which is SDL's documented fallback for this family and what it turns into the gyro and accelerometer sample rate.
 
@@ -164,6 +164,6 @@ The feature answers are grounded on two independent reads of real hardware that 
 
 `0xAE` reads a string by index, and the persona declares one answer per index the real device provisions: the board serial, the unit serial, and the constant at index 3 that Steam checks. Every other index reads back `0xFF` where the index would be, which is how a real unit says a string is not provisioned, and the byte Steam's own updater tests.
 
-Consumers drive report `0x42` through `SubmitRawReport`. Steam's haptic writes arrive on `OutputReceived` as output reports `0x80` and up.
+Its input frame is the 54-byte `TritonMTUFull_t` on report `0x42`, packed by `extendedReport` so an ordinary `SubmitState` drives it; consumers can still submit it whole through `SubmitRawReport`. Steam's haptic writes arrive on `OutputReceived` as output reports `0x80` and up.
 
 SDL binds Triton on any interface of a wired unit, so nothing here depends on interface numbering the way the 2015 controller does.

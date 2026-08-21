@@ -1,6 +1,6 @@
 # Profile System
 
-Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 228 ship in the embedded catalog across 32 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 16 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
+Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 231 ship in the embedded catalog across 32 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 16 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
 
 This page documents the JSON schema field-by-field, the three runtime architecture groups a profile can fall into, and how the SDK resolves a profile into a deployable virtual device at `CreateController` time.
 
@@ -225,7 +225,7 @@ The profile fields determine which of three architecture groups the runtime inst
 
 Profiles where `driverMode` is **not** `"xinputhid"` and `vid` is **not** Microsoft (`0x045E`).
 
-Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 228-profile catalog (~204 profiles).
+Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 231-profile catalog (~204 profiles).
 
 ```
 ROOT\VID_054C&PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
@@ -309,7 +309,7 @@ The full per-archetype sequence lives in `DeviceOrchestrator.cs`'s `SetupControl
 ## Loading the catalog
 
 ```csharp
-// Embedded catalog (228 profiles)
+// Embedded catalog (231 profiles)
 ctx.LoadDefaultProfiles();
 
 // Custom directory of JSON profiles
@@ -391,7 +391,7 @@ As of v1.3.4:
 
 | Metric | Count |
 |--------|-------|
-| Total profiles | 228 |
+| Total profiles | 231 |
 | Vendor folders | 32 |
 | Plain HID profiles | ~204 |
 | Non-xinputhid Xbox profiles | ~6 |

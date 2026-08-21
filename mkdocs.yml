@@ -83,7 +83,7 @@ nav:
       - HID Descriptor Builder: sdk/hid-descriptor-builder.md
       - Force Feedback: sdk/force-feedback.md
       - Output Passthrough: sdk/output-passthrough.md
-      - Controller Audio (Composite USB): sdk/usb-audio-composite.md
+      - Composite USB Personas: sdk/usb-audio-composite.md
       - OEM Name Override: sdk/oem-name-override.md
   - Profiles:
       - profiles/index.md

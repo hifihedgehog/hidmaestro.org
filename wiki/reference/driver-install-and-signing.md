@@ -285,7 +285,7 @@ Process A:                                           Time
 1.  using var ctx = new HMContext();                ~10 ms
        Background prewarm tasks fire-and-forget
 2.  ctx.LoadDefaultProfiles();                      ~100 ms
-       Parse 228 embedded JSONs
+       Parse 231 embedded JSONs
 3.  ctx.InstallDriver();                            ~1.7 s on a clean machine
        3a. RemoveAllVirtualControllers (no-op)        ~50 ms
        3b. Compute hash, IsDriverInstalled? no       <50 ms

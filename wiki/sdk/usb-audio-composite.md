@@ -111,9 +111,59 @@ One fidelity note worth knowing: Windows persists per-endpoint enable/disable st
 
 ## Profile schema
 
-Composite personas add two fields to the profile JSON:
+Composite personas add these fields to the profile JSON:
 
 - `"backend": "usbip"` selects the create path. It is a property of the device, never a mode toggle on an existing profile: a profile that presented four interfaces on some machines and one on others would name a device plus a machine state.
 - `"usbConfiguration"` carries the full USB identity: the structured interface/endpoint model the backend routes with, plus the verbatim wire blobs (`deviceDescriptor`, `configurationDescriptor`, `otherSpeedConfigurationDescriptor`), the `busSpeed`, and `audioControls` with the pad's real UAC volume ranges. The blobs are served byte-for-byte and cross-checked against the structured model at create time.
+- An interface's alt setting may carry its own `"reportDescriptor"`, for a persona presenting more than one HID interface. The primary interface (the one whose `function` is `"hid"`) serves the profile's own `descriptor` as always; the others serve theirs from here.
+- `"featureStubs"` declares the answers the persona gives to `GET_REPORT(Feature)`, for a device whose claiming software interrogates it before it will use it. `messageByte` says where the message id sits in a write's payload, and a report may declare the `param` it answers for, when one message carries several.
 
 See [Profile System](../profiles/profile-system.md) for the rest of the schema.
+
+---
+
+## A second kind of persona: the Valve devices
+
+The audio personas above exist because UMDF2 can present exactly one HID interface and a DualSense has four. The three Valve personas use the same backend for a different reason: what a device *is* to Steam.
+
+### The Steam Deck
+
+The plain `steam-deck` profile carries Valve's real ids over a standard gamepad descriptor. Steam files it under Generic DirectInput, and none of Steam Input's Valve-device treatment applies: no gyro lane, no trackpads, no HD haptics, no Valve button prompts. The ids alone are not what earns that treatment; the device behind them is.
+
+So the persona presents the device. Three HID interfaces, as the real Deck does: the controller's vendor-page interface (`06 FF FF`, 64-byte input and feature reports) on interface 2 at endpoint 0x83, and the keyboard and mouse interfaces its lizard mode drives on 0 and 1. All three report descriptors are verbatim from one physical Deck, and the endpoint addresses, packet sizes, full-speed enumeration and 4 ms input cadence are that same device's.
+
+#### The interrogation
+
+Steam does not simply read input from a Deck. It asks the device what it is, over the feature-report channel, and the Deck's protocol declares no report ids at all: the host writes a message with `SET_REPORT(Feature)` and reads its answer with `GET_REPORT(Feature)`. `ID_GET_ATTRIBUTES_VALUES` (`0x83`) returns a block of `(tag, u32)` records: the product id, the firmware build time, the board revision, and the connection interval Steam uses to pace its own reads.
+
+That is what `featureStubs` answers, keyed `match: "lastMessage"` so a lookup follows the message the preceding write carried. The shipped values come from a capture of a real Deck answering a real Steam client, with the connection interval matching the persona's own 4 ms endpoint rather than being copied blindly.
+
+#### Driving it
+
+The persona's input report is the 64-byte Neptune frame (`ID_CONTROLLER_DECK_STATE`, type `0x09`), which carries more than `HMGamepadState` models: two sticks, two trackpads with pressure, analog triggers, four back grips, and a 6-axis IMU. Consumers submit it whole through `SubmitRawReport`, the same path the Sony vendor-blob packers use. Steam's rumble (`0xEB`), haptic (`0xEA`) and pulse (`0x8F`) writes arrive as HID feature output on `OutputReceived`.
+
+The real device also exposes a CDC ACM debug serial pair, which the persona omits: it carries no controller data and nothing in the input stack reads it.
+
+### The 2015 Steam Controller
+
+`steam-controller-composite` is the wired D0G at `28DE:1102`, and it presents three interfaces for a blunter reason than the Deck's: SDL's driver refuses the pad on any interface but number 2. A single-interface profile carrying the same descriptor and the same ids is skipped outright. So the persona reproduces the real unit's whole configuration from its `lsusb` dump, `wTotalLength` 0x54 and all: keyboard on interface 0 (endpoint 0x81, 8 bytes, `bInterval` 10), mouse on interface 1 (0x82, 4 bytes, interval 6), and the controller on interface 2 (0x83, 64 bytes, interval 6), which is where the driver looks.
+
+The controller's report descriptor is the same 33-byte vendor-page descriptor the plain `steam-controller` profile already recorded from hardware, byte for byte. The keyboard and mouse descriptors are standard boot-protocol ones rather than Valve's own: no public capture of the wired unit's lizard descriptors exists, and `lsusb` marks both UNAVAILABLE. They are there to put the controller on interface 2, which is the part that matters. The profile's `notes` say so.
+
+Its `featureStubs` answer the same `0x83` interrogation the Deck's do, since both speak the same Valve protocol with no report ids, keyed off the message the preceding `SET_REPORT` carried. The attribute block carries three records in the order two real Valve captures use: the product id, a zero capabilities word (zero on both of those real devices too), and the 9000 µs connection interval, which is SDL's documented fallback for this family and what it turns into the gyro and accelerometer sample rate.
+
+Three records, not six. A real block also carries a firmware build timestamp, a bootloader build timestamp and a board revision, and no public capture of a 2015 unit's exists. Those are absent rather than invented: SDL ignores all three, and a wrong firmware timestamp is what makes Steam re-ask forever.
+
+### The 2026 Steam Controller
+
+`steam-controller-2` is the wired unit at `28DE:1302`, the one SDL calls Triton. It is built differently from both of the above: one HID interface carries everything, addressed by report id rather than split across interfaces. The mouse (`0x40`) and keyboard (`0x41`) reports its lizard mode drives live in the same descriptor as the 53-byte controller state (`0x42`), the BLE state (`0x45`), battery (`0x43`), wireless status (`0x79`), the `0x80`–`0x89` haptic and rumble output reports, and a 63-byte command channel on feature reports 1 and 2. The command channel is why this persona's `featureStubs` set `"messageByte": 1`: the message id sits after the feature report id rather than at byte 0.
+
+The 372-byte descriptor is verbatim from [OpenPuck](https://github.com/safijari/openpuck)'s `ReversePuckFirmware`, an emulation of this controller that a live Steam client already accepts, and every report id in it matches SDL's own `ID_TRITON_*` constants.
+
+The feature answers are grounded on two independent reads of real hardware that agree record for record: OpenPuck's `identity.cpp`, and [sc2-research](https://github.com/CouchTurtle/sc2-research), which logs the same five attribute tags in the same order off a live controller and matches Steam's own firmware-update JSON on two of the values. The `0x83` block is those 25 bytes: product id `0x1302`, a zero capabilities word, the bootloader and firmware build timestamps, and the board revision. Steam validates them byte for byte, so none of them is a guess. The build timestamp shipped is the newer of the two real ones, so Steam sees a current unit rather than offering it an update.
+
+`0xAE` reads a string by index, and the persona declares one answer per index the real device provisions: the board serial, the unit serial, and the constant at index 3 that Steam checks. Every other index reads back `0xFF` where the index would be, which is how a real unit says a string is not provisioned, and the byte Steam's own updater tests.
+
+Consumers drive report `0x42` through `SubmitRawReport`. Steam's haptic writes arrive on `OutputReceived` as output reports `0x80` and up.
+
+SDL binds Triton on any interface of a wired unit, so nothing here depends on interface numbering the way the 2015 controller does.

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIDMaestro specifications: every capability, in full</title>
+    <meta name="description" content="The complete HIDMaestro capability list: identity, the profile catalog, latency, APIs, VR, the SDK surface, validation, and platform details.">
+    <link rel="icon" type="image/png" href="assets/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=9">
+    <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+    <div class="container-wide nav-in">
+        <a class="nav-brand" href="index.html"><img src="assets/logo-light.png" alt="" width="27" height="27">HIDMaestro</a>
+        <div class="nav-links">
+            <a href="index.html#identity">Identity</a>
+            <a href="index.html#latency">Latency</a>
+            <a href="index.html#compare">Compare</a>
+            <a href="specs.html">Specifications</a>
+            <a href="/docs/">Docs</a>
+        </div>
+        <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Download</a>
+    </div>
+</nav>
+
+<header class="spec-hero">
+    <div class="container">
+        <p class="kicker reveal">Specifications</p>
+        <h1 class="display-l reveal" data-d="1">Everything, in full.</h1>
+        <p class="lede reveal" data-d="2">
+            The complete capability list. The <a href="index.html">product page</a> shows
+            what HIDMaestro is; this page proves what it does. Each entry is covered at
+            length in the <a href="/docs/">documentation</a>.
+        </p>
+    </div>
+</header>
+
+<div class="container spec-wrap">
+    <aside class="spec-nav">
+        <div class="spec-nav-in">
+            <p class="mono-tag">Contents</p>
+                <a href="#identity">Identity and fidelity</a>
+                <a href="#catalog">The catalog</a>
+                <a href="#latency">Latency and transport</a>
+                <a href="#apis">APIs and consumers</a>
+                <a href="#vr">VR</a>
+                <a href="#sdk">The SDK</a>
+                <a href="#validation">Validation</a>
+                <a href="#platform">Platform and licensing</a>
+                <a href="#comparison">Full comparison</a>
+                <a href="#faq">Questions</a>
+        </div>
+    </aside>
+    <main class="spec-main">
+        <section class="spec-block" id="identity">
+            <h2 class="display-s spec-h reveal">Identity and fidelity</h2>
+            <dl class="spec-list reveal" data-d="1">
+                <div class="spec-row">
+                    <dt>Exact hardware identity</dt>
+                    <dd>Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name. SDL3's controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Valve personas Steam recognizes</dt>
+                    <dd>Three composite personas present the whole USB device a real Valve controller presents: the Steam Deck's controller (five interfaces, reproduced from a real unit's lsusb dump), the wired 2015 Steam Controller (every descriptor verbatim from a real unit), and the 2026 Steam Controller. Steam files them under its own hardware rather than Generic DirectInput, answers arrive for the GET_REPORT interrogation Steam performs before claiming a device, and each packs its own wire format cross-checked against SDL's decoders.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>A Switch Pro that answers back</dt>
+                    <dd>The Switch Pro Controller is not a passive device: hosts drive a Nintendo subcommand handshake and stall without a device that answers. HIDMaestro's driver answers it over the real Bluetooth wire, with a descriptor extracted byte-exact from a live Pro's SDP cache: SPI calibration reads, input-mode switch, 60 Hz full-mode streaming with gyro and accel. SDL3 and Steam Input bind it as a real Bluetooth Pro Controller with motion and rumble.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Controller audio and haptics</dt>
+                    <dd>A real USB DualSense is a four-interface composite, and three profiles present all four. Windows gets the pad's own Speakers and Headset Microphone endpoints, and the 4-channel stream behind them carries the speaker on channels 1 and 2 and the voice-coil actuators on 3 and 4. That stream is the only path on Windows by which a game hands a controller its authored haptic waveforms. It reaches your code as UsbAudio.Output with each channel's role named. Nothing extra to install: the USB transport ships inside the DLL and deploys itself the first time you create one.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Capture a controller you own</dt>
+                    <dd>Point HMDeviceExtractor at any controller you have plugged in and get a ready-to-deploy profile back. Clone a DualSense and ship a 16-button variant that Windows, Steam, and games still see as a DualSense. Build a flight stick, racing wheel, or arcade panel from scratch with arbitrary VID/PID, axis count, button count, and resolution.</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="spec-block" id="catalog">
+            <h2 class="display-s spec-h reveal">The catalog</h2>
+            <dl class="spec-list reveal" data-d="1">
+                <div class="spec-row">
+                    <dt>234 device profiles</dt>
+                    <dd>Embedded profiles across 32 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Devices are JSON</dt>
+                    <dd>Add a controller by writing a data-only JSON profile or by capturing one you already own. No per-device source code, no recompile, no hardcoded device classes. Adding a controller to a code-per-device emulator means writing and compiling a new device implementation. That difference is the whole point of the profile system.</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="spec-block" id="latency">
+            <h2 class="display-s spec-h reveal">Latency and transport</h2>
+            <dl class="spec-list reveal" data-d="1">
+                <div class="spec-row">
+                    <dt>~35 µs measured input latency</dt>
+                    <dd>The input number is real propagation, measured over 10,000 single-press iterations and reproducible with one command. The methodology is published in the repository at docs/testing/latency.md.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Event-driven output at 0.15 ms</dt>
+                    <dd>Rumble, force feedback, and LED packets are signaled to the consumer per captured packet at ~0.15 ms median, over 60x faster than the previous 8 ms polled path, with idle controllers costing zero measurable CPU.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>No socket, no batching cap</dt>
+                    <dd>HIDMaestro talks to its driver through shared memory on the same machine. No socket, no USBIP stack, no kernel transport driver in the path. Both directions are event-driven with no batching cap: input signals the driver per frame, and the driver signals each captured rumble/FFB/LED packet back to the consumer.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>The comparison, honestly</dt>
+                    <dd>VIIPER's published Windows figure, 168 µs, is localhost-only. Running it over an actual network, the thing the project is named for, adds roughly 1 to 5 ms on wired LAN or 10 to 50 ms over Wi-Fi on top of that figure, a caveat its docs mention only in passing. It also batches reports every millisecond, capping the update rate at 1000 Hz. HIDMaestro's input is event-driven with no fixed cap.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Networking at the right layer</dt>
+                    <dd>Networking belongs in the application, not in the device driver. Tools built on USB/IP put a kernel USBIP driver and a listening socket in front of every user, even for purely local play. USB/IP can also only present USB devices, so a controller paired over Bluetooth shows up with the wrong bus type. HIDMaestro keeps the device layer local and sets bus type per profile. Network play still happens, at the right layer: PadForge, built on HIDMaestro, shares controllers across PCs with its Remote Link feature, both directions with feedback returning to the real device, at no cost to local play.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Fast to start, fast to recover</dt>
+                    <dd>When the installed driver already matches, InstallDriver() completes in ~40-60 ms and a consumer goes from process start to a live controller in about a second. If the consuming app is force-closed mid-session, the next launch evicts the orphaned devices and has the first controller live again in ~2.3 s, measured with an Xbox Series BT profile in the mix, the deepest teardown stack.</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="spec-block" id="apis">
+            <h2 class="display-s spec-h reveal">APIs and consumers</h2>
+            <dl class="spec-list reveal" data-d="1">
+                <div class="spec-row">
+                    <dt>Every gaming API at once</dt>
+                    <dd>DirectInput sees correct axes and buttons. XInput sees separate triggers in one slot. SDL3/HIDAPI sees the right identity and bus type. The browser sees a STANDARD GAMEPAD with separate triggers. WGI sees one Gamepad. RawInput sees the same device as all of them, at the same time.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Multi-controller</dt>
+                    <dd>No hard limit on simultaneous virtual controllers. Tested with 6 mixed types, correct per-controller ordering across every API. XInput caps Xbox-family profiles at its own 4 slots; non-Xbox profiles run beyond it.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Hot-plug</dt>
+                    <dd>Create and remove controllers on the fly, about 200 ms for a single controller. Live-swap a controller's profile mid-session. No reboots, no leftover devices.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Force feedback answered</dt>
+                    <dd>HID PID 1.0 answers for DirectInput force-feedback games, plus rumble and haptic output events the consumer routes to real hardware. The driver accepts the writes and raises them to your application in real time.</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="spec-block" id="vr">
+            <h2 class="display-s spec-h reveal">VR</h2>
+            <dl class="spec-list reveal" data-d="1">
+                <div class="spec-row">
+                    <dt>Virtual VR controllers</dt>
+                    <dd>An embedded OpenVR driver presents a left and a right hand to SteamVR. The hands hold real SteamVR hand roles, serve the modern input system through a full input profile, and serve legacy GetControllerState readers through a shipped legacy binding. Controllers exist only while a consumer is live, so an idle machine shows no phantom devices. SteamVR is the one dependency, and it installs Steam-client-free and account-free via Valve's own steamcmd.</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="spec-block" id="sdk">
+            <h2 class="display-s spec-h reveal">The SDK</h2>
+            <dl class="spec-list reveal" data-d="1">
+                <div class="spec-row">
+                    <dt>One DLL</dt>
+                    <dd>HIDMaestro.Core.dll carries the 234-profile catalog, the driver binaries, and the signing tools embedded. Grab it from a release ZIP or build from source. Pick a profile, call CreateController, submit input. Dispose it and the device disappears, with no leftover PnP state.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Self-bootstrapping install</dt>
+                    <dd>InstallDriver() creates a locally trusted certificate, signs the driver, and installs it. No EV certificate, no test-signing mode, no reboot. When the installed driver already matches, the call completes in ~40-60 ms.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>A UI instead of code</dt>
+                    <dd>If you want to use HIDMaestro through a UI instead of code, install PadForge. It wraps this SDK with a full input-mapping app.</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="spec-block" id="validation">
+            <h2 class="display-s spec-h reveal">Validation</h2>
+            <dl class="spec-list reveal" data-d="1">
+                <div class="spec-row">
+                    <dt>Validated across the stack</dt>
+                    <dd>A 57-scenario regression battery checks DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, and WGI on every change. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Judged by the real consumers</dt>
+                    <dd>The battery does not only check HIDMaestro's own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. The decoders Steam Input is built on are the judges.</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="spec-block" id="platform">
+            <h2 class="display-s spec-h reveal">Platform and licensing</h2>
+            <dl class="spec-list reveal" data-d="1">
+                <div class="spec-row">
+                    <dt>No kernel driver, no test-signing</dt>
+                    <dd>Runs entirely in user mode via UMDF2, loaded by a locally trusted self-signed certificate. No test-signing mode, no purchased certificate, no reboot. It installs on a normal PC, not just a developer box, and a bug cannot blue-screen the machine.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>The composite exception, stated</dt>
+                    <dd>HIDMaestro is Windows optimized and focused on game controllers and HID game devices. Within that scope it gives you exact hardware identity with no kernel driver, no network layer, and no per-device code. The composite USB personas are the one deliberate exception: controller audio needs a driver-backed USB device, so those profiles deploy a signed third-party transport that ships inside the DLL. Pick any other profile and nothing kernel-mode is ever installed.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Windows 10 and 11</dt>
+                    <dd>Windows 10 or 11, x64, with the .NET 10 runtime. Administrator privileges are required for virtual device creation. Building from source takes Visual Studio 2022 or later with Windows SDK/WDK 10.0.26100.0.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>MIT licensed</dt>
+                    <dd>Free and open source. Use it in your own projects, commercial or otherwise, with no restrictions.</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="spec-block" id="comparison">
+            <h2 class="display-s spec-h reveal">Full comparison</h2>
+            <p class="spec-note reveal">Every capability, against the tools people usually reach for. The product page carries a shortened version of this table.</p>
+            <div class="cmp-wrap reveal" data-d="1">
+                <div class="cmp-scroll">
+                    <table class="cmp">
+    <thead>
+        <tr>
+            <th scope="col">Capability</th>
+            <th scope="col" class="us">HIDMaestro</th>
+            <th scope="col">VIIPER</th>
+            <th scope="col">ViGEmBus</th>
+            <th scope="col">vJoy</th>
+            <th scope="col">WinUHid</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>Kernel driver required</td><td class="us">No, except the composite USB personas</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td><td>No (on VHF)</td></tr>
+        <tr><td>Installs without test-signing</td><td class="us">Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+        <tr><td>Network play</td><td class="us">App layer via consumers (PadForge Remote Link)</td><td>In the driver: +1-5 ms wired, +10-50 ms Wi-Fi</td><td>No</td><td>No</td><td>No</td></tr>
+        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 234 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
+        <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td><td>Write C, or raw descriptor</td></tr>
+        <tr><td>Local single-press latency</td><td class="us">~35 µs measured</td><td>168 µs published</td><td>N/A</td><td>N/A</td><td>Not published</td></tr>
+        <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Retired</td><td>Stale</td><td>Active</td></tr>
+    </tbody>
+</table>
+                </div>
+            </div>
+        </section>
+
+        <section class="spec-block" id="faq">
+            <h2 class="display-s spec-h reveal">Questions, answered plainly</h2>
+            <div class="details reveal" data-d="1">
+                <details class="detail">
+                    <summary>Is it really free?</summary>
+                    <div class="detail-body">Yes. MIT licensed, free and open source, commercial use welcome with no restrictions. HIDMaestro will never become paid, freemium, or Patreon early-access paywalled.</div>
+                </details>
+                <details class="detail">
+                    <summary>Do I need to enable test-signing mode?</summary>
+                    <div class="detail-body">No. The driver runs entirely in user mode via UMDF2 and loads under a locally trusted self-signed certificate that InstallDriver() creates for you. No test-signing mode, no purchased certificate, no reboot.</div>
+                </details>
+                <details class="detail">
+                    <summary>Does anything kernel-mode get installed?</summary>
+                    <div class="detail-body">Not for the standard profiles. The composite USB personas are the one deliberate exception: controller audio needs a driver-backed USB device, so those profiles deploy a signed third-party transport that ships inside the DLL. Pick any other profile and nothing kernel-mode is ever installed.</div>
+                </details>
+                <details class="detail">
+                    <summary>Can I add a controller you don't ship?</summary>
+                    <div class="detail-body">Yes, without touching code. Write a data-only JSON profile, or point HMDeviceExtractor at a controller you have plugged in and get a ready-to-deploy profile back.</div>
+                </details>
+                <details class="detail">
+                    <summary>How is this different from ViGEmBus, vJoy, or VIIPER?</summary>
+                    <div class="detail-body">Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 234 of them, down to the bus type, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side.</div>
+                </details>
+                <details class="detail">
+                    <summary>Does it work with Steam?</summary>
+                    <div class="detail-body">Yes. Steam recognizes the virtual controllers as the hardware their profiles declare, and the Valve personas go further: Steam files them under its own hardware, with the regression battery starting the actual Steam client to prove it claims and classifies all three.</div>
+                </details>
+            </div>
+        </section>
+    </main>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <a class="footer-brand" href="index.html"><img src="assets/logo-light.png" alt="" width="26" height="26">HIDMaestro</a>
+            <div class="footer-links">
+                <a href="index.html">Overview</a>
+                <a href="specs.html">Specifications</a>
+                <a href="/docs/">Docs</a>
+                <a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+        <div class="footer-note">
+            <span>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color:var(--text-muted)">MIT License</a></span>
+            <span>The engine inside PadForge</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+(function () {
+    "use strict";
+    var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.04 });
+    document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+
+    var nav = document.getElementById("nav");
+    addEventListener("scroll", function () { nav.classList.toggle("stuck", scrollY > 40); }, { passive: true });
+
+    /* Mark the section currently in view in the contents rail. */
+    var links = [].slice.call(document.querySelectorAll(".spec-nav a"));
+    var blocks = links.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); });
+    blocks.forEach(function (b) {
+        new IntersectionObserver(function (es) {
+            es.forEach(function (e) {
+                if (!e.isIntersecting) return;
+                var i = blocks.indexOf(e.target);
+                links.forEach(function (l, n) { l.classList.toggle("on", n === i); });
+            });
+        }, { rootMargin: "-20% 0px -70% 0px" }).observe(b);
+    });
+})();
+</script>
+</body>
+</html>

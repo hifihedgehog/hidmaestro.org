@@ -1,0 +1,14 @@
+[
+  {"q": "Is it really free?",
+   "a": "Yes. MIT licensed, free and open source, commercial use welcome with no restrictions. HIDMaestro will never become paid, freemium, or Patreon early-access paywalled."},
+  {"q": "Do I need to enable test-signing mode?",
+   "a": "No. The driver runs entirely in user mode via UMDF2 and loads under a locally trusted self-signed certificate that InstallDriver() creates for you. No test-signing mode, no purchased certificate, no reboot."},
+  {"q": "Does anything kernel-mode get installed?",
+   "a": "Not for the standard profiles. The composite USB personas are the one deliberate exception: controller audio needs a driver-backed USB device, so those profiles deploy a signed third-party transport that ships inside the DLL. Pick any other profile and nothing kernel-mode is ever installed."},
+  {"q": "Can I add a controller you don't ship?",
+   "a": "Yes, without touching code. Write a data-only JSON profile, or point HMDeviceExtractor at a controller you have plugged in and get a ready-to-deploy profile back."},
+  {"q": "How is this different from ViGEmBus, vJoy, or VIIPER?",
+   "a": "Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 234 of them, down to the bus type, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side."},
+  {"q": "Does it work with Steam?",
+   "a": "Yes. Steam recognizes the virtual controllers as the hardware their profiles declare, and the Valve personas go further: Steam files them under its own hardware, with the regression battery starting the actual Steam client to prove it claims and classifies all three."}
+]

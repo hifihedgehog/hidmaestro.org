@@ -21,7 +21,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=9">
     <script>document.documentElement.classList.add('js');</script>
-</head>
+<style id="cap">
+.hero{min-height:auto !important; padding-top:11rem !important; padding-bottom:5rem !important;}
+.js .reveal{opacity:1 !important; transform:none !important;}
+/* Freeze every transition and animation. Headless virtual time can
+   photograph a transition mid-flight, which prints as ghosted text and
+   reads like a layout bug that is not in the page. */
+*,*::before,*::after{transition:none !important; animation:none !important; will-change:auto !important;}
+</style></head>
 <body>
 
 <!-- ═══════════════ NAV ═══════════════ -->

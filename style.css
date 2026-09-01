@@ -41,6 +41,8 @@
     --font-display: "Archivo", "Segoe UI", sans-serif;
     --font-body: "Instrument Sans", "Segoe UI", sans-serif;
     --font-mono: "JetBrains Mono", Consolas, monospace;
+    --hairline:      rgba(255, 255, 255, 0.07);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
     --radius: 14px;
     --radius-lg: 22px;
     --section-pad: clamp(4.5rem, 9vw, 8.5rem);
@@ -136,6 +138,10 @@ a:hover { color: var(--text-hi); }
     border-bottom-color: var(--border-soft);
     padding: 0.55rem 0;
 }
+
+/* Traveling down, the product owns the viewport. */
+.navbar.hide { transform: translateY(-110%); }
+.navbar { transition: transform 0.5s var(--ease), background 0.3s ease, box-shadow 0.3s ease; }
 
 .nav-container { display: flex; align-items: center; justify-content: space-between; }
 
@@ -249,15 +255,9 @@ a:hover { color: var(--text-hi); }
 }
 
 .hero-shot {
-    max-width: 980px;
+    max-width: 940px;
     margin: 0 auto;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.03) inset,
-        0 30px 80px -20px rgba(0, 0, 0, 0.8),
-        0 0 120px -30px var(--ember-glow);
+    padding: 0 clamp(0.5rem, 3vw, 2rem);
 }
 
 .hero-trust {
@@ -424,10 +424,7 @@ a:hover { color: var(--text-hi); }
 }
 
 .chapter-hero-shot {
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: 0 24px 70px -24px rgba(0, 0, 0, 0.75);
+    padding: clamp(0.4rem, 1.5vw, 1.2rem);
 }
 
 /* Alternate chapters mirror the hero: shot left, copy right. */
@@ -926,3 +923,136 @@ a:hover { color: var(--text-hi); }
 
     .screenshot-nav { position: static; justify-content: flex-end; margin-bottom: 0.8rem; }
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   THE RIG (ported from padforge.org)
+   Every app screen is staged like hardware: perspective, a rim light,
+   a contact shadow plus a long floor throw, a glass sheen, and a bloom
+   behind it. All five or none. The corner radius is container-relative
+   so the window's curvature holds at every displayed size.
+   ══════════════════════════════════════════════════════════════════════ */
+.stage { position: relative; }
+.stage::before {
+    content: ""; position: absolute; left: 50%; top: 46%;
+    width: 116%; height: 130%; transform: translate(-50%, -50%);
+    background:
+        radial-gradient(52% 46% at 50% 44%, rgba(242,101,42,0.20), transparent 70%),
+        radial-gradient(64% 54% at 50% 50%, rgba(111,195,214,0.07), transparent 72%),
+        radial-gradient(46% 40% at 50% 46%, rgba(150,170,210,0.055), transparent 74%);
+    filter: blur(30px); pointer-events: none;
+}
+.stage-cy::before {
+    background:
+        radial-gradient(52% 46% at 50% 44%, rgba(111,195,214,0.17), transparent 70%),
+        radial-gradient(64% 54% at 50% 50%, rgba(242,101,42,0.06), transparent 72%);
+}
+
+.rig { position: relative; perspective: 2400px; perspective-origin: 50% 42%;
+       container-type: inline-size; }
+.rig-in {
+    position: relative; transform-style: preserve-3d;
+    border-radius: 0.625cqw; overflow: hidden;
+    transform: rotateY(-13deg) rotateX(5deg);
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.10),
+        0 1px 0 rgba(255,255,255,0.16) inset,
+        0 0 70px -10px rgba(242,101,42,0.22),
+        0 60px 90px -30px rgba(0,0,0,0.88),
+        0 150px 160px -70px rgba(0,0,0,0.75);
+}
+.rig-in > img { display: block; width: 100%; height: auto; }
+.rig-in::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(102deg,
+        rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 13%,
+        transparent 34%, transparent 72%,
+        rgba(255,255,255,0.03) 88%, rgba(255,255,255,0.10) 100%);
+}
+.rig-r  .rig-in { transform: rotateY(13deg) rotateX(5deg); }
+.rig-r  .rig-in::after { background: linear-gradient(258deg,
+        rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 13%,
+        transparent 34%, transparent 72%,
+        rgba(255,255,255,0.03) 88%, rgba(255,255,255,0.10) 100%); }
+.rig-soft .rig-in { transform: rotateY(-8deg) rotateX(3deg); }
+
+/* Under 900px the angle stands down and the screen goes flat: the angle
+   is a presentation device, never a legibility tax. */
+@media (max-width: 900px) {
+    .rig-in, .rig-r .rig-in, .rig-soft .rig-in { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .rig-in { transition: none; } }
+
+/* ── Lightbox: every screenshot opens full size ─────────────────────── */
+.zoom { cursor: zoom-in; }
+.lb {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: clamp(1rem, 4vw, 3rem);
+    background: rgba(3, 5, 8, 0.86);
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s var(--ease);
+}
+.lb.on { opacity: 1; pointer-events: auto; }
+.lb img {
+    max-width: 100%; max-height: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-soft);
+    box-shadow: 0 40px 100px -30px rgba(0,0,0,0.9);
+    transform: scale(0.985);
+    transition: transform 0.4s var(--ease);
+}
+.lb.on img { transform: none; }
+.lb-cap {
+    position: absolute; left: 50%; bottom: clamp(0.8rem, 2.5vw, 1.8rem);
+    transform: translateX(-50%);
+    font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--text-dim); text-align: center;
+    padding: 0 1rem;
+}
+.lb-close {
+    position: absolute; top: clamp(0.8rem, 2.5vw, 1.6rem); right: clamp(0.8rem, 2.5vw, 1.6rem);
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid var(--hairline); background: rgba(255,255,255,0.05);
+    color: var(--text-hi); font-size: 1.1rem; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.lb-close:hover { background: rgba(255,255,255,0.11); border-color: rgba(255,255,255,0.28); }
+
+/* ── Giving ─────────────────────────────────────────────────────────── */
+.give { max-width: 62ch; margin: 3rem auto 0; text-align: center; }
+.give p { color: var(--text-muted); font-size: 0.95rem; }
+.give p + p { margin-top: 0.6rem; }
+.give b { color: var(--text-hi); }
+.give a { color: var(--ember-bright); }
+.give-small { margin-top: 0.6rem; font-size: 0.88rem; color: var(--text-dim); }
+
+/* ── The invitation ─────────────────────────────────────────────────── */
+.invite {
+    padding: var(--section-pad) 0;
+    background: var(--bg-sunken);
+}
+.invite-panel {
+    max-width: 720px; margin: 0 auto; text-align: center;
+    padding: clamp(2.2rem, 5vw, 3.6rem) clamp(1.4rem, 4vw, 3rem);
+    border: 1px solid var(--hairline); border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 60%);
+}
+.invite-panel .kicker { margin-bottom: 1.6rem; }
+.invite-verse p {
+    font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+    line-height: 1.7; font-style: italic; color: var(--text);
+}
+.invite-verse cite {
+    display: block; margin-top: 1rem;
+    font-family: var(--font-mono); font-style: normal; font-size: 0.75rem;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--telemetry);
+}
+.invite-testimony {
+    margin-top: 1.8rem; font-size: 1rem; color: var(--text-hi);
+}
+.invite-link { margin-top: 1.1rem; font-size: 0.95rem; color: var(--text-muted); }
+.invite-link a { color: var(--ember-bright); }

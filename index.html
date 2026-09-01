@@ -56,8 +56,10 @@
             <a href="#download" class="btn btn-primary">Download latest release</a>
             <a href="/docs/" class="btn btn-secondary">Read the docs</a>
         </div>
-        <figure class="hero-shot reveal">
-            <img src="assets/screenshot-xbox-series-bt.png" alt="A virtual Xbox Series X|S Bluetooth controller shown identically in Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3" fetchpriority="high">
+        <figure class="hero-shot stage reveal">
+            <div class="rig rig-soft"><div class="rig-in">
+                <img class="zoom" src="assets/screenshot-xbox-series-bt.png" alt="A virtual Xbox Series X|S Bluetooth controller shown identically in Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3" fetchpriority="high">
+            </div></div>
         </figure>
         <div class="hero-trust">
             <a href="https://padforge.org/" class="hero-trust-item" target="_blank" rel="noopener">
@@ -74,7 +76,7 @@
 <!-- Stat band -->
 <section class="stats" aria-label="HIDMaestro by the numbers">
     <div class="container stats-row">
-        <div class="stat reveal"><span class="stat-num">228</span><span class="stat-label">device profiles built in</span></div>
+        <div class="stat reveal"><span class="stat-num">234</span><span class="stat-label">device profiles built in</span></div>
         <div class="stat reveal"><span class="stat-num">32</span><span class="stat-label">vendors covered</span></div>
         <div class="stat reveal"><span class="stat-num">~35<em>&micro;s</em></span><span class="stat-label">median single-press latency</span></div>
         <div class="stat reveal"><span class="stat-num">0</span><span class="stat-label">kernel drivers installed</span></div>
@@ -90,7 +92,7 @@
             <div class="how-step reveal">
                 <div class="how-num">1</div>
                 <h3>Reference the SDK</h3>
-                <p>One DLL, <span class="chip">HIDMaestro.Core.dll</span>, with the 228-profile catalog, the driver binaries, and the signing tools embedded. Grab it from a release ZIP or build from source.</p>
+                <p>One DLL, <span class="chip">HIDMaestro.Core.dll</span>, with the 234-profile catalog, the driver binaries, and the signing tools embedded. Grab it from a release ZIP or build from source.</p>
             </div>
             <div class="how-step reveal">
                 <div class="how-num">2</div>
@@ -128,13 +130,13 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             <div class="chapter-hero-copy">
                 <p>Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name. SDL3's controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name.</p>
             </div>
-            <figure class="chapter-hero-shot">
-                <img src="assets/screenshot-dualsense.png" alt="A virtual DualSense shown identically in Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3" loading="lazy">
-            </figure>
+            <figure class="chapter-hero-shot stage"><div class="rig rig-r"><div class="rig-in">
+                <img class="zoom" src="assets/screenshot-dualsense.png" alt="A virtual DualSense shown identically in Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3" loading="lazy">
+            </div></div></figure>
         </div>
         <div class="rail" tabindex="0">
             <article class="rail-card reveal">
-                <span class="story-eyebrow">228 device profiles</span>
+                <span class="story-eyebrow">234 device profiles</span>
                 <h3>Xbox to HOTAS, out of the box.</h3>
                 <p>Embedded profiles across 32 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code.</p>
             </article>
@@ -214,15 +216,15 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             <div class="chapter-hero-copy">
                 <p>DirectInput sees correct axes and buttons. XInput sees separate triggers in one slot. SDL3/HIDAPI sees the right identity and bus type. The browser sees a STANDARD GAMEPAD with separate triggers. WGI sees one Gamepad. RawInput sees the same device as all of them, at the same time.</p>
             </div>
-            <figure class="chapter-hero-shot">
-                <img src="assets/screenshot-xbox-360-wired.png" alt="A virtual Xbox 360 Wired controller shown identically in Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3" loading="lazy">
-            </figure>
+            <figure class="chapter-hero-shot stage stage-cy"><div class="rig rig-r"><div class="rig-in">
+                <img class="zoom" src="assets/screenshot-xbox-360-wired.png" alt="A virtual Xbox 360 Wired controller shown identically in Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3" loading="lazy">
+            </div></div></figure>
         </div>
         <div class="rail" tabindex="0">
             <article class="rail-card reveal">
                 <span class="story-eyebrow">Validated across the stack</span>
-                <h3>46 scenarios, two machines, every change.</h3>
-                <p>A 46-scenario regression battery checks DirectInput, XInput, SDL3, the browser Gamepad API, and WGI on every change, passing on both a 16-core Windows 11 desktop and a low-power Intel Atom Windows 10 machine. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</p>
+                <h3>57 scenarios, every change.</h3>
+                <p>A 57-scenario regression battery checks DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, and WGI on every change. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</p>
             </article>
             <article class="rail-card reveal">
                 <span class="story-eyebrow">Multi-controller</span>
@@ -272,7 +274,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
                     <tr><td>Kernel driver required</td><td>No, except the composite USB personas</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td><td>No (on VHF)</td></tr>
                     <tr><td>Installs without test-signing</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
                     <tr><td>Network play</td><td>App layer via consumers (PadForge Remote Link)</td><td>In the driver: +1-5 ms wired, +10-50 ms Wi-Fi</td><td>No</td><td>No</td><td>No</td></tr>
-                    <tr><td>Exact identity, incl. Bluetooth bus</td><td>Yes, 228 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
+                    <tr><td>Exact identity, incl. Bluetooth bus</td><td>Yes, 234 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
                     <tr><td>Add a new device</td><td>JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td><td>Write C, or raw descriptor</td></tr>
                     <tr><td>Local single-press latency</td><td>~35 &micro;s measured</td><td>168 &micro;s published</td><td>N/A</td><td>N/A</td><td>Not published</td></tr>
                     <tr><td>Status</td><td>Active</td><td>Active</td><td>Retired</td><td>Stale</td><td>Active</td></tr>
@@ -312,7 +314,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 8.2h8a5 5 0 0 1 4.9 6c-.5 2.6-3.4 3.2-4.8 1.6L14.2 14H9.8l-1.9 1.8c-1.4 1.6-4.3 1-4.8-1.6a5 5 0 0 1 4.9-6z"/><path d="M7 11.4v2.6M5.7 12.7h2.6" class="e"/><circle cx="15.8" cy="11.8" r="0.9" class="e"/><circle cx="17.4" cy="13.8" r="0.9" class="e"/></svg></div>
-                <h3>228 device profiles</h3>
+                <h3>234 device profiles</h3>
                 <p>Embedded profiles across 32 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more.</p>
             </div>
             <div class="feature-card reveal">
@@ -323,7 +325,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             <div class="feature-card reveal">
                 <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 5.8v5.4c0 4.4 2.9 7.4 7 9 4.1-1.6 7-4.6 7-9V5.8L12 3z"/><path d="M8.8 12.1l2.3 2.3 4.1-4.4" class="e"/></svg></div>
                 <h3>Validated across the stack</h3>
-                <p>A 46-scenario regression battery checks DirectInput, XInput, SDL3, the browser Gamepad API, and WGI on every change, passing on both a 16-core Windows 11 desktop and a low-power Intel Atom Windows 10 machine.</p>
+                <p>A 57-scenario regression battery checks DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, and WGI on every change.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon"><svg class="ficon" viewBox="0 0 24 24" fill="none" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 4.5c-2.2 0-2.6 1.4-2.6 3.1 0 2.7-.4 3.6-2.4 4.4 2 0.8 2.4 1.7 2.4 4.4 0 1.7.4 3.1 2.6 3.1"/><path d="M15.5 4.5c2.2 0 2.6 1.4 2.6 3.1 0 2.7.4 3.6 2.4 4.4-2 0.8-2.4 1.7-2.4 4.4 0 1.7-.4 3.1-2.6 3.1"/><circle cx="12" cy="12" r="1.3" class="e"/></svg></div>
@@ -362,15 +364,15 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             <div class="screenshot-viewport">
                 <div class="screenshot-track">
                     <figure class="screenshot-item active">
-                        <img src="assets/screenshot-xbox-series-bt.png" alt="Xbox Series BT" loading="lazy">
+                        <img class="zoom" src="assets/screenshot-xbox-series-bt.png" alt="Xbox Series BT" loading="lazy">
                         <figcaption>Xbox Series X|S Bluetooth across Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3</figcaption>
                     </figure>
                     <figure class="screenshot-item">
-                        <img src="assets/screenshot-xbox-360-wired.png" alt="Xbox 360 Wired" loading="lazy">
+                        <img class="zoom" src="assets/screenshot-xbox-360-wired.png" alt="Xbox 360 Wired" loading="lazy">
                         <figcaption>Xbox 360 Wired across Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3</figcaption>
                     </figure>
                     <figure class="screenshot-item">
-                        <img src="assets/screenshot-dualsense.png" alt="DualSense PS5" loading="lazy">
+                        <img class="zoom" src="assets/screenshot-dualsense.png" alt="DualSense PS5" loading="lazy">
                         <figcaption>DualSense (PS5) across Device Manager, joy.cpl, Chrome Gamepad Tester, and PadForge/SDL3</figcaption>
                     </figure>
                 </div>
@@ -400,8 +402,34 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             </ul>
             <p>If you want to use HIDMaestro through a UI instead of code, install <a href="https://padforge.org/" target="_blank" rel="noopener">PadForge</a>. It wraps this SDK with a full input-mapping app.</p>
         </div>
+        <div class="give reveal">
+            <p><b>There is no tip jar.</b> Knowing HIDMaestro is useful is reward enough. If you insist on giving something, give it to a charity instead and bless humanity. Short of one you already trust, <a href="https://philanthropies.churchofjesuschrist.org/humanitarian-services" target="_blank" rel="noopener">Humanitarian Services of The Church of Jesus Christ of Latter-day Saints</a> puts it to work directly, and <a href="https://give.org" target="_blank" rel="noopener">give.org</a> grades charities against twenty standards if you would rather choose your own.</p>
+            <p>The upstream projects HIDMaestro is built on have earned it as much as anyone. They made all of this possible.</p>
+            <p class="give-small">Anonymously, preferably. Not at all is fine too, and nothing here changes either way.</p>
+        </div>
     </div>
 </section>
+
+<!-- The invitation -->
+<section class="invite" aria-label="An invitation">
+    <div class="container">
+        <div class="invite-panel reveal">
+            <p class="kicker">An invitation</p>
+            <blockquote class="invite-verse">
+                <p>&ldquo;And we talk of Christ, we rejoice in Christ, we preach of Christ, we prophesy of Christ, and we write according to our prophecies, that our children may know to what source they may look for a remission of their sins.&rdquo;</p>
+                <cite>2 Nephi 25:26</cite>
+            </blockquote>
+            <p class="invite-testimony">Glory, honor, and praise to the Lord Jesus Christ, the source of all truth and salvation, forever and ever.</p>
+            <p class="invite-link">You are warmly invited to visit <a href="https://www.comeuntochrist.org" target="_blank" rel="noopener">ComeUntoChrist.org</a> and learn more about Him and The Church of Jesus Christ of Latter-day Saints.</p>
+        </div>
+    </div>
+</section>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Screenshot viewer">
+    <button class="lb-close" id="lbClose" aria-label="Close">&#10005;</button>
+    <img id="lbImg" src="" alt="">
+    <div class="lb-cap" id="lbCap"></div>
+</div>
 
 <!-- Footer -->
 <footer class="footer">
@@ -502,8 +530,45 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
     });
 
     const navbar = document.querySelector('.navbar');
+    let lastY = 0;
     window.addEventListener('scroll', () => {
-        navbar.classList.toggle('scrolled', window.scrollY > 50);
+        const y = window.scrollY;
+        navbar.classList.toggle('scrolled', y > 50);
+        navbar.classList.toggle('hide', y > 560 && y > lastY + 4);
+        lastY = y;
+    }, { passive: true });
+
+    // Lightbox: every screenshot opens full size, keyboard reachable.
+    const lb = document.getElementById('lb');
+    const lbImg = document.getElementById('lbImg');
+    const lbCap = document.getElementById('lbCap');
+    let lastFocus = null;
+    function openLb(img) {
+        lastFocus = document.activeElement;
+        lbImg.src = img.currentSrc || img.src;
+        lbImg.alt = img.alt || '';
+        lbCap.textContent = img.alt || '';
+        lb.classList.add('on');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('lbClose').focus();
+    }
+    function closeLb() {
+        lb.classList.remove('on');
+        document.body.style.overflow = '';
+        if (lastFocus) lastFocus.focus();
+    }
+    document.querySelectorAll('img.zoom').forEach(img => {
+        img.tabIndex = 0;
+        img.setAttribute('role', 'button');
+        img.addEventListener('click', () => openLb(img));
+        img.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLb(img); }
+        });
+    });
+    document.getElementById('lbClose').addEventListener('click', closeLb);
+    lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && lb.classList.contains('on')) closeLb();
     });
 })();
 </script>

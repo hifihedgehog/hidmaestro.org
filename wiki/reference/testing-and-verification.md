@@ -189,6 +189,8 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 | **S28_Hat_Resolution_Encoder** | Pure encoder unit-test across hat resolutions 8 / 16 / 360 | v1.3.4 hat-input priority chain: `HMHat / HatRaw / HatHundredths / HatDegrees` produce correct descriptor field values. |
 | **S58_Identity_Derivation** | Identity key derivation, no device (issue #60) | The default key reproduces the index-shaped ids, a consumer key derives deterministic collision-free ids, persona serials derive as documented. |
 | **S59_Identity_Battery** | One controller per family across nine lives (issue #60) | Parent id, ParentIdPrefix, ContainerId, HID children, interface paths, DirectInput GUID, SDL3 path and USB serial identical across lives, plus empty-shell checks, overlap and a profile change at one key. |
+| **S58_Identity_Derivation** | Identity key derivation, no device (issue #60) | The default key reproduces the index-shaped ids, a consumer key derives deterministic collision-free ids, persona serials derive as documented. |
+| **S59_Identity_Battery** | One controller per family across nine lives (issue #60) | Parent id, ParentIdPrefix, ContainerId, HID children, interface paths, DirectInput GUID, SDL3 path and USB serial identical across lives, plus empty-shell checks, overlap and a profile change at one key. |
 
 Each scenario covers a specific historical bug or invariant. The full list is the codified history of what's broken in this area before.
 

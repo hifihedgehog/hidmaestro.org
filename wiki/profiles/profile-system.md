@@ -246,7 +246,7 @@ ROOT\VID_045E&PID_028E&IG_00\NNNN    ← UMDF2 driver (main HID device)
   │                                    (SDK-written; blocks WGI from synthesizing
   │                                    a duplicate HID-backed Gamepad)
   └─ HID\VID_045E&PID_028E&IG_00\... ← HID child (raw PDO, input.inf)
-SWD\HIDMAESTRO\<sid>_NNNN            ← XUSB companion (HMXInput.dll)
+SWD\HIDMAESTRO\<token>               ← XUSB companion (HMXInput.dll)
   │                                    SwDeviceCreate, System class, explicit
   │                                    per-controller ContainerID (shared with main HID).
   │                                    UpperFilters = "xinputhid" from INF
@@ -265,7 +265,7 @@ Profiles with `driverMode: "xinputhid"`. These match `xinputhid.inf [GIP_Hid]` b
 Includes Xbox Series BT (`xbox-series-xs-bt`), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT &mdash; the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.
 
 ```
-SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\<sid>_NNNN
+SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\<token>
   │                                  ← UMDF2 driver via SwDeviceCreate
   │                                    (mshidumdf host). Explicit non-sentinel
   │                                    ContainerID closes the slot-1-skip

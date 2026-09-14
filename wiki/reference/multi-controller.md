@@ -218,7 +218,7 @@ Idle CPU is the **per-controller WUDFHost** measurement. Each per-instance host 
 
 The regression battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Slow-hardware target for validating the event-driven harness without time-based settles.
 
-Full battery: ~75 minutes wall time at `HIDMAESTRO_TIMEOUT_SCALE=2`. Same 28/28 PASS as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed &mdash; a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
+Full battery: ~75 minutes wall time at `HIDMAESTRO_TIMEOUT_SCALE=2`. Its last run, on v1.7.3, passed 57/57, the same result as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed &mdash; a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
 
 See [Testing and Verification](testing-and-verification.md).
 

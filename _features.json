@@ -42,7 +42,7 @@
   {"t": "One DLL",
    "d": "HIDMaestro.Core.dll carries the 234-profile catalog, the driver binaries, and the signing tools embedded. Grab it from a release ZIP or build from source. Pick a profile, call CreateController, submit input. Dispose it and the device disappears, with no leftover PnP state."},
   {"t": "Validated across the stack",
-   "d": "A 57-scenario regression battery checks DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, and WGI on every change. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs."},
+   "d": "A 59-scenario regression battery checks DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, WGI, and the device identity of every family across nine lives, on every change. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs."},
   {"t": "Judged by the real consumers",
    "d": "The battery does not only check HIDMaestro's own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. The decoders Steam Input is built on are the judges."},
   {"t": "The composite exception, stated",

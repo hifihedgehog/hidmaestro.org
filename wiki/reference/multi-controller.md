@@ -32,7 +32,7 @@ The index drives:
 - The serial number string (`HM-CTL-<N>` zero-padded to 4 digits).
 - The ContainerID GUID's last 16 bits (`{48494430-...-4F00<idx:X4>}`).
 
-These are stable per-process. Across processes, the per-process PID prefix on SwD instance-IDs makes them globally unique &mdash; see [SwDevice and PnP](swdevice-and-pnp.md).
+These are per-process. The devnode instance names and the ContainerID derive from the identity key when the caller passes one, and from the index otherwise, so a controller comes back at the same paths across processes. See [SwDevice and PnP](swdevice-and-pnp.md#stable-device-identity).
 
 ---
 

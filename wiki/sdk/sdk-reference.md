@@ -67,7 +67,9 @@ public int LoadProfilesFromDirectory(string profilesDir);
 
 ```csharp
 public HMController CreateController(HMProfile profile);
+public HMController CreateController(HMProfile profile, string? identityKey);
 public HMController CreateControllerAt(int index, HMProfile profile);
+public HMController CreateControllerAt(int index, HMProfile profile, string? identityKey);
 public IReadOnlyCollection<HMController> ActiveControllers { get; }
 
 public void DisposeControllersInParallel(
@@ -88,6 +90,25 @@ Throws:
 The returned `HMController` is live. Dispose it to remove the device, or dispose the entire context to remove all controllers it owns.
 
 `CreateControllerAt(index, profile)` is the same except it pins to a specific index. Used by live profile-switch workflows where you want to dispose the controller at index N and replace it with a different profile while keeping N stable. Throws `InvalidOperationException` if index is in use.
+
+#### Identity keys (v1.8.0)
+
+The `identityKey` overloads give the controller a durable identity. Every device path, the ContainerId and, for a USB/IP persona, the USB serial derive from the key, so a controller created again with the same key comes back at the same paths after a dispose, a process restart, a reboot or a driver upgrade. Programs that store a binding against a device path (SDL joystick path, RawInput name, GameInput device path) or a USB serial (Steam's per-controller configuration) keep it across those lives.
+
+Name the controller the way your program thinks of it, such as a slot number plus a profile id:
+
+```csharp
+using var pad = ctx.CreateController(profile, "slot0:" + profile.Id);
+```
+
+Rules:
+
+- A null, empty or blank key uses the controller index (`index:<N>`), which is what the one-argument overloads do. `HMController.IdentityKey` reports the effective key.
+- Keys are trimmed and case-sensitive. Two live controllers in one context cannot share a key; `InvalidOperationException` names the index that holds it.
+- A different profile at the same key keeps the identity and refreshes the descriptor.
+- DirectInput's instance GUID is DirectInput's own per-VID/PID ordinal and is not derived from the key; it moves when a same-VID/PID pad in front of it leaves.
+
+The per-family mechanism is in [SwDevice and PnP](../reference/swdevice-and-pnp.md#stable-device-identity).
 
 `ActiveControllers` returns a snapshot of every live controller this context owns. Order is creation order.
 

@@ -814,7 +814,7 @@
   <span class="md-ellipsis">
     
   
-    Controller Audio (Composite USB)
+    Composite USB Personas
   
 
     
@@ -1403,33 +1403,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-session-unique-instance-id-suffix" class="md-nav__link">
+  <a href="#stable-device-identity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The session-unique instance-ID suffix
+        Stable device identity
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="The session-unique instance-ID suffix">
+    <nav class="md-nav" aria-label="Stable device identity">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#symptoms-before-the-fix" class="md-nav__link">
+  <a href="#the-suffix-that-came-before" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Symptoms before the fix
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#the-two-tier-fix" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The two-tier fix
+        The suffix that came before
       
     </span>
   </a>
@@ -1857,33 +1846,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-session-unique-instance-id-suffix" class="md-nav__link">
+  <a href="#stable-device-identity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The session-unique instance-ID suffix
+        Stable device identity
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="The session-unique instance-ID suffix">
+    <nav class="md-nav" aria-label="Stable device identity">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#symptoms-before-the-fix" class="md-nav__link">
+  <a href="#the-suffix-that-came-before" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Symptoms before the fix
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#the-two-tier-fix" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The two-tier fix
+        The suffix that came before
       
     </span>
   </a>
@@ -1990,7 +1968,7 @@
 
 
 <h1 id="swdevice-and-pnp">SwDevice and PnP<a class="headerlink" href="#swdevice-and-pnp" title="Permanent link">&para;</a></h1>
-<p>The PnP machinery behind every HIDMaestro virtual controller. This page covers the SWD migration story (why HIDMaestro can't use <code>SetupDiCreateDeviceInfoW</code> for everything), the slot-1-skip ContainerID fix, the session-unique instance-ID suffix that bypasses Windows' sticky reuse-fast-path, and why <code>hmswd.exe</code> exists as a separate native executable.</p>
+<p>The PnP machinery behind every HIDMaestro virtual controller. This page covers the SWD migration story (why HIDMaestro can't use <code>SetupDiCreateDeviceInfoW</code> for everything), the slot-1-skip ContainerID fix, the stable device identity that keeps a controller's paths the same on every life, and why <code>hmswd.exe</code> exists as a separate native executable.</p>
 <p>If you have skimmed the README's "Techniques" section, this is the long-form. The README compresses years of debugging into ~10 paragraphs; this page expands them with the empirical evidence and the alternative paths that didn't work.</p>
 <p>For the SDK orchestration that calls into all of this, see <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>. For the companion device this enables, see <a href="../xusb-companion/">XUSB Companion</a>.</p>
 <hr />
@@ -2081,28 +2059,29 @@
 <tbody>
 <tr>
 <td><strong>Plain HID</strong></td>
-<td><code>ROOT\VID_xxxx&amp;PID_yyyy&amp;IG_00\NNNN</code> (SetupAPI)</td>
+<td><code>ROOT\HIDClass\&lt;token&gt;</code> (SetupAPI)</td>
 <td>(no companion)</td>
 </tr>
 <tr>
 <td><strong>Non-xinputhid Xbox</strong></td>
-<td><code>ROOT\VID_045E&amp;PID_*&amp;IG_00\NNNN</code> (SetupAPI)</td>
-<td><code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code> (SwDevice)</td>
+<td><code>ROOT\VID_045E&amp;PID_*&amp;IG_00\&lt;token&gt;</code> (SetupAPI)</td>
+<td><code>SWD\HIDMAESTRO\&lt;token&gt;</code> (SwDevice)</td>
 </tr>
 <tr>
 <td><strong>xinputhid Xbox</strong></td>
-<td><code>SWD\HIDMAESTRO_VID_045E_PID_*&amp;IG_00\&lt;sid&gt;_NNNN</code> (SwDevice)</td>
+<td><code>SWD\HIDMAESTRO_VID_045E_PID_*&amp;IG_00\&lt;token&gt;</code> (SwDevice)</td>
 <td>(no companion)</td>
 </tr>
 </tbody>
 </table>
+<p><code>&lt;token&gt;</code> is the controller's identity token: <code>HM_0000</code> for the default key of index 0, <code>HM_</code> plus sixteen hex digits for a consumer key. See <a href="#stable-device-identity">Stable device identity</a> below.</p>
 <p><strong>Plain HID</strong> profiles (DualSense, wheels, HOTAS, etc.) don't go through XInput, so the slot-1-skip bug doesn't apply &mdash; staying on the simpler SetupAPI path is fine.</p>
 <p><strong>Non-xinputhid Xbox</strong> profiles do go through XInput, but only via the XUSB <strong>companion</strong>. The main HID device on the ROOT\ path doesn't carry the XInput device interface; the companion does. So only the companion needs SWD's explicit ContainerID. The main HID stays on SetupAPI.</p>
 <p><strong>xinputhid Xbox</strong> profiles bind <code>xinputhid.sys</code> as a kernel filter on the HID child, and <code>xinputhid</code> is what publishes the XUSB interface. There's no separate companion; the main HID device must itself be SWD-enumerated with a real ContainerID so its XInput dispatch lands in slot 0.</p>
 <hr />
 <h2 id="why-the-underscore-between-vid-and-pid">Why the underscore between VID and PID<a class="headerlink" href="#why-the-underscore-between-vid-and-pid" title="Permanent link">&para;</a></h2>
 <p>Look closely at the xinputhid Xbox enumerator name:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\&lt;sid&gt;_NNNN
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\HM_0000
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>              ^^^^                ^
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>              underscore between VID and PID, NOT &amp;
 </code></pre></div>
@@ -2115,38 +2094,156 @@
 </ul>
 <p>So we get the best of both: PnP enumerates the SWD parent (no <code>&amp;</code> in <code>VID_*&amp;PID_*</code>), and the HID-class libraries skip the inherited <code>&amp;IG_00</code> substring on the children.</p>
 <hr />
-<h2 id="the-session-unique-instance-id-suffix">The session-unique instance-ID suffix<a class="headerlink" href="#the-session-unique-instance-id-suffix" title="Permanent link">&para;</a></h2>
-<p>The SWD migration immediately exposed a second Windows PnP behavior on Win11 26200: after <code>SwDeviceClose</code> finalizes a devnode with <code>SWDeviceLifetimeParentPresent</code>, the kernel retains a sticky per-<code>(enumerator + instanceId + ContainerId)</code> record. A subsequent <code>SwDeviceCreate</code> with the <strong>identical</strong> tuple takes a "reuse-existing" fast path that creates an empty registry shell &mdash; no Service or Driver bound, no device-interface class registered &mdash; and reports <code>S_OK</code> synchronously to the caller.</p>
-<p>The sticky state survives across processes and across same-boot uninstall + reinstall of the INF.</p>
-<h3 id="symptoms-before-the-fix">Symptoms before the fix<a class="headerlink" href="#symptoms-before-the-fix" title="Permanent link">&para;</a></h3>
-<ul>
-<li>First run after a fresh boot: fast (~2 s for 4 mixed), all APIs pass.</li>
-<li>Every <strong>subsequent</strong> run on the same boot: <code>SwDeviceCreate</code> returns <code>S_OK</code> synchronously while the devnode never materializes.</li>
-<li><code>CM_Locate_DevNodeW</code> returned <code>CR_NO_SUCH_DEVNODE</code> the entire time the SDK waited.</li>
-<li>The creation callback timed out at 30 s with <code>E_FAIL</code>.</li>
-<li>Phase-1 creation ballooned from ~2 s to <strong>65 s</strong> (15 s callback wait × 2 BT slots + 15 s XInput slot-claim wait × 2 Xbox 360 slots).</li>
-<li>XInput lost visibility for the XUSB-companion path because the empty-shell devnode never bound <code>HMXInput.dll</code> and so never registered the XUSB device-interface class.</li>
-</ul>
-<p>PadForge users with multiple controllers were hit on every relaunch.</p>
-<h3 id="the-two-tier-fix">The two-tier fix<a class="headerlink" href="#the-two-tier-fix" title="Permanent link">&para;</a></h3>
-<p>Two iterations.</p>
-<p><strong>v1.x.x.0 (PID prefix)</strong>: Prepend the launching process's PID in hex to every SwD instance-ID suffix, e.g. <code>SWD\HIDMAESTRO\A7B4_0002</code>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">private</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">s_sessionId</span><span class="w"> </span><span class="o">=</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="n">Diagnostics</span><span class="p">.</span><span class="n">Process</span><span class="p">.</span><span class="n">GetCurrentProcess</span><span class="p">().</span><span class="n">Id</span><span class="p">.</span><span class="n">ToString</span><span class="p">(</span><span class="s">&quot;X&quot;</span><span class="p">).</span><span class="n">ToUpperInvariant</span><span class="p">();</span>
-</code></pre></div>
-<p>Each launch gets a unique tuple; the kernel runs a fresh full install. Verified for fresh-boot-AND-subsequent-run parity. 5 back-to-back same-boot 4-controller runs all passed.</p>
-<p>But: a <strong>same-process</strong> live-swap recreation (e.g. <code>remove 2; 2 dualsense; remove 2; 2 dualsense</code>) reused <code>&lt;PID&gt;_&lt;idx&gt;</code> and hit the same reuse-existing fast path on the second recreation in a swap cycle. The 2nd Series BT recreation in a cycle was an empty shell; the 2nd Xbox 360 wired ROOT was <code>[Stopped]</code>.</p>
-<p><strong>v1.x.x.1 (per-call atomic sequence)</strong>: Add a per-call atomic sequence number. Format <code>&lt;PID-hex&gt;&lt;seq:X4&gt;_&lt;idx:D4&gt;</code>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">private</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">s_swdCreateSeq</span><span class="p">;</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">private</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="nf">NextSwdSuffix</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">controllerIndex</span><span class="p">)</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">{</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="n">Threading</span><span class="p">.</span><span class="n">Interlocked</span><span class="p">.</span><span class="n">Increment</span><span class="p">(</span><span class="k">ref</span><span class="w"> </span><span class="n">s_swdCreateSeq</span><span class="p">);</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">$&quot;{s_sessionId}{seq:X4}_{controllerIndex:D4}&quot;</span><span class="p">;</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">}</span>
-</code></pre></div>
-<p>Every <code>SwDeviceCreate</code> call within this process gets a unique <code>(enumerator + suffix + ContainerId)</code> tuple. The kernel never hits the reuse-existing path. <code>FindExistingCompanion</code> matches by <code>ControllerIndex</code> in Device Parameters (not by suffix), so cleanup and teardown sweep across instances regardless of which session created them.</p>
-<p>Verified via the regression battery's S03_Single_LongCycle_8swaps and S08_Multi_SwapOneSlot scenarios &mdash; previously failed, now pass.</p>
+<h2 id="stable-device-identity">Stable device identity<a class="headerlink" href="#stable-device-identity" title="Permanent link">&para;</a></h2>
+<p>Since v1.8.0 every virtual controller has a durable identity, and every id a consumer keys on comes back the same on each life of that controller: the same process recreating it, a process restart, a reboot, and a driver upgrade. The identity is the key passed to <code>CreateController(profile, identityKey)</code>. A caller that passes none gets the controller index as its key.</p>
+<p>What consumers key on, measured on Windows 11 26200:</p>
+<table>
+<thead>
+<tr>
+<th>Consumer</th>
+<th>Keys on</th>
+<th>Before v1.8.0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DirectInput</td>
+<td>Instance GUID, a per-VID/PID ordinal persisted under <code>HKCU</code></td>
+<td>Stable for a lone pad</td>
+</tr>
+<tr>
+<td>SDL3 joystick path, RawInput</td>
+<td>The HID interface path</td>
+<td>Changed on every life</td>
+</tr>
+<tr>
+<td>Steam (USB/IP personas)</td>
+<td>The USB serial string</td>
+<td>Port-dependent for the Sony composites</td>
+</tr>
+<tr>
+<td>Windows.Gaming.Input, GameInput</td>
+<td>ContainerId and device path</td>
+<td>Path changed on every life</td>
+</tr>
+<tr>
+<td>XInput</td>
+<td>Slot ordinal</td>
+<td>Unchanged</td>
+</tr>
+</tbody>
+</table>
+<p>The HID interface path is built from the HID child's instance id, and that id is <code>&lt;ParentIdPrefix&gt;&amp;&lt;collection&gt;</code>, where <code>ParentIdPrefix</code> is a <code>1&amp;hash&amp;n</code> value PnP keeps in the parent's instance key. PnP reads it from the key when the child first arrives and mints a new counter only when it is absent. Every parent used to be created with a Windows-generated instance name and its key was deleted at teardown, so the counter advanced on every life. One reporter's pad had counted 74.</p>
+<p>Every derived value is a pure function of the key, nothing is stored, and the mechanism differs per family:</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Parent</th>
+<th>How the child path stays put</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plain HID</td>
+<td><code>ROOT\HIDClass\&lt;token&gt;</code>, SetupAPI with an explicit instance id</td>
+<td>The identity's <code>ParentIdPrefix</code> is written into the instance key between <code>SetupDiCreateDeviceInfo</code> and <code>DIF_REGISTERDEVICE</code>, before the HID child exists.</td>
+</tr>
+<tr>
+<td>Non-xinputhid Xbox</td>
+<td><code>ROOT\VID_045E&amp;PID_*&amp;IG_00\&lt;token&gt;</code> plus <code>SWD\HIDMAESTRO\&lt;token&gt;</code></td>
+<td>Main devnode as above. The XUSB companion has no HID child, so a fixed SwDevice tuple is the whole fix.</td>
+</tr>
+<tr>
+<td>xinputhid Xbox</td>
+<td><code>SWD\HIDMAESTRO_VID_045E_PID_*&amp;IG_00\&lt;token&gt;</code></td>
+<td>Fixed SwDevice tuple. <code>SwDeviceCreate</code> starts the driver inside the call, so the child has already enumerated by the time the SDK can write anything. The identity's prefix is reconciled into the key afterwards, and the restart the creation path already performs re-keys the child under it.</td>
+</tr>
+<tr>
+<td>USB/IP composite personas</td>
+<td><code>USB\VID_054C&amp;PID_0CE6\&lt;serial&gt;</code></td>
+<td>A profile without a captured serial serves the identity's synthetic serial at a string index the descriptor did not use, so Windows keys the USB instance on the serial instead of the vhci port. Profiles with a captured serial keep it, varied by identity.</td>
+</tr>
+</tbody>
+</table>
+<p><code>&lt;token&gt;</code> is <code>HM_0000</code> for the default key of index 0, and <code>HM_</code> plus sixteen hex digits for a consumer key. A consumer key also derives a container GUID in the <code>HIDMAESTRO</code> family, a <code>1&amp;hash&amp;0</code> prefix and a <code>HM</code> plus twelve hex digit serial, all from one SHA-256 of the key.</p>
+<h3 id="the-suffix-that-came-before">The suffix that came before<a class="headerlink" href="#the-suffix-that-came-before" title="Permanent link">&para;</a></h3>
+<p>Releases v1.1.30 through v1.7.3 put a session-unique suffix on every <code>SwDeviceCreate</code> call. It existed because a <code>DIF_REMOVE</code> on a <code>SWDeviceLifetimeParentPresent</code> device left the software device alive in the kernel, and a create with the same tuple reconnected to that half-removed shell: <code>S_OK</code> with no Service, no driver, no interface. Phase-1 creation of four mixed controllers ballooned from about 2 s to 65 s on every same-boot relaunch, and PadForge users with multiple controllers were hit on every relaunch. Teardown has gone through <code>SwDeviceSetLifetime(Handle)</code> plus <code>SwDeviceClose</code> since v1.1.31, which destroys the software device, and a fixed tuple recreates cleanly after it.</p>
+<p>The identity lab (<code>test/probes/identity_lab</code>, three lives per variant on 26200) measured the matrix:</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Bound</th>
+<th>Same parent</th>
+<th>Same child</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unique SwDevice suffix, fixed container (v1.7.3 behavior)</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>Fixed suffix, fixed container, phantom record retained</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Fixed suffix, fixed container, phantom record purged between lives</td>
+<td>yes</td>
+<td>yes</td>
+<td>no (counter 0, 1, 2)</td>
+</tr>
+<tr>
+<td>Fixed suffix, purged, prefix written after create plus restart</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Fixed suffix, changing container, retained</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Fixed suffix, fast remove without waiting for the cascade, immediate recreate</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>XUSB companion, fixed suffix, any of the above</td>
+<td>yes</td>
+<td>yes</td>
+<td>(no child)</td>
+</tr>
+<tr>
+<td>ROOT parent, explicit instance id, no prefix written</td>
+<td>yes</td>
+<td>yes</td>
+<td>no (counter 0, 1, 2)</td>
+</tr>
+<tr>
+<td>ROOT parent, explicit id, prefix written before registration</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Instance key created BEFORE <code>SwDeviceCreate</code></td>
+<td><strong>no</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The last row is the one hazard: a <code>SWD</code> instance key that exists before the software device does leaves a record PnP stamps with a SYSTEM-only <code>Properties</code> subkey and never enumerates, and an administrator cannot delete it. Nothing in the SDK creates one.</p>
+<p><code>FindExistingCompanion</code> still matches by <code>ControllerIndex</code> in Device Parameters, so cleanup and teardown sweep across instances regardless of which session created them. Battery scenarios S59 (derivation) and S60 (nine lives per family, overlap, profile change at one key) hold the behavior.</p>
 <hr />
 <h2 id="why-hmswdexe-exists-as-a-separate-native-binary">Why <code>hmswd.exe</code> exists as a separate native binary<a class="headerlink" href="#why-hmswdexe-exists-as-a-separate-native-binary" title="Permanent link">&para;</a></h2>
 <p><code>.NET 10</code>'s P/Invoke to <code>cfgmgr32!SwDeviceCreate</code> on Win11 26200 returns <code>0x8007007E ERROR_MOD_NOT_FOUND</code> synchronously, while the identical C call succeeds. We tried, in order:</p>
@@ -2160,8 +2257,8 @@
 <li><strong>Wrapping the call in <code>CallerMustBeAdmin</code> checks just in case.</strong> No effect.</li>
 </ol>
 <p>Nothing managed worked. Rather than ship a broken managed migration path, we wrote a small native executable (<code>driver/hmswd/hmswd.c</code>, 286 lines) that does the call from C and prints the result to stdout. The SDK's <code>SwdDeviceFactory</code> invokes <code>hmswd.exe</code> via <code>Process.Start</code> and parses the stdout.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>hmswd.exe create &lt;enumerator&gt; &lt;instance-id-suffix&gt; &lt;container-guid&gt;
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>                 &lt;hw-ids-csv&gt; &lt;compat-ids-csv&gt; &lt;description&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>hmswd.exe create &lt;enumerator&gt; &lt;instance-id-suffix&gt; &lt;container-guid&gt;
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>                 &lt;hw-ids-csv&gt; &lt;compat-ids-csv&gt; &lt;description&gt;
 </code></pre></div>
 <p>Returns instance-id on success (<code>OK &lt;full-instance-id&gt;</code>); writes errors to stderr.</p>
 <p>The helper is included in the SDK's embedded resource payload alongside the driver DLLs. Total binary size: ~25 KB. Lifetime per call: &lt;1 second (call, get instance-ID, exit).</p>
@@ -2177,8 +2274,8 @@
 </ol>
 <p><code>pnputil /remove-device /force</code> and <code>DIF_REMOVE</code> both silently no-op on <code>FAILEDINSTALL</code>-state SWD phantoms, which is why this helper-mediated path is required.</p>
 <p>The teardown is implemented in <code>hmswd.exe</code>'s <code>remove</code> subcommand:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>hmswd.exe remove &lt;enumerator&gt; &lt;instance-id-suffix&gt; &lt;container-guid&gt;
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>                 &lt;hw-ids-csv&gt; &lt;compat-ids-csv&gt; &lt;description&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>hmswd.exe remove &lt;enumerator&gt; &lt;instance-id-suffix&gt; &lt;container-guid&gt;
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>                 &lt;hw-ids-csv&gt; &lt;compat-ids-csv&gt; &lt;description&gt;
 </code></pre></div>
 <p>Same args as <code>create</code>; the helper does the reconnect-then-downgrade-then-close dance.</p>
 <hr />
@@ -2211,15 +2308,15 @@
 <hr />
 <h2 id="how-the-suffix-mapping-works-at-scale">How the suffix mapping works at scale<a class="headerlink" href="#how-the-suffix-mapping-works-at-scale" title="Permanent link">&para;</a></h2>
 <p>For 6 controllers running in one process:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>SWD\HIDMAESTRO\A7B40001_0000   ← controller 0 (Xbox 360 Wired companion), seq=1
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>SWD\HIDMAESTRO\A7B40002_0001   ← controller 1 (Xbox Series BT main HID), seq=2
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\A7B40002_0001    ← (xinputhid path uses different enumerator)
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>SWD\HIDMAESTRO\A7B40003_0002   ← controller 2 (DualSense), if it had a companion (it doesn&#39;t)
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>SWD\HIDMAESTRO\A7B40001_0000   ← controller 0 (Xbox 360 Wired companion), seq=1
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>SWD\HIDMAESTRO\A7B40002_0001   ← controller 1 (Xbox Series BT main HID), seq=2
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\A7B40002_0001    ← (xinputhid path uses different enumerator)
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>SWD\HIDMAESTRO\A7B40003_0002   ← controller 2 (DualSense), if it had a companion (it doesn&#39;t)
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>...
 </code></pre></div>
 <p>PID hex is <code>A7B4</code>; per-call sequence increments globally per process; controller index varies per call.</p>
 <p><code>FindExistingCompanion</code> walks <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\</code> and matches devices whose <code>Device Parameters\ControllerIndex</code> value matches the controller we're operating on. The suffix isn't load-bearing for matching &mdash; it's there to make the kernel <code>(enumerator + suffix + ContainerId)</code> tuple unique.</p>
-<p>For across-process matching (e.g. <code>RemoveAllVirtualControllers</code> from a fresh process sweeping orphans from a prior crashed session), the <code>HIDMAESTRO</code> enumerator name is the only stable identifier &mdash; sweep walks every <code>SWD\HIDMAESTRO*\*</code> entry regardless of suffix.</p>
+<p>For across-process matching (e.g. <code>RemoveAllVirtualControllers</code> from a fresh process sweeping orphans from a prior crashed session), the <code>HIDMAESTRO</code> enumerator name is the stable identifier. The sweep walks every <code>SWD\HIDMAESTRO*\*</code> entry regardless of token.</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>

@@ -220,9 +220,11 @@ Multiple `OutputReceived` invocations per poll iteration are normal &mdash; PID 
 
 | Group | Profiles | Device tree | Notes |
 |-------|----------|-------------|-------|
-| **Plain HID** | DualSense, Logitech wheels, Thrustmaster HOTAS, ~204 profiles | `ROOT\VID_*&PID_*\NNNN` | Lightest stack. No companion. |
-| **Non-xinputhid Xbox** | Xbox 360 Wired family (~6) | `ROOT\VID_045E&PID_*&IG_00\NNNN` + `SWD\HIDMAESTRO\<sid>_NNNN` | Two device trees. XUSB companion. |
-| **xinputhid Xbox** | Xbox Series BT, Xbox One BT, Xbox Elite v2 BT (~4) | `SWD\HIDMAESTRO_VID_045E_PID_*&IG_00\<sid>_NNNN` | xinputhid kernel filter binds upstream. SwD-enumerated parent. |
+| **Plain HID** | DualSense, Logitech wheels, Thrustmaster HOTAS, ~204 profiles | `ROOT\HIDClass\<token>` | Lightest stack. No companion. |
+| **Non-xinputhid Xbox** | Xbox 360 Wired family (~6) | `ROOT\VID_045E&PID_*&IG_00\<token>` + `SWD\HIDMAESTRO\<token>` | Two device trees. XUSB companion. |
+| **xinputhid Xbox** | Xbox Series BT, Xbox One BT, Xbox Elite v2 BT (~4) | `SWD\HIDMAESTRO_VID_045E_PID_*&IG_00\<token>` | xinputhid kernel filter binds upstream. SwD-enumerated parent. |
+
+`<token>` is the controller's identity token, the same on every life of that controller: see [SwDevice and PnP](swdevice-and-pnp.md#stable-device-identity).
 
 See [Profile System](../profiles/profile-system.md) for the runtime classification and [Lifecycle and Teardown](lifecycle-and-teardown.md) for per-group create/dispose latencies.
 

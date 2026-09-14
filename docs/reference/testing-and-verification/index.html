@@ -814,7 +814,7 @@
   <span class="md-ellipsis">
     
   
-    Controller Audio (Composite USB)
+    Composite USB Personas
   
 
     
@@ -2170,7 +2170,7 @@
 <p><code>--filter</code> runs only the named API check. Useful for iterating on a specific subsystem without waiting for the full pipeline.</p>
 <hr />
 <h2 id="testregressionswap_regressionps1-lifecycle-battery"><code>test/regression/swap_regression.ps1</code>: lifecycle battery<a class="headerlink" href="#testregressionswap_regressionps1-lifecycle-battery" title="Permanent link">&para;</a></h2>
-<p>The 28-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, and verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
+<p>The 59-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># from an ELEVATED PowerShell, repo root or anywhere</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">swap_regression</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2409,7 +2409,7 @@
 <ol>
 <li>Clean build &mdash; no stale Resources/ snapshots.</li>
 <li><code>verify.py --controllers 4</code> &mdash; cross-API correctness on a multi-controller deployment.</li>
-<li><code>swap_regression.ps1</code> &mdash; full 28-scenario battery. <strong>28/28 PASS required.</strong></li>
+<li><code>swap_regression.ps1</code>: full 59-scenario battery. <strong>59/59 PASS required.</strong></li>
 <li><code>HIDMaestroTest cleanup</code> &mdash; verify no leftover devnodes after the battery.</li>
 <li>Profile extractor smoke test &mdash; the GUI tool opens, populates, extracts.</li>
 </ol>

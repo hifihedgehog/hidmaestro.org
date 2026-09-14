@@ -1,6 +1,6 @@
 # SwDevice and PnP
 
-The PnP machinery behind every HIDMaestro virtual controller. This page covers the SWD migration story (why HIDMaestro can't use `SetupDiCreateDeviceInfoW` for everything), the slot-1-skip ContainerID fix, the session-unique instance-ID suffix that bypasses Windows' sticky reuse-fast-path, and why `hmswd.exe` exists as a separate native executable.
+The PnP machinery behind every HIDMaestro virtual controller. This page covers the SWD migration story (why HIDMaestro can't use `SetupDiCreateDeviceInfoW` for everything), the slot-1-skip ContainerID fix, the stable device identity that keeps a controller's paths the same on every life, and why `hmswd.exe` exists as a separate native executable.
 
 If you have skimmed the README's "Techniques" section, this is the long-form. The README compresses years of debugging into ~10 paragraphs; this page expands them with the empirical evidence and the alternative paths that didn't work.
 
@@ -93,9 +93,11 @@ Not every profile needs SWD. The architecture group determines:
 
 | Group | Main HID enumerator | XUSB companion enumerator |
 |-------|--------------------|--------------------------|
-| **Plain HID** | `ROOT\VID_xxxx&PID_yyyy&IG_00\NNNN` (SetupAPI) | (no companion) |
-| **Non-xinputhid Xbox** | `ROOT\VID_045E&PID_*&IG_00\NNNN` (SetupAPI) | `SWD\HIDMAESTRO\<sid>_NNNN` (SwDevice) |
-| **xinputhid Xbox** | `SWD\HIDMAESTRO_VID_045E_PID_*&IG_00\<sid>_NNNN` (SwDevice) | (no companion) |
+| **Plain HID** | `ROOT\HIDClass\<token>` (SetupAPI) | (no companion) |
+| **Non-xinputhid Xbox** | `ROOT\VID_045E&PID_*&IG_00\<token>` (SetupAPI) | `SWD\HIDMAESTRO\<token>` (SwDevice) |
+| **xinputhid Xbox** | `SWD\HIDMAESTRO_VID_045E_PID_*&IG_00\<token>` (SwDevice) | (no companion) |
+
+`<token>` is the controller's identity token: `HM_0000` for the default key of index 0, `HM_` plus sixteen hex digits for a consumer key. See [Stable device identity](#stable-device-identity) below.
 
 **Plain HID** profiles (DualSense, wheels, HOTAS, etc.) don't go through XInput, so the slot-1-skip bug doesn't apply &mdash; staying on the simpler SetupAPI path is fine.
 
@@ -110,7 +112,7 @@ Not every profile needs SWD. The architecture group determines:
 Look closely at the xinputhid Xbox enumerator name:
 
 ```
-SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\<sid>_NNNN
+SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\HM_0000
               ^^^^                ^
               underscore between VID and PID, NOT &
 ```
@@ -128,53 +130,55 @@ So we get the best of both: PnP enumerates the SWD parent (no `&` in `VID_*&PID_
 
 ---
 
-## The session-unique instance-ID suffix
+## Stable device identity
 
-The SWD migration immediately exposed a second Windows PnP behavior on Win11 26200: after `SwDeviceClose` finalizes a devnode with `SWDeviceLifetimeParentPresent`, the kernel retains a sticky per-`(enumerator + instanceId + ContainerId)` record. A subsequent `SwDeviceCreate` with the **identical** tuple takes a "reuse-existing" fast path that creates an empty registry shell &mdash; no Service or Driver bound, no device-interface class registered &mdash; and reports `S_OK` synchronously to the caller.
+Since v1.8.0 every virtual controller has a durable identity, and every id a consumer keys on comes back the same on each life of that controller: the same process recreating it, a process restart, a reboot, and a driver upgrade. The identity is the key passed to `CreateController(profile, identityKey)`. A caller that passes none gets the controller index as its key.
 
-The sticky state survives across processes and across same-boot uninstall + reinstall of the INF.
+What consumers key on, measured on Windows 11 26200:
 
-### Symptoms before the fix
+| Consumer | Keys on | Before v1.8.0 |
+|----------|---------|---------------|
+| DirectInput | Instance GUID, a per-VID/PID ordinal persisted under `HKCU` | Stable for a lone pad |
+| SDL3 joystick path, RawInput | The HID interface path | Changed on every life |
+| Steam (USB/IP personas) | The USB serial string | Port-dependent for the Sony composites |
+| Windows.Gaming.Input, GameInput | ContainerId and device path | Path changed on every life |
+| XInput | Slot ordinal | Unchanged |
 
-- First run after a fresh boot: fast (~2 s for 4 mixed), all APIs pass.
-- Every **subsequent** run on the same boot: `SwDeviceCreate` returns `S_OK` synchronously while the devnode never materializes.
-- `CM_Locate_DevNodeW` returned `CR_NO_SUCH_DEVNODE` the entire time the SDK waited.
-- The creation callback timed out at 30 s with `E_FAIL`.
-- Phase-1 creation ballooned from ~2 s to **65 s** (15 s callback wait × 2 BT slots + 15 s XInput slot-claim wait × 2 Xbox 360 slots).
-- XInput lost visibility for the XUSB-companion path because the empty-shell devnode never bound `HMXInput.dll` and so never registered the XUSB device-interface class.
+The HID interface path is built from the HID child's instance id, and that id is `<ParentIdPrefix>&<collection>`, where `ParentIdPrefix` is a `1&hash&n` value PnP keeps in the parent's instance key. PnP reads it from the key when the child first arrives and mints a new counter only when it is absent. Every parent used to be created with a Windows-generated instance name and its key was deleted at teardown, so the counter advanced on every life. One reporter's pad had counted 74.
 
-PadForge users with multiple controllers were hit on every relaunch.
+Every derived value is a pure function of the key, nothing is stored, and the mechanism differs per family:
 
-### The two-tier fix
+| Family | Parent | How the child path stays put |
+|--------|--------|------------------------------|
+| Plain HID | `ROOT\HIDClass\<token>`, SetupAPI with an explicit instance id | The identity's `ParentIdPrefix` is written into the instance key between `SetupDiCreateDeviceInfo` and `DIF_REGISTERDEVICE`, before the HID child exists. |
+| Non-xinputhid Xbox | `ROOT\VID_045E&PID_*&IG_00\<token>` plus `SWD\HIDMAESTRO\<token>` | Main devnode as above. The XUSB companion has no HID child, so a fixed SwDevice tuple is the whole fix. |
+| xinputhid Xbox | `SWD\HIDMAESTRO_VID_045E_PID_*&IG_00\<token>` | Fixed SwDevice tuple. `SwDeviceCreate` starts the driver inside the call, so the child has already enumerated by the time the SDK can write anything. The identity's prefix is reconciled into the key afterwards, and the restart the creation path already performs re-keys the child under it. |
+| USB/IP composite personas | `USB\VID_054C&PID_0CE6\<serial>` | A profile without a captured serial serves the identity's synthetic serial at a string index the descriptor did not use, so Windows keys the USB instance on the serial instead of the vhci port. Profiles with a captured serial keep it, varied by identity. |
 
-Two iterations.
+`<token>` is `HM_0000` for the default key of index 0, and `HM_` plus sixteen hex digits for a consumer key. A consumer key also derives a container GUID in the `HIDMAESTRO` family, a `1&hash&0` prefix and a `HM` plus twelve hex digit serial, all from one SHA-256 of the key.
 
-**v1.x.x.0 (PID prefix)**: Prepend the launching process's PID in hex to every SwD instance-ID suffix, e.g. `SWD\HIDMAESTRO\A7B4_0002`.
+### The suffix that came before
 
-```csharp
-private static readonly string s_sessionId =
-    System.Diagnostics.Process.GetCurrentProcess().Id.ToString("X").ToUpperInvariant();
-```
+Releases v1.1.30 through v1.7.3 put a session-unique suffix on every `SwDeviceCreate` call. It existed because a `DIF_REMOVE` on a `SWDeviceLifetimeParentPresent` device left the software device alive in the kernel, and a create with the same tuple reconnected to that half-removed shell: `S_OK` with no Service, no driver, no interface. Phase-1 creation of four mixed controllers ballooned from about 2 s to 65 s on every same-boot relaunch, and PadForge users with multiple controllers were hit on every relaunch. Teardown has gone through `SwDeviceSetLifetime(Handle)` plus `SwDeviceClose` since v1.1.31, which destroys the software device, and a fixed tuple recreates cleanly after it.
 
-Each launch gets a unique tuple; the kernel runs a fresh full install. Verified for fresh-boot-AND-subsequent-run parity. 5 back-to-back same-boot 4-controller runs all passed.
+The identity lab (`test/probes/identity_lab`, three lives per variant on 26200) measured the matrix:
 
-But: a **same-process** live-swap recreation (e.g. `remove 2; 2 dualsense; remove 2; 2 dualsense`) reused `<PID>_<idx>` and hit the same reuse-existing fast path on the second recreation in a swap cycle. The 2nd Series BT recreation in a cycle was an empty shell; the 2nd Xbox 360 wired ROOT was `[Stopped]`.
+| Variant | Bound | Same parent | Same child |
+|---------|-------|-------------|------------|
+| Unique SwDevice suffix, fixed container (v1.7.3 behavior) | yes | no | no |
+| Fixed suffix, fixed container, phantom record retained | yes | yes | yes |
+| Fixed suffix, fixed container, phantom record purged between lives | yes | yes | no (counter 0, 1, 2) |
+| Fixed suffix, purged, prefix written after create plus restart | yes | yes | yes |
+| Fixed suffix, changing container, retained | yes | yes | yes |
+| Fixed suffix, fast remove without waiting for the cascade, immediate recreate | yes | yes | yes |
+| XUSB companion, fixed suffix, any of the above | yes | yes | (no child) |
+| ROOT parent, explicit instance id, no prefix written | yes | yes | no (counter 0, 1, 2) |
+| ROOT parent, explicit id, prefix written before registration | yes | yes | yes |
+| Instance key created BEFORE `SwDeviceCreate` | **no** | | |
 
-**v1.x.x.1 (per-call atomic sequence)**: Add a per-call atomic sequence number. Format `<PID-hex><seq:X4>_<idx:D4>`.
+The last row is the one hazard: a `SWD` instance key that exists before the software device does leaves a record PnP stamps with a SYSTEM-only `Properties` subkey and never enumerates, and an administrator cannot delete it. Nothing in the SDK creates one.
 
-```csharp
-private static int s_swdCreateSeq;
-
-private static string NextSwdSuffix(int controllerIndex)
-{
-    int seq = System.Threading.Interlocked.Increment(ref s_swdCreateSeq);
-    return $"{s_sessionId}{seq:X4}_{controllerIndex:D4}";
-}
-```
-
-Every `SwDeviceCreate` call within this process gets a unique `(enumerator + suffix + ContainerId)` tuple. The kernel never hits the reuse-existing path. `FindExistingCompanion` matches by `ControllerIndex` in Device Parameters (not by suffix), so cleanup and teardown sweep across instances regardless of which session created them.
-
-Verified via the regression battery's S03_Single_LongCycle_8swaps and S08_Multi_SwapOneSlot scenarios &mdash; previously failed, now pass.
+`FindExistingCompanion` still matches by `ControllerIndex` in Device Parameters, so cleanup and teardown sweep across instances regardless of which session created them. Battery scenarios S59 (derivation) and S60 (nine lives per family, overlap, profile change at one key) hold the behavior.
 
 ---
 
@@ -278,7 +282,7 @@ PID hex is `A7B4`; per-call sequence increments globally per process; controller
 
 `FindExistingCompanion` walks `HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\` and matches devices whose `Device Parameters\ControllerIndex` value matches the controller we're operating on. The suffix isn't load-bearing for matching &mdash; it's there to make the kernel `(enumerator + suffix + ContainerId)` tuple unique.
 
-For across-process matching (e.g. `RemoveAllVirtualControllers` from a fresh process sweeping orphans from a prior crashed session), the `HIDMAESTRO` enumerator name is the only stable identifier &mdash; sweep walks every `SWD\HIDMAESTRO*\*` entry regardless of suffix.
+For across-process matching (e.g. `RemoveAllVirtualControllers` from a fresh process sweeping orphans from a prior crashed session), the `HIDMAESTRO` enumerator name is the stable identifier. The sweep walks every `SWD\HIDMAESTRO*\*` entry regardless of token.
 
 ---
 

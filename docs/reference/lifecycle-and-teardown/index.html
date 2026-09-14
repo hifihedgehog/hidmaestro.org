@@ -814,7 +814,7 @@
   <span class="md-ellipsis">
     
   
-    Controller Audio (Composite USB)
+    Composite USB Personas
   
 
     
@@ -2129,7 +2129,7 @@
 <p>For the SDK-side API, see <a href="../../sdk/sdk-reference/">SDK Reference</a>. For the underlying PnP machinery, see <a href="../swdevice-and-pnp/">SwDevice and PnP</a>. For the multi-controller scenarios, see <a href="../multi-controller/">Multi-Controller</a>.</p>
 <hr />
 <h2 id="create-setupcontroller-orchestration">Create: <code>SetupController</code> orchestration<a class="headerlink" href="#create-setupcontroller-orchestration" title="Permanent link">&para;</a></h2>
-<p><code>HMContext.CreateController(profile)</code> runs <code>Internal.DeviceOrchestrator.SetupController(index, profile, infPath)</code>. The sequence:</p>
+<p><code>HMContext.CreateController(profile, identityKey)</code> runs <code>Internal.DeviceOrchestrator.SetupController(index, profile, infPath, identity)</code>. The sequence:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>1. RemoveAllVirtualControllers (one-shot self-heal, first call only)
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>2. Index allocation (from HMContext._lock)
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>3. Per-instance registry write
@@ -2145,17 +2145,19 @@
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>   Global\HIDMaestroInputEvent&lt;N&gt;     (created)
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   Global\HIDMaestroStopEvent&lt;N&gt;      (created)
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>   PID state section is lazy — only created on first PublishPidPool
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>5. ContainerID computation
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>   {48494430-4D41-4553-5452-4F00 + 16-bit index}
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>6. Device creation:
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>   plain HID profiles:    SetupDiCreateDeviceInfoW under ROOT\
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>   xinputhid profiles:    hmswd.exe create SWD\HIDMAESTRO_VID_*_PID_*&amp;IG_00\&lt;sid&gt;_NNNN
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>   non-xinputhid Xbox:    SetupDiCreateDeviceInfoW (main HID) + hmswd.exe create (XUSB companion)
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>7. WaitForHidChild       (10 s budget)
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>8. WaitForDeviceStarted  (5 s budget)
-<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>9. WaitForXInputSlotClaim (500 ms budget post-v1.3.2)
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>10. Per-instance UpperFilter writes (xinputhid-companion-XOR-tripwire profiles only)
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>11. Friendly-name application (best-effort; FinalizeNames runs the polled re-apply)
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>5. Identity derivation (issue #60)
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>   token, ContainerID, ParentIdPrefix, serial: all from the identity key,
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>   or from the index when the caller passed none
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>   {48494430-4D41-4553-5452-4F00 + 16-bit index} for the index identity
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>6. Device creation, instance name = the identity token:
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>   plain HID profiles:    SetupDiCreateDeviceInfoW ROOT\HIDClass\&lt;token&gt;, ParentIdPrefix written before DIF_REGISTERDEVICE
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>   xinputhid profiles:    hmswd.exe create SWD\HIDMAESTRO_VID_*_PID_*&amp;IG_00\&lt;token&gt;, ParentIdPrefix reconciled, then the restart
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>   non-xinputhid Xbox:    SetupDiCreateDeviceInfoW (main HID) + hmswd.exe create SWD\HIDMAESTRO\&lt;token&gt; (XUSB companion)
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>7. WaitForHidChild       (10 s budget)
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>8. WaitForDeviceStarted  (5 s budget)
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>9. WaitForXInputSlotClaim (500 ms budget post-v1.3.2)
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>10. Per-instance UpperFilter writes (xinputhid-companion-XOR-tripwire profiles only)
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>11. Friendly-name application (best-effort; FinalizeNames runs the polled re-apply)
 </code></pre></div>
 <p>The driver wakes on PnP binding and reads its configuration from the registry written in step 3. The shared sections from step 4 are opened lazily by the driver (LocalService can't <code>CreateFileMapping(Global\)</code>, only <code>OpenFileMapping</code> what the SDK already created).</p>
 <p>If any step fails after step 3, <code>TeardownController</code> is run as a best-effort cleanup. The throw rethrows to the consumer.</p>

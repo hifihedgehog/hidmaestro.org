@@ -10,7 +10,7 @@ For the SDK-side API, see [SDK Reference](../sdk/sdk-reference.md). For the unde
 
 ## Create: `SetupController` orchestration
 
-`HMContext.CreateController(profile)` runs `Internal.DeviceOrchestrator.SetupController(index, profile, infPath)`. The sequence:
+`HMContext.CreateController(profile, identityKey)` runs `Internal.DeviceOrchestrator.SetupController(index, profile, infPath, identity)`. The sequence:
 
 ```
 1. RemoveAllVirtualControllers (one-shot self-heal, first call only)
@@ -28,12 +28,14 @@ For the SDK-side API, see [SDK Reference](../sdk/sdk-reference.md). For the unde
    Global\HIDMaestroInputEvent<N>     (created)
    Global\HIDMaestroStopEvent<N>      (created)
    PID state section is lazy — only created on first PublishPidPool
-5. ContainerID computation
-   {48494430-4D41-4553-5452-4F00 + 16-bit index}
-6. Device creation:
-   plain HID profiles:    SetupDiCreateDeviceInfoW under ROOT\
-   xinputhid profiles:    hmswd.exe create SWD\HIDMAESTRO_VID_*_PID_*&IG_00\<sid>_NNNN
-   non-xinputhid Xbox:    SetupDiCreateDeviceInfoW (main HID) + hmswd.exe create (XUSB companion)
+5. Identity derivation (issue #60)
+   token, ContainerID, ParentIdPrefix, serial: all from the identity key,
+   or from the index when the caller passed none
+   {48494430-4D41-4553-5452-4F00 + 16-bit index} for the index identity
+6. Device creation, instance name = the identity token:
+   plain HID profiles:    SetupDiCreateDeviceInfoW ROOT\HIDClass\<token>, ParentIdPrefix written before DIF_REGISTERDEVICE
+   xinputhid profiles:    hmswd.exe create SWD\HIDMAESTRO_VID_*_PID_*&IG_00\<token>, ParentIdPrefix reconciled, then the restart
+   non-xinputhid Xbox:    SetupDiCreateDeviceInfoW (main HID) + hmswd.exe create SWD\HIDMAESTRO\<token> (XUSB companion)
 7. WaitForHidChild       (10 s budget)
 8. WaitForDeviceStarted  (5 s budget)
 9. WaitForXInputSlotClaim (500 ms budget post-v1.3.2)

@@ -814,7 +814,7 @@
   <span class="md-ellipsis">
     
   
-    Controller Audio (Composite USB)
+    Composite USB Personas
   
 
     
@@ -2048,7 +2048,7 @@
 <li>The serial number string (<code>HM-CTL-&lt;N&gt;</code> zero-padded to 4 digits).</li>
 <li>The ContainerID GUID's last 16 bits (<code>{48494430-...-4F00&lt;idx:X4&gt;}</code>).</li>
 </ul>
-<p>These are stable per-process. Across processes, the per-process PID prefix on SwD instance-IDs makes them globally unique &mdash; see <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
+<p>These are per-process. The devnode instance names and the ContainerID derive from the identity key when the caller passes one, and from the index otherwise, so a controller comes back at the same paths across processes. See <a href="../swdevice-and-pnp/#stable-device-identity">SwDevice and PnP</a>.</p>
 <hr />
 <h2 id="friendly-name-re-application">Friendly name re-application<a class="headerlink" href="#friendly-name-re-application" title="Permanent link">&para;</a></h2>
 <p>There's a Windows PnP race where the <strong>first</strong> controller's friendly name gets overwritten by the <strong>second</strong> controller's driver-bind activity. Symptom: 4 controllers all show "Game Controller" instead of their per-profile names like "Controller (XBOX 360 For Windows)" / "DualSense Wireless Controller".</p>

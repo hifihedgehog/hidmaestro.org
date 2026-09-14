@@ -954,7 +954,7 @@
   <span class="md-ellipsis">
     
   
-    Controller Audio (Composite USB)
+    Composite USB Personas
   
 
     
@@ -1931,7 +1931,7 @@
 <tbody>
 <tr>
 <td><strong>XUSB Companion</strong></td>
-<td>A separate UMDF2 device (<code>HMXInput.dll</code>, INF: <code>hidmaestro_xusb.inf</code>) created alongside non-xinputhid Xbox profiles like Xbox 360 Wired. Lives at <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code>. Registers the XUSB device interface and serves XInput IOCTLs. Needed because <code>mshidumdf</code> suppresses XUSB IOCTLs on HID devices. See <a href="../../reference/xusb-companion/">XUSB Companion</a>.</td>
+<td>A separate UMDF2 device (<code>HMXInput.dll</code>, INF: <code>hidmaestro_xusb.inf</code>) created alongside non-xinputhid Xbox profiles like Xbox 360 Wired. Lives at <code>SWD\HIDMAESTRO\&lt;token&gt;</code>. Registers the XUSB device interface and serves XInput IOCTLs. Needed because <code>mshidumdf</code> suppresses XUSB IOCTLs on HID devices. See <a href="../../reference/xusb-companion/">XUSB Companion</a>.</td>
 </tr>
 <tr>
 <td><strong>xinputhid</strong></td>
@@ -1947,7 +1947,7 @@
 </tr>
 <tr>
 <td><strong>Profile</strong></td>
-<td>A JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code> describing one real-world controller's identity (VID, PID, product string, manufacturer string) and HID characteristics (descriptor, input report size, trigger mode, connection). 228 ship in the embedded catalog. Every controller HIDMaestro creates is parameterized by exactly one profile.</td>
+<td>A JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code> describing one real-world controller's identity (VID, PID, product string, manufacturer string) and HID characteristics (descriptor, input report size, trigger mode, connection). 234 ship in the embedded catalog. Every controller HIDMaestro creates is parameterized by exactly one profile.</td>
 </tr>
 <tr>
 <td><strong>HMContext</strong></td>
@@ -2029,8 +2029,20 @@
 <td>A registry entry under <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\&lt;...&gt;</code> with no live devnode. Cosmetic registry residue from <code>SWDeviceLifetimeParentPresent</code> cleanup; ignored by every consumer-visible API including XInput slot allocation. The regression battery treats them as PASS.</td>
 </tr>
 <tr>
+<td><strong>Identity key</strong></td>
+<td>The string a consumer passes to <code>CreateController(profile, identityKey)</code>. Every device path, the ContainerId and a USB/IP persona's serial derive from it, so the controller comes back at the same paths on every life. A missing key means the controller index. See <a href="../../reference/swdevice-and-pnp/#stable-device-identity">SwDevice and PnP</a>.</td>
+</tr>
+<tr>
+<td><strong>Identity token</strong></td>
+<td>The instance-name segment every devnode of one controller carries: <code>HM_0000</code> for the default key of index 0, <code>HM_</code> plus sixteen hex digits for a consumer key.</td>
+</tr>
+<tr>
+<td><strong>ParentIdPrefix</strong></td>
+<td>The <code>level&amp;hash&amp;n</code> value in a parent's instance key that PnP prepends to the instance id of every child that reports a non-unique id (HID children do). HIDMaestro writes the identity's value so the HID child keeps its path across lives.</td>
+</tr>
+<tr>
 <td><strong>Sticky reuse-fast-path</strong></td>
-<td>Windows PnP behavior on Win11 26100/26200: a <code>SwDeviceCreate</code> call with an <code>(enumerator + instanceId + ContainerId)</code> tuple identical to a prior same-boot call takes a fast path that creates an empty devnode shell (no Service / Driver bound, no interface class) and returns S_OK. The session-unique instance-ID suffix bypasses this. See <a href="../../reference/swdevice-and-pnp/">SwDevice and PnP</a>.</td>
+<td>The empty devnode shell a <code>SwDeviceCreate</code> produced in releases before v1.1.31 when its <code>(enumerator + instanceId + ContainerId)</code> tuple matched a device that a <code>DIF_REMOVE</code> had left half-removed in the kernel. The handle-lifetime teardown removed the cause; since v1.8.0 every life reuses one fixed tuple on purpose. See <a href="../../reference/swdevice-and-pnp/">SwDevice and PnP</a>.</td>
 </tr>
 <tr>
 <td><strong>&amp;IG_</strong></td>

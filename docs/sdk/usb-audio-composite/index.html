@@ -27,7 +27,7 @@
     
     
       
-        <title>Controller Audio (Composite USB) - HIDMaestro Documentation</title>
+        <title>Composite USB Personas - HIDMaestro Documentation</title>
       
     
     
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Controller Audio (Composite USB)
+              Composite USB Personas
             
           </span>
         </div>
@@ -828,7 +828,7 @@
   <span class="md-ellipsis">
     
   
-    Controller Audio (Composite USB)
+    Composite USB Personas
   
 
     
@@ -846,7 +846,7 @@
   <span class="md-ellipsis">
     
   
-    Controller Audio (Composite USB)
+    Composite USB Personas
   
 
     
@@ -912,6 +912,95 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-second-kind-of-persona-the-valve-devices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A second kind of persona: the Valve devices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A second kind of persona: the Valve devices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-steam-deck" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Steam Deck
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Steam Deck">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-interrogation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The interrogation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#driving-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Driving it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-2015-steam-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 2015 Steam Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-2026-steam-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 2026 Steam Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-them-without-steam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using them without Steam
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1684,6 +1773,95 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#a-second-kind-of-persona-the-valve-devices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A second kind of persona: the Valve devices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A second kind of persona: the Valve devices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-steam-deck" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Steam Deck
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Steam Deck">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-interrogation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The interrogation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#driving-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Driving it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-2015-steam-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 2015 Steam Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-2026-steam-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 2026 Steam Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-them-without-steam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using them without Steam
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1802,12 +1980,42 @@
 <p>One fidelity note worth knowing: Windows persists per-endpoint enable/disable state by device identity. Because the composite presents the real pad's exact identity, it inherits whatever state the machine last had for the real controller's endpoints. If the real pad's speaker endpoint was ever disabled in the Sound control panel, the virtual one arrives disabled too. Re-enable it there once.</p>
 <hr />
 <h2 id="profile-schema">Profile schema<a class="headerlink" href="#profile-schema" title="Permanent link">&para;</a></h2>
-<p>Composite personas add two fields to the profile JSON:</p>
+<p>Composite personas add these fields to the profile JSON:</p>
 <ul>
 <li><code>"backend": "usbip"</code> selects the create path. It is a property of the device, never a mode toggle on an existing profile: a profile that presented four interfaces on some machines and one on others would name a device plus a machine state.</li>
 <li><code>"usbConfiguration"</code> carries the full USB identity: the structured interface/endpoint model the backend routes with, plus the verbatim wire blobs (<code>deviceDescriptor</code>, <code>configurationDescriptor</code>, <code>otherSpeedConfigurationDescriptor</code>), the <code>busSpeed</code>, and <code>audioControls</code> with the pad's real UAC volume ranges. The blobs are served byte-for-byte and cross-checked against the structured model at create time.</li>
+<li>An interface's alt setting may carry its own <code>"reportDescriptor"</code>, for a persona presenting more than one HID interface. The primary interface (the one whose <code>function</code> is <code>"hid"</code>) serves the profile's own <code>descriptor</code> as always; the others serve theirs from here.</li>
+<li><code>"featureStubs"</code> declares the answers the persona gives to <code>GET_REPORT(Feature)</code>, for a device whose claiming software interrogates it before it will use it. <code>messageByte</code> says where the message id sits in a write's payload, and a report may declare the <code>param</code> it answers for, when one message carries several.</li>
 </ul>
 <p>See <a href="../../profiles/profile-system/">Profile System</a> for the rest of the schema.</p>
+<hr />
+<h2 id="a-second-kind-of-persona-the-valve-devices">A second kind of persona: the Valve devices<a class="headerlink" href="#a-second-kind-of-persona-the-valve-devices" title="Permanent link">&para;</a></h2>
+<p>The audio personas above exist because UMDF2 can present exactly one HID interface and a DualSense has four. The three Valve personas use the same backend for a different reason: what a device <em>is</em> to Steam.</p>
+<h3 id="the-steam-deck">The Steam Deck<a class="headerlink" href="#the-steam-deck" title="Permanent link">&para;</a></h3>
+<p>The plain <code>steam-deck</code> profile carries Valve's real ids over a standard gamepad descriptor. Steam files it under Generic DirectInput, and none of Steam Input's Valve-device treatment applies: no gyro lane, no trackpads, no HD haptics, no Valve button prompts. The ids alone are not what earns that treatment; the device behind them is.</p>
+<p>So the persona presents the device, reproduced from a real unit's <code>lsusb</code> dump rather than assembled, because the identity Steam inspects is the whole configuration and not just the controller interface: <code>bcdDevice</code> 3.00, product string <code>Steam Controller</code>, a serial string at index 3, <code>bmAttributes</code> 0x80, <code>wTotalLength</code> 150 and five interfaces. Mouse on 0 (endpoint 0x81), keyboard on 1 (0x82, boot protocol), the vendor-page controller on 2 (<code>06 FF FF</code>, 0x83, 64-byte input and feature reports), then an Interface Association Descriptor and the CDC ACM pair on 3 and 4. An earlier revision of this page described a three-interface device with <code>bcdDevice</code> 2.00 and the product string <code>Steam Deck Controller</code>, taken from a different unit's dump with the CDC pair dropped. Steam claimed that device, read its attributes and named it, and then decoded every input as zero.</p>
+<h4 id="the-interrogation">The interrogation<a class="headerlink" href="#the-interrogation" title="Permanent link">&para;</a></h4>
+<p>Steam does not simply read input from a Deck. It asks the device what it is, over the feature-report channel, and the Deck's protocol declares no report ids at all: the host writes a message with <code>SET_REPORT(Feature)</code> and reads its answer with <code>GET_REPORT(Feature)</code>. <code>ID_GET_ATTRIBUTES_VALUES</code> (<code>0x83</code>) returns a block of <code>(tag, u32)</code> records: the product id, the firmware build time, the board revision, and the connection interval Steam uses to pace its own reads.</p>
+<p>That is what <code>featureStubs</code> answers, keyed <code>match: "lastMessage"</code> so a lookup follows the message the preceding write carried. The shipped values come from a capture of a real Deck answering a real Steam client, with the connection interval matching the persona's own 4 ms endpoint rather than being copied blindly.</p>
+<h4 id="driving-it">Driving it<a class="headerlink" href="#driving-it" title="Permanent link">&para;</a></h4>
+<p>The persona's input report is the 64-byte Neptune frame (<code>ID_CONTROLLER_DECK_STATE</code>, type <code>0x09</code>), and <code>extendedReport</code> packs it from <code>SteamDeckStatePacket_t</code>, so an ordinary <code>SubmitState</code> call drives it. That matters more than it sounds: a profile whose descriptor is an opaque vendor blob declares no axes, and every layer that keys off declared axes will quietly emit nothing rather than fail. The profile must also set <code>alwaysArmed</code>, or the encoder is built and never armed and <code>SubmitState</code> falls through to the descriptor-driven builder, which has nothing to fill. Consumers can still submit the frame whole through <code>SubmitRawReport</code>. Steam's rumble (<code>0xEB</code>), haptic (<code>0xEA</code>) and pulse (<code>0x8F</code>) writes arrive as HID feature output on <code>OutputReceived</code>.</p>
+<p>The real device also exposes a CDC ACM debug serial pair, which the persona omits: it carries no controller data and nothing in the input stack reads it.</p>
+<h3 id="the-2015-steam-controller">The 2015 Steam Controller<a class="headerlink" href="#the-2015-steam-controller" title="Permanent link">&para;</a></h3>
+<p><code>steam-controller-composite</code> is the wired D0G at <code>28DE:1102</code>, and it presents three interfaces for a blunter reason than the Deck's: SDL's driver refuses the pad on any interface but number 2. A single-interface profile carrying the same descriptor and the same ids is skipped outright. So the persona reproduces the real unit's whole configuration from its <code>lsusb</code> dump, <code>wTotalLength</code> 0x54 and all: keyboard on interface 0 (endpoint 0x81, 8 bytes, <code>bInterval</code> 10), mouse on interface 1 (0x82, 4 bytes, interval 6), and the controller on interface 2 (0x83, 64 bytes, interval 6), which is where the driver looks.</p>
+<p>Every descriptor is verbatim from a real unit: the device and configuration blobs, the 63-byte keyboard and 56-byte mouse report descriptors its lizard mode drives, and the 33-byte vendor-page controller descriptor. Its input frame is <code>ValveControllerStatePacket_t</code>. The pad has one stick and the wire carries no separate stick field: with <code>STEAM_LEFTPAD_FINGERDOWN</code> clear, SDL's <code>FormatStatePacketUntilGyro</code> reads <code>sLeftPadX/Y</code> as the joystick, so that is where the stick is written. Its analog triggers come from the 8-bit values inside the <code>ButtonTriggerData</code> union, which SDL remaps against 26000 rather than full scale, not from the redundant 16-bit copy further down the packet.</p>
+<p>Its <code>featureStubs</code> answer the same <code>0x83</code> interrogation the Deck's do, since both speak the same Valve protocol with no report ids, keyed off the message the preceding <code>SET_REPORT</code> carried. The attribute block carries three records in the order two real Valve captures use: the product id, a zero capabilities word (zero on both of those real devices too), and the 9000 µs connection interval, which is SDL's documented fallback for this family and what it turns into the gyro and accelerometer sample rate.</p>
+<p>Three records, not six. A real block also carries a firmware build timestamp, a bootloader build timestamp and a board revision, and no public capture of a 2015 unit's exists. Those are absent rather than invented: SDL ignores all three, and a wrong firmware timestamp is what makes Steam re-ask forever.</p>
+<h3 id="the-2026-steam-controller">The 2026 Steam Controller<a class="headerlink" href="#the-2026-steam-controller" title="Permanent link">&para;</a></h3>
+<p><code>steam-controller-2</code> is the wired unit at <code>28DE:1302</code>, the one SDL calls Triton. It is built differently from both of the above: one HID interface carries everything, addressed by report id rather than split across interfaces. The mouse (<code>0x40</code>) and keyboard (<code>0x41</code>) reports its lizard mode drives live in the same descriptor as the 53-byte controller state (<code>0x42</code>), the BLE state (<code>0x45</code>), battery (<code>0x43</code>), wireless status (<code>0x79</code>), the <code>0x80</code>–<code>0x89</code> haptic and rumble output reports, and a 63-byte command channel on feature reports 1 and 2. The command channel is why this persona's <code>featureStubs</code> set <code>"messageByte": 1</code>: the message id sits after the feature report id rather than at byte 0.</p>
+<p>The 372-byte descriptor is verbatim from <a href="https://github.com/safijari/openpuck">OpenPuck</a>'s <code>ReversePuckFirmware</code>, an emulation of this controller that a live Steam client already accepts, and every report id in it matches SDL's own <code>ID_TRITON_*</code> constants.</p>
+<p>The feature answers are grounded on two independent reads of real hardware that agree record for record: OpenPuck's <code>identity.cpp</code>, and <a href="https://github.com/CouchTurtle/sc2-research">sc2-research</a>, which logs the same five attribute tags in the same order off a live controller and matches Steam's own firmware-update JSON on two of the values. The <code>0x83</code> block is those 25 bytes: product id <code>0x1302</code>, a zero capabilities word, the bootloader and firmware build timestamps, and the board revision. Steam validates them byte for byte, so none of them is a guess. The build timestamp shipped is the newer of the two real ones, so Steam sees a current unit rather than offering it an update.</p>
+<p><code>0xAE</code> reads a string by index, and the persona declares one answer per index the real device provisions: the board serial, the unit serial, and the constant at index 3 that Steam checks. Every other index reads back <code>0xFF</code> where the index would be, which is how a real unit says a string is not provisioned, and the byte Steam's own updater tests.</p>
+<p>Its input frame is the 54-byte <code>TritonMTUFull_t</code> on report <code>0x42</code>, packed by <code>extendedReport</code> so an ordinary <code>SubmitState</code> drives it; consumers can still submit it whole through <code>SubmitRawReport</code>. Steam's haptic writes arrive on <code>OutputReceived</code> as output reports <code>0x80</code> and up.</p>
+<p>SDL binds Triton on any interface of a wired unit, so nothing here depends on interface numbering the way the 2015 controller does.</p>
+<h3 id="using-them-without-steam">Using them without Steam<a class="headerlink" href="#using-them-without-steam" title="Permanent link">&para;</a></h3>
+<p>These pads speak only Valve's vendor protocol. Nothing generic reads it: not DirectInput, not XInput, not <code>joy.cpl</code>. That is equally true of real hardware, which is what lizard mode exists to cover. What makes a real Steam Controller work with Steam closed is SDL, which implements the protocol directly and turns lizard mode off itself.</p>
+<p>The personas never emit keyboard or mouse reports at all, so they sit permanently in the gamepad state and nothing needs disabling. An SDL application reads them with Steam not running.</p>
+<p>Battery scenario S52 proves this without a client: it creates each persona, drives it through <code>SubmitState</code>, reads the frame back off the real HID stack, and decodes it with SDL's own per-device arithmetic, asserting both stick extremes and a trigger pulled and released. <code>ValveWireCheck.exe --monitor &lt;persona&gt;</code> runs the same path interactively and prints what an SDL application would read.</p>
 
 
 

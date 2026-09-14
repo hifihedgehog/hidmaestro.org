@@ -137,7 +137,7 @@ python scripts\verify.py --controllers 6 --filter order
 
 ## `test/regression/swap_regression.ps1`: lifecycle battery
 
-The 28-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, and verifies no PnP devnodes are left in the `PRESENT` state after each one.
+The 59-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the `PRESENT` state after each one.
 
 ```powershell
 # from an ELEVATED PowerShell, repo root or anywhere
@@ -290,7 +290,7 @@ The pre-tag validation pipeline (`scripts\pre-tag-validate.cmd`) is the gate:
 
 1. Clean build &mdash; no stale Resources/ snapshots.
 2. `verify.py --controllers 4` &mdash; cross-API correctness on a multi-controller deployment.
-3. `swap_regression.ps1` &mdash; full 28-scenario battery. **28/28 PASS required.**
+3. `swap_regression.ps1`: full 59-scenario battery. **59/59 PASS required.**
 4. `HIDMaestroTest cleanup` &mdash; verify no leftover devnodes after the battery.
 5. Profile extractor smoke test &mdash; the GUI tool opens, populates, extracts.
 

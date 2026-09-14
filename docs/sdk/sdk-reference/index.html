@@ -2463,9 +2463,9 @@
 <p>Rules:</p>
 <ul>
 <li>A null, empty or blank key uses the controller index (<code>index:&lt;N&gt;</code>), which is what the one-argument overloads do. <code>HMController.IdentityKey</code> reports the effective key.</li>
-<li>Keys are trimmed and case-sensitive. Two live controllers in one context cannot share a key; <code>InvalidOperationException</code> names the index that holds it.</li>
+<li>Keys are trimmed and case-sensitive. Two live controllers in one context cannot share a key. The <code>InvalidOperationException</code> names the index that holds it.</li>
 <li>A different profile at the same key keeps the identity and refreshes the descriptor.</li>
-<li>DirectInput's instance GUID is DirectInput's own per-VID/PID ordinal and is not derived from the key; it moves when a same-VID/PID pad in front of it leaves.</li>
+<li>DirectInput's instance GUID is DirectInput's own per-VID/PID ordinal and is not derived from the key. It moves when a same-VID/PID pad in front of it leaves.</li>
 </ul>
 <p>The per-family mechanism is in <a href="../../reference/swdevice-and-pnp/#stable-device-identity">SwDevice and PnP</a>.</p>
 <p><code>ActiveControllers</code> returns a snapshot of every live controller this context owns. Order is creation order.</p>

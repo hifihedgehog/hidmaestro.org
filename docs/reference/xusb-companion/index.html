@@ -1945,7 +1945,7 @@
 
 <h1 id="xusb-companion">XUSB Companion<a class="headerlink" href="#xusb-companion" title="Permanent link">&para;</a></h1>
 <p><code>HMXInput.dll</code> is a UMDF2 function driver that registers the XUSB device interface for non-xinputhid Xbox profiles. Created <strong>only</strong> for profiles where <code>vid == 0x045E</code> and <code>driverMode != "xinputhid"</code> &mdash; i.e. the Xbox 360 Wired family.</p>
-<p>The companion is a <strong>separate device node</strong> at <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code>, paired with the main HID device (<code>ROOT\VID_045E&amp;PID_028E&amp;IG_00\NNNN</code>) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because <code>mshidumdf.sys</code> suppresses XUSB IOCTLs on devices it hosts.</p>
+<p>The companion is a <strong>separate device node</strong> at <code>SWD\HIDMAESTRO\&lt;token&gt;</code>, paired with the main HID device (<code>ROOT\VID_045E&amp;PID_028E&amp;IG_00\&lt;token&gt;</code>) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because <code>mshidumdf.sys</code> suppresses XUSB IOCTLs on devices it hosts.</p>
 <p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c"><code>driver/companion.c</code></a> (745 lines), <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf"><code>driver/hidmaestro_xusb.inf</code></a>.</p>
 <p>For the main HID driver, see <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>. For why this exists at all (and not as a child PDO of the main HID), see <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
 <hr />
@@ -1971,7 +1971,7 @@
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>%DeviceDesc% = XUSB_Install, root\HIDMaestroXUSB
 </code></pre></div>
 <p>Three VID-specific PIDs (Xbox 360 Wired, Xbox 360 Wireless Receiver, etc.) plus a generic <code>root\HIDMaestroXUSB</code> fallback. PnP's <code>DEVPKEY_Device_MatchingDeviceId</code> carries the right VID:PID string when the SDK writes the hardware ID list at create time. New Xbox 360 PIDs that aren't in the specific list fall through to the generic alias &mdash; still works, but loses the per-PID INF behavior.</p>
-<p>The <code>&amp;XI_00</code> suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code>, not <code>root\VID_*&amp;PID_*&amp;XI_00\*</code> &mdash; the hardware IDs above just give PnP something to match against during INF binding.</p>
+<p>The <code>&amp;XI_00</code> suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses <code>SWD\HIDMAESTRO\&lt;token&gt;</code>, not <code>root\VID_*&amp;PID_*&amp;XI_00\*</code> &mdash; the hardware IDs above just give PnP something to match against during INF binding.</p>
 <hr />
 <h2 id="the-xinputhid-upperfilter-tripwire">The <code>xinputhid</code> UpperFilter tripwire<a class="headerlink" href="#the-xinputhid-upperfilter-tripwire" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[XUSB_HW_AddReg]

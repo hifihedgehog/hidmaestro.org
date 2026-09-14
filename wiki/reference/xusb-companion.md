@@ -2,7 +2,7 @@
 
 `HMXInput.dll` is a UMDF2 function driver that registers the XUSB device interface for non-xinputhid Xbox profiles. Created **only** for profiles where `vid == 0x045E` and `driverMode != "xinputhid"` &mdash; i.e. the Xbox 360 Wired family.
 
-The companion is a **separate device node** at `SWD\HIDMAESTRO\<sid>_NNNN`, paired with the main HID device (`ROOT\VID_045E&PID_028E&IG_00\NNNN`) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because `mshidumdf.sys` suppresses XUSB IOCTLs on devices it hosts.
+The companion is a **separate device node** at `SWD\HIDMAESTRO\<token>`, paired with the main HID device (`ROOT\VID_045E&PID_028E&IG_00\<token>`) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because `mshidumdf.sys` suppresses XUSB IOCTLs on devices it hosts.
 
 Source: [`driver/companion.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c) (745 lines), [`driver/hidmaestro_xusb.inf`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf).
 
@@ -49,7 +49,7 @@ System class isn't on the classifier pass-list at all, so WGI doesn't auto-class
 
 Three VID-specific PIDs (Xbox 360 Wired, Xbox 360 Wireless Receiver, etc.) plus a generic `root\HIDMaestroXUSB` fallback. PnP's `DEVPKEY_Device_MatchingDeviceId` carries the right VID:PID string when the SDK writes the hardware ID list at create time. New Xbox 360 PIDs that aren't in the specific list fall through to the generic alias &mdash; still works, but loses the per-PID INF behavior.
 
-The `&XI_00` suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses `SWD\HIDMAESTRO\<sid>_NNNN`, not `root\VID_*&PID_*&XI_00\*` &mdash; the hardware IDs above just give PnP something to match against during INF binding.
+The `&XI_00` suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses `SWD\HIDMAESTRO\<token>`, not `root\VID_*&PID_*&XI_00\*` &mdash; the hardware IDs above just give PnP something to match against during INF binding.
 
 ---
 

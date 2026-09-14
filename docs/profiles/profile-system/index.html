@@ -2454,7 +2454,7 @@
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  │                                    (SDK-written; blocks WGI from synthesizing
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  │                                    a duplicate HID-backed Gamepad)
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>  └─ HID\VID_045E&amp;PID_028E&amp;IG_00\... ← HID child (raw PDO, input.inf)
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN            ← XUSB companion (HMXInput.dll)
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>SWD\HIDMAESTRO\&lt;token&gt;               ← XUSB companion (HMXInput.dll)
 <a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>  │                                    SwDeviceCreate, System class, explicit
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>  │                                    per-controller ContainerID (shared with main HID).
 <a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>  │                                    UpperFilters = &quot;xinputhid&quot; from INF
@@ -2467,7 +2467,7 @@
 <h3 id="3-xinputhid-xbox-150-600-ms-create-500-ms-dispose">3. xinputhid Xbox (~150-600 ms create, ~500 ms dispose)<a class="headerlink" href="#3-xinputhid-xbox-150-600-ms-create-500-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Profiles with <code>driverMode: "xinputhid"</code>. These match <code>xinputhid.inf [GIP_Hid]</code> by hardware ID (<code>HID\VID_045E&amp;PID_0B13&amp;IG_00</code>), which binds Microsoft's <code>xinputhid.sys</code> as an upper filter on the HID child. xinputhid provides XInput delivery and 16-button HID descriptor synthesis natively: no XUSB companion needed, single Device Manager entry.</p>
 <p>Includes Xbox Series BT (<code>xbox-series-xs-bt</code>), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT &mdash; the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\&lt;sid&gt;_NNNN
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\&lt;token&gt;
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  │                                  ← UMDF2 driver via SwDeviceCreate
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  │                                    (mshidumdf host). Explicit non-sentinel
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>  │                                    ContainerID closes the slot-1-skip

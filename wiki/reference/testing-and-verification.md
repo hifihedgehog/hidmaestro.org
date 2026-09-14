@@ -1,6 +1,6 @@
 # Testing and Verification
 
-Two test pipelines: `scripts/verify.py` for cross-API correctness on a live deployment, and `test/regression/swap_regression.ps1` for the 28-scenario lifecycle battery. Both gate the release pipeline; a tag without 28/28 PASS doesn't ship.
+Two test pipelines: `scripts/verify.py` for cross-API correctness on a live deployment, and `test/regression/swap_regression.ps1` for the 59-scenario lifecycle battery. Both gate the release pipeline. A tag without 59/59 PASS doesn't ship.
 
 For the wiki coverage of where these pipelines fit, see [Build and Release](build-and-release.md). For the underlying SDK mechanics they exercise, see [SDK Reference](../sdk/sdk-reference.md) and [Lifecycle and Teardown](lifecycle-and-teardown.md).
 
@@ -155,7 +155,7 @@ The 59-scenario battery that drives `HIDMaestroTest.exe` through every interesti
 
 Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 minutes on Ryzen-class, ~75 minutes on Atom Z8350 fixture (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`).
 
-### The 28 scenarios
+### The scenarios
 
 | Scenario | Pattern | Catches |
 |----------|---------|---------|
@@ -164,7 +164,7 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 | **S03_Single_LongCycle_8swaps** | 8 alternating swaps | Suffix-allocator stress + repeated DIF_REMOVE+hmswd-remove path. |
 | **S04_Single_BT_360_BT** | BT first | Initial xinputhid bind path before any non-xinputhid create. |
 | **S05_Single_Mixed_Families** | `360 → DS → Switch → BT → 360` | Cross-family swaps (XUSB companion, plain HID, xinputhid gamepad). |
-| **S06_Single_SameProfileSwap** | `BT → BT` (same id) | Per-call unique suffix lets identical-profile recreation work. |
+| **S06_Single_SameProfileSwap** | `BT → BT` (same id) | Recreating the identical profile at the same identity binds again at the same paths. |
 | **S07_Multi_CreateAll_Idle** | 4 mixed, idle, quit | Baseline multi-slot teardown via clean process exit. |
 | **S08_Multi_SwapOneSlot** | 4 wired, swap slot 1 | Single-slot swap doesn't leak across siblings. |
 | **S09_Multi_SwapAllSlots** | 4 wired, swap each slot | Concurrent live-swap of every slot. |
@@ -187,6 +187,8 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 | **S26_PidFfb_FfbTest** | DI PID FFB end-to-end via SharpDX/DI8 (`FfbTest`) | The PID FFB invariants S24/S25 cover at the SDK boundary actually deliver to a real DI consumer. |
 | **S27_Xbox360_Dpad_XInput** | xbox-360-wired d-pad through XUSB companion (`XInputGetState`) | Closes #19 &mdash; `wButtons.DPAD_*` matches expected mask. |
 | **S28_Hat_Resolution_Encoder** | Pure encoder unit-test across hat resolutions 8 / 16 / 360 | v1.3.4 hat-input priority chain: `HMHat / HatRaw / HatHundredths / HatDegrees` produce correct descriptor field values. |
+| **S58_Identity_Derivation** | Identity key derivation, no device (issue #60) | The default key reproduces the index-shaped ids, a consumer key derives deterministic collision-free ids, persona serials derive as documented. |
+| **S59_Identity_Battery** | One controller per family across nine lives (issue #60) | Parent id, ParentIdPrefix, ContainerId, HID children, interface paths, DirectInput GUID, SDL3 path and USB serial identical across lives, plus empty-shell checks, overlap and a profile change at one key. |
 
 Each scenario covers a specific historical bug or invariant. The full list is the codified history of what's broken in this area before.
 
@@ -238,11 +240,11 @@ These five fixes interact; missing any one makes the harness hang on Win11. Pres
 
 ### Slow-hardware fixture
 
-The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Same 28/28 PASS at `HIDMAESTRO_TIMEOUT_SCALE=2`. Validated on each release.
+The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Its last run, on v1.7.3, passed 57/57 at `HIDMAESTRO_TIMEOUT_SCALE=2`.
 
 The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed &mdash; a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
 
-The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there. ~75 minutes wall time for the full 28 scenarios.
+The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there. ~75 minutes wall time for the full battery.
 
 ---
 

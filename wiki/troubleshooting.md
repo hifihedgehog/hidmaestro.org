@@ -124,14 +124,14 @@ If you're on the latest build and still see slot-1-skip, the per-controller Cont
 
 ### Subsequent run after a fresh boot is fast (~2 s); same-boot relaunch is slow (65 s) and XInput loses visibility
 
-**Cause**: pre-v1.x.x.0 with the sticky `(enumerator + suffix + ContainerId)` reuse-fast-path leaving subsequent-run companion devnodes as empty registry shells.
+**Cause**: releases before v1.1.31, where a `DIF_REMOVE` left the software device alive in the kernel and the next `SwDeviceCreate` with the same `(enumerator + suffix + ContainerId)` tuple reconnected to that half-removed shell.
 
-**Fix**: upgrade to a build with the per-process PID prefix on SwD instance-IDs (current). Verify by checking the companion's instance ID:
+**Fix**: upgrade to v1.8.0 or later. The handle-lifetime teardown (v1.1.31) removed the cause, and since v1.8.0 the instance name is the controller's identity token, the same on every life. Verify by checking the companion's instance ID:
 
-```cmd
+```powershell
 Get-PnpDevice -InstanceId 'SWD\HIDMAESTRO\*'
-:: Instance ID should look like "<HEXPID><HEX4>_<DEC4>", e.g. "A7B40001_0002"
-:: NOT just "0001_0002" or "0_0002"
+# Instance ID reads SWD\HIDMAESTRO\HM_0000 for the default key of index 0,
+# or SWD\HIDMAESTRO\HM_<16 hex digits> for a consumer identity key.
 ```
 
 ### `hmswd.exe` returns `E_FAIL`
@@ -256,7 +256,7 @@ Console.WriteLine($"PID FFB enabled (load status: {bl.LoadStatus})");
 
 **Cause options**:
 
-- For Xbox 360 Wired: the xinputhid UpperFilter tripwire isn't on the XUSB companion. Check `HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\<sid>_<idx>\UpperFilters` &mdash; should contain `xinputhid`. INF carries this; if missing, the install was corrupt.
+- For Xbox 360 Wired: the xinputhid UpperFilter tripwire isn't on the XUSB companion. Check `HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\<token>\UpperFilters` &mdash; should contain `xinputhid`. INF carries this; if missing, the install was corrupt.
 - For Xbox Series BT: xinputhid handles vibration internally as a HID Output report. Surfaces as `HMOutputSource.HidOutput` not `HMOutputSource.XInput`.
 - For plain HID: WGI dispatches a HID Output report directly. Subscribe to `HidOutput` source, not just `XInput`.
 

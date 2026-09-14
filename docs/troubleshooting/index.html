@@ -2669,11 +2669,11 @@
 </code></pre></div>
 <p>If you're on the latest build and still see slot-1-skip, the per-controller ContainerID may have been reset to null-sentinel by a hardware ID list change. File an issue with <code>Get-PnpDevice ... | Format-List *</code> output.</p>
 <h3 id="subsequent-run-after-a-fresh-boot-is-fast-2-s-same-boot-relaunch-is-slow-65-s-and-xinput-loses-visibility">Subsequent run after a fresh boot is fast (~2 s); same-boot relaunch is slow (65 s) and XInput loses visibility<a class="headerlink" href="#subsequent-run-after-a-fresh-boot-is-fast-2-s-same-boot-relaunch-is-slow-65-s-and-xinput-loses-visibility" title="Permanent link">&para;</a></h3>
-<p><strong>Cause</strong>: pre-v1.x.x.0 with the sticky <code>(enumerator + suffix + ContainerId)</code> reuse-fast-path leaving subsequent-run companion devnodes as empty registry shells.</p>
-<p><strong>Fix</strong>: upgrade to a build with the per-process PID prefix on SwD instance-IDs (current). Verify by checking the companion's instance ID:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Get-PnpDevice -InstanceId &#39;SWD\HIDMAESTRO\*&#39;
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>:: Instance ID should look like &quot;&lt;HEXPID&gt;&lt;HEX4&gt;_&lt;DEC4&gt;&quot;, e.g. &quot;A7B40001_0002&quot;
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>:: NOT just &quot;0001_0002&quot; or &quot;0_0002&quot;
+<p><strong>Cause</strong>: releases before v1.1.31, where a <code>DIF_REMOVE</code> left the software device alive in the kernel and the next <code>SwDeviceCreate</code> with the same <code>(enumerator + suffix + ContainerId)</code> tuple reconnected to that half-removed shell.</p>
+<p><strong>Fix</strong>: upgrade to v1.8.0 or later. The handle-lifetime teardown (v1.1.31) removed the cause, and since v1.8.0 the instance name is the controller's identity token, the same on every life. Verify by checking the companion's instance ID:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">Get-PnpDevice</span> <span class="n">-InstanceId</span> <span class="s1">&#39;SWD\HIDMAESTRO\*&#39;</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c"># Instance ID reads SWD\HIDMAESTRO\HM_0000 for the default key of index 0,</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c"># or SWD\HIDMAESTRO\HM_&lt;16 hex digits&gt; for a consumer identity key.</span>
 </code></pre></div>
 <h3 id="hmswdexe-returns-e_fail"><code>hmswd.exe</code> returns <code>E_FAIL</code><a class="headerlink" href="#hmswdexe-returns-e_fail" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong>: <code>SwDeviceCreate</code> failed. Typically a callback timeout (the kernel didn't acknowledge the create within 30 seconds).</p>
@@ -2756,7 +2756,7 @@
 <h3 id="browser-vibration-doesnt-reach-my-consumer">Browser vibration doesn't reach my consumer<a class="headerlink" href="#browser-vibration-doesnt-reach-my-consumer" title="Permanent link">&para;</a></h3>
 <p><strong>Cause options</strong>:</p>
 <ul>
-<li>For Xbox 360 Wired: the xinputhid UpperFilter tripwire isn't on the XUSB companion. Check <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\&lt;sid&gt;_&lt;idx&gt;\UpperFilters</code> &mdash; should contain <code>xinputhid</code>. INF carries this; if missing, the install was corrupt.</li>
+<li>For Xbox 360 Wired: the xinputhid UpperFilter tripwire isn't on the XUSB companion. Check <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\&lt;token&gt;\UpperFilters</code> &mdash; should contain <code>xinputhid</code>. INF carries this; if missing, the install was corrupt.</li>
 <li>For Xbox Series BT: xinputhid handles vibration internally as a HID Output report. Surfaces as <code>HMOutputSource.HidOutput</code> not <code>HMOutputSource.XInput</code>.</li>
 <li>For plain HID: WGI dispatches a HID Output report directly. Subscribe to <code>HidOutput</code> source, not just <code>XInput</code>.</li>
 </ul>

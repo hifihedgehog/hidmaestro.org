@@ -1,4 +1,4 @@
-# Multi-Controller
+﻿# Multi-Controller
 
 Up to N virtual controllers running simultaneously. Verified working with 6 mixed (2× Xbox Series BT + 2× Xbox 360 Wired + 2× DualSense) on a Ryzen 9955HX3D dev box and on an Intel Atom Z8350 fixture. The SDK supports unlimited; downstream APIs cap variously.
 
@@ -54,7 +54,7 @@ ctx.FinalizeNames();   // re-apply friendly names after PnP settles
 
 The method polls each HID child for `DN_STARTED` (driver fully bound) before re-applying. On fast machines exits in <100 ms; on slow machines adapts up to 5 s rather than failing from an insufficient fixed sleep.
 
-The proven pre-SDK test app (~v0.x) called this as "Phase 1.5 &mdash; Finalizing device names". The functionality moved into the SDK; consumers should call it as their final create step.
+The proven pre-SDK test app (~v0.x) called this as "Phase 1.5: Finalizing device names". The functionality moved into the SDK; consumers should call it as their final create step.
 
 ---
 
@@ -67,7 +67,7 @@ Both INFs (`hidmaestro.inf` and `hidmaestro_xusb.inf`) carry:
 UmdfHostProcessSharing = ProcessSharingDisabled
 ```
 
-Each device instance gets its own `WUDFHost.exe` process (~8 MB RSS, ~10 threads). With 6 controllers running, expect 6-12 `WUDFHost.exe` processes &mdash; one per main HID instance plus one per XUSB companion (companions only exist for non-xinputhid Xbox profiles).
+Each device instance gets its own `WUDFHost.exe` process (~8 MB RSS, ~10 threads). With 6 controllers running, expect 6-12 `WUDFHost.exe` processes: one per main HID instance plus one per XUSB companion (companions only exist for non-xinputhid Xbox profiles).
 
 ### Why per-instance hosts
 
@@ -99,7 +99,7 @@ If your consumer needs more than 4 XInput-visible controllers, that's a Microsof
 
 ## Browser cap
 
-Chromium's gamepad API caps at 4 connected gamepads on Win10/11. With 6 mixed controllers, browser sees 4 in a deterministic order (alphabetical by GUID, not by creation order &mdash; see [Cross-API Coverage](cross-api-coverage.md)).
+Chromium's gamepad API caps at 4 connected gamepads on Win10/11. With 6 mixed controllers, browser sees 4 in a deterministic order (alphabetical by GUID, not by creation order: see [Cross-API Coverage](cross-api-coverage.md)).
 
 Restart Chromium to clear stale slot caching when adding/removing controllers during a session.
 
@@ -127,7 +127,7 @@ Game enumeration anchors to **creation order** across most APIs:
 | **joy.cpl** | Creation order. |
 | **SDL3** | Creation order via `SDL_GetJoysticks`. |
 
-For UI flows where the user expects "Controller 1 = first one I created", every API except Chromium gets it right. Chromium reorders &mdash; the consumer needs to sort or remap if browser ordering matters.
+For UI flows where the user expects "Controller 1 = first one I created", every API except Chromium gets it right. Chromium reorders: the consumer needs to sort or remap if browser ordering matters.
 
 ### Don't parallelize `CreateController`
 
@@ -138,9 +138,9 @@ A consumer might be tempted to parallelize multi-controller creation:
 await Task.WhenAll(profiles.Select(p => Task.Run(() => ctx.CreateController(p))));
 ```
 
-The creation order **anchors** every downstream API. Parallel creates produce non-deterministic order across XInput, WGI, joy.cpl, browser, RawInput, SDL3 simultaneously &mdash; the user-visible game enumeration becomes a coin flip per launch.
+The creation order **anchors** every downstream API. Parallel creates produce non-deterministic order across XInput, WGI, joy.cpl, browser, RawInput, SDL3 simultaneously: the user-visible game enumeration becomes a coin flip per launch.
 
-**Always create sequentially.** Multi-controller perf comes from making each step faster (the v1.3.x latency improvements), not from parallelism. Verified at the SDK level &mdash; `CreateController` takes the context lock for index allocation but otherwise serializes through `SetupController`'s registry-then-PnP-create path.
+**Always create sequentially.** Multi-controller perf comes from making each step faster (the v1.3.x latency improvements), not from parallelism. Verified at the SDK level: `CreateController` takes the context lock for index allocation but otherwise serializes through `SetupController`'s registry-then-PnP-create path.
 
 ---
 
@@ -174,7 +174,7 @@ AppendUlongDecimal(serial, ControllerIndex, /* zero-pad to 4 */);
 
 Returned by `IOCTL_HID_GET_STRING / HID_STRING_ID_ISERIALNUMBER`. SDL3 / HIDAPI use this string as a per-device disambiguator; identical VID:PID/ProductString controllers get distinct GUIDs derived from the serial.
 
-The exact format (`HM-CTL-<index>`) isn't part of any contract &mdash; consumers are expected to treat the string as opaque. Don't parse the index out and use it for ordering; use creation order instead.
+The exact format (`HM-CTL-<index>`) isn't part of any contract: consumers are expected to treat the string as opaque. Don't parse the index out and use it for ordering; use creation order instead.
 
 ---
 
@@ -218,7 +218,7 @@ Idle CPU is the **per-controller WUDFHost** measurement. Each per-instance host 
 
 The regression battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Slow-hardware target for validating the event-driven harness without time-based settles.
 
-Full battery: ~75 minutes wall time at `HIDMAESTRO_TIMEOUT_SCALE=2`. Same 28/28 PASS as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed &mdash; a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
+Full battery: ~75 minutes wall time at `HIDMAESTRO_TIMEOUT_SCALE=2`. Same 28/28 PASS as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
 
 See [Testing and Verification](testing-and-verification.md).
 
@@ -226,8 +226,8 @@ See [Testing and Verification](testing-and-verification.md).
 
 ## See also
 
-- [Architecture Overview](architecture-overview.md) &mdash; per-controller WUDFHost in the full stack diagram.
-- [SwDevice and PnP](swdevice-and-pnp.md) &mdash; per-controller indices, ContainerIDs, instance suffixes.
-- [Lifecycle and Teardown](lifecycle-and-teardown.md) &mdash; create / dispose mechanics that scale.
-- [Cross-API Coverage](cross-api-coverage.md) &mdash; per-API ordering and slot caps.
-- [Testing and Verification](testing-and-verification.md) &mdash; the multi-controller regression scenarios.
+- [Architecture Overview](architecture-overview.md): per-controller WUDFHost in the full stack diagram.
+- [SwDevice and PnP](swdevice-and-pnp.md): per-controller indices, ContainerIDs, instance suffixes.
+- [Lifecycle and Teardown](lifecycle-and-teardown.md): create / dispose mechanics that scale.
+- [Cross-API Coverage](cross-api-coverage.md): per-API ordering and slot caps.
+- [Testing and Verification](testing-and-verification.md): the multi-controller regression scenarios.

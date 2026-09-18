@@ -2174,7 +2174,7 @@
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   Global\HIDMaestroOutput&lt;N&gt;         (created)
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>   Global\HIDMaestroInputEvent&lt;N&gt;     (created)
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   Global\HIDMaestroStopEvent&lt;N&gt;      (created)
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>   PID state section is lazy — only created on first PublishPidPool
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>   PID state section is lazy: only created on first PublishPidPool
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>5. Identity derivation (issue #60)
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>   token, ContainerID, ParentIdPrefix, serial: all from the identity key,
 <a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>   or from the index when the caller passed none
@@ -2196,10 +2196,10 @@
 <p>After <code>SwDeviceCreate</code> (or <code>SetupDiCreateDeviceInfoW</code>) returns success, the device isn't fully usable yet. Three wait gates ensure we only return to the consumer when downstream APIs can read the device.</p>
 <h3 id="gate-1-waitforhidchild-10-s">Gate 1: <code>WaitForHidChild</code> (10 s)<a class="headerlink" href="#gate-1-waitforhidchild-10-s" title="Permanent link">&para;</a></h3>
 <p>PnP creates the HID child node under the parent we just created. Polls <code>CM_Locate_DevNodeW</code> for the expected child instance ID. Typical: &lt;100 ms warm. Slow machines (Atom Z8350): up to 2 s. Cap at 10 s.</p>
-<p>If this times out, <code>SetupController</code> throws <code>InvalidOperationException</code> and best-effort cleanup runs. Cause: usually a corrupt INF or DriverStore inconsistency &mdash; rerun <code>RemoveAllVirtualControllers</code> then <code>InstallDriver</code> to repair.</p>
+<p>If this times out, <code>SetupController</code> throws <code>InvalidOperationException</code> and best-effort cleanup runs. Cause: usually a corrupt INF or DriverStore inconsistency: rerun <code>RemoveAllVirtualControllers</code> then <code>InstallDriver</code> to repair.</p>
 <h3 id="gate-2-waitfordevicestarted-5-s">Gate 2: <code>WaitForDeviceStarted</code> (5 s)<a class="headerlink" href="#gate-2-waitfordevicestarted-5-s" title="Permanent link">&para;</a></h3>
 <p>Polls the HID child's <code>DEVPKEY_Device_DevNodeStatus</code> for <code>DN_STARTED</code>. The driver isn't fully bound until this status flips. Typical: &lt;50 ms warm. Cap at 5 s.</p>
-<p>Without this gate, an immediate <code>SubmitState</code> after <code>CreateController</code> returns could land before the driver has opened the shared section &mdash; the seqno never increments and no input reaches the consumer.</p>
+<p>Without this gate, an immediate <code>SubmitState</code> after <code>CreateController</code> returns could land before the driver has opened the shared section: the seqno never increments and no input reaches the consumer.</p>
 <h3 id="gate-3-waitforxinputslotclaim-500-ms-post-v132">Gate 3: <code>WaitForXInputSlotClaim</code> (500 ms post-v1.3.2)<a class="headerlink" href="#gate-3-waitforxinputslotclaim-500-ms-post-v132" title="Permanent link">&para;</a></h3>
 <p>For Xbox-family profiles only. Polls <code>XInputGetState</code> to confirm the controller has been assigned an XInput slot.</p>
 <p>This gate <strong>was 15 s pre-v1.3.2</strong> and was the dominant cost. Distribution is bimodal:</p>
@@ -2324,8 +2324,8 @@
 <li>The subsequent <code>/add-driver</code> then sees package-already-present + "Needed repairing" and <strong>restores the stale bytes from <code>pnputil</code>'s internal cache</strong> rather than installing the fresh extracted binary.</li>
 <li>Net effect: every launch since the first one serves the stale driver forever, the v1.1.5 self-heal code never actually loads, input keeps hanging, and the only escape is manual <code>devcon</code> + TrustedInstaller <code>takeown</code> of the FileRepository subdirectory (which users do not have).</li>
 </ul>
-<p>Running the sweep here FIRST removes the bound devices via <code>devcon</code> (returning "Removed on reboot" is sufficient &mdash; the INF becomes eligible for package deletion immediately), so <code>FullDeploy</code>'s <code>/delete-driver</code> call actually succeeds and the fresh extracted binary replaces the DriverStore contents.</p>
-<p>The same call is exposed publicly as <code>HMContext.RemoveAllVirtualControllers()</code> for consumers who want explicit defensive cleanup (e.g. on app exit). In normal operation, individual <code>HMController.Dispose()</code> is sufficient &mdash; there is no per-process cleanup obligation on shutdown.</p>
+<p>Running the sweep here FIRST removes the bound devices via <code>devcon</code> (returning "Removed on reboot" is sufficient: the INF becomes eligible for package deletion immediately), so <code>FullDeploy</code>'s <code>/delete-driver</code> call actually succeeds and the fresh extracted binary replaces the DriverStore contents.</p>
+<p>The same call is exposed publicly as <code>HMContext.RemoveAllVirtualControllers()</code> for consumers who want explicit defensive cleanup (e.g. on app exit). In normal operation, individual <code>HMController.Dispose()</code> is sufficient: there is no per-process cleanup obligation on shutdown.</p>
 <hr />
 <h2 id="dispose-teardowncontroller-orchestration">Dispose: <code>TeardownController</code> orchestration<a class="headerlink" href="#dispose-teardowncontroller-orchestration" title="Permanent link">&para;</a></h2>
 <p><code>HMController.Dispose()</code> runs <code>Internal.DeviceOrchestrator.TeardownController(index, instanceId)</code>. Sequence:</p>
@@ -2344,10 +2344,10 @@
 <p>For SwD-enumerated devices, step 4 uses the SwD-first ordering (see below). For plain HID devices, <code>DIF_REMOVE</code> and the per-device removal wait are sufficient.</p>
 <hr />
 <h2 id="swd-first-removal-ordering-v131">SwD-first removal ordering (v1.3.1)<a class="headerlink" href="#swd-first-removal-ordering-v131" title="Permanent link">&para;</a></h2>
-<p>Two of the three architecture groups own a SwDevice-enumerated parent: Xbox 360 Wired (XUSB companion is SwD) and Xbox Series BT (main HID is SwD). SwDevice lifetimes are anchored to the <code>HSWDEVICE</code> handle, <strong>not</strong> the PnP devnode &mdash; children of a SwD parent cannot fully unwind their query-remove cascade until the parent's handle drops its kernel refcount.</p>
+<p>Two of the three architecture groups own a SwDevice-enumerated parent: Xbox 360 Wired (XUSB companion is SwD) and Xbox Series BT (main HID is SwD). SwDevice lifetimes are anchored to the <code>HSWDEVICE</code> handle, <strong>not</strong> the PnP devnode: children of a SwD parent cannot fully unwind their query-remove cascade until the parent's handle drops its kernel refcount.</p>
 <h3 id="pre-v131-hid-children-first-broken">Pre-v1.3.1: HID-children-first (broken)<a class="headerlink" href="#pre-v131-hid-children-first-broken" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>1. DIF_REMOVE on every HID child first
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>2. WaitForDeviceRemoval per child (2,000 ms timeout each — always times out
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>2. WaitForDeviceRemoval per child (2,000 ms timeout each: always times out
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>   because the parent is still holding the lifetime lock)
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>3. Finally close the SwDevice handle
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
@@ -2359,12 +2359,12 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>1. Close the SwDevice handle FIRST via hmswd.exe remove
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>2. Block on CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED for the parent
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>3. Mop up any HID children that survived the cascade
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>   (usually zero — the SwD parent&#39;s release fires its children&#39;s removal in one cascade)
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>   (usually zero: the SwD parent&#39;s release fires its children&#39;s removal in one cascade)
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Net cost: ~135 ms for Xbox 360 Wired
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>          ~500 ms for Xbox Series BT
 </code></pre></div>
-<p><code>CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED</code> is the kernel-side guarantee that the cascade has propagated, not just that the handle closed. Critical for callers that immediately follow with a recreate (live profile switch &mdash; the new controller's <code>SetupController</code> would race the old one's cleanup if we returned too early).</p>
+<p><code>CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED</code> is the kernel-side guarantee that the cascade has propagated, not just that the handle closed. Critical for callers that immediately follow with a recreate (live profile switch: the new controller's <code>SetupController</code> would race the old one's cleanup if we returned too early).</p>
 <p>A second optimization in the same change: when a HIDMAESTRO sweep walks registry entries that exist only as <code>PHANTOM</code> (registry residue from prior sessions, no live devnode), skip the <code>hmswd.exe</code> <code>SwDeviceCreate</code>-reconnect roundtrip entirely. Saves ~50-75 ms per stale entry and prevents creep across same-process recreation cycles.</p>
 <hr />
 <h2 id="per-archetype-dispose-latency">Per-archetype dispose latency<a class="headerlink" href="#per-archetype-dispose-latency" title="Permanent link">&para;</a></h2>
@@ -2439,11 +2439,11 @@
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>2. Parallel.ForEach: each controller&#39;s Dispose runs concurrently
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>   (each takes its own per-controller lock; no contention)
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>3. Set _batchDisposing = false
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>4. RemoveOrphanHidChildrenBatch — single sweep
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>4. RemoveOrphanHidChildrenBatch: single sweep
 </code></pre></div>
 <p>The per-controller <code>Dispose</code> checks <code>_batchDisposing</code>; when set, it skips the per-controller orphan sweep that would otherwise run inside each <code>TeardownController</code>.</p>
 <p>For 4-6 mixed controllers the cleanup typically completes in 1.5-4 s end to end.</p>
-<p><code>HMContext.Dispose()</code> itself uses an equivalent path internally &mdash; consumers don't need to call <code>DisposeControllersInParallel</code> explicitly unless they want the per-controller wall-clock telemetry.</p>
+<p><code>HMContext.Dispose()</code> itself uses an equivalent path internally: consumers don't need to call <code>DisposeControllersInParallel</code> explicitly unless they want the per-controller wall-clock telemetry.</p>
 <h3 id="single-element-empty-input">Single-element / empty input<a class="headerlink" href="#single-element-empty-input" title="Permanent link">&para;</a></h3>
 <p>Single-element inputs degrade to a plain serial dispose (no parallelism overhead). Empty inputs are no-ops. The implementation:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">Length</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
@@ -2458,7 +2458,7 @@
 </code></pre></div>
 <hr />
 <h2 id="live-profile-switch">Live profile switch<a class="headerlink" href="#live-profile-switch" title="Permanent link">&para;</a></h2>
-<p>Switching a slot's profile mid-session (<code>HMController.Dispose()</code> then <code>HMContext.CreateControllerAt(index, newProfile)</code>) is <strong>synchronous</strong> by design. Slot-allocation determinism requires the old devnode fully gone before the new one is created &mdash; otherwise the new device would race the old one's removal and might land in a slot the old one hasn't released yet.</p>
+<p>Switching a slot's profile mid-session (<code>HMController.Dispose()</code> then <code>HMContext.CreateControllerAt(index, newProfile)</code>) is <strong>synchronous</strong> by design. Slot-allocation determinism requires the old devnode fully gone before the new one is created: otherwise the new device would race the old one's removal and might land in a slot the old one hasn't released yet.</p>
 <p>Round-trip latencies are the dispose + create numbers above. PadForge's user-perceived "switch slot 1 from DualSense to Xbox 360 Wired" is ~850 ms post-v1.3.x.</p>
 <hr />
 <h2 id="hot-plug-api">Hot-plug API<a class="headerlink" href="#hot-plug-api" title="Permanent link">&para;</a></h2>
@@ -2471,13 +2471,13 @@
 <a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="kt">var</span><span class="w"> </span><span class="n">ctrl1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;xbox-360-wired&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">);</span>
 <a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="kt">var</span><span class="w"> </span><span class="n">ctrl2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;switch-pro&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">);</span>
 <a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
-<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">ctrl1</span><span class="p">.</span><span class="n">Dispose</span><span class="p">();</span><span class="w">    </span><span class="c1">// dispose middle one — others stay live, slots renumber</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">ctrl1</span><span class="p">.</span><span class="n">Dispose</span><span class="p">();</span><span class="w">    </span><span class="c1">// dispose middle one: others stay live, slots renumber</span>
 <a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="c1">// ctrl0 still works at index 0</span>
 <a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="c1">// ctrl2 still works at index 2</span>
 <a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="c1">// indices 1 is free; next CreateController fills it</span>
 </code></pre></div>
-<p>Slot indices don't compact automatically. If you want sparse-to-dense compaction (after disposing index 1, want index 2 to become index 1), you have to dispose index 2 and recreate at index 1. The XInput user-index allocator handles this on its side independently &mdash; an XInput slot-N controller becoming slot-1 means a brief disconnect/reconnect at the XInput level for slot 2 consumers.</p>
-<p>PadForge does this compaction explicitly via the "bubble-up cascade" in its Step 5 InputManager &mdash; see PadForge's wiki for the consumer-side implementation. The SDK doesn't enforce a particular scheme.</p>
+<p>Slot indices don't compact automatically. If you want sparse-to-dense compaction (after disposing index 1, want index 2 to become index 1), you have to dispose index 2 and recreate at index 1. The XInput user-index allocator handles this on its side independently: an XInput slot-N controller becoming slot-1 means a brief disconnect/reconnect at the XInput level for slot 2 consumers.</p>
+<p>PadForge does this compaction explicitly via the "bubble-up cascade" in its Step 5 InputManager: see PadForge's wiki for the consumer-side implementation. The SDK doesn't enforce a particular scheme.</p>
 <hr />
 <h2 id="force-kill-recovery">Force-kill recovery<a class="headerlink" href="#force-kill-recovery" title="Permanent link">&para;</a></h2>
 <p>If the consumer process crashes without disposing controllers, the next process's <code>HMContext.InstallDriver</code> calls <code>RemoveAllVirtualControllers</code> first thing as a self-heal. Typically:</p>
@@ -2500,7 +2500,7 @@
 <p>For deliberate cleanup (e.g. uninstalling HIDMaestro entirely), use:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>HIDMaestroTest.exe cleanup
 </code></pre></div>
-<p>Which calls <code>RemoveAllVirtualControllers</code> + driver package uninstall. Don't reach for raw <code>pnputil /remove-device</code> or <code>devcon</code> &mdash; the cleanup command is the right interface.</p>
+<p>Which calls <code>RemoveAllVirtualControllers</code> + driver package uninstall. Don't reach for raw <code>pnputil /remove-device</code> or <code>devcon</code>: the cleanup command is the right interface.</p>
 <hr />
 <h2 id="anti-pattern-pnputil-delete-driver-uninstall-force-on-the-active-driver">Anti-pattern: <code>pnputil /delete-driver /uninstall /force</code> on the active driver<a class="headerlink" href="#anti-pattern-pnputil-delete-driver-uninstall-force-on-the-active-driver" title="Permanent link">&para;</a></h2>
 <p><strong>Don't.</strong> Leaves devices in Code 14 ("restart required"). Always:</p>
@@ -2508,7 +2508,7 @@
 <li><code>HIDMaestroTest cleanup</code> (or <code>HMContext.RemoveAllVirtualControllers()</code>) FIRST to evict the devices.</li>
 <li>Plain <code>pnputil /delete-driver</code> (no <code>/uninstall</code>) if a package delete is even needed.</li>
 </ol>
-<p><code>InstallDriver</code> is <strong>idempotent across version bumps</strong> &mdash; manual uninstall before reinstall is almost never the right move.</p>
+<p><code>InstallDriver</code> is <strong>idempotent across version bumps</strong>: manual uninstall before reinstall is almost never the right move.</p>
 <p>The cleanup command does the right thing because:</p>
 <ul>
 <li>It walks every HIDMaestro PnP entry by enumerator name (<code>SWD\HIDMAESTRO*</code>, <code>ROOT\VID_*&amp;PID_*&amp;IG_00</code>).</li>
@@ -2519,12 +2519,12 @@
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../sdk/sdk-reference/">SDK Reference</a> &mdash; the public API that drives all of this.</li>
-<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a> &mdash; the per-controller PnP machinery.</li>
-<li><a href="../multi-controller/">Multi-Controller</a> &mdash; multi-controller create / dispose patterns.</li>
-<li><a href="../driver-install-and-signing/">Driver Install and Signing</a> &mdash; the InstallDriver step.</li>
-<li><a href="../testing-and-verification/">Testing and Verification</a> &mdash; the regression battery that validates this end-to-end.</li>
-<li><a href="../../troubleshooting/">Troubleshooting</a> &mdash; lifecycle-related symptoms and fixes.</li>
+<li><a href="../../sdk/sdk-reference/">SDK Reference</a>: the public API that drives all of this.</li>
+<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a>: the per-controller PnP machinery.</li>
+<li><a href="../multi-controller/">Multi-Controller</a>: multi-controller create / dispose patterns.</li>
+<li><a href="../driver-install-and-signing/">Driver Install and Signing</a>: the InstallDriver step.</li>
+<li><a href="../testing-and-verification/">Testing and Verification</a>: the regression battery that validates this end-to-end.</li>
+<li><a href="../../troubleshooting/">Troubleshooting</a>: lifecycle-related symptoms and fixes.</li>
 </ul>
 
 

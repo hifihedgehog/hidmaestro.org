@@ -1,4 +1,4 @@
-# HID Descriptor Builder
+﻿# HID Descriptor Builder
 
 `HidDescriptorBuilder` is the fluent API for constructing valid HID report descriptors from semantic building blocks. The user describes what they want (sticks, buttons, hat, triggers, FFB) and the builder emits the correct HID descriptor bytes. No hex authoring, no byte counting, no aligning report sizes by hand.
 
@@ -55,7 +55,7 @@ Adds a 2-axis stick (X+Y or Rx+Ry) inside a Physical collection.
 | `"Left"` or `"L"` | X, Y | 0x30, 0x31 |
 | (anything else)   | Rx, Ry | 0x33, 0x34 |
 
-`bits` is the axis resolution. 8 produces `[0..255]` ranges; 16 produces `[0..65535]`. Other values work but should match the descriptor's wire alignment &mdash; the builder doesn't enforce byte-alignment on stick bits because two sticks together always sum to a byte multiple.
+`bits` is the axis resolution. 8 produces `[0..255]` ranges; 16 produces `[0..65535]`. Other values work but should match the descriptor's wire alignment: the builder doesn't enforce byte-alignment on stick bits because two sticks together always sum to a byte multiple.
 
 The Physical collection wraps the two axes per HID spec convention. Logical Min is 0; Logical Max is `(1 << bits) - 1` (encoded as 1-byte for 8-bit, 4-byte for 16-bit per HID Item rules).
 
@@ -81,7 +81,7 @@ Adds a single trigger axis.
 
 The reason is Chromium's RawInput parser. When the report has unaligned trigger bits, HIDMaestro emits a Const padding item to byte-align the report; that Const item surfaces as `axes[N] = 1227133568` (a literal phantom value tied to the const-pad bit pattern). See issue #6.
 
-For separate triggers on Xbox profiles, the catalog uses 8-bit Vx/Vy velocity usages instead of declaring Z + Rz directly &mdash; that's the velocity-usage trick documented in [Cross-API Coverage](../reference/cross-api-coverage.md). Vx and Vy are usages 0x40 and 0x41 on the Generic Desktop Page (HID Usage Tables 1.5 §4 &mdash; download from [usb.org/document-library](https://www.usb.org/document-library)). Custom profiles wanting the same behavior bypass `AddTrigger` and emit Vx/Vy via `AddRaw`. See [Custom Profiles](../profiles/custom-profiles.md).
+For separate triggers on Xbox profiles, the catalog uses 8-bit Vx/Vy velocity usages instead of declaring Z + Rz directly. That is the velocity-usage trick documented in [Cross-API Coverage](../reference/cross-api-coverage.md). Vx and Vy are usages 0x40 and 0x41 on the Generic Desktop Page (HID Usage Tables 1.5 §4, downloadable from [usb.org/document-library](https://www.usb.org/document-library)). Custom profiles wanting the same behavior bypass `AddTrigger` and emit Vx/Vy via `AddRaw`. See [Custom Profiles](../profiles/custom-profiles.md).
 
 ---
 
@@ -108,7 +108,7 @@ Adds an analog axis identified by HID usage. Covers everything outside the stand
 .AddButtons(20)
 ```
 
-`bits` must be a multiple of 8 &mdash; same Chromium-phantom-axis constraint `AddTrigger` enforces. `logicalMin` defaults to `0` and `logicalMax` defaults to `(2^bits) - 1` (the typical convention for unidirectional axes). Pass an explicit signed range when the axis is centered (e.g. a 16-bit steering wheel as `[-32768, 32767]`).
+`bits` must be a multiple of 8: same Chromium-phantom-axis constraint `AddTrigger` enforces. `logicalMin` defaults to `0` and `logicalMax` defaults to `(2^bits) - 1` (the typical convention for unidirectional axes). Pass an explicit signed range when the axis is centered (e.g. a 16-bit steering wheel as `[-32768, 32767]`).
 
 Whatever `HMAxis` value you declare becomes addressable at runtime via `state.Axes[axis] = value`. `HMProfile.AvailableAxes` enumerates every `HMAxis` declared in the profile so consumer UIs can render the right axis-mapping widget per profile without hardcoding which usages a given device exposes. See [SDK Reference](sdk-reference.md) for the consumer-side surface.
 
@@ -126,7 +126,7 @@ Adds N buttons (Button Page, Usages 1..N, 1 bit each).
 .AddButtons(16)    // 16 declared, no rounding
 ```
 
-The declared Report Count is **rounded up to the next multiple of 8** with extra "dummy" buttons that the caller never sets. This eliminates the Const-pad-as-phantom-axis problem `AddTrigger` warns about &mdash; absorbing the pad as additional buttons keeps the report byte-aligned without introducing a Const Input item.
+The declared Report Count is **rounded up to the next multiple of 8** with extra "dummy" buttons that the caller never sets. This eliminates the Const-pad-as-phantom-axis problem `AddTrigger` warns about: absorbing the pad as additional buttons keeps the report byte-aligned without introducing a Const Input item.
 
 The historical "AXIS 9 = 1227133568" symptom in the W3C Gamepad API (surfaced in Chromium's RawInput backend per issue #6) was a trailing Const Input item the descriptor needed for byte alignment; rounded-up button counts make the Const item unnecessary.
 
@@ -170,7 +170,7 @@ Appends the HID PID 1.0 force-feedback report block to the descriptor (specifica
 
 ```csharp
 var desc = new HidDescriptorBuilder()
-    .Joystick()                         // REQUIRED — Gamepad throws
+    .Joystick()                         // REQUIRED: Gamepad throws
     .AddStick("Left", 16).AddStick("Right", 16)
     .AddTrigger("Left", 8).AddTrigger("Right", 8)
     .AddButtons(10).AddHat()
@@ -200,13 +200,13 @@ var desc = new HidDescriptorBuilder()
 
 The [vJoy reference descriptor](https://github.com/njz3/vJoy/blob/master/driver/sys/hidReportDescFfb.h) (`hidReportDescFfb.h`) declares **four** sibling Feature reports: Create New Effect (0x11), Block Load (0x12), PID Pool (0x13), PID State (0x14). With HIDMaestro's UMDF2 shared-section transport, the four-feature variant causes `pid.dll` to AV inside `PID_EffectOperation+0x52` the first time the consumer calls `CreateEffect` via DirectInput8 / SharpDX ([issue #16](https://github.com/hifihedgehog/HIDMaestro/issues/16)). The crash reproduces with the exact bytes vJoy ships.
 
-The block emitted here drops 0x12, 0x13, 0x14 from the Feature side and serves them via shared-section `HidD_GetFeature` handling in the driver instead &mdash; the only configuration that does not AV. See [Force Feedback](force-feedback.md) for the architecture.
+The block emitted here drops 0x12, 0x13, 0x14 from the Feature side and serves them via shared-section `HidD_GetFeature` handling in the driver instead: the only configuration that does not AV. See [Force Feedback](force-feedback.md) for the architecture.
 
-**Don't add additional Feature reports inside the same Application Collection.** If you need extra metadata reachable via `HidD_GetFeature`, expose it through `HMController.PublishPidPool` / `PublishPidBlockLoad` / `PublishPidState` &mdash; those are served by the driver from a separate shared-section path that doesn't touch `pid.dll`'s preparsed-data parser.
+**Don't add additional Feature reports inside the same Application Collection.** If you need extra metadata reachable via `HidD_GetFeature`, expose it through `HMController.PublishPidPool` / `PublishPidBlockLoad` / `PublishPidState`: those are served by the driver from a separate shared-section path that doesn't touch `pid.dll`'s preparsed-data parser.
 
 ### Auto-injected Report ID 0x01
 
-HID validation rejects a descriptor that mixes untagged input items with the FFB block's tagged Output reports. If no Report ID has been emitted before `AddPidFfbBlock` is called, the method auto-injects `85 01` (Report ID 0x01) **immediately after the Application Collection open** so every preceding input item picks up the tag. The total wire input report size is then `InputReportByteSize + 1` &mdash; `HMProfileBuilder.FromDescriptorBuilder` derives this automatically.
+HID validation rejects a descriptor that mixes untagged input items with the FFB block's tagged Output reports. If no Report ID has been emitted before `AddPidFfbBlock` is called, the method auto-injects `85 01` (Report ID 0x01) **immediately after the Application Collection open** so every preceding input item picks up the tag. The total wire input report size is then `InputReportByteSize + 1`: `HMProfileBuilder.FromDescriptorBuilder` derives this automatically.
 
 If you already emitted a Report ID via `AddRaw` or by manually composing items, the injection is skipped and your existing tag wins.
 
@@ -232,13 +232,13 @@ The exact bytes `AddPidFfbBlock` appends, exposed as a static byte array for pro
 .AddRaw(new byte[] { 0x05, 0x01, 0x09, 0x40, 0x15, 0x00, ... })
 ```
 
-Signature is `AddRaw(byte[] bytes)` &mdash; not `params byte[]` &mdash; so callers pass an explicit array. Appends arbitrary HID descriptor bytes without validation. For advanced cases not covered by the semantic methods:
+Signature is `AddRaw(byte[] bytes)`, not `params byte[]`, so callers pass an explicit array. Appends arbitrary HID descriptor bytes without validation. For advanced cases not covered by the semantic methods:
 
 - **Vx / Vy velocity usages** for separate-trigger Xbox profiles. Append the bytes for Vx (Generic Desktop Page 0x01, Usage 0x40) and Vy (Usage 0x41) in the order the descriptor needs them.
 - **Vendor-page items** for proprietary input/output/feature reports.
 - **Specific descriptor bytes copied from a real device** when you want bit-identical wire shape rather than logically equivalent.
 
-The builder doesn't track what `AddRaw` adds for purposes of `TotalInputBits` &mdash; if you append input items via raw bytes, `InputReportByteSize` and `FromDescriptorBuilder`'s wire-size derivation may be off. Use either fully-fluent or fully-raw construction; mixing requires manual `InputReportSize`.
+The builder doesn't track what `AddRaw` adds for purposes of `TotalInputBits`: if you append input items via raw bytes, `InputReportByteSize` and `FromDescriptorBuilder`'s wire-size derivation may be off. Use either fully-fluent or fully-raw construction; mixing requires manual `InputReportSize`.
 
 ---
 
@@ -308,33 +308,33 @@ ctrl.SubmitState(new HMGamepadState { HatDegrees = 22.5f });
 
 | Method | Checks | Throws |
 |--------|--------|--------|
-| `Gamepad()` | None | &mdash; |
-| `Joystick()` | None | &mdash; |
-| `AddStick(name, bits)` | None &mdash; bits not enforced byte-aligned (two-stick always rounds) | &mdash; |
+| `Gamepad()` | None | n/a |
+| `Joystick()` | None | n/a |
+| `AddStick(name, bits)` | None. Bits not enforced byte-aligned (two-stick always rounds) | n/a |
 | `AddTrigger(name, bits)` | `bits % 8 == 0` | `ArgumentException` |
-| `AddButtons(count)` | None &mdash; rounds up internally | &mdash; |
+| `AddButtons(count)` | None. Rounds up internally | n/a |
 | `AddHat(positions)` | `positions >= 4` | `ArgumentOutOfRangeException` |
 | `AddPidFfbBlock()` | Current TLC must not be Gamepad | `InvalidOperationException` |
-| `AddRaw(bytes)` | None &mdash; no validation by design | &mdash; |
-| `Build()` | None &mdash; auto-closes Application Collection | &mdash; |
+| `AddRaw(bytes)` | None, by design | n/a |
+| `Build()` | None. Auto-closes the Application Collection | n/a |
 
 ---
 
 ## See also
 
-- [SDK Reference](sdk-reference.md) &mdash; `HMProfileBuilder.FromDescriptorBuilder` automatic `+1` wire-size derivation.
-- [Custom Profiles](../profiles/custom-profiles.md) &mdash; full clone / build / spoof patterns using this builder.
-- [Force Feedback](force-feedback.md) &mdash; what the FFB block does at runtime, descriptor authoring requirements, and the full publish/read loop.
-- [Profile System](../profiles/profile-system.md) &mdash; how the JSON `descriptor` field maps to the bytes this builder produces.
+- [SDK Reference](sdk-reference.md): `HMProfileBuilder.FromDescriptorBuilder` automatic `+1` wire-size derivation.
+- [Custom Profiles](../profiles/custom-profiles.md): full clone / build / spoof patterns using this builder.
+- [Force Feedback](force-feedback.md): what the FFB block does at runtime, descriptor authoring requirements, and the full publish/read loop.
+- [Profile System](../profiles/profile-system.md): how the JSON `descriptor` field maps to the bytes this builder produces.
 
 ## References
 
 USB-IF specs are at [usb.org/document-library](https://www.usb.org/document-library); search by the exact title.
 
-- USB HID 1.11 specification &mdash; Item Format encoding, report descriptor structure.
-- HID Usage Tables (HUT) 1.5 &mdash; Generic Desktop usages (X/Y/Z/Rx/Ry/Rz/Vx/Vy/Hat) and the Joystick (0x04) / Gamepad (0x05) application TLCs.
-- HID PID 1.0 specification &mdash; the descriptor block `AddPidFfbBlock` emits.
-- vJoy reference descriptor &mdash; in [github.com/njz3/vJoy](https://github.com/njz3/vJoy) under `driver/sys/hidReportDescFfb.h`. The four-feature variant that triggers the `pid.dll` AV.
-- [HIDMaestro issue #16](https://github.com/hifihedgehog/HIDMaestro/issues/16) &mdash; the empirical pid.dll AV report.
-- [HIDMaestro issue #6](https://github.com/hifihedgehog/HIDMaestro/issues/6) &mdash; the Chromium phantom-axis trap that motivates `AddButtons` round-up and `AddTrigger` byte-alignment validation.
-- [References](../reference/references.md) &mdash; full source bibliography.
+- USB HID 1.11 specification: Item Format encoding, report descriptor structure.
+- HID Usage Tables (HUT) 1.5: Generic Desktop usages (X/Y/Z/Rx/Ry/Rz/Vx/Vy/Hat) and the Joystick (0x04) / Gamepad (0x05) application TLCs.
+- HID PID 1.0 specification: the descriptor block `AddPidFfbBlock` emits.
+- vJoy reference descriptor: in [github.com/njz3/vJoy](https://github.com/njz3/vJoy) under `driver/sys/hidReportDescFfb.h`. The four-feature variant that triggers the `pid.dll` AV.
+- [HIDMaestro issue #16](https://github.com/hifihedgehog/HIDMaestro/issues/16): the empirical pid.dll AV report.
+- [HIDMaestro issue #6](https://github.com/hifihedgehog/HIDMaestro/issues/6): the Chromium phantom-axis trap that motivates `AddButtons` round-up and `AddTrigger` byte-alignment validation.
+- [References](../reference/references.md): full source bibliography.

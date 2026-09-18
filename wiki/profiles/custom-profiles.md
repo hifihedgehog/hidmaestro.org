@@ -1,4 +1,4 @@
-# Custom Profiles
+﻿# Custom Profiles
 
 Three patterns for building controllers that aren't in the 231-profile catalog: clone-and-modify, build-from-scratch, and spoof. All three use `HMProfileBuilder` plus optionally `HidDescriptorBuilder`. Resulting profiles deploy through the same `HMContext.CreateController` path as catalog entries with no special-casing.
 
@@ -22,7 +22,7 @@ var modded = new HMProfileBuilder()
 using var ctrl = ctx.CreateController(modded);
 ```
 
-Windows still sees DualSense (VID/PID unchanged), Steam's controller database still matches, but `joy.cpl` and DirectInput show "My Custom Controller". For a `joy.cpl` label change without modifying the profile, see [OEM Name Override](../sdk/oem-name-override.md) &mdash; that's the right tool when the VID/PID can't change.
+Windows still sees DualSense (VID/PID unchanged), Steam's controller database still matches, but `joy.cpl` and DirectInput show "My Custom Controller". For a `joy.cpl` label change without modifying the profile, see [OEM Name Override](../sdk/oem-name-override.md): that's the right tool when the VID/PID can't change.
 
 ### Use case B: extra button on an existing controller
 
@@ -44,7 +44,7 @@ var custom = new HMProfileBuilder()
 using var ctrl = ctx.CreateController(custom);
 ```
 
-VID/PID and product string are preserved (Windows / Steam / games still see "DualSense"), but the descriptor declares 16 buttons instead of 15. The extra bit is real wire data &mdash; submit `HMButton.Touchpad` (bit 11) or any custom bit and the consumer reads it via DirectInput / SDL3 / Browser like any other button.
+VID/PID and product string are preserved (Windows / Steam / games still see "DualSense"), but the descriptor declares 16 buttons instead of 15. The extra bit is real wire data: submit `HMButton.Touchpad` (bit 11) or any custom bit and the consumer reads it via DirectInput / SDL3 / Browser like any other button.
 
 This pattern works for axis count, trigger resolution, hat positions, and FFB declarations. Whatever the descriptor says, that's what consumers see.
 
@@ -64,7 +64,7 @@ Less useful in practice. Most consumers (Windows, Steam, games) match by VID:PID
 
 ## Pattern 2: Build from scratch
 
-Define a controller that doesn't exist anywhere &mdash; arbitrary VID/PID, custom descriptor, custom product string. Best when emulating a niche device or constructing a custom-shaped controller (16-axis flight panel, DJ deck with 8 sliders + 4 jog wheels).
+Define a controller that doesn't exist anywhere: arbitrary VID/PID, custom descriptor, custom product string. Best when emulating a niche device or constructing a custom-shaped controller (16-axis flight panel, DJ deck with 8 sliders + 4 jog wheels).
 
 ### Custom flight stick with 16-position hat
 
@@ -86,7 +86,7 @@ var stick = new HMProfileBuilder()
     .Build();
 
 using var ctx = new HMContext();
-ctx.LoadDefaultProfiles();   // optional — gives us catalog access too
+ctx.LoadDefaultProfiles();   // optional: gives us catalog access too
 ctx.InstallDriver();
 using var ctrl = ctx.CreateController(stick);
 
@@ -95,11 +95,11 @@ ctrl.SubmitState(new HMGamepadState { HatDegrees = 22.5f });    // ENE
 ctrl.SubmitState(new HMGamepadState { HatHundredths = 11250 }); // 112.5° = ESE
 ```
 
-`FromDescriptorBuilder` derives `InputReportSize` correctly &mdash; including the +1 byte for the Report ID prefix that `AddPidFfbBlock` would inject if you called it. See [HID Descriptor Builder](../sdk/hid-descriptor-builder.md).
+`FromDescriptorBuilder` derives `InputReportSize` correctly: including the +1 byte for the Report ID prefix that `AddPidFfbBlock` would inject if you called it. See [HID Descriptor Builder](../sdk/hid-descriptor-builder.md).
 
 ### More than 4 sticks + 2 triggers
 
-Profiles whose descriptor declares analog axes beyond the standard 4 sticks + 2 triggers &mdash; throttle quadrants, racing wheels with separate brake/throttle/clutch pedals, HOTAS systems with rudder pedals &mdash; declare each by HID usage with `AddAxis` and consumers drive them through the same `state.Axes` dict as everything else.
+Profiles whose descriptor declares analog axes beyond the standard 4 sticks + 2 triggers (throttle quadrants, racing wheels with separate brake/throttle/clutch pedals, HOTAS systems with rudder pedals) declare each by HID usage with `AddAxis` and consumers drive them through the same `state.Axes` dict as everything else.
 
 ```csharp
 var quadrant = new HMProfileBuilder()
@@ -122,8 +122,8 @@ using var ctrl = ctx.CreateController(quadrant);
 // Discovery: list every axis the descriptor exposes
 foreach (var a in quadrant.AvailableAxes) Console.WriteLine($"  {a}");
 
-// Drive every axis in one frame. Allocate the dictionary once and reuse —
-// null on the hot path is free (encoder skips the dict walk).
+// Drive every axis in one frame. Allocate the dictionary once and reuse it.
+// Null on the hot path is free (the encoder skips the dict walk).
 var axes = new Dictionary<HMAxis, float>
 {
     [HMAxis.X]        = 0.55f,   // stick X, slightly right of center
@@ -136,7 +136,7 @@ var axes = new Dictionary<HMAxis, float>
 ctrl.SubmitState(new HMGamepadState { Axes = axes });
 ```
 
-Every analog input lives in `state.Axes` keyed by `HMAxis` &mdash; sticks, triggers, sliders, pedals, simulation usages all share the same surface. Setting an entry whose usage isn't declared is a no-op, so consumer UIs can populate every axis they track without checking which ones the active profile actually exposes. See [SDK Reference](../sdk/sdk-reference.md) for the `HMAxis` enum and the full `Layout` schema for kind-aware discovery.
+Every analog input lives in `state.Axes` keyed by `HMAxis`: sticks, triggers, sliders, pedals, simulation usages all share the same surface. Setting an entry whose usage isn't declared is a no-op, so consumer UIs can populate every axis they track without checking which ones the active profile actually exposes. See [SDK Reference](../sdk/sdk-reference.md) for the `HMAxis` enum and the full `Layout` schema for kind-aware discovery.
 
 ### Adding force feedback
 
@@ -147,7 +147,7 @@ var ffbStick = new HMProfileBuilder()
     .ProductString("Custom FFB Stick")
     .Type("hotas")
     .FromDescriptorBuilder(new HidDescriptorBuilder()
-        .Joystick()                        // REQUIRED for FFB — Gamepad TLC AVs pid.dll
+        .Joystick()                        // REQUIRED for FFB: Gamepad TLC AVs pid.dll
         .AddStick("Left", 16)
         .AddTrigger("Left", 8).AddTrigger("Right", 8)
         .AddButtons(12).AddHat()
@@ -198,7 +198,7 @@ You know a real device's VID, PID, and product string but you don't own one. HID
 ### Manual spoof (when you have the descriptor bytes)
 
 ```csharp
-// "Mad Catz Pro Race FFB Wheel" — VID 0x0738, PID 0xCB29, descriptor known
+// "Mad Catz Pro Race FFB Wheel": VID 0x0738, PID 0xCB29, descriptor known
 var spoof = new HMProfileBuilder()
     .Id("madcatz-pro-race")
     .Vendor("Mad Catz")
@@ -211,7 +211,7 @@ var spoof = new HMProfileBuilder()
     .Build();
 ```
 
-Windows pre-populates a clone label for many VID:PIDs, which can show up in `joy.cpl` even with the spoof active &mdash; combine with `HMOemNameOverride.Set` if you need the joy.cpl label to match. See [OEM Name Override](../sdk/oem-name-override.md).
+Windows pre-populates a clone label for many VID:PIDs, which can show up in `joy.cpl` even with the spoof active: combine with `HMOemNameOverride.Set` if you need the joy.cpl label to match. See [OEM Name Override](../sdk/oem-name-override.md).
 
 ### Automatic spoof from a connected device
 
@@ -225,12 +225,12 @@ HMProfile extracted = HMDeviceExtractor.Extract(device);
 
 using var ctrl = ctx.CreateController(extracted);
 // Virtual now presents with the real device's descriptor, VID/PID,
-// product string — identical to what the physical device reports.
+// product string: identical to what the physical device reports.
 ```
 
 The descriptor is reconstructed from `HidD_GetPreparsedData` via the libusb/hidapi C# port. Output is logically equivalent to the original (same report IDs, field layouts, logical ranges, usage pages) but not byte-for-byte identical. For HIDMaestro's purpose (creating a virtual that behaves the same as the physical), logical equivalence is the right fidelity bar.
 
-For a UI-driven extract flow, use the standalone `HIDMaestroProfileExtractor.exe` &mdash; see [Profile Extractor](profile-extractor.md).
+For a UI-driven extract flow, use the standalone `HIDMaestroProfileExtractor.exe`: see [Profile Extractor](profile-extractor.md).
 
 ### Why spoof?
 
@@ -279,11 +279,11 @@ new HMProfileBuilder()
     .Build();
 ```
 
-Lands in architecture group 2 (non-xinputhid Xbox + XUSB companion). XInput, WGI vibration via XUSB companion, separate triggers in browser via Vx/Vy + GameInput registry mapping. Note: only specific PIDs in the `[Standard.NTamd64]` section of `hidmaestro_xusb.inf` get the dedicated PID-aliased install &mdash; new PIDs fall through to the generic `root\HIDMaestroXUSB` alias which still works but isn't bound to a specific VID:PID.
+Lands in architecture group 2 (non-xinputhid Xbox + XUSB companion). XInput, WGI vibration via XUSB companion, separate triggers in browser via Vx/Vy + GameInput registry mapping. Note: only specific PIDs in the `[Standard.NTamd64]` section of `hidmaestro_xusb.inf` get the dedicated PID-aliased install: new PIDs fall through to the generic `root\HIDMaestroXUSB` alias which still works but isn't bound to a specific VID:PID.
 
 ### Custom xinputhid-bound profile
 
-This requires hardware IDs that match `xinputhid.inf [GIP_Hid]`. Not portable to arbitrary VID:PIDs &mdash; xinputhid binds by hardware ID, and adding new IDs to `xinputhid.inf` requires modifying a Microsoft inbox driver (which we can't ship). Custom xinputhid profiles aren't supported in v1.3.4.
+This requires hardware IDs that match `xinputhid.inf [GIP_Hid]`. Not portable to arbitrary VID:PIDs: xinputhid binds by hardware ID, and adding new IDs to `xinputhid.inf` requires modifying a Microsoft inbox driver (which we can't ship). Custom xinputhid profiles aren't supported in v1.3.4.
 
 If you need 16-button + native XInput + WGI vibration over Bluetooth, use one of the catalog Xbox Series / One / Elite v2 BT profiles directly.
 
@@ -330,7 +330,7 @@ byte[] dualsenseRawReport = AssembleDualSenseInputReport(state, touchpad, gyro, 
 ctrl.SubmitRawReport(dualsenseRawReport);
 ```
 
-Pass **data bytes only** &mdash; the SDK prepends the Report ID automatically based on what the descriptor declared.
+Pass **data bytes only**: the SDK prepends the Report ID automatically based on what the descriptor declared.
 
 For a custom descriptor where you need bit-exact axis encoding:
 
@@ -368,16 +368,16 @@ HIDMaestroTest.exe emulate --profile-dir C:\my-profiles my-pad
 python scripts\verify.py --controllers 1
 ```
 
-The regression battery's S21-S23 scenarios cover runtime-built custom profiles end-to-end &mdash; create + idle, swap-cycle through Xbox / DualSense / Custom, and a real PadForge-shape consumer config. See [Testing and Verification](../reference/testing-and-verification.md).
+The regression battery's S21-S23 scenarios cover runtime-built custom profiles end-to-end: create + idle, swap-cycle through Xbox / DualSense / Custom, and a real PadForge-shape consumer config. See [Testing and Verification](../reference/testing-and-verification.md).
 
 ---
 
 ## See also
 
-- [SDK Reference](../sdk/sdk-reference.md) &mdash; `HMProfileBuilder` API and `FromDescriptorBuilder` mechanics.
-- [HID Descriptor Builder](../sdk/hid-descriptor-builder.md) &mdash; the fluent descriptor authoring API.
-- [Profile System](profile-system.md) &mdash; the JSON schema your custom profile maps to.
-- [Profile Extractor](profile-extractor.md) &mdash; the GUI tool for capturing profiles from real connected devices.
-- [Force Feedback](../sdk/force-feedback.md) &mdash; the FFB descriptor + publish/read protocol.
-- [OEM Name Override](../sdk/oem-name-override.md) &mdash; relabel `joy.cpl` without changing VID:PID.
-- [Contributing Profiles](contributing-profiles.md) &mdash; submit a custom profile back to the catalog.
+- [SDK Reference](../sdk/sdk-reference.md): `HMProfileBuilder` API and `FromDescriptorBuilder` mechanics.
+- [HID Descriptor Builder](../sdk/hid-descriptor-builder.md): the fluent descriptor authoring API.
+- [Profile System](profile-system.md): the JSON schema your custom profile maps to.
+- [Profile Extractor](profile-extractor.md): the GUI tool for capturing profiles from real connected devices.
+- [Force Feedback](../sdk/force-feedback.md): the FFB descriptor + publish/read protocol.
+- [OEM Name Override](../sdk/oem-name-override.md): relabel `joy.cpl` without changing VID:PID.
+- [Contributing Profiles](contributing-profiles.md): submit a custom profile back to the catalog.

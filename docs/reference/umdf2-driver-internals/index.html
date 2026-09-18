@@ -2271,7 +2271,7 @@
 <a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>└─────────────────────────────────────────────────────┘
 <a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>                        ↓
 <a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>┌─────────────────────────────────────────────────────┐
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│ HIDMaestro.dll (this driver) — UMDF2 lower filter    │  User mode
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│ HIDMaestro.dll (this driver): UMDF2 lower filter    │  User mode
 <a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│  EvtIoDeviceControl handles GET_DEVICE_DESCRIPTOR,   │
 <a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>│  GET_REPORT_DESCRIPTOR, READ_REPORT, GET_FEATURE,    │
 <a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>│  SET_OUTPUT_REPORT, GET_STRING.                      │
@@ -2285,7 +2285,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">_DEVICE_CONTEXT</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="n">WDFDEVICE</span><span class="w">   </span><span class="n">Device</span><span class="p">;</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="cm">/* HID descriptor — set by user-mode at create time, returned to HID class */</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="cm">/* HID descriptor: set by user-mode at create time, returned to HID class */</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">       </span><span class="n">ReportDescriptor</span><span class="p">[</span><span class="n">HIDMAESTRO_MAX_DESCRIPTOR_SIZE</span><span class="p">];</span><span class="w">   </span><span class="c1">// 4 KB</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ReportDescriptorSize</span><span class="p">;</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="n">HID_DESCRIPTOR</span><span class="w">          </span><span class="n">HidDescriptor</span><span class="p">;</span>
@@ -2306,8 +2306,8 @@
 <a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">SerialStringBytes</span><span class="p">;</span>
 <a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>
 <a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">    </span><span class="cm">/* Queues */</span>
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">DefaultQueue</span><span class="p">;</span><span class="w">     </span><span class="c1">// parallel — HID IOCTLs</span>
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">ManualQueue</span><span class="p">;</span><span class="w">      </span><span class="c1">// manual — pended READ_REPORT requests</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">DefaultQueue</span><span class="p">;</span><span class="w">     </span><span class="c1">// parallel: HID IOCTLs</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">ManualQueue</span><span class="p">;</span><span class="w">      </span><span class="c1">// manual: pended READ_REPORT requests</span>
 <a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>
 <a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">    </span><span class="cm">/* Locks */</span>
 <a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">    </span><span class="n">WDFWAITLOCK</span><span class="w"> </span><span class="n">InputLock</span><span class="p">;</span>
@@ -2447,11 +2447,11 @@
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="cp">#define IOCTL_UMDF_HID_SET_OUTPUT_REPORT  HID_CTL_CODE(22)  </span><span class="c1">// 0x000B005B</span>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="cp">#define IOCTL_UMDF_HID_GET_INPUT_REPORT   HID_CTL_CODE(23)  </span><span class="c1">// 0x000B005F</span>
 </code></pre></div>
-<p>Pre-v1.1.39, every <code>SetFeature</code> / <code>GetFeature</code> / <code>SetOutputReport</code> / <code>GetInputReport</code> handler we shipped since v1.1.35 compiled but <strong>never fired</strong> &mdash; the case statement constants didn't match the framework's <code>IoControlCode</code>, so dispatch fell through to the default and returned <code>STATUS_NOT_IMPLEMENTED</code>.</p>
+<p>Pre-v1.1.39, every <code>SetFeature</code> / <code>GetFeature</code> / <code>SetOutputReport</code> / <code>GetInputReport</code> handler we shipped since v1.1.35 compiled but <strong>never fired</strong>: the case statement constants didn't match the framework's <code>IoControlCode</code>, so dispatch fell through to the default and returned <code>STATUS_NOT_IMPLEMENTED</code>.</p>
 <p>The fix is to include <code>&lt;hidport.h&gt;</code> in <code>driver.h</code> and let the WDK header own the values. The <code>#ifndef</code> guards in <code>driver.h</code> are kept as a safety net but should never fire on a current WDK.</p>
 <hr />
 <h2 id="ioctl_hid_read_report-seqno-gate-manual-queue"><code>IOCTL_HID_READ_REPORT</code>: seqno gate + manual queue<a class="headerlink" href="#ioctl_hid_read_report-seqno-gate-manual-queue" title="Permanent link">&para;</a></h2>
-<p>The naive design completes every <code>IOCTL_HID_READ_REPORT</code> synchronously from the cached input buffer. That worked, but it caused HidClass.sys to hammer <code>READ_REPORT</code> in a tight loop because every call returned instantly with the same stale data &mdash; <strong>CPU saturation</strong> at scale (issue #3 root cause).</p>
+<p>The naive design completes every <code>IOCTL_HID_READ_REPORT</code> synchronously from the cached input buffer. That worked, but it caused HidClass.sys to hammer <code>READ_REPORT</code> in a tight loop because every call returned instantly with the same stale data: <strong>CPU saturation</strong> at scale (issue #3 root cause).</p>
 <p>The fix is a <strong>seqno gate</strong>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">NTSTATUS</span><span class="w"> </span><span class="nf">HandleReadReport</span><span class="p">(</span><span class="n">WDFREQUEST</span><span class="w"> </span><span class="n">Request</span><span class="p">,</span><span class="w"> </span><span class="n">PDEVICE_CONTEXT</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">{</span>
@@ -2462,7 +2462,7 @@
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">STATUS_SUCCESS</span><span class="p">;</span>
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="cm">/* No new data — pend in ManualQueue. The worker thread completes us</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="cm">/* No new data: pend in ManualQueue. The worker thread completes us</span>
 <a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="cm">       on the next ProcessSharedInput tick. */</span>
 <a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">WdfRequestForwardToIoQueue</span><span class="p">(</span><span class="n">Request</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">ManualQueue</span><span class="p">);</span>
 <a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="p">}</span>
@@ -2480,7 +2480,7 @@
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">LastDeliveredInputSeqNo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">SharedMemSeqNo</span><span class="p">;</span>
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="p">}</span>
 </code></pre></div>
-<p>Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on <code>WaitForMultipleObjects(StopEvent, InputDataEvent, 50ms)</code> &mdash; the 50 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers <code>SetEvent(InputDataEvent)</code> which wakes the worker immediately.</p>
+<p>Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on <code>WaitForMultipleObjects(StopEvent, InputDataEvent, 50ms)</code>: the 50 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers <code>SetEvent(InputDataEvent)</code> which wakes the worker immediately.</p>
 <hr />
 <h2 id="worker-thread">Worker thread<a class="headerlink" href="#worker-thread" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">DWORD</span><span class="w"> </span><span class="n">WINAPI</span><span class="w"> </span><span class="n">WorkerThread</span><span class="p">(</span><span class="n">LPVOID</span><span class="w"> </span><span class="n">lpParam</span><span class="p">)</span>
@@ -2499,9 +2499,9 @@
 <a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="p">}</span>
 </code></pre></div>
 <ul>
-<li><strong>WAIT_OBJECT_0</strong> &mdash; StopEvent fired; exit.</li>
-<li><strong>WAIT_OBJECT_0 + 1</strong> &mdash; InputDataEvent fired; new frame; process and complete pended requests.</li>
-<li><strong>WAIT_TIMEOUT</strong> &mdash; 50 ms safety tick; process opportunistically.</li>
+<li><strong>WAIT_OBJECT_0</strong>: StopEvent fired; exit.</li>
+<li><strong>WAIT_OBJECT_0 + 1</strong>: InputDataEvent fired; new frame; process and complete pended requests.</li>
+<li><strong>WAIT_TIMEOUT</strong>: 50 ms safety tick; process opportunistically.</li>
 </ul>
 <p>Created in <code>EvtDeviceAdd</code> and joined on stop. Cancellation via <code>SetEvent(StopEvent)</code> then <code>WaitForSingleObject(WorkerThread, 5000)</code>.</p>
 <hr />
@@ -2660,7 +2660,7 @@ is never asked for it.</p>
 <p>When an output IOCTL arrives (<code>SET_OUTPUT_REPORT</code>, <code>SET_FEATURE</code>, <code>WRITE_REPORT</code>):</p>
 <ol>
 <li>Take <code>OutputLock</code>.</li>
-<li><code>EnsureOutputMapping</code> &mdash; opens the output section if not already; periodic re-open every 500 writes for stale-handle recovery (issue #2). LocalService can't <code>CreateFileMapping(Global\)</code>, so it can only <code>OpenFileMapping</code> the section the elevated SDK created.</li>
+<li><code>EnsureOutputMapping</code>: opens the output section if not already; periodic re-open every 500 writes for stale-handle recovery (issue #2). LocalService can't <code>CreateFileMapping(Global\)</code>, so it can only <code>OpenFileMapping</code> the section the elevated SDK created.</li>
 <li>Increment <code>Head</code> to get the new SeqNo.</li>
 <li>Write <code>Slots[(Head - 1) % 64]</code> with <code>Source</code>, <code>ReportId</code>, <code>DataSize</code>, <code>Data</code>.</li>
 <li>Write <code>SeqNo</code> last (memory barrier).</li>
@@ -2671,7 +2671,7 @@ is never asked for it.</p>
 <h2 id="pid-ffb-driver-side-ebi-auto-allocation">PID FFB: driver-side EBI auto-allocation<a class="headerlink" href="#pid-ffb-driver-side-ebi-auto-allocation" title="Permanent link">&para;</a></h2>
 <p>When <code>IOCTL_UMDF_HID_SET_FEATURE</code> arrives with Report ID 0x11 (PID Create New Effect), the driver:</p>
 <ol>
-<li><code>EnsurePidStateMapping</code> &mdash; opens the PID state section R/W (the v1.1.39 fix; pre-v1.1.39 it was opened FILE_MAP_READ which AV'd inside the driver-side write).</li>
+<li><code>EnsurePidStateMapping</code>: opens the PID state section R/W (the v1.1.39 fix; pre-v1.1.39 it was opened FILE_MAP_READ which AV'd inside the driver-side write).</li>
 <li>Reads <code>EbiAllocBitmap</code> atomically. Picks the lowest free bit.</li>
 <li><code>InterlockedOr(&amp;bitmap, 1u &lt;&lt; freeBit)</code> to claim the EBI.</li>
 <li>Acquires PID state's seqlock (increment SeqNo; +1 = mid-write, +2 = stable).</li>
@@ -2682,7 +2682,7 @@ is never asked for it.</p>
 </ol>
 <p><code>pid.dll</code>'s follow-up <code>GetFeature(0x12 BlockLoad)</code> reads from the same shared section, which the driver's IOCTL handler also sources from. The handshake completes within <code>pid.dll</code>'s synchronous IOCTL pair without waiting on user-mode. Mirrors vJoy's <code>Ffb_GetNextFreeEffect</code>. See <a href="../../sdk/force-feedback/">Force Feedback</a> for the SDK side.</p>
 <p>If the bitmap is full when an allocation request arrives, the driver writes <code>BL_LoadStatus = Full</code>, <code>BL_EffectBlockIndex = 0</code>, and returns success. <code>pid.dll</code> propagates this to the game.</p>
-<p><code>PID Block Free</code> (Output 0x1B) writes are captured to the output ring as <code>HidOutput</code> so the consumer's <code>OutputReceived</code> handler gets a chance to wire the EBI back to its own tracking. The driver does <strong>not</strong> auto-clear the bitmap on Block Free &mdash; deliberate; the consumer is responsible for that bookkeeping. Trusting <code>pid.dll</code> to send Block Free for every allocation it released and ignoring the driver-side bitmap maintenance is the canonical pattern.</p>
+<p><code>PID Block Free</code> (Output 0x1B) writes are captured to the output ring as <code>HidOutput</code> so the consumer's <code>OutputReceived</code> handler gets a chance to wire the EBI back to its own tracking. The driver does <strong>not</strong> auto-clear the bitmap on Block Free: deliberate; the consumer is responsible for that bookkeeping. Trusting <code>pid.dll</code> to send Block Free for every allocation it released and ignoring the driver-side bitmap maintenance is the canonical pattern.</p>
 <hr />
 <h2 id="ioctl_umdf_hid_get_feature-pid-state-read"><code>IOCTL_UMDF_HID_GET_FEATURE</code>: PID state read<a class="headerlink" href="#ioctl_umdf_hid_get_feature-pid-state-read" title="Permanent link">&para;</a></h2>
 <p>When the consumer pulls a Feature report ID 0x12 / 0x13 / 0x14, the driver reads the PID state section seqlocked:</p>
@@ -2696,7 +2696,7 @@ is never asked for it.</p>
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">retries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
 <a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="k">do</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">        </span><span class="n">seq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">seq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// mid-write — re-read once</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">seq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// mid-write: re-read once</span>
 <a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">        </span><span class="n">MemoryBarrier</span><span class="p">();</span>
 <a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">        </span><span class="n">out</span><span class="o">-&gt;</span><span class="n">PidEnabled</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">PidEnabled</span><span class="p">;</span>
 <a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">        </span><span class="n">out</span><span class="o">-&gt;</span><span class="n">BL_EffectBlockIndex</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">BL_EffectBlockIndex</span><span class="p">;</span>
@@ -2712,13 +2712,13 @@ is never asked for it.</p>
 <p>If <code>PidEnabled == 0</code> (consumer hasn't called <code>PublishPidPool</code> yet), the driver returns <code>STATUS_NO_SUCH_DEVICE</code> for the Pool Report (matches vJoy's "FFB not enabled" convention so DInput cleanly concludes "device exists but no FFB" without retrying) and <code>STATUS_NOT_SUPPORTED</code> for Block Load / State.</p>
 <hr />
 <h2 id="dacl-on-the-shared-sections">DACL on the shared sections<a class="headerlink" href="#dacl-on-the-shared-sections" title="Permanent link">&para;</a></h2>
-<p>The SDK creates the shared sections with the SDDL <code>D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)</code> &mdash; SYSTEM, BUILTIN\Administrators, and Everyone get <code>GENERIC_ALL</code>. This is required because:</p>
+<p>The SDK creates the shared sections with the SDDL <code>D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)</code>: SYSTEM, BUILTIN\Administrators, and Everyone get <code>GENERIC_ALL</code>. This is required because:</p>
 <ul>
 <li>The SDK consumer process (admin) writes input frames.</li>
 <li>WUDFHost runs as LocalService (which lacks <code>SeCreateGlobalPrivilege</code>, so the driver can NOT create the section) and must <code>OpenFileMapping</code> to read.</li>
 <li>Unelevated WGI / GameInput consumers also need to read shared sections in some indirect paths.</li>
 </ul>
-<p><code>Everyone GENERIC_ALL</code> looks loose, but the section content is one virtual controller's HID state &mdash; not security-sensitive. The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared section permissions.</p>
+<p><code>Everyone GENERIC_ALL</code> looks loose, but the section content is one virtual controller's HID state: not security-sensitive. The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared section permissions.</p>
 <hr />
 <h2 id="self-cleanup-at-unload">Self-cleanup at unload<a class="headerlink" href="#self-cleanup-at-unload" title="Permanent link">&para;</a></h2>
 <p>When the device is removed (via <code>DIF_REMOVE</code> from the SDK or PnP), <code>EvtDeviceContextCleanup</code> runs:</p>
@@ -2750,8 +2750,8 @@ is never asked for it.</p>
 <a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>UmdfFsContextUsePolicy      = CanUseFsContext2
 <a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>UmdfHostProcessSharing      = ProcessSharingDisabled    ← critical
 </code></pre></div>
-<p><code>UmdfHostProcessSharing = ProcessSharingDisabled</code> means each device instance gets its own WUDFHost. Default is <code>ProcessSharingEnabled</code> which pools every instance into one shared host &mdash; we hit non-linear CPU saturation on that path and the per-instance host model is what makes 6 mixed controllers actually scale. See <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a>.</p>
-<p>The INF carries <strong>no <code>xinputhid</code> UpperFilter</strong> at the HID level. The SDK writes that string per-instance after device creation, <strong>only for profiles with an XUSB companion</strong> &mdash; for non-companion profiles (DualSense, Xbox Series BT, Switch Pro), the HID path IS the only WGI Gamepad source, and blocking it with xinputhid would produce zero Gamepads.</p>
+<p><code>UmdfHostProcessSharing = ProcessSharingDisabled</code> means each device instance gets its own WUDFHost. Default is <code>ProcessSharingEnabled</code> which pools every instance into one shared host: we hit non-linear CPU saturation on that path and the per-instance host model is what makes 6 mixed controllers actually scale. See <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a>.</p>
+<p>The INF carries <strong>no <code>xinputhid</code> UpperFilter</strong> at the HID level. The SDK writes that string per-instance after device creation, <strong>only for profiles with an XUSB companion</strong>: for non-companion profiles (DualSense, Xbox Series BT, Switch Pro), the HID path IS the only WGI Gamepad source, and blocking it with xinputhid would produce zero Gamepads.</p>
 <hr />
 <h2 id="self-contained-no-msvcrt">Self-contained, no MSVCRT<a class="headerlink" href="#self-contained-no-msvcrt" title="Permanent link">&para;</a></h2>
 <p>The driver doesn't link against MSVCRT. <code>swprintf</code> / <code>wsprintf</code> aren't available. The <code>AppendUlongDecimal</code> helper at the top of <code>driver.c</code> is hand-rolled string building. Linking MSVCRT into a UMDF2 driver is technically possible but introduces a dependency on a redistributable that LocalService might not have access to. Self-contained is simpler.</p>
@@ -2827,23 +2827,23 @@ is never asked for it.</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../architecture-overview/">Architecture Overview</a> &mdash; the driver's position in the full stack.</li>
-<li><a href="../xusb-companion/">XUSB Companion</a> &mdash; the second UMDF2 driver, for non-xinputhid Xbox profiles.</li>
-<li><a href="../shared-memory-protocol/">Shared Memory Protocol</a> &mdash; wire formats for input, output ring, PID state.</li>
-<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a> &mdash; how device nodes get created and torn down.</li>
-<li><a href="../../sdk/force-feedback/">Force Feedback</a> &mdash; SDK-side counterpart to the PID state read/write protocol.</li>
-<li><a href="../../sdk/output-passthrough/">Output Passthrough</a> &mdash; SDK-side counterpart to the output ring.</li>
-<li><a href="../driver-install-and-signing/">Driver Install and Signing</a> &mdash; how the INF gets registered and the DLL gets signed.</li>
+<li><a href="../architecture-overview/">Architecture Overview</a>: the driver's position in the full stack.</li>
+<li><a href="../xusb-companion/">XUSB Companion</a>: the second UMDF2 driver, for non-xinputhid Xbox profiles.</li>
+<li><a href="../shared-memory-protocol/">Shared Memory Protocol</a>: wire formats for input, output ring, PID state.</li>
+<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a>: how device nodes get created and torn down.</li>
+<li><a href="../../sdk/force-feedback/">Force Feedback</a>: SDK-side counterpart to the PID state read/write protocol.</li>
+<li><a href="../../sdk/output-passthrough/">Output Passthrough</a>: SDK-side counterpart to the output ring.</li>
+<li><a href="../driver-install-and-signing/">Driver Install and Signing</a>: how the INF gets registered and the DLL gets signed.</li>
 </ul>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
-<li>UMDF2 framework primer &mdash; search Microsoft Learn for "User-Mode Driver Framework version 2".</li>
-<li><a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2">vhidmini2 sample</a> &mdash; the Microsoft-provided reference HIDMaestro's pattern descends from.</li>
-<li><code>hidport.h</code> &mdash; the WDK header that defines the canonical <code>IOCTL_UMDF_HID_*</code> codes (<code>HID_CTL_CODE(20)</code>, <code>(21)</code>, <code>(22)</code>, <code>(23)</code>).</li>
-<li>WDF directives reference &mdash; search Microsoft Learn for "Specifying WDF Directives in INF Files" (covers <code>UmdfHostProcessSharing</code> and friends).</li>
-<li>HID architecture &mdash; search Microsoft Learn for "HID Architecture".</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a> &mdash; the WUDFHost saturation root cause.</li>
-<li><a href="../references/">References</a> &mdash; full source bibliography.</li>
+<li>UMDF2 framework primer: search Microsoft Learn for "User-Mode Driver Framework version 2".</li>
+<li><a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2">vhidmini2 sample</a>: the Microsoft-provided reference HIDMaestro's pattern descends from.</li>
+<li><code>hidport.h</code>: the WDK header that defines the canonical <code>IOCTL_UMDF_HID_*</code> codes (<code>HID_CTL_CODE(20)</code>, <code>(21)</code>, <code>(22)</code>, <code>(23)</code>).</li>
+<li>WDF directives reference: search Microsoft Learn for "Specifying WDF Directives in INF Files" (covers <code>UmdfHostProcessSharing</code> and friends).</li>
+<li>HID architecture: search Microsoft Learn for "HID Architecture".</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a>: the WUDFHost saturation root cause.</li>
+<li><a href="../references/">References</a>: full source bibliography.</li>
 </ul>
 
 

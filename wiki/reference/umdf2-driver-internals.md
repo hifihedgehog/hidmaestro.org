@@ -1,4 +1,4 @@
-# UMDF2 Driver Internals
+﻿# UMDF2 Driver Internals
 
 `HIDMaestro.dll` is a UMDF2 lower filter driver under `mshidumdf.sys`. This page documents the driver's responsibilities, the IOCTL dispatch table, the device context, the worker thread, the seqno-gated `READ_REPORT` path, and the empirical reasons each design choice exists. UMDF2 framework reference: search Microsoft Learn for "User-Mode Driver Framework version 2".
 
@@ -37,7 +37,7 @@ For the XUSB companion driver, see [XUSB Companion](xusb-companion.md). For the 
 └─────────────────────────────────────────────────────┘
                         ↓
 ┌─────────────────────────────────────────────────────┐
-│ HIDMaestro.dll (this driver) — UMDF2 lower filter    │  User mode
+│ HIDMaestro.dll (this driver): UMDF2 lower filter    │  User mode
 │  EvtIoDeviceControl handles GET_DEVICE_DESCRIPTOR,   │
 │  GET_REPORT_DESCRIPTOR, READ_REPORT, GET_FEATURE,    │
 │  SET_OUTPUT_REPORT, GET_STRING.                      │
@@ -58,7 +58,7 @@ The driver compiles as a DLL (UMDF2 differs from KMDF in this), uses `EvtIoDevic
 typedef struct _DEVICE_CONTEXT {
     WDFDEVICE   Device;
 
-    /* HID descriptor — set by user-mode at create time, returned to HID class */
+    /* HID descriptor: set by user-mode at create time, returned to HID class */
     UCHAR       ReportDescriptor[HIDMAESTRO_MAX_DESCRIPTOR_SIZE];   // 4 KB
     ULONG       ReportDescriptorSize;
     HID_DESCRIPTOR          HidDescriptor;
@@ -79,8 +79,8 @@ typedef struct _DEVICE_CONTEXT {
     ULONG       SerialStringBytes;
 
     /* Queues */
-    WDFQUEUE    DefaultQueue;     // parallel — HID IOCTLs
-    WDFQUEUE    ManualQueue;      // manual — pended READ_REPORT requests
+    WDFQUEUE    DefaultQueue;     // parallel: HID IOCTLs
+    WDFQUEUE    ManualQueue;      // manual: pended READ_REPORT requests
 
     /* Locks */
     WDFWAITLOCK InputLock;
@@ -200,7 +200,7 @@ These don't match what mshidumdf delivers. WDK `<hidport.h>` provides the real v
 #define IOCTL_UMDF_HID_GET_INPUT_REPORT   HID_CTL_CODE(23)  // 0x000B005F
 ```
 
-Pre-v1.1.39, every `SetFeature` / `GetFeature` / `SetOutputReport` / `GetInputReport` handler we shipped since v1.1.35 compiled but **never fired** &mdash; the case statement constants didn't match the framework's `IoControlCode`, so dispatch fell through to the default and returned `STATUS_NOT_IMPLEMENTED`.
+Pre-v1.1.39, every `SetFeature` / `GetFeature` / `SetOutputReport` / `GetInputReport` handler we shipped since v1.1.35 compiled but **never fired**: the case statement constants didn't match the framework's `IoControlCode`, so dispatch fell through to the default and returned `STATUS_NOT_IMPLEMENTED`.
 
 The fix is to include `<hidport.h>` in `driver.h` and let the WDK header own the values. The `#ifndef` guards in `driver.h` are kept as a safety net but should never fire on a current WDK.
 
@@ -208,7 +208,7 @@ The fix is to include `<hidport.h>` in `driver.h` and let the WDK header own the
 
 ## `IOCTL_HID_READ_REPORT`: seqno gate + manual queue
 
-The naive design completes every `IOCTL_HID_READ_REPORT` synchronously from the cached input buffer. That worked, but it caused HidClass.sys to hammer `READ_REPORT` in a tight loop because every call returned instantly with the same stale data &mdash; **CPU saturation** at scale (issue #3 root cause).
+The naive design completes every `IOCTL_HID_READ_REPORT` synchronously from the cached input buffer. That worked, but it caused HidClass.sys to hammer `READ_REPORT` in a tight loop because every call returned instantly with the same stale data: **CPU saturation** at scale (issue #3 root cause).
 
 The fix is a **seqno gate**:
 
@@ -222,7 +222,7 @@ NTSTATUS HandleReadReport(WDFREQUEST Request, PDEVICE_CONTEXT ctx)
         return STATUS_SUCCESS;
     }
 
-    /* No new data — pend in ManualQueue. The worker thread completes us
+    /* No new data: pend in ManualQueue. The worker thread completes us
        on the next ProcessSharedInput tick. */
     return WdfRequestForwardToIoQueue(Request, ctx->ManualQueue);
 }
@@ -244,7 +244,7 @@ VOID ProcessSharedInput(PDEVICE_CONTEXT ctx)
 }
 ```
 
-Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on `WaitForMultipleObjects(StopEvent, InputDataEvent, 50ms)` &mdash; the 50 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers `SetEvent(InputDataEvent)` which wakes the worker immediately.
+Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on `WaitForMultipleObjects(StopEvent, InputDataEvent, 50ms)`: the 50 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers `SetEvent(InputDataEvent)` which wakes the worker immediately.
 
 ---
 
@@ -267,9 +267,9 @@ DWORD WINAPI WorkerThread(LPVOID lpParam)
 }
 ```
 
-- **WAIT_OBJECT_0** &mdash; StopEvent fired; exit.
-- **WAIT_OBJECT_0 + 1** &mdash; InputDataEvent fired; new frame; process and complete pended requests.
-- **WAIT_TIMEOUT** &mdash; 50 ms safety tick; process opportunistically.
+- **WAIT_OBJECT_0**: StopEvent fired; exit.
+- **WAIT_OBJECT_0 + 1**: InputDataEvent fired; new frame; process and complete pended requests.
+- **WAIT_TIMEOUT**: 50 ms safety tick; process opportunistically.
 
 Created in `EvtDeviceAdd` and joined on stop. Cancellation via `SetEvent(StopEvent)` then `WaitForSingleObject(WorkerThread, 5000)`.
 
@@ -470,7 +470,7 @@ What happens next is the part the withdrawn first cut of v1.5.0 asserted without
 When an output IOCTL arrives (`SET_OUTPUT_REPORT`, `SET_FEATURE`, `WRITE_REPORT`):
 
 1. Take `OutputLock`.
-2. `EnsureOutputMapping` &mdash; opens the output section if not already; periodic re-open every 500 writes for stale-handle recovery (issue #2). LocalService can't `CreateFileMapping(Global\)`, so it can only `OpenFileMapping` the section the elevated SDK created.
+2. `EnsureOutputMapping`: opens the output section if not already; periodic re-open every 500 writes for stale-handle recovery (issue #2). LocalService can't `CreateFileMapping(Global\)`, so it can only `OpenFileMapping` the section the elevated SDK created.
 3. Increment `Head` to get the new SeqNo.
 4. Write `Slots[(Head - 1) % 64]` with `Source`, `ReportId`, `DataSize`, `Data`.
 5. Write `SeqNo` last (memory barrier).
@@ -484,7 +484,7 @@ The 8 ms SDK-side polling interval has 64 × 8 = 512 ms of headroom before the o
 
 When `IOCTL_UMDF_HID_SET_FEATURE` arrives with Report ID 0x11 (PID Create New Effect), the driver:
 
-1. `EnsurePidStateMapping` &mdash; opens the PID state section R/W (the v1.1.39 fix; pre-v1.1.39 it was opened FILE_MAP_READ which AV'd inside the driver-side write).
+1. `EnsurePidStateMapping`: opens the PID state section R/W (the v1.1.39 fix; pre-v1.1.39 it was opened FILE_MAP_READ which AV'd inside the driver-side write).
 2. Reads `EbiAllocBitmap` atomically. Picks the lowest free bit.
 3. `InterlockedOr(&bitmap, 1u << freeBit)` to claim the EBI.
 4. Acquires PID state's seqlock (increment SeqNo; +1 = mid-write, +2 = stable).
@@ -497,7 +497,7 @@ When `IOCTL_UMDF_HID_SET_FEATURE` arrives with Report ID 0x11 (PID Create New Ef
 
 If the bitmap is full when an allocation request arrives, the driver writes `BL_LoadStatus = Full`, `BL_EffectBlockIndex = 0`, and returns success. `pid.dll` propagates this to the game.
 
-`PID Block Free` (Output 0x1B) writes are captured to the output ring as `HidOutput` so the consumer's `OutputReceived` handler gets a chance to wire the EBI back to its own tracking. The driver does **not** auto-clear the bitmap on Block Free &mdash; deliberate; the consumer is responsible for that bookkeeping. Trusting `pid.dll` to send Block Free for every allocation it released and ignoring the driver-side bitmap maintenance is the canonical pattern.
+`PID Block Free` (Output 0x1B) writes are captured to the output ring as `HidOutput` so the consumer's `OutputReceived` handler gets a chance to wire the EBI back to its own tracking. The driver does **not** auto-clear the bitmap on Block Free: deliberate; the consumer is responsible for that bookkeeping. Trusting `pid.dll` to send Block Free for every allocation it released and ignoring the driver-side bitmap maintenance is the canonical pattern.
 
 ---
 
@@ -516,7 +516,7 @@ static BOOLEAN ReadPidState(PDEVICE_CONTEXT ctx, HIDMAESTRO_SHARED_PID_STATE *ou
     int retries = 4;
     do {
         seq1 = src->SeqNo;
-        if (seq1 & 1) { seq1 = src->SeqNo; }   // mid-write — re-read once
+        if (seq1 & 1) { seq1 = src->SeqNo; }   // mid-write: re-read once
         MemoryBarrier();
         out->PidEnabled            = src->PidEnabled;
         out->BL_EffectBlockIndex   = src->BL_EffectBlockIndex;
@@ -537,13 +537,13 @@ If `PidEnabled == 0` (consumer hasn't called `PublishPidPool` yet), the driver r
 
 ## DACL on the shared sections
 
-The SDK creates the shared sections with the SDDL `D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)` &mdash; SYSTEM, BUILTIN\Administrators, and Everyone get `GENERIC_ALL`. This is required because:
+The SDK creates the shared sections with the SDDL `D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)`: SYSTEM, BUILTIN\Administrators, and Everyone get `GENERIC_ALL`. This is required because:
 
 - The SDK consumer process (admin) writes input frames.
 - WUDFHost runs as LocalService (which lacks `SeCreateGlobalPrivilege`, so the driver can NOT create the section) and must `OpenFileMapping` to read.
 - Unelevated WGI / GameInput consumers also need to read shared sections in some indirect paths.
 
-`Everyone GENERIC_ALL` looks loose, but the section content is one virtual controller's HID state &mdash; not security-sensitive. The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared section permissions.
+`Everyone GENERIC_ALL` looks loose, but the section content is one virtual controller's HID state: not security-sensitive. The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared section permissions.
 
 ---
 
@@ -585,9 +585,9 @@ UmdfFsContextUsePolicy      = CanUseFsContext2
 UmdfHostProcessSharing      = ProcessSharingDisabled    ← critical
 ```
 
-`UmdfHostProcessSharing = ProcessSharingDisabled` means each device instance gets its own WUDFHost. Default is `ProcessSharingEnabled` which pools every instance into one shared host &mdash; we hit non-linear CPU saturation on that path and the per-instance host model is what makes 6 mixed controllers actually scale. See [`docs/investigations/issue3-dual-xinputhid-saturation-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04).
+`UmdfHostProcessSharing = ProcessSharingDisabled` means each device instance gets its own WUDFHost. Default is `ProcessSharingEnabled` which pools every instance into one shared host: we hit non-linear CPU saturation on that path and the per-instance host model is what makes 6 mixed controllers actually scale. See [`docs/investigations/issue3-dual-xinputhid-saturation-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04).
 
-The INF carries **no `xinputhid` UpperFilter** at the HID level. The SDK writes that string per-instance after device creation, **only for profiles with an XUSB companion** &mdash; for non-companion profiles (DualSense, Xbox Series BT, Switch Pro), the HID path IS the only WGI Gamepad source, and blocking it with xinputhid would produce zero Gamepads.
+The INF carries **no `xinputhid` UpperFilter** at the HID level. The SDK writes that string per-instance after device creation, **only for profiles with an XUSB companion**: for non-companion profiles (DualSense, Xbox Series BT, Switch Pro), the HID path IS the only WGI Gamepad source, and blocking it with xinputhid would produce zero Gamepads.
 
 ---
 
@@ -619,20 +619,20 @@ Total: 1,574 lines (driver.c) + 414 lines (driver.h) + 745 lines (companion.c) +
 
 ## See also
 
-- [Architecture Overview](architecture-overview.md) &mdash; the driver's position in the full stack.
-- [XUSB Companion](xusb-companion.md) &mdash; the second UMDF2 driver, for non-xinputhid Xbox profiles.
-- [Shared Memory Protocol](shared-memory-protocol.md) &mdash; wire formats for input, output ring, PID state.
-- [SwDevice and PnP](swdevice-and-pnp.md) &mdash; how device nodes get created and torn down.
-- [Force Feedback](../sdk/force-feedback.md) &mdash; SDK-side counterpart to the PID state read/write protocol.
-- [Output Passthrough](../sdk/output-passthrough.md) &mdash; SDK-side counterpart to the output ring.
-- [Driver Install and Signing](driver-install-and-signing.md) &mdash; how the INF gets registered and the DLL gets signed.
+- [Architecture Overview](architecture-overview.md): the driver's position in the full stack.
+- [XUSB Companion](xusb-companion.md): the second UMDF2 driver, for non-xinputhid Xbox profiles.
+- [Shared Memory Protocol](shared-memory-protocol.md): wire formats for input, output ring, PID state.
+- [SwDevice and PnP](swdevice-and-pnp.md): how device nodes get created and torn down.
+- [Force Feedback](../sdk/force-feedback.md): SDK-side counterpart to the PID state read/write protocol.
+- [Output Passthrough](../sdk/output-passthrough.md): SDK-side counterpart to the output ring.
+- [Driver Install and Signing](driver-install-and-signing.md): how the INF gets registered and the DLL gets signed.
 
 ## References
 
-- UMDF2 framework primer &mdash; search Microsoft Learn for "User-Mode Driver Framework version 2".
-- [vhidmini2 sample](https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2) &mdash; the Microsoft-provided reference HIDMaestro's pattern descends from.
-- `hidport.h` &mdash; the WDK header that defines the canonical `IOCTL_UMDF_HID_*` codes (`HID_CTL_CODE(20)`, `(21)`, `(22)`, `(23)`).
-- WDF directives reference &mdash; search Microsoft Learn for "Specifying WDF Directives in INF Files" (covers `UmdfHostProcessSharing` and friends).
-- HID architecture &mdash; search Microsoft Learn for "HID Architecture".
-- [`docs/investigations/issue3-dual-xinputhid-saturation-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04) &mdash; the WUDFHost saturation root cause.
-- [References](references.md) &mdash; full source bibliography.
+- UMDF2 framework primer: search Microsoft Learn for "User-Mode Driver Framework version 2".
+- [vhidmini2 sample](https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2): the Microsoft-provided reference HIDMaestro's pattern descends from.
+- `hidport.h`: the WDK header that defines the canonical `IOCTL_UMDF_HID_*` codes (`HID_CTL_CODE(20)`, `(21)`, `(22)`, `(23)`).
+- WDF directives reference: search Microsoft Learn for "Specifying WDF Directives in INF Files" (covers `UmdfHostProcessSharing` and friends).
+- HID architecture: search Microsoft Learn for "HID Architecture".
+- [`docs/investigations/issue3-dual-xinputhid-saturation-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04): the WUDFHost saturation root cause.
+- [References](references.md): full source bibliography.

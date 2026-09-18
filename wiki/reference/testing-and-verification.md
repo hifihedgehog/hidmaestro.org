@@ -108,7 +108,7 @@ gamepads = wgi.Gamepad.gamepads
 Per-virtual:
 
 - One `RawGameController` per virtual.
-- One `Gamepad` per virtual (not zero, not two &mdash; the duplicate-Gamepad hang).
+- One `Gamepad` per virtual (not zero, not two: the duplicate-Gamepad hang).
 - `Gamepad.Vibration.LeftMotor / RightMotor` properties writable (round-trip through `OutputReceived` if the test driver subscribes).
 
 #### Order
@@ -202,7 +202,7 @@ Per scenario:
 1. **Snapshot every `HIDMAESTRO*` / `VID_045E&PID_028E*` PnP devnode** that `CM_Locate_DevNodeW(NORMAL)` reports as `PRESENT` BEFORE the scenario runs. This is the baseline.
 2. **Run the scenario**, then sleep 12 s for kernel cascade to settle.
 3. **Snapshot the same set AFTER.**
-4. **PASS** iff `(after \ before) == empty` &mdash; no new `PRESENT` entries leaked across the scenario.
+4. **PASS** iff `(after \ before) == empty`: no new `PRESENT` entries leaked across the scenario.
 
 `PHANTOM` entries (registry residue with no live devnode) are **ignored**. They don't occupy XInput slots, don't show in active-controller lists, and are cosmetic-only registry leftovers from the historic SwDevice behavior. Only `PRESENT` is what consumers actually see.
 
@@ -229,11 +229,11 @@ The harness is **event-driven, not time-based.** The test app emits `[ACK]` on s
 
 This was a hard-won design. Win11 26200's PowerShell 5.1 has several pitfalls that interact:
 
-1. **`Add-Type` C# delegate for `OutputDataReceived`** &mdash; never `Register-ObjectEvent` or PS-scriptblock cast. The latter produces silent zero-byte stdout reads on Win11.
-2. **Byte-by-byte stdin pump** in the test app &mdash; `Console.In.ReadLine()` has a 15-second buffer on Win11 that breaks rapid back-to-back commands.
-3. **UTF-8 BOM strip on stdin** &mdash; PowerShell's `WriteLine` emits one; the test app strips it.
-4. **Named `EventWaitHandle` for quit signal** &mdash; cleaner than relying on stdin EOF detection.
-5. **`Process.Kill` self-exit** + `HIDMAESTRO_QUIET=1` &mdash; ProcessExit handler skips the redundant `RemoveAllVirtualControllers` (per-scenario cleanup already disposed everything).
+1. **`Add-Type` C# delegate for `OutputDataReceived`**: never `Register-ObjectEvent` or PS-scriptblock cast. The latter produces silent zero-byte stdout reads on Win11.
+2. **Byte-by-byte stdin pump** in the test app: `Console.In.ReadLine()` has a 15-second buffer on Win11 that breaks rapid back-to-back commands.
+3. **UTF-8 BOM strip on stdin**: PowerShell's `WriteLine` emits one; the test app strips it.
+4. **Named `EventWaitHandle` for quit signal**: cleaner than relying on stdin EOF detection.
+5. **`Process.Kill` self-exit** + `HIDMAESTRO_QUIET=1`: ProcessExit handler skips the redundant `RemoveAllVirtualControllers` (per-scenario cleanup already disposed everything).
 
 These five fixes interact; missing any one makes the harness hang on Win11. Preserved as the canonical recipe.
 
@@ -243,7 +243,7 @@ These five fixes interact; missing any one makes the harness hang on Win11. Pres
 
 The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Same 28/28 PASS at `HIDMAESTRO_TIMEOUT_SCALE=2`. Validated on each release.
 
-The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed &mdash; a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
+The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
 
 The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there. ~75 minutes wall time for the full 28 scenarios.
 
@@ -275,7 +275,7 @@ The `test/probes/` directory holds investigation tools used during HIDMaestro de
 - `xinput_byte_probe`
 - `xinput_latency_meter`
 
-Each was built to characterize a specific behavior during an investigation. Some are ProcMon traces, some are C# WinRT probes, some are PowerShell scripts. They're untracked / WIP and **never deleted automatically** &mdash; preserved as forensic tools.
+Each was built to characterize a specific behavior during an investigation. Some are ProcMon traces, some are C# WinRT probes, some are PowerShell scripts. They're untracked / WIP and **never deleted automatically**: preserved as forensic tools.
 
 ---
 
@@ -291,11 +291,11 @@ Self-hosted runners on Win11 client could run it, but that's not currently set u
 
 The pre-tag validation pipeline (`scripts\pre-tag-validate.cmd`) is the gate:
 
-1. Clean build &mdash; no stale Resources/ snapshots.
-2. `verify.py --controllers 4` &mdash; cross-API correctness on a multi-controller deployment.
+1. Clean build: no stale Resources/ snapshots.
+2. `verify.py --controllers 4`: cross-API correctness on a multi-controller deployment.
 3. `swap_regression.ps1`: full 60-scenario battery. **60/60 PASS required.**
-4. `HIDMaestroTest cleanup` &mdash; verify no leftover devnodes after the battery.
-5. Profile extractor smoke test &mdash; the GUI tool opens, populates, extracts.
+4. `HIDMaestroTest cleanup`: verify no leftover devnodes after the battery.
+5. Profile extractor smoke test: the GUI tool opens, populates, extracts.
 
 Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
@@ -303,12 +303,12 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## See also
 
-- [Build and Release](build-and-release.md) &mdash; how validation fits into the tag-and-release flow.
-- [Lifecycle and Teardown](lifecycle-and-teardown.md) &mdash; the create / dispose paths the battery exercises.
-- [Cross-API Coverage](cross-api-coverage.md) &mdash; the per-API behavior `verify.py` checks.
-- [Force Feedback](../sdk/force-feedback.md) &mdash; what S24-S26 validate.
-- [Multi-Controller](multi-controller.md) &mdash; what S07, S15, S20, S23 validate.
-- [`test/regression/README.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md) &mdash; the in-repo battery doc.
+- [Build and Release](build-and-release.md): how validation fits into the tag-and-release flow.
+- [Lifecycle and Teardown](lifecycle-and-teardown.md): the create / dispose paths the battery exercises.
+- [Cross-API Coverage](cross-api-coverage.md): the per-API behavior `verify.py` checks.
+- [Force Feedback](../sdk/force-feedback.md): what S24-S26 validate.
+- [Multi-Controller](multi-controller.md): what S07, S15, S20, S23 validate.
+- [`test/regression/README.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md): the in-repo battery doc.
 
 
 ## ARM64 and USB/IP validation

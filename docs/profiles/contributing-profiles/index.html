@@ -2050,7 +2050,7 @@
 </tr>
 <tr>
 <td><strong>Bluetooth</strong></td>
-<td>Native Bluetooth pairing. Some controllers behave differently on BT vs USB &mdash; submit one profile per mode if so.</td>
+<td>Native Bluetooth pairing. Some controllers behave differently on BT vs USB: submit one profile per mode if so.</td>
 </tr>
 <tr>
 <td><strong>BLE</strong></td>
@@ -2062,7 +2062,7 @@
 </tr>
 <tr>
 <td><strong>Other</strong></td>
-<td>Anything else &mdash; mention what in the Notes field.</td>
+<td>Anything else: mention what in the Notes field.</td>
 </tr>
 </tbody>
 </table>
@@ -2088,9 +2088,9 @@
 <h3 id="checklist">Checklist<a class="headerlink" href="#checklist" title="Permanent link">&para;</a></h3>
 <p>Three boxes the template requires:</p>
 <ol>
-<li><strong>I physically own this device.</strong> &mdash; profiles are extracted from real hardware. Synthesized / guessed descriptors don't go in the catalog.</li>
-<li><strong>The JSON was produced by <code>HIDMaestroProfileExtractor</code> without manual edits.</strong> &mdash; ensures the profile matches what real users will see when running their own extraction.</li>
-<li><strong>I'm okay with redistribution under the HIDMaestro license</strong> (MIT). &mdash; the catalog ships with the SDK and reaches every downstream consumer.</li>
+<li><strong>I physically own this device.</strong> Profiles are extracted from real hardware. Synthesized / guessed descriptors don't go in the catalog.</li>
+<li><strong>The JSON was produced by <code>HIDMaestroProfileExtractor</code> without manual edits.</strong> Ensures the profile matches what real users will see when running their own extraction.</li>
+<li><strong>I'm okay with redistribution under the HIDMaestro license</strong> (MIT). The catalog ships with the SDK and reaches every downstream consumer.</li>
 </ol>
 <hr />
 <h2 id="what-the-maintainer-reviews">What the maintainer reviews<a class="headerlink" href="#what-the-maintainer-reviews" title="Permanent link">&para;</a></h2>
@@ -2145,7 +2145,7 @@
 <li><code>dualshock-4-v1.json</code> (USB) and <code>dualshock-4-v1-full.json</code> (BT, full extended report)</li>
 <li><code>dualsense.json</code> (USB) and <code>dualsense-bt.json</code> (BT) and <code>dualsense-bt-full.json</code> (BT extended)</li>
 <li><code>xbox-360-wired.json</code> and <code>xbox-360-wireless.json</code> (different PIDs, different connection)</li>
-<li><code>g29.json</code> (USB Logitech G driver mode) and <code>g29-ps4.json</code> (USB PS4 mode &mdash; different PID)</li>
+<li><code>g29.json</code> (USB Logitech G driver mode) and <code>g29-ps4.json</code> (USB PS4 mode: different PID)</li>
 </ul>
 <p>If you're not sure which mode produces which JSON, run the extractor in each mode and submit both.</p>
 <hr />
@@ -2164,9 +2164,9 @@
 <hr />
 <h2 id="tips-for-high-quality-contributions">Tips for high-quality contributions<a class="headerlink" href="#tips-for-high-quality-contributions" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Run the extractor in the device's "default" mode.</strong> If your DualSense has a "performance mode" toggle, capture standard mode first &mdash; that's what most users will encounter.</li>
-<li><strong>Pick the right top-level collection.</strong> Devices with multiple collections (Joystick + Gamepad on the same VID:PID) appear multiple times in the dropdown. Pick the one whose <code>(UsageLabel)</code> matches what you want games to see &mdash; (Gamepad) for gamepad-shaped controllers, (Joystick) for sticks/wheels.</li>
-<li><strong>Test the round-trip.</strong> After extracting, save the JSON to <code>C:\my-profiles\&lt;id&gt;.json</code>, then <code>HIDMaestroTest.exe emulate --profile-dir C:\my-profiles &lt;id&gt;</code> and check <code>joy.cpl</code> shows your device with the right name. If it doesn't, the extraction may have grabbed the wrong collection &mdash; try a different dropdown entry.</li>
+<li><strong>Run the extractor in the device's "default" mode.</strong> If your DualSense has a "performance mode" toggle, capture standard mode first: that's what most users will encounter.</li>
+<li><strong>Pick the right top-level collection.</strong> Devices with multiple collections (Joystick + Gamepad on the same VID:PID) appear multiple times in the dropdown. Pick the one whose <code>(UsageLabel)</code> matches what you want games to see: (Gamepad) for gamepad-shaped controllers, (Joystick) for sticks/wheels.</li>
+<li><strong>Test the round-trip.</strong> After extracting, save the JSON to <code>C:\my-profiles\&lt;id&gt;.json</code>, then <code>HIDMaestroTest.exe emulate --profile-dir C:\my-profiles &lt;id&gt;</code> and check <code>joy.cpl</code> shows your device with the right name. If it doesn't, the extraction may have grabbed the wrong collection: try a different dropdown entry.</li>
 <li><strong>Capture both wired and wireless</strong> if your device supports both. Two contributions, two issues.</li>
 <li><strong>Include firmware version</strong> in Notes if you know it. Some controllers' descriptors changed across firmware revisions.</li>
 </ul>
@@ -2187,10 +2187,10 @@
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../profile-extractor/">Profile Extractor</a> &mdash; the tool that produces the JSON you're contributing.</li>
-<li><a href="../profile-system/">Profile System</a> &mdash; the schema the JSON conforms to.</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/issues/new?template=profile-contribution.yml">Profile contribution issue template</a> &mdash; the form to fill out.</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest">Latest release</a> &mdash; download the extractor.</li>
+<li><a href="../profile-extractor/">Profile Extractor</a>: the tool that produces the JSON you're contributing.</li>
+<li><a href="../profile-system/">Profile System</a>: the schema the JSON conforms to.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/issues/new?template=profile-contribution.yml">Profile contribution issue template</a>: the form to fill out.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest">Latest release</a>: download the extractor.</li>
 </ul>
 
 

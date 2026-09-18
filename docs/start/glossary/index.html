@@ -1844,7 +1844,7 @@
 </tr>
 <tr>
 <td><strong>mshidumdf</strong></td>
-<td><code>mshidumdf.sys</code> &mdash; Microsoft's kernel-mode HID minidriver proxy. Acts as the function driver. The HID class stack (<code>HidClass.sys</code>) sees a real HID device; HIDMaestro.dll attaches as a UMDF2 lower filter under it.</td>
+<td><code>mshidumdf.sys</code>: Microsoft's kernel-mode HID minidriver proxy. Acts as the function driver. The HID class stack (<code>HidClass.sys</code>) sees a real HID device; HIDMaestro.dll attaches as a UMDF2 lower filter under it.</td>
 </tr>
 <tr>
 <td><strong>KMDF</strong></td>
@@ -1852,7 +1852,7 @@
 </tr>
 <tr>
 <td><strong>VHF</strong></td>
-<td>Microsoft's Virtual HID Framework. Kernel-only. Mentioned for context &mdash; another approach HIDMaestro deliberately did not take.</td>
+<td>Microsoft's Virtual HID Framework. Kernel-only. Mentioned for context: another approach HIDMaestro deliberately did not take.</td>
 </tr>
 <tr>
 <td><strong>WDF</strong></td>
@@ -1871,7 +1871,7 @@
 <tbody>
 <tr>
 <td><strong>HID</strong></td>
-<td>Human Interface Device. The USB device class that gamepads, keyboards, mice, and joysticks use. The HID protocol is bus-agnostic &mdash; the same descriptor format works over USB, Bluetooth, BLE, and virtual buses.</td>
+<td>Human Interface Device. The USB device class that gamepads, keyboards, mice, and joysticks use. The HID protocol is bus-agnostic: the same descriptor format works over USB, Bluetooth, BLE, and virtual buses.</td>
 </tr>
 <tr>
 <td><strong>HID descriptor</strong></td>
@@ -1914,7 +1914,7 @@
 <tbody>
 <tr>
 <td><strong>DirectInput</strong></td>
-<td>The legacy Win32 game controller API. Reads HID descriptors directly (preparsed data). Sees axes by HID usage code. Does not understand Vx/Vy velocity usages, which is what lets HIDMaestro carry separate trigger values for WGI / browser without exposing them as DI axes &mdash; every Xbox profile presents in DI as 5 axes with combined Z, matching real <code>xusb22.sys</code>.</td>
+<td>The legacy Win32 game controller API. Reads HID descriptors directly (preparsed data). Sees axes by HID usage code. Does not understand Vx/Vy velocity usages, which is what lets HIDMaestro carry separate trigger values for WGI / browser without exposing them as DI axes: every Xbox profile presents in DI as 5 axes with combined Z, matching real <code>xusb22.sys</code>.</td>
 </tr>
 <tr>
 <td><strong>XInput</strong></td>
@@ -1942,7 +1942,7 @@
 </tr>
 <tr>
 <td><strong>HIDAPI</strong></td>
-<td>The libusb-maintained cross-platform HID library. Skips devices whose path contains <code>&amp;IG_</code> (XInput-handled, by design). Detects Bluetooth via the device's CompatibleIDs &mdash; HIDMaestro spoofs <code>BTHLEDEVICE</code> for BT-mode profiles so HIDAPI reports <code>bus_type = BT</code>.</td>
+<td>The libusb-maintained cross-platform HID library. Skips devices whose path contains <code>&amp;IG_</code> (XInput-handled, by design). Detects Bluetooth via the device's CompatibleIDs: HIDMaestro spoofs <code>BTHLEDEVICE</code> for BT-mode profiles so HIDAPI reports <code>bus_type = BT</code>.</td>
 </tr>
 <tr>
 <td><strong>STANDARD GAMEPAD</strong></td>
@@ -1965,7 +1965,7 @@
 </tr>
 <tr>
 <td><strong>xinputhid</strong></td>
-<td><code>xinputhid.sys</code> &mdash; Microsoft's inbox kernel filter for Xbox controllers using the GIP (Gaming Input Protocol) descriptor over HID. Binds as an upper filter on HID children matching <code>[GIP_Hid]</code> hardware IDs in <code>xinputhid.inf</code>. Provides XInput delivery and the 16-button HID descriptor synthesis natively. Used by Xbox Series / Xbox One / Xbox Elite v2 BT profiles.</td>
+<td><code>xinputhid.sys</code>: Microsoft's inbox kernel filter for Xbox controllers using the GIP (Gaming Input Protocol) descriptor over HID. Binds as an upper filter on HID children matching <code>[GIP_Hid]</code> hardware IDs in <code>xinputhid.inf</code>. Provides XInput delivery and the 16-button HID descriptor synthesis natively. Used by Xbox Series / Xbox One / Xbox Elite v2 BT profiles.</td>
 </tr>
 <tr>
 <td><strong>xinputhid UpperFilter tripwire</strong></td>
@@ -2028,7 +2028,7 @@
 </tr>
 <tr>
 <td><strong>DriverStore</strong></td>
-<td><code>C:\Windows\System32\DriverStore\FileRepository\</code>. Where <code>pnputil</code> caches every installed driver package. Survives uninstall &mdash; budget for ~40 MB per HIDMaestro version churn on dev machines.</td>
+<td><code>C:\Windows\System32\DriverStore\FileRepository\</code>. Where <code>pnputil</code> caches every installed driver package. Survives uninstall: budget for ~40 MB per HIDMaestro version churn on dev machines.</td>
 </tr>
 <tr>
 <td><strong>ContainerID</strong></td>
@@ -2036,7 +2036,7 @@
 </tr>
 <tr>
 <td><strong>Null-sentinel ContainerID</strong></td>
-<td><code>{00000000-0000-0000-FFFF-FFFFFFFFFFFF}</code>. Windows assigns this to ROOT-enumerated devnodes when the creator doesn't provide one. Triggers the bit-2 path in <code>xinput1_4!FUN_18000de2c</code> that skips XInput slot 0 &mdash; the bug behind the historical "slot 1 is empty" symptom. The SWD migration assigns explicit non-sentinel ContainerIDs to bypass this branch. See <a href="../../reference/swdevice-and-pnp/">SwDevice and PnP</a>.</td>
+<td><code>{00000000-0000-0000-FFFF-FFFFFFFFFFFF}</code>. Windows assigns this to ROOT-enumerated devnodes when the creator doesn't provide one. Triggers the bit-2 path in <code>xinput1_4!FUN_18000de2c</code> that skips XInput slot 0: the bug behind the historical "slot 1 is empty" symptom. The SWD migration assigns explicit non-sentinel ContainerIDs to bypass this branch. See <a href="../../reference/swdevice-and-pnp/">SwDevice and PnP</a>.</td>
 </tr>
 <tr>
 <td><strong>SWD</strong></td>
@@ -2107,7 +2107,7 @@
 </tr>
 <tr>
 <td><strong>EV certificate</strong></td>
-<td>An "Extended Validation" code-signing certificate. Required by Windows for drivers signed for kernel mode. Costs $300+/year; project-fatal for hobbyists. <strong>Not</strong> required for HIDMaestro &mdash; UMDF2 + self-signed + TrustedPublisher trust path is sufficient.</td>
+<td>An "Extended Validation" code-signing certificate. Required by Windows for drivers signed for kernel mode. Costs $300+/year; project-fatal for hobbyists. <strong>Not</strong> required for HIDMaestro: UMDF2 + self-signed + TrustedPublisher trust path is sufficient.</td>
 </tr>
 <tr>
 <td><strong>WHQL</strong></td>
@@ -2115,7 +2115,7 @@
 </tr>
 <tr>
 <td><strong><code>bcdedit /set testsigning</code></strong></td>
-<td>The Windows boot flag that disables driver signature enforcement. <strong>Not</strong> required for HIDMaestro &mdash; the trusted self-signed cert is enough. Mentioned because every other "no EV cert" project on Windows requires it; HIDMaestro is the exception.</td>
+<td>The Windows boot flag that disables driver signature enforcement. <strong>Not</strong> required for HIDMaestro: the trusted self-signed cert is enough. Mentioned because every other "no EV cert" project on Windows requires it; HIDMaestro is the exception.</td>
 </tr>
 </tbody>
 </table>
@@ -2134,11 +2134,11 @@
 </tr>
 <tr>
 <td><strong>Vx / Vy</strong></td>
-<td>HID velocity usages (Generic Desktop Page 0x01, Usages 0x40 and 0x41 per HID Usage Tables 1.5 §4 &mdash; <a href="https://www.usb.org/document-library">usb.org/document-library</a>). Used by HIDMaestro to carry separate trigger values without DirectInput recognizing them as axes. DirectInput sees 5 axes; Microsoft GameInput / WGI enumerate Vx/Vy as additional axes via the <code>GameInput\Devices</code> registry mapping and read separate triggers from them.</td>
+<td>HID velocity usages (Generic Desktop Page 0x01, Usages 0x40 and 0x41 per HID Usage Tables 1.5 §4: <a href="https://www.usb.org/document-library">usb.org/document-library</a>). Used by HIDMaestro to carry separate trigger values without DirectInput recognizing them as axes. DirectInput sees 5 axes; Microsoft GameInput / WGI enumerate Vx/Vy as additional axes via the <code>GameInput\Devices</code> registry mapping and read separate triggers from them.</td>
 </tr>
 <tr>
 <td><strong>EBI</strong></td>
-<td>Effect Block Index. HID PID 1.0 §5.5 &mdash; the 1-byte handle the device assigns to a Create New Effect request. The SDK's PID State shared section carries an <code>EbiAllocBitmap</code> (32-bit; 32 simultaneous effects) and the driver atomically allocates from it inside the <code>SetFeature(0x11)</code> IOCTL handler so DirectInput's follow-up <code>GetFeature(0x12 Block Load)</code> reads consistent state. Mirrors vJoy's <code>Ffb_GetNextFreeEffect</code>.</td>
+<td>Effect Block Index. HID PID 1.0 §5.5: the 1-byte handle the device assigns to a Create New Effect request. The SDK's PID State shared section carries an <code>EbiAllocBitmap</code> (32-bit; 32 simultaneous effects) and the driver atomically allocates from it inside the <code>SetFeature(0x11)</code> IOCTL handler so DirectInput's follow-up <code>GetFeature(0x12 Block Load)</code> reads consistent state. Mirrors vJoy's <code>Ffb_GetNextFreeEffect</code>.</td>
 </tr>
 <tr>
 <td><strong>Seqlock</strong></td>
@@ -2152,9 +2152,9 @@
 </table>
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../reference/architecture-overview/">Architecture Overview</a> &mdash; how all of the above pieces fit together.</li>
-<li><a href="../../reference/cross-api-coverage/">Cross-API Coverage</a> &mdash; which terms apply at which downstream consumer.</li>
-<li><a href="../../profiles/profile-system/">Profile System</a> &mdash; how <code>driverMode</code>, <code>connection</code>, and VID determine the runtime path.</li>
+<li><a href="../../reference/architecture-overview/">Architecture Overview</a>: how all of the above pieces fit together.</li>
+<li><a href="../../reference/cross-api-coverage/">Cross-API Coverage</a>: which terms apply at which downstream consumer.</li>
+<li><a href="../../profiles/profile-system/">Profile System</a>: how <code>driverMode</code>, <code>connection</code>, and VID determine the runtime path.</li>
 </ul>
 
 

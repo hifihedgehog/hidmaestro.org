@@ -2655,7 +2655,7 @@
 <p><strong>Fix</strong>: check <code>Cert:\LocalMachine\TrustedPublisher</code> for "HIDMaestro Self-Signed":</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">Get-ChildItem</span> <span class="n">Cert</span><span class="p">:\</span><span class="n">LocalMachine</span><span class="p">\</span><span class="n">TrustedPublisher</span> <span class="p">|</span> <span class="nb">Where-Object</span> <span class="n">Subject</span> <span class="o">-like</span> <span class="s1">&#39;*HIDMaestro*&#39;</span>
 </code></pre></div>
-<p>If missing, run <code>HIDMaestroTest.exe cleanup</code> then call <code>InstallDriver</code> again &mdash; the install will regenerate the cert and place it in all three stores.</p>
+<p>If missing, run <code>HIDMaestroTest.exe cleanup</code> then call <code>InstallDriver</code> again: the install will regenerate the cert and place it in all three stores.</p>
 <h3 id="subsequent-install-replaces-with-stale-binary">Subsequent install replaces with stale binary<a class="headerlink" href="#subsequent-install-replaces-with-stale-binary" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong>: DriverStore corruption. The FileRepository subdirectory has the wrong bytes and <code>pnputil</code> keeps restoring it on every install.</p>
 <p><strong>Fix</strong> (manual, last resort):</p>
@@ -2669,12 +2669,12 @@
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>:: Now delete
 <a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>rmdir /s /q &quot;C:\Windows\System32\DriverStore\FileRepository\&lt;dir&gt;&quot;
 <a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>:: Then run InstallDriver again — fresh extraction
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>:: Then run InstallDriver again: fresh extraction
 </code></pre></div>
 <p>Almost never needed in normal operation. The self-heal sweep prevents this from happening; if you hit it, capture state and file an issue.</p>
 <h3 id="0x80004005-from-inf2cat"><code>0x80004005</code> from Inf2Cat<a class="headerlink" href="#0x80004005-from-inf2cat" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong>: missing <code>Microsoft.UniversalStore.HardwareWorkflow.*</code> dependency DLLs.</p>
-<p><strong>Fix</strong>: the embedded payload is missing files. Reinstall the SDK package &mdash; this means the SDK assembly itself is corrupt, not a runtime issue.</p>
+<p><strong>Fix</strong>: the embedded payload is missing files. Reinstall the SDK package: this means the SDK assembly itself is corrupt, not a runtime issue.</p>
 <hr />
 <h2 id="create-phase">Create phase<a class="headerlink" href="#create-phase" title="Permanent link">&para;</a></h2>
 <h3 id="invalidoperationexception-device-node-creation-failed"><code>InvalidOperationException</code> "device-node creation failed"<a class="headerlink" href="#invalidoperationexception-device-node-creation-failed" title="Permanent link">&para;</a></h3>
@@ -2685,7 +2685,7 @@
 </code></pre></div>
 <p>Common causes:</p>
 <ul>
-<li><strong>xinputhid binding hung.</strong> Xbox Series BT profiles need <code>xinputhid.sys</code> to bind on the HID child. If the kernel xinputhid allocator is in a stuck state from prior session residue, the bind never completes. Reboot fixes it (clears xinputhid kernel state). v1.3.2's 500ms <code>WaitForXInputSlotClaim</code> cap means the consumer no longer freezes for 15s on this case &mdash; the controller still creates, just may not have an XInput slot until xinputhid recovers on its own (typically next reboot).</li>
+<li><strong>xinputhid binding hung.</strong> Xbox Series BT profiles need <code>xinputhid.sys</code> to bind on the HID child. If the kernel xinputhid allocator is in a stuck state from prior session residue, the bind never completes. Reboot fixes it (clears xinputhid kernel state). v1.3.2's 500ms <code>WaitForXInputSlotClaim</code> cap means the consumer no longer freezes for 15s on this case: the controller still creates, just may not have an XInput slot until xinputhid recovers on its own (typically next reboot).</li>
 <li><strong>Stale ContainerID.</strong> The reuse-existing fast path (see <a href="../reference/swdevice-and-pnp/">SwDevice and PnP</a>) leaves an empty registry shell. v1.x.x.1's per-call atomic sequence number prevents this. If you hit it on a current build, capture <code>teardown_diag.log</code> and the registry state.</li>
 </ul>
 <h3 id="single-xbox-series-bt-create-takes-13-14-seconds">Single Xbox Series BT create takes 13-14 seconds<a class="headerlink" href="#single-xbox-series-bt-create-takes-13-14-seconds" title="Permanent link">&para;</a></h3>
@@ -2737,7 +2737,7 @@
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;Axes declared:    {profile.AxisCount}&quot;</span><span class="p">);</span>
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;InputReportSize:  {profile.InputReportSize}&quot;</span><span class="p">);</span>
 </code></pre></div>
-<p>If those don't match what you expect, the profile is wrong &mdash; either re-extract via <code>HMDeviceExtractor.Extract</code> or use <code>HMProfileBuilder</code> to define the right shape.</p>
+<p>If those don't match what you expect, the profile is wrong: either re-extract via <code>HMDeviceExtractor.Extract</code> or use <code>HMProfileBuilder</code> to define the right shape.</p>
 <h3 id="xbox-360-d-pad-doesnt-work-in-xinput-consumers">Xbox 360 d-pad doesn't work in XInput consumers<a class="headerlink" href="#xbox-360-d-pad-doesnt-work-in-xinput-consumers" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong> (pre-v1.3.3): the SDK never wrote hat bits into the GIP buffer. XInput consumers hitting <code>xusb22</code> directly (SDL3 XInput backend, sample-quality XInput apps) saw no d-pad on Xbox 360 wired.</p>
 <p><strong>Fix</strong>: upgrade to v1.3.3+. Issue #19 fix packs hat into bits 2-5 of GIP <code>btnHigh</code>; the companion's <code>IOCTL_XUSB_GET_STATE</code> handler unpacks back. Verified by <code>swap_regression.ps1</code> scenario S27_Xbox360_Dpad_XInput.</p>
@@ -2786,7 +2786,7 @@
 <h3 id="browser-vibration-doesnt-reach-my-consumer">Browser vibration doesn't reach my consumer<a class="headerlink" href="#browser-vibration-doesnt-reach-my-consumer" title="Permanent link">&para;</a></h3>
 <p><strong>Cause options</strong>:</p>
 <ul>
-<li>For Xbox 360 Wired: the xinputhid UpperFilter tripwire isn't on the XUSB companion. Check <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\&lt;sid&gt;_&lt;idx&gt;\UpperFilters</code> &mdash; should contain <code>xinputhid</code>. INF carries this; if missing, the install was corrupt.</li>
+<li>For Xbox 360 Wired: the xinputhid UpperFilter tripwire isn't on the XUSB companion. Check <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\&lt;sid&gt;_&lt;idx&gt;\UpperFilters</code>: should contain <code>xinputhid</code>. INF carries this; if missing, the install was corrupt.</li>
 <li>For Xbox Series BT: xinputhid handles vibration internally as a HID Output report. Surfaces as <code>HMOutputSource.HidOutput</code> not <code>HMOutputSource.XInput</code>.</li>
 <li>For plain HID: WGI dispatches a HID Output report directly. Subscribe to <code>HidOutput</code> source, not just <code>XInput</code>.</li>
 </ul>
@@ -2840,7 +2840,7 @@
 <p><strong>Fix</strong>: upgrade to v1.1.39+. Section is now opened R/W.</p>
 <h3 id="never-kill-wudfhostexe-to-fix-things">NEVER kill <code>WUDFHost.exe</code> to "fix" things<a class="headerlink" href="#never-kill-wudfhostexe-to-fix-things" title="Permanent link">&para;</a></h3>
 <p>This breaks real BT Xbox controllers (Code 43). HIDMaestro shares WUDFHost with Microsoft-shipped UMDF2 drivers; killing one host kills its currently-bound devices.</p>
-<p><strong>Fix</strong>: let the system manage host lifetime. If you need to force-recover from a HIDMaestro state, use <code>HIDMaestroTest.exe cleanup</code> &mdash; that goes through proper PnP removal, not host termination.</p>
+<p><strong>Fix</strong>: let the system manage host lifetime. If you need to force-recover from a HIDMaestro state, use <code>HIDMaestroTest.exe cleanup</code>: that goes through proper PnP removal, not host termination.</p>
 <hr />
 <h2 id="reference-when-in-doubt-full-reset">Reference: when in doubt, full reset<a class="headerlink" href="#reference-when-in-doubt-full-reset" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>HIDMaestroTest.exe cleanup
@@ -2853,7 +2853,7 @@
 <a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>HIDMaestroTest.exe cleanup
 <a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>:: re-run your consumer
 </code></pre></div>
-<p>Reboot is the strongest reset for kernel-state issues (xinputhid stuck, DriverStore corruption, host pool sharing). Don't reach for it first &mdash; cleanup handles 99% of cases &mdash; but it's the documented escape hatch for the 1%.</p>
+<p>Reboot is the strongest reset for kernel-state issues (xinputhid stuck, DriverStore corruption, host pool sharing). Don't reach for it first, since cleanup handles 99% of cases. It is the documented escape hatch for the 1%.</p>
 <hr />
 <h2 id="diagnostic-logs">Diagnostic logs<a class="headerlink" href="#diagnostic-logs" title="Permanent link">&para;</a></h2>
 <table>
@@ -2920,12 +2920,12 @@
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../reference/driver-install-and-signing/">Driver Install and Signing</a> &mdash; the install pipeline that produces install-phase failure modes.</li>
-<li><a href="../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> &mdash; the create / dispose orchestration with per-archetype latencies.</li>
-<li><a href="../reference/multi-controller/">Multi-Controller</a> &mdash; the multi-controller regression scenarios and what they catch.</li>
-<li><a href="../reference/cross-api-coverage/">Cross-API Coverage</a> &mdash; per-API browser vibration / WGI / XInput dispatch paths.</li>
-<li><a href="../reference/testing-and-verification/">Testing and Verification</a> &mdash; how to reproduce a regression locally with <code>swap_regression.ps1</code>.</li>
-<li><a href="../start/glossary/">Glossary</a> &mdash; term definitions for the unfamiliar.</li>
+<li><a href="../reference/driver-install-and-signing/">Driver Install and Signing</a>: the install pipeline that produces install-phase failure modes.</li>
+<li><a href="../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a>: the create / dispose orchestration with per-archetype latencies.</li>
+<li><a href="../reference/multi-controller/">Multi-Controller</a>: the multi-controller regression scenarios and what they catch.</li>
+<li><a href="../reference/cross-api-coverage/">Cross-API Coverage</a>: per-API browser vibration / WGI / XInput dispatch paths.</li>
+<li><a href="../reference/testing-and-verification/">Testing and Verification</a>: how to reproduce a regression locally with <code>swap_regression.ps1</code>.</li>
+<li><a href="../start/glossary/">Glossary</a>: term definitions for the unfamiliar.</li>
 </ul>
 
 

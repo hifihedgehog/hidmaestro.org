@@ -2091,14 +2091,14 @@
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">ctx</span><span class="p">.</span><span class="n">FinalizeNames</span><span class="p">();</span><span class="w">   </span><span class="c1">// re-apply friendly names after PnP settles</span>
 </code></pre></div>
 <p>The method polls each HID child for <code>DN_STARTED</code> (driver fully bound) before re-applying. On fast machines exits in &lt;100 ms; on slow machines adapts up to 5 s rather than failing from an insufficient fixed sleep.</p>
-<p>The proven pre-SDK test app (~v0.x) called this as "Phase 1.5 &mdash; Finalizing device names". The functionality moved into the SDK; consumers should call it as their final create step.</p>
+<p>The proven pre-SDK test app (~v0.x) called this as "Phase 1.5: Finalizing device names". The functionality moved into the SDK; consumers should call it as their final create step.</p>
 <hr />
 <h2 id="per-instance-wudfhost">Per-instance WUDFHost<a class="headerlink" href="#per-instance-wudfhost" title="Permanent link">&para;</a></h2>
 <p>Both INFs (<code>hidmaestro.inf</code> and <code>hidmaestro_xusb.inf</code>) carry:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[..._Install.NT.Wdf]
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>UmdfHostProcessSharing = ProcessSharingDisabled
 </code></pre></div>
-<p>Each device instance gets its own <code>WUDFHost.exe</code> process (~8 MB RSS, ~10 threads). With 6 controllers running, expect 6-12 <code>WUDFHost.exe</code> processes &mdash; one per main HID instance plus one per XUSB companion (companions only exist for non-xinputhid Xbox profiles).</p>
+<p>Each device instance gets its own <code>WUDFHost.exe</code> process (~8 MB RSS, ~10 threads). With 6 controllers running, expect 6-12 <code>WUDFHost.exe</code> processes: one per main HID instance plus one per XUSB companion (companions only exist for non-xinputhid Xbox profiles).</p>
 <h3 id="why-per-instance-hosts">Why per-instance hosts<a class="headerlink" href="#why-per-instance-hosts" title="Permanent link">&para;</a></h3>
 <p>Default (<code>ProcessSharingEnabled</code>) funnels every UMDF2 instance into one shared WUDFHost. At 6 controllers, the shared host accumulates 9+ minutes of CPU time vs ~2 seconds per per-instance host. Empirically traced in 2026-04 (<a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a>).</p>
 <p>Root cause: contention between writer threads (HIDMaestro virtual instances) and concurrent <code>XInputGetState</code> reader threads when 2+ virtuals coexist with a real xinputhid device in the same host. Per-instance hosts run their I/O paths in parallel, idle CPU stays near zero, and peak throughput scales with controller count.</p>
@@ -2115,7 +2115,7 @@
 <p>If your consumer needs more than 4 XInput-visible controllers, that's a Microsoft-side limit; no user-mode workaround.</p>
 <hr />
 <h2 id="browser-cap">Browser cap<a class="headerlink" href="#browser-cap" title="Permanent link">&para;</a></h2>
-<p>Chromium's gamepad API caps at 4 connected gamepads on Win10/11. With 6 mixed controllers, browser sees 4 in a deterministic order (alphabetical by GUID, not by creation order &mdash; see <a href="../cross-api-coverage/">Cross-API Coverage</a>).</p>
+<p>Chromium's gamepad API caps at 4 connected gamepads on Win10/11. With 6 mixed controllers, browser sees 4 in a deterministic order (alphabetical by GUID, not by creation order: see <a href="../cross-api-coverage/">Cross-API Coverage</a>).</p>
 <p>Restart Chromium to clear stale slot caching when adding/removing controllers during a session.</p>
 <hr />
 <h2 id="sdl3-directinput-hidapi-no-cap">SDL3 / DirectInput / HIDAPI: no cap<a class="headerlink" href="#sdl3-directinput-hidapi-no-cap" title="Permanent link">&para;</a></h2>
@@ -2162,14 +2162,14 @@
 </tr>
 </tbody>
 </table>
-<p>For UI flows where the user expects "Controller 1 = first one I created", every API except Chromium gets it right. Chromium reorders &mdash; the consumer needs to sort or remap if browser ordering matters.</p>
+<p>For UI flows where the user expects "Controller 1 = first one I created", every API except Chromium gets it right. Chromium reorders: the consumer needs to sort or remap if browser ordering matters.</p>
 <h3 id="dont-parallelize-createcontroller">Don't parallelize <code>CreateController</code><a class="headerlink" href="#dont-parallelize-createcontroller" title="Permanent link">&para;</a></h3>
 <p>A consumer might be tempted to parallelize multi-controller creation:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// DON&#39;T DO THIS</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">await</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">WhenAll</span><span class="p">(</span><span class="n">profiles</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">p</span><span class="p">))));</span>
 </code></pre></div>
-<p>The creation order <strong>anchors</strong> every downstream API. Parallel creates produce non-deterministic order across XInput, WGI, joy.cpl, browser, RawInput, SDL3 simultaneously &mdash; the user-visible game enumeration becomes a coin flip per launch.</p>
-<p><strong>Always create sequentially.</strong> Multi-controller perf comes from making each step faster (the v1.3.x latency improvements), not from parallelism. Verified at the SDK level &mdash; <code>CreateController</code> takes the context lock for index allocation but otherwise serializes through <code>SetupController</code>'s registry-then-PnP-create path.</p>
+<p>The creation order <strong>anchors</strong> every downstream API. Parallel creates produce non-deterministic order across XInput, WGI, joy.cpl, browser, RawInput, SDL3 simultaneously: the user-visible game enumeration becomes a coin flip per launch.</p>
+<p><strong>Always create sequentially.</strong> Multi-controller perf comes from making each step faster (the v1.3.x latency improvements), not from parallelism. Verified at the SDK level: <code>CreateController</code> takes the context lock for index allocation but otherwise serializes through <code>SetupController</code>'s registry-then-PnP-create path.</p>
 <hr />
 <h2 id="disposecontrollersinparallel"><code>DisposeControllersInParallel</code><a class="headerlink" href="#disposecontrollersinparallel" title="Permanent link">&para;</a></h2>
 <p>Disposal is safe to parallelize because the user-visible ordering is already broken when controllers are gone:</p>
@@ -2189,7 +2189,7 @@
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1">// e.g. serial = &quot;HM-CTL-0001&quot;</span>
 </code></pre></div>
 <p>Returned by <code>IOCTL_HID_GET_STRING / HID_STRING_ID_ISERIALNUMBER</code>. SDL3 / HIDAPI use this string as a per-device disambiguator; identical VID:PID/ProductString controllers get distinct GUIDs derived from the serial.</p>
-<p>The exact format (<code>HM-CTL-&lt;index&gt;</code>) isn't part of any contract &mdash; consumers are expected to treat the string as opaque. Don't parse the index out and use it for ordering; use creation order instead.</p>
+<p>The exact format (<code>HM-CTL-&lt;index&gt;</code>) isn't part of any contract: consumers are expected to treat the string as opaque. Don't parse the index out and use it for ordering; use creation order instead.</p>
 <hr />
 <h2 id="verified-configurations">Verified configurations<a class="headerlink" href="#verified-configurations" title="Permanent link">&para;</a></h2>
 <p>The regression battery (<code>swap_regression.ps1</code>) exercises multi-controller configurations:</p>
@@ -2299,16 +2299,16 @@
 <hr />
 <h2 id="atom-z8350-fixture-slow-hardware-validation">Atom Z8350 fixture (slow-hardware validation)<a class="headerlink" href="#atom-z8350-fixture-slow-hardware-validation" title="Permanent link">&para;</a></h2>
 <p>The regression battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Slow-hardware target for validating the event-driven harness without time-based settles.</p>
-<p>Full battery: ~75 minutes wall time at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>. Same 28/28 PASS as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed &mdash; a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.</p>
+<p>Full battery: ~75 minutes wall time at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>. Same 28/28 PASS as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.</p>
 <p>See <a href="../testing-and-verification/">Testing and Verification</a>.</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../architecture-overview/">Architecture Overview</a> &mdash; per-controller WUDFHost in the full stack diagram.</li>
-<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a> &mdash; per-controller indices, ContainerIDs, instance suffixes.</li>
-<li><a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> &mdash; create / dispose mechanics that scale.</li>
-<li><a href="../cross-api-coverage/">Cross-API Coverage</a> &mdash; per-API ordering and slot caps.</li>
-<li><a href="../testing-and-verification/">Testing and Verification</a> &mdash; the multi-controller regression scenarios.</li>
+<li><a href="../architecture-overview/">Architecture Overview</a>: per-controller WUDFHost in the full stack diagram.</li>
+<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a>: per-controller indices, ContainerIDs, instance suffixes.</li>
+<li><a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>: create / dispose mechanics that scale.</li>
+<li><a href="../cross-api-coverage/">Cross-API Coverage</a>: per-API ordering and slot caps.</li>
+<li><a href="../testing-and-verification/">Testing and Verification</a>: the multi-controller regression scenarios.</li>
 </ul>
 
 

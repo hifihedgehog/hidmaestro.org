@@ -1,4 +1,4 @@
-# SwDevice and PnP
+﻿# SwDevice and PnP
 
 The PnP machinery behind every HIDMaestro virtual controller. This page covers the SWD migration story (why HIDMaestro can't use `SetupDiCreateDeviceInfoW` for everything), the slot-1-skip ContainerID fix, the stable device identity that keeps a controller's paths the same on every life, and why `hmswd.exe` exists as a separate native executable.
 
@@ -36,21 +36,21 @@ Slot 2: NOT CONNECTED
 Slot 3: NOT CONNECTED
 ```
 
-Or in 4-controller mixed configurations, the lowest user-index assigned was 1, not 0. With 4 Xbox-family virtuals you'd see slots 1, 2, 3 (and one missing &mdash; XInput's 4-slot cap is hit by 1+2+3+4, but if the allocator skips 0, you only get 3 working).
+Or in 4-controller mixed configurations, the lowest user-index assigned was 1, not 0. With 4 Xbox-family virtuals you'd see slots 1, 2, 3 (and one missing: XInput's 4-slot cap is hit by 1+2+3+4, but if the allocator skips 0, you only get 3 working).
 
 ### Ghidra trace
 
 The behavior comes from `xinput1_4.dll`'s slot allocator. Decomp (Win11 26200):
 
 ```c
-// FUN_18000de2c — tests for slot-1-skip eligibility
+// FUN_18000de2c: tests for slot-1-skip eligibility
 ULONG FUN_18000de2c(DEVICE_INFO *dev) {
     if (memcmp(&dev->ContainerId, &NULL_SENTINEL_GUID, 16) == 0) return 1;
     if (StringContains(dev->HardwareIds, "XINPUT_EMBEDDED_DEVICE")) return 1;
     return 0;
 }
 
-// FUN_18000c728 at 0x18000C8AE — sets bit 2 on the device struct
+// FUN_18000c728 at 0x18000C8AE: sets bit 2 on the device struct
 result = FUN_18000de2c(dev);
 test al, al
 jne     L_set_bit_2
@@ -58,14 +58,14 @@ jmp     L_normal
 L_set_bit_2:
 or      dword ptr [rbx], 4    // ← bit 2 set on bit-2 path
 
-// FUN_18000f85c — fallback slot allocator
+// FUN_18000f85c: fallback slot allocator
 if (FeatureManagerFlag_0x39EB83D && (dev->Flags & 4)) {
     // bit-2 device + feature flag on → SKIP iter 0
     iter = 1;
 }
 
-// FUN_18000f178 — promotes first bit-2 slot to "primary"
-// FUN_18000f08c — query-time swap surfaces empty slot 1 to consumers
+// FUN_18000f178: promotes first bit-2 slot to "primary"
+// FUN_18000f08c: query-time swap surfaces empty slot 1 to consumers
 ```
 
 The chain: null-sentinel ContainerID &rarr; bit 2 set on the device struct &rarr; slot allocator skips iter 0 (only when Feature Manager flag `0x39EB83D` is on, which it is on Win11 26200) &rarr; first bit-2 slot becomes "primary" &rarr; query-time swap surfaces an empty slot 1 to consumers.
@@ -99,7 +99,7 @@ Not every profile needs SWD. The architecture group determines:
 
 `<token>` is the controller's identity token: `HM_0000` for the default key of index 0, `HM_` plus sixteen hex digits for a consumer key. See [Stable device identity](#stable-device-identity) below.
 
-**Plain HID** profiles (DualSense, wheels, HOTAS, etc.) don't go through XInput, so the slot-1-skip bug doesn't apply &mdash; staying on the simpler SetupAPI path is fine.
+**Plain HID** profiles (DualSense, wheels, HOTAS, etc.) don't go through XInput, so the slot-1-skip bug doesn't apply: staying on the simpler SetupAPI path is fine.
 
 **Non-xinputhid Xbox** profiles do go through XInput, but only via the XUSB **companion**. The main HID device on the ROOT\ path doesn't carry the XInput device interface; the companion does. So only the companion needs SWD's explicit ContainerID. The main HID stays on SetupAPI.
 
@@ -124,7 +124,7 @@ Reason: any SWD enumerator name matching the substring `VID_*&PID_*&IG_*` trigge
 Replacing `&` with `_` between VID and PID avoids the heuristic. The `&IG_00` suffix is **preserved** because:
 
 - The HID child inherits its parent's enumerator name as the first segment of its instance path.
-- HIDAPI / SDL3 / Chromium all blocklist `&IG_` substrings to avoid duplicating XInput-claimed devices &mdash; we want the suffix in the instance path so those skip the device.
+- HIDAPI / SDL3 / Chromium all blocklist `&IG_` substrings to avoid duplicating XInput-claimed devices: we want the suffix in the instance path so those skip the device.
 
 So we get the best of both: PnP enumerates the SWD parent (no `&` in `VID_*&PID_*`), and the HID-class libraries skip the inherited `&IG_00` substring on the children.
 
@@ -205,13 +205,13 @@ Returns instance-id on success (`OK <full-instance-id>`); writes errors to stder
 
 The helper is included in the SDK's embedded resource payload alongside the driver DLLs. Total binary size: ~25 KB. Lifetime per call: <1 second (call, get instance-ID, exit).
 
-The performance overhead of OOP-helper SwDeviceCreate has been verified empirically as **not observable** vs an in-process call &mdash; the P/Invoke marshaling path itself takes long enough that adding `Process.Start` doesn't move the needle. Architectural-cleanup alone doesn't justify chasing the 0x8007007E mystery.
+The performance overhead of OOP-helper SwDeviceCreate has been verified empirically as **not observable** vs an in-process call: the P/Invoke marshaling path itself takes long enough that adding `Process.Start` doesn't move the needle. Architectural-cleanup alone doesn't justify chasing the 0x8007007E mystery.
 
 ---
 
 ## SwDevice removal
 
-`SWDeviceLifetimeParentPresent` (a value of the `SW_DEVICE_LIFETIME` enum &mdash; search Microsoft Learn for the exact name) keeps the device alive across process exit. The only documented removal path:
+`SWDeviceLifetimeParentPresent` (a value of the `SW_DEVICE_LIFETIME` enum: search Microsoft Learn for the exact name) keeps the device alive across process exit. The only documented removal path:
 
 1. Re-`SwDeviceCreate` with **identical args**. The docs guarantee this returns a fresh handle to the existing device (not a new device). The companion uses `FindExistingCompanion` lookup by `ControllerIndex` to find the right (suffix, ContainerID) tuple to pass.
 2. **Downgrade lifetime** from `SWDeviceLifetimeParentPresent` to `SWDeviceLifetimeHandle` via `SwDeviceSetLifetime`.
@@ -233,7 +233,7 @@ Same args as `create`; the helper does the reconnect-then-downgrade-then-close d
 
 ## SwD-first removal ordering (v1.3.1)
 
-Two of the three architecture groups (Xbox 360 Wired and Xbox Series BT) own a SwDevice-enumerated parent. SwDevice lifetimes are anchored to the `HSWDEVICE` handle, **not** the PnP devnode &mdash; children of a SwD parent cannot fully unwind their query-remove cascade until the parent's handle drops its kernel refcount.
+Two of the three architecture groups (Xbox 360 Wired and Xbox Series BT) own a SwDevice-enumerated parent. SwDevice lifetimes are anchored to the `HSWDEVICE` handle, **not** the PnP devnode: children of a SwD parent cannot fully unwind their query-remove cascade until the parent's handle drops its kernel refcount.
 
 Pre-v1.3.1 disposal:
 
@@ -245,7 +245,7 @@ Pre-v1.3.1 disposal:
 v1.3.1 inverts the order:
 
 1. For any `SWD\` parent, **close the SwDevice handle FIRST** via `SwdDeviceFactory.Remove`.
-2. Block on `CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED` (a value of the `CM_NOTIFY_ACTION` enum on Microsoft Learn) for the parent &mdash; so callers know the kernel has actually propagated removal, not just that the handle closed.
+2. Block on `CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED` (a value of the `CM_NOTIFY_ACTION` enum on Microsoft Learn) for the parent: so callers know the kernel has actually propagated removal, not just that the handle closed.
 3. Mop up any HID children that survived the cascade. Usually none, because the SwD parent's release fires its children's removal in one cascade.
 4. Net cost: ~135 ms for Xbox 360 Wired, ~500 ms for Xbox Series BT.
 
@@ -280,7 +280,7 @@ SWD\HIDMAESTRO\A7B40003_0002   ← controller 2 (DualSense), if it had a compani
 
 PID hex is `A7B4`; per-call sequence increments globally per process; controller index varies per call.
 
-`FindExistingCompanion` walks `HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\` and matches devices whose `Device Parameters\ControllerIndex` value matches the controller we're operating on. The suffix isn't load-bearing for matching &mdash; it's there to make the kernel `(enumerator + suffix + ContainerId)` tuple unique.
+`FindExistingCompanion` walks `HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\` and matches devices whose `Device Parameters\ControllerIndex` value matches the controller we're operating on. The suffix isn't load-bearing for matching: it's there to make the kernel `(enumerator + suffix + ContainerId)` tuple unique.
 
 For across-process matching (e.g. `RemoveAllVirtualControllers` from a fresh process sweeping orphans from a prior crashed session), the `HIDMAESTRO` enumerator name is the stable identifier. The sweep walks every `SWD\HIDMAESTRO*\*` entry regardless of token.
 
@@ -288,19 +288,19 @@ For across-process matching (e.g. `RemoveAllVirtualControllers` from a fresh pro
 
 ## See also
 
-- [Architecture Overview](architecture-overview.md) &mdash; PnP layer's place in the full stack.
-- [XUSB Companion](xusb-companion.md) &mdash; the device the SwDevice path is most needed for.
-- [Lifecycle and Teardown](lifecycle-and-teardown.md) &mdash; the SDK orchestration that drives `SwDeviceCreate` and the SwD-first removal ordering.
-- [Multi-Controller](multi-controller.md) &mdash; why per-controller ContainerIDs scale.
-- [Driver Install and Signing](driver-install-and-signing.md) &mdash; the broader install flow that creates these devnodes.
+- [Architecture Overview](architecture-overview.md): PnP layer's place in the full stack.
+- [XUSB Companion](xusb-companion.md): the device the SwDevice path is most needed for.
+- [Lifecycle and Teardown](lifecycle-and-teardown.md): the SDK orchestration that drives `SwDeviceCreate` and the SwD-first removal ordering.
+- [Multi-Controller](multi-controller.md): why per-controller ContainerIDs scale.
+- [Driver Install and Signing](driver-install-and-signing.md): the broader install flow that creates these devnodes.
 
 ## References
 
-The Win32 PnP API symbols below are documented on [learn.microsoft.com](https://learn.microsoft.com/) &mdash; search by the exact symbol name; the page is one click away.
+The Win32 PnP API symbols below are documented on [learn.microsoft.com](https://learn.microsoft.com/): search by the exact symbol name; the page is one click away.
 
-- `SwDeviceCreate` &mdash; the API and `pContainerId` parameter.
-- `SetupDiCreateDeviceInfoW` &mdash; the older device-creation API.
-- `DEVPKEY_Device_ContainerId` &mdash; ContainerID semantics, including the null-sentinel default.
-- `SW_DEVICE_LIFETIME` &mdash; `SWDeviceLifetimeParentPresent` vs `Handle` lifetime.
-- `CM_NOTIFY_ACTION` &mdash; the `DEVICEINSTANCEREMOVED` action used as the kernel-side removal guarantee.
-- [References](references.md) &mdash; full source bibliography.
+- `SwDeviceCreate`: the API and `pContainerId` parameter.
+- `SetupDiCreateDeviceInfoW`: the older device-creation API.
+- `DEVPKEY_Device_ContainerId`: ContainerID semantics, including the null-sentinel default.
+- `SW_DEVICE_LIFETIME`: `SWDeviceLifetimeParentPresent` vs `Handle` lifetime.
+- `CM_NOTIFY_ACTION`: the `DEVICEINSTANCEREMOVED` action used as the kernel-side removal guarantee.
+- [References](references.md): full source bibliography.

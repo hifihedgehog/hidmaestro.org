@@ -1,8 +1,8 @@
-# Output Passthrough
+﻿# Output Passthrough
 
 How rumble, haptics, force feedback, adaptive trigger config, LED color, and any other host-to-device data reaches the consumer. The driver captures the bytes; the SDK surfaces them via `HMController.OutputReceived` events; the consumer decodes per the active profile.
 
-The SDK does **not** classify packets as "rumble" vs "haptic" vs "FFB" &mdash; that distinction is semantic and lives in the consumer. All three end up in the same payload at different byte offsets per profile.
+The SDK does **not** classify packets as "rumble" vs "haptic" vs "FFB": that distinction is semantic and lives in the consumer. All three end up in the same payload at different byte offsets per profile.
 
 This page covers the wire format, the ring buffer mechanics, and consumer decoding patterns. For the driver-side IOCTL handling, see [UMDF2 Driver Internals](../reference/umdf2-driver-internals.md) and [XUSB Companion](../reference/xusb-companion.md). For the canonical PID FFB packet flow, see [Force Feedback](force-feedback.md).
 
@@ -58,7 +58,7 @@ public sealed class HMOutputDecodedEventArgs : EventArgs
 | `bytes-passthrough` | `byte[]` (length per the declared range) |
 | `button-mask` | `List<string>` of pressed-button names |
 
-Both `OutputReceived` (raw) and `OutputDecoded` (parsed) fire on every matching report — choose whichever the consumer needs. Pure raw consumers can ignore `OutputDecoded`; consumers wanting named field access can ignore `OutputReceived`. `CrcValid` reports the result of any `crc32-le` field declared in the spec; consumers decide whether to act on a mismatch.
+Both `OutputReceived` (raw) and `OutputDecoded` (parsed) fire on every matching report: choose whichever the consumer needs. Pure raw consumers can ignore `OutputDecoded`; consumers wanting named field access can ignore `OutputReceived`. `CrcValid` reports the result of any `crc32-le` field declared in the spec; consumers decide whether to act on a mismatch.
 
 ```csharp
 controller.OutputDecoded += (sender, e) =>
@@ -95,7 +95,7 @@ Use case: every HID-aware FFB / rumble path.
 
 Host wrote via `HidD_SetFeature`. Used by some controllers (DualSense, DualShock 4) for configuration writes; used by `pid.dll` for PID FFB Create New Effect (Report ID 0x11).
 
-For a HIDMaestro virtual with `AddPidFfbBlock`-built descriptor, every `OutputReceived(HidFeature, 0x11)` is a Create New Effect notification &mdash; the driver has just allocated an EBI in shared memory. Read it via `HMController.GetCurrentPidBlockLoad`.
+For a HIDMaestro virtual with `AddPidFfbBlock`-built descriptor, every `OutputReceived(HidFeature, 0x11)` is a Create New Effect notification: the driver has just allocated an EBI in shared memory. Read it via `HMController.GetCurrentPidBlockLoad`.
 
 ### `XInput` (2)
 
@@ -176,23 +176,23 @@ while (!ct.IsCancellationRequested)
 }
 ```
 
-Each `TryReadOutputFrame` call reads `Head`, computes slots from `lastSeen + 1` to `Head`, and returns one slot at a time. The reader uses per-slot SeqNo for torn-write detection: if SeqNo before-read ≠ SeqNo after-read, the slot was being rewritten &mdash; skip it.
+Each `TryReadOutputFrame` call reads `Head`, computes slots from `lastSeen + 1` to `Head`, and returns one slot at a time. The reader uses per-slot SeqNo for torn-write detection: if SeqNo before-read ≠ SeqNo after-read, the slot was being rewritten: skip it.
 
 ### Why the ring depth is 64
 
-`pid.dll` writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms. Pre-1.1.40 the channel was a single slot &mdash; the magnitude packet (Set Constant Force, in the middle) got coalesced and dropped. With 64 slots the reader has 512 ms of headroom (handler-stall bound) before the oldest slot would be overwritten, which is plenty for any realistic FFB burst pattern.
+`pid.dll` writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms. Pre-1.1.40 the channel was a single slot: the magnitude packet (Set Constant Force, in the middle) got coalesced and dropped. With 64 slots the reader has 512 ms of headroom (handler-stall bound) before the oldest slot would be overwritten, which is plenty for any realistic FFB burst pattern.
 
 The 256-byte payload covers DualSense BT report 0x31 (78 bytes) and any current PID FFB Output (largest is Set Effect at 22 bytes). Profile descriptors with larger output reports than 256 bytes would need the section widened.
 
 ### Reader-stall threshold
 
-If the consumer's handler stalls for >512 ms while the driver is writing at burst rate, the oldest packets get overwritten. The consumer would see a `SeqNo` jump (e.g. from 17 to 80) that signals a drop. **Keep handlers cheap** &mdash; no synchronous I/O, no long locks, no UI marshaling on the SDK poll thread (use `Dispatcher.BeginInvoke` to fire-and-forget the marshal).
+If the consumer's handler stalls for >512 ms while the driver is writing at burst rate, the oldest packets get overwritten. The consumer would see a `SeqNo` jump (e.g. from 17 to 80) that signals a drop. **Keep handlers cheap**: no synchronous I/O, no long locks, no UI marshaling on the SDK poll thread (use `Dispatcher.BeginInvoke` to fire-and-forget the marshal).
 
 ---
 
 ## Cadence
 
-The SDK reader is event-driven (issue #34): the driver signals `Global\HIDMaestroOutputEvent<N>` after each published packet, so the reader wakes at dispatch cost instead of poll quantization. Against a pre-#34 driver that never created the event, the reader falls back to the historical ~125 Hz (8 ms) poll. Multiple invocations of `OutputReceived` per wake are normal &mdash; the loop drains every new slot before waiting again, so three-packet PID FFB bursts arrive together.
+The SDK reader is event-driven (issue #34): the driver signals `Global\HIDMaestroOutputEvent<N>` after each published packet, so the reader wakes at dispatch cost instead of poll quantization. Against a pre-#34 driver that never created the event, the reader falls back to the historical ~125 Hz (8 ms) poll. Multiple invocations of `OutputReceived` per wake are normal: the loop drains every new slot before waiting again, so three-packet PID FFB bursts arrive together.
 
 Dispose latency: cancel-token-driven. The output thread waits on the cancel handle alongside the doorbell, so cancellation returns within ~1 ms.
 
@@ -249,7 +249,7 @@ ctrl.OutputReceived += (_, packet) =>
             break;
 
         case (HMOutputSource.HidOutput, 0x02):
-            // DualSense Report 0x02 — full motor + adaptive trigger + LED bytes
+            // DualSense Report 0x02: full motor + adaptive trigger + LED bytes
             HandleDualSenseOutput(bytes);
             break;
 
@@ -260,12 +260,12 @@ ctrl.OutputReceived += (_, packet) =>
         case (HMOutputSource.HidOutput, 0x1B):
         case (HMOutputSource.HidOutput, 0x1C):
         case (HMOutputSource.HidOutput, 0x1D):
-            // PID FFB output reports — see Force Feedback page
+            // PID FFB output reports: see Force Feedback page
             HandlePidFfbOutput(packet.ReportId, bytes);
             break;
 
         case (HMOutputSource.HidFeature, 0x11):
-            // PID FFB Create New Effect — driver allocated an EBI
+            // PID FFB Create New Effect: driver allocated an EBI
             var bl = ctrl.GetCurrentPidBlockLoad();
             WireEbi(bl);
             break;
@@ -297,7 +297,7 @@ ctrl.OutputReceived += (_, packet) =>
 ```csharp
 ctrl.OutputReceived += (sender, packet) =>
 {
-    // Don't decode on the poll thread — push to a queue, decode on UI thread
+    // Don't decode on the poll thread: push to a queue, decode on UI thread
     _decoderQueue.Enqueue(packet);
     _decoderSignal.Set();
 };
@@ -327,7 +327,7 @@ The buffer is reused on the next slot read. Don't store the `ReadOnlyMemory` ref
 
 For non-xinputhid Xbox profiles (Xbox 360 Wired), the XUSB companion (`HMXInput.dll`) handles `IOCTL_XUSB_SET_STATE`. Inside its handler it reads the IRP's input buffer (5 bytes, XINPUT_VIBRATION-style), takes the per-controller `OutputLock` against the main HID device's shared section, writes a slot with `Source = XInput`, `ReportId = 0`, `Data = 5 bytes`. The companion signals the same output event after publishing, so the SDK reader picks it up at dispatch cost (8 ms poll against pre-#34 drivers).
 
-For xinputhid profiles (Xbox Series BT), `xinputhid.sys` handles `IOCTL_XUSB_SET_STATE` itself and converts to a HID Output report against the HID child &mdash; so rumble surfaces as `HMOutputSource.HidOutput` with whatever Report ID `xinputhid` writes (typically 0).
+For xinputhid profiles (Xbox Series BT), `xinputhid.sys` handles `IOCTL_XUSB_SET_STATE` itself and converts to a HID Output report against the HID child: so rumble surfaces as `HMOutputSource.HidOutput` with whatever Report ID `xinputhid` writes (typically 0).
 
 ### Browser vibration
 
@@ -359,8 +359,8 @@ Vendor-specific output reports (Logitech rotation calibration, DualSense lightba
 
 ## See also
 
-- [Force Feedback](force-feedback.md) &mdash; HID PID 1.0 architecture, the canonical packet flow, EBI auto-allocation.
-- [Shared Memory Protocol](../reference/shared-memory-protocol.md) &mdash; `HIDMAESTRO_SHARED_OUTPUT` wire format and seqlock invariants.
-- [XUSB Companion](../reference/xusb-companion.md) &mdash; how `IOCTL_XUSB_SET_STATE` becomes an `HMOutputSource.XInput` packet.
-- [UMDF2 Driver Internals](../reference/umdf2-driver-internals.md) &mdash; how `IOCTL_UMDF_HID_SET_OUTPUT_REPORT` becomes an `HMOutputSource.HidOutput` packet.
-- [Cross-API Coverage](../reference/cross-api-coverage.md) &mdash; per-API browser vibration / WGI dispatch path.
+- [Force Feedback](force-feedback.md): HID PID 1.0 architecture, the canonical packet flow, EBI auto-allocation.
+- [Shared Memory Protocol](../reference/shared-memory-protocol.md): `HIDMAESTRO_SHARED_OUTPUT` wire format and seqlock invariants.
+- [XUSB Companion](../reference/xusb-companion.md): how `IOCTL_XUSB_SET_STATE` becomes an `HMOutputSource.XInput` packet.
+- [UMDF2 Driver Internals](../reference/umdf2-driver-internals.md): how `IOCTL_UMDF_HID_SET_OUTPUT_REPORT` becomes an `HMOutputSource.HidOutput` packet.
+- [Cross-API Coverage](../reference/cross-api-coverage.md): per-API browser vibration / WGI dispatch path.

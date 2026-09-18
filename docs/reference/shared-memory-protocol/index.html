@@ -2120,7 +2120,7 @@
 
 
 <h1 id="shared-memory-protocol">Shared Memory Protocol<a class="headerlink" href="#shared-memory-protocol" title="Permanent link">&para;</a></h1>
-<p>The wire format of the three pagefile-backed shared memory sections HIDMaestro uses for cross-process communication between the SDK (consumer process) and the driver (<code>HIDMaestro.dll</code> in WUDFHost) plus the XUSB companion (<code>HMXInput.dll</code> in another WUDFHost). All three are RAM-only &mdash; no disk I/O.</p>
+<p>The wire format of the three pagefile-backed shared memory sections HIDMaestro uses for cross-process communication between the SDK (consumer process) and the driver (<code>HIDMaestro.dll</code> in WUDFHost) plus the XUSB companion (<code>HMXInput.dll</code> in another WUDFHost). All three are RAM-only: no disk I/O.</p>
 <p>This page is the byte-level reference. For the SDK-facing API that wraps these sections, see <a href="../../sdk/sdk-reference/">SDK Reference</a>. For the driver-side seqlock readers, see <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>.</p>
 <hr />
 <h2 id="section-names">Section names<a class="headerlink" href="#section-names" title="Permanent link">&para;</a></h2>
@@ -2177,20 +2177,20 @@
 </tr>
 </tbody>
 </table>
-<p>The SDK creates all three sections and both events with <code>SDDL = D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)</code> &mdash; SYSTEM, BUILTIN\Administrators, and Everyone get <code>GENERIC_ALL</code>.</p>
+<p>The SDK creates all three sections and both events with <code>SDDL = D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)</code>: SYSTEM, BUILTIN\Administrators, and Everyone get <code>GENERIC_ALL</code>.</p>
 <p>The permissive DACL is required because:
 - The SDK consumer (admin) writes input frames.
-- WUDFHost runs as LocalService and <strong>lacks</strong> <code>SeCreateGlobalPrivilege</code>. The driver can <code>OpenFileMapping</code> but cannot <code>CreateFileMapping</code> in the <code>Global\</code> namespace &mdash; only the elevated SDK can.
+- WUDFHost runs as LocalService and <strong>lacks</strong> <code>SeCreateGlobalPrivilege</code>. The driver can <code>OpenFileMapping</code> but cannot <code>CreateFileMapping</code> in the <code>Global\</code> namespace: only the elevated SDK can.
 - Unelevated WGI / GameInput consumers may need to read indirectly via shared section paths.</p>
 <p>The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared-section permissions.</p>
 <hr />
 <h2 id="input-section-hidmaestro_shared_input">Input section: <code>HIDMAESTRO_SHARED_INPUT</code><a class="headerlink" href="#input-section-hidmaestro_shared_input" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">#pragma pack(push, 1)</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">_HIDMAESTRO_SHARED_INPUT</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">SeqNo</span><span class="p">;</span><span class="w">           </span><span class="c1">//  4 bytes — incremented each write</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">           </span><span class="n">DataSize</span><span class="p">;</span><span class="w">        </span><span class="c1">//  4 bytes — HID input report data size (excluding Report ID)</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">Data</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span><span class="w">       </span><span class="c1">// 256 bytes — HID input report data (native descriptor format)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">GipData</span><span class="p">[</span><span class="mi">14</span><span class="p">];</span><span class="w">     </span><span class="c1">//  14 bytes — GIP-format data for XUSB GET_STATE</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">SeqNo</span><span class="p">;</span><span class="w">           </span><span class="c1">//  4 bytes: incremented each write</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">           </span><span class="n">DataSize</span><span class="p">;</span><span class="w">        </span><span class="c1">//  4 bytes: HID input report data size (excluding Report ID)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">Data</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span><span class="w">       </span><span class="c1">// 256 bytes: HID input report data (native descriptor format)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">GipData</span><span class="p">[</span><span class="mi">14</span><span class="p">];</span><span class="w">     </span><span class="c1">//  14 bytes: GIP-format data for XUSB GET_STATE</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span><span class="w"> </span><span class="n">HIDMAESTRO_SHARED_INPUT</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">PHIDMAESTRO_SHARED_INPUT</span><span class="p">;</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="cp">#pragma pack(pop)</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1">// Total: 278 bytes</span>
@@ -2200,7 +2200,7 @@
 <p>Covers every HID input report size in the profile database without truncation. DualSense BT report 0x31 is <strong>78 bytes</strong>; Switch Pro standard input reports can run to ~64; gyro / accelerometer passthrough on these pads writes motion values <strong>late</strong> in the report, so the prior 64-byte pipe (pre-2026-04-23) clipped exactly the motion fields consumers (Dolphin, Cemu, yuzu/Citron, RetroArch) needed.</p>
 <p>256 matches the mirror in <code>SHARED_OUTPUT</code>'s slot data cap and gives headroom for custom profile descriptors.</p>
 <h3 id="why-14-bytes-for-gipdata">Why 14 bytes for <code>GipData</code>?<a class="headerlink" href="#why-14-bytes-for-gipdata" title="Permanent link">&para;</a></h3>
-<p>The XUSB companion reads ONLY this slice on <code>IOCTL_XUSB_GET_STATE</code>. The SDK packs LX/LY/RX/RY/LT/RT/buttons into the 14 bytes for Xbox-VID profiles regardless of the descriptor declared in <code>Data</code> &mdash; so the same controller can serve DirectInput (descriptor-formatted bytes in <code>Data</code>) and XInput (GIP-formatted bytes in <code>GipData</code>) from one shared write.</p>
+<p>The XUSB companion reads ONLY this slice on <code>IOCTL_XUSB_GET_STATE</code>. The SDK packs LX/LY/RX/RY/LT/RT/buttons into the 14 bytes for Xbox-VID profiles regardless of the descriptor declared in <code>Data</code>: so the same controller can serve DirectInput (descriptor-formatted bytes in <code>Data</code>) and XInput (GIP-formatted bytes in <code>GipData</code>) from one shared write.</p>
 <p>Layout:</p>
 <table>
 <thead>
@@ -2253,7 +2253,7 @@
 </tr>
 </tbody>
 </table>
-<p>For non-Xbox-VID profiles, the GIP buffer is left zeroed (no XUSB companion is bound; the bytes are unused). The SDK's <code>_packsGipBuffer</code> flag short-circuits the packing entirely &mdash; ~60-80 instructions saved per frame on DualSense / Switch Pro / generic gamepad paths.</p>
+<p>For non-Xbox-VID profiles, the GIP buffer is left zeroed (no XUSB companion is bound; the bytes are unused). The SDK's <code>_packsGipBuffer</code> flag short-circuits the packing entirely: ~60-80 instructions saved per frame on DualSense / Switch Pro / generic gamepad paths.</p>
 <h3 id="seqlock-write-protocol-writer">Seqlock write protocol (writer)<a class="headerlink" href="#seqlock-write-protocol-writer" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// SDK side, in WriteInputFrame</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">// Increment SeqNo to odd → readers know &quot;writer is mid-update&quot;</span>
@@ -2271,7 +2271,7 @@
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="kt">int</span><span class="w"> </span><span class="n">retries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="k">do</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="n">seq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">seq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// mid-write — re-read once</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">seq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// mid-write: re-read once</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="n">MemoryBarrier</span><span class="p">();</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="cm">/* copy fields */</span>
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="n">MemoryBarrier</span><span class="p">();</span>
@@ -2279,10 +2279,10 @@
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">seq2</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="p">(</span><span class="n">seq1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
 <a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">--</span><span class="n">retries</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 </code></pre></div>
-<p>If <code>seq1 != seq2</code> after 4 retries, the read is unstable and is treated as "no new data" &mdash; will retry on the next event signal.</p>
+<p>If <code>seq1 != seq2</code> after 4 retries, the read is unstable and is treated as "no new data": will retry on the next event signal.</p>
 <p>The SDK's writer is single-threaded (the consumer's input thread) so reader contention is rare. Two readers (driver worker and companion <code>IOCTL_XUSB_GET_STATE</code> handler) can read concurrently; both use the seqlock and don't interfere.</p>
 <h3 id="cadence">Cadence<a class="headerlink" href="#cadence" title="Permanent link">&para;</a></h3>
-<p>The SDK doesn't pump frames itself &mdash; the consumer drives cadence. Typical rates:</p>
+<p>The SDK doesn't pump frames itself: the consumer drives cadence. Typical rates:</p>
 <ul>
 <li><strong>PadForge</strong>: 1000 Hz (consumer's polling-loop rate).</li>
 <li><strong>SdkDemo</strong>: 125 Hz (just enough to drive the example).</li>
@@ -2296,17 +2296,17 @@
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="cp">#pragma pack(push, 1)</span>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">_HIDMAESTRO_OUTPUT_SLOT</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">SeqNo</span><span class="p">;</span><span class="w">           </span><span class="c1">//  4 bytes — per-slot SeqNo, equal to Head value at write time</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">Source</span><span class="p">;</span><span class="w">          </span><span class="c1">//  1 byte  — HIDMAESTRO_OUTPUT_SOURCE_*</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">ReportId</span><span class="p">;</span><span class="w">        </span><span class="c1">//  1 byte  — HID Report ID (0 if no Report IDs)</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="n">USHORT</span><span class="w">          </span><span class="n">DataSize</span><span class="p">;</span><span class="w">        </span><span class="c1">//  2 bytes — bytes valid in Data[]</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">Data</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span><span class="w">       </span><span class="c1">// 256 bytes — payload</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">SeqNo</span><span class="p">;</span><span class="w">           </span><span class="c1">//  4 bytes: per-slot SeqNo, equal to Head value at write time</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">Source</span><span class="p">;</span><span class="w">          </span><span class="c1">//  1 byte: HIDMAESTRO_OUTPUT_SOURCE_*</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">ReportId</span><span class="p">;</span><span class="w">        </span><span class="c1">//  1 byte: HID Report ID (0 if no Report IDs)</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="n">USHORT</span><span class="w">          </span><span class="n">DataSize</span><span class="p">;</span><span class="w">        </span><span class="c1">//  2 bytes: bytes valid in Data[]</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">Data</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span><span class="w">       </span><span class="c1">// 256 bytes: payload</span>
 <a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">}</span><span class="w"> </span><span class="n">HIDMAESTRO_OUTPUT_SLOT</span><span class="p">;</span>
 <a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="c1">// Per-slot total: 264 bytes</span>
 <a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
 <a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">_HIDMAESTRO_SHARED_OUTPUT</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">          </span><span class="n">Head</span><span class="p">;</span><span class="w">            </span><span class="c1">//  4 bytes — monotonic total writes</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">                   </span><span class="n">_Reserved</span><span class="p">;</span><span class="w">       </span><span class="c1">//  4 bytes — reserved for future layout version</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">          </span><span class="n">Head</span><span class="p">;</span><span class="w">            </span><span class="c1">//  4 bytes: monotonic total writes</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">                   </span><span class="n">_Reserved</span><span class="p">;</span><span class="w">       </span><span class="c1">//  4 bytes: reserved for future layout version</span>
 <a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span><span class="n">HIDMAESTRO_OUTPUT_SLOT</span><span class="w">  </span><span class="n">Slots</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">       </span><span class="c1">// 64 × 264 = 16896 bytes</span>
 <a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="p">}</span><span class="w"> </span><span class="n">HIDMAESTRO_SHARED_OUTPUT</span><span class="p">;</span>
 <a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="cp">#pragma pack(pop)</span>
@@ -2319,7 +2319,7 @@
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="cp">#define HIDMAESTRO_OUTPUT_SOURCE_XINPUT       2   </span><span class="c1">// XInput</span>
 </code></pre></div>
 <p>For <code>Source = HidOutput</code> / <code>HidFeature</code>, <code>ReportId</code> is the HID Report ID byte (0 if descriptor uses none). For <code>Source = XInput</code>, <code>ReportId</code> is reserved (0); <code>Data</code> is the 5-byte XINPUT_VIBRATION-style payload from the IOCTL_XUSB_SET_STATE input buffer.</p>
-<p>The driver does <strong>not</strong> classify rumble vs haptic vs adaptive trigger &mdash; that distinction is semantic and lives in the consumer. See <a href="../../sdk/output-passthrough/">Output Passthrough</a>.</p>
+<p>The driver does <strong>not</strong> classify rumble vs haptic vs adaptive trigger: that distinction is semantic and lives in the consumer. See <a href="../../sdk/output-passthrough/">Output Passthrough</a>.</p>
 <h3 id="ring-buffer-write-protocol">Ring-buffer write protocol<a class="headerlink" href="#ring-buffer-write-protocol" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Writer (driver or companion)</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">ULONG</span><span class="w"> </span><span class="n">headNow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dst</span><span class="o">-&gt;</span><span class="n">Head</span><span class="p">;</span>
@@ -2351,31 +2351,31 @@
 <a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="c1">// Torn-write detection: read SeqNo before and after the field read</span>
 <a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="kt">uint</span><span class="w"> </span><span class="n">slotSeqBefore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slot</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span>
 <a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">slotSeqBefore</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">nextSeq</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">        </span><span class="c1">// The slot we expected has been overwritten — reader fell behind by ≥64</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">        </span><span class="c1">// The slot we expected has been overwritten: reader fell behind by ≥64</span>
 <a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">        </span><span class="c1">// Skip ahead; this is the &quot;drop&quot; path</span>
 <a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">        </span><span class="n">lastSeen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">currentHead</span><span class="p">;</span>
 <a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">        </span><span class="k">break</span><span class="p">;</span>
 <a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">    </span><span class="c1">// ... read Source, ReportId, DataSize, Data</span>
 <a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">    </span><span class="kt">uint</span><span class="w"> </span><span class="n">slotSeqAfter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slot</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">;</span>
-<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">slotSeqAfter</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">slotSeqBefore</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span><span class="w">   </span><span class="c1">// torn — retry</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">slotSeqAfter</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">slotSeqBefore</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span><span class="w">   </span><span class="c1">// torn: retry</span>
 <a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>
 <a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">    </span><span class="n">OutputReceived</span><span class="o">?.</span><span class="n">Invoke</span><span class="p">(</span><span class="n">controller</span><span class="p">,</span><span class="w"> </span><span class="n">packet</span><span class="p">);</span>
 <a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="w">    </span><span class="n">lastSeen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nextSeq</span><span class="p">;</span>
 <a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="p">}</span>
 </code></pre></div>
-<p>If <code>slotSeqBefore != nextSeq</code>, the reader has fallen behind by at least 64 writes &mdash; the slot we were going to read has been overwritten. The reader skips ahead to current Head and resumes; the consumer would see a SeqNo gap if it tracks them.</p>
+<p>If <code>slotSeqBefore != nextSeq</code>, the reader has fallen behind by at least 64 writes: the slot we were going to read has been overwritten. The reader skips ahead to current Head and resumes; the consumer would see a SeqNo gap if it tracks them.</p>
 <h3 id="reader-stall-threshold">Reader-stall threshold<a class="headerlink" href="#reader-stall-threshold" title="Permanent link">&para;</a></h3>
 <p>64 slots give the reader 512 ms of handler-stall headroom before the oldest packet would be overwritten (the reader itself is event-driven since issue #34, so drain latency is dispatch cost, not poll cadence). If the consumer's <code>OutputReceived</code> handler stalls past that threshold while the producer is bursting, the oldest packets get overwritten.</p>
 <p>Pre-1.1.40 the channel was single-slot, latest-write-wins. <code>pid.dll</code> writes Set Effect → Set Constant Force → Effect Operation Start within 1-3 ms; the middle (magnitude) packet got coalesced. Issue #16. The 64-slot ring is the fix.</p>
 <h3 id="periodic-mapping-refresh">Periodic mapping refresh<a class="headerlink" href="#periodic-mapping-refresh" title="Permanent link">&para;</a></h3>
-<p>The driver and companion both close and re-open the output mapping every 500 writes (~2 s at typical XInput polling rate) for stale-handle recovery. If the SDK tears down and recreates the section between sessions, the cached handle points at the old destroyed kernel object &mdash; writes go nowhere. Periodic re-open picks up the fresh section.</p>
+<p>The driver and companion both close and re-open the output mapping every 500 writes (~2 s at typical XInput polling rate) for stale-handle recovery. If the SDK tears down and recreates the section between sessions, the cached handle points at the old destroyed kernel object: writes go nowhere. Periodic re-open picks up the fresh section.</p>
 <hr />
 <h2 id="pid-ffb-state-section-hidmaestro_shared_pid_state">PID FFB state section: <code>HIDMAESTRO_SHARED_PID_STATE</code><a class="headerlink" href="#pid-ffb-state-section-hidmaestro_shared_pid_state" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="cp">#pragma pack(push, 1)</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">_HIDMAESTRO_SHARED_PID_STATE</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">SeqNo</span><span class="p">;</span><span class="w">                   </span><span class="c1">//  4 bytes — seqlock</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">PidEnabled</span><span class="p">;</span><span class="w">              </span><span class="c1">//  1 byte — 0 until first PublishPidPool</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">SeqNo</span><span class="p">;</span><span class="w">                   </span><span class="c1">//  4 bytes: seqlock</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">PidEnabled</span><span class="p">;</span><span class="w">              </span><span class="c1">//  1 byte: 0 until first PublishPidPool</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">_pad0</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
 <a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
 <a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="cm">/* Block Load Report (0x12) */</span>
@@ -2394,13 +2394,13 @@
 <a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">_pad1</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 <a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>
 <a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="w">    </span><span class="cm">/* Driver-side EBI free-list */</span>
-<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">EbiAllocBitmap</span><span class="p">;</span><span class="w">          </span><span class="c1">//  4 bytes — bit N = EBI N+1 allocated</span>
-<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">EbiAllocatedCount</span><span class="p">;</span><span class="w">       </span><span class="c1">//  4 bytes — count</span>
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">EbiAllocBitmap</span><span class="p">;</span><span class="w">          </span><span class="c1">//  4 bytes: bit N = EBI N+1 allocated</span>
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">EbiAllocatedCount</span><span class="p">;</span><span class="w">       </span><span class="c1">//  4 bytes: count</span>
 <a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="p">}</span><span class="w"> </span><span class="n">HIDMAESTRO_SHARED_PID_STATE</span><span class="p">;</span>
 <a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="cp">#pragma pack(pop)</span>
 <a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="c1">// Total: 28 bytes</span>
 </code></pre></div>
-<p>Both producer and consumer in this case &mdash; the SDK consumer writes Pool / State, the driver writes Block Load and EBI bitmap. <strong>Different field groups</strong>, partitioned to avoid contention.</p>
+<p>Both producer and consumer in this case: the SDK consumer writes Pool / State, the driver writes Block Load and EBI bitmap. <strong>Different field groups</strong>, partitioned to avoid contention.</p>
 <h3 id="pidenabled-the-ffb-gate"><code>PidEnabled</code>: the FFB gate<a class="headerlink" href="#pidenabled-the-ffb-gate" title="Permanent link">&para;</a></h3>
 <p>Zero-initialized when the SDK creates the section. First call to <code>HMController.PublishPidPool</code> flips it to 1 atomic with the Pool fields write under the same seqlock cycle. Driver checks <code>PidEnabled</code> before reading any other field. When 0:</p>
 <ul>
@@ -2409,7 +2409,7 @@
 </ul>
 <p>This means a non-FFB consumer (PadForge with a non-FFB device, SdkDemo) can ignore the PID FFB API entirely and the driver will correctly tell DInput "no FFB" without surfacing as a half-broken FFB device.</p>
 <h3 id="wire-layout-matches-hid-pid-10-reports">Wire layout matches HID PID 1.0 reports<a class="headerlink" href="#wire-layout-matches-hid-pid-10-reports" title="Permanent link">&para;</a></h3>
-<p>The <code>BL_*</code>, <code>Pool_*</code>, <code>State_*</code> field groups are wire-format compatible with the HID PID 1.0 report layouts they correspond to. The driver can <code>memcpy</code> directly into the IOCTL output buffer with minimal packing &mdash; no field-by-field rebuilding.</p>
+<p>The <code>BL_*</code>, <code>Pool_*</code>, <code>State_*</code> field groups are wire-format compatible with the HID PID 1.0 report layouts they correspond to. The driver can <code>memcpy</code> directly into the IOCTL output buffer with minimal packing: no field-by-field rebuilding.</p>
 <h3 id="ebi-auto-allocation-v1137">EBI auto-allocation (v1.1.37+)<a class="headerlink" href="#ebi-auto-allocation-v1137" title="Permanent link">&para;</a></h3>
 <p><code>EbiAllocBitmap</code> is a 32-bit field (32 simultaneous effects max). The driver atomically allocates on <code>SetFeature(0x11 Create New Effect)</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// Driver side, inside SetFeature handler</span>
@@ -2431,16 +2431,16 @@
 <p>Mirrors vJoy's <code>Ffb_GetNextFreeEffect</code>. <code>pid.dll</code>'s follow-up <code>GetFeature(0x12 Block Load)</code> reads from the same shared section; the handshake completes within <code>pid.dll</code>'s synchronous IOCTL pair.</p>
 <p>The bitmap is <strong>outside</strong> the seqlock'd block intentionally so EBI alloc/free never has to synchronize with <code>PublishPid*</code> writers. <code>BL_*</code> fields ARE inside the seqlock and the driver writes them atomically with SeqNo increment after a successful allocation.</p>
 <p>The consumer reads the assigned EBI via <code>HMController.GetCurrentPidBlockLoad()</code>. See <a href="../../sdk/force-feedback/">Force Feedback</a> for the consumer-side pattern.</p>
-<p><code>PID Block Free</code> (Output 0x1B) writes are captured to the output ring as <code>HidOutput</code> so the consumer's handler can clear the bit if it wants to track. The driver does <strong>not</strong> auto-clear &mdash; deliberate; the consumer is responsible for that bookkeeping.</p>
+<p><code>PID Block Free</code> (Output 0x1B) writes are captured to the output ring as <code>HidOutput</code> so the consumer's handler can clear the bit if it wants to track. The driver does <strong>not</strong> auto-clear: deliberate; the consumer is responsible for that bookkeeping.</p>
 <hr />
 <h2 id="section-creation-lifecycle">Section creation lifecycle<a class="headerlink" href="#section-creation-lifecycle" title="Permanent link">&para;</a></h2>
 <p>The SDK consumer creates all three sections + both events in <code>SetupController</code> before binding the driver:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">// In DeviceOrchestrator.SetupController</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">SharedMemoryIO</span><span class="p">.</span><span class="n">EnsureInputMapping</span><span class="p">(</span><span class="n">controllerIndex</span><span class="p">);</span><span class="w">    </span><span class="c1">// creates Global\HIDMaestroInput&lt;N&gt; + Event</span>
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">SharedMemoryIO</span><span class="p">.</span><span class="n">EnsureOutputMapping</span><span class="p">(</span><span class="n">controllerIndex</span><span class="p">);</span><span class="w">   </span><span class="c1">// creates Global\HIDMaestroOutput&lt;N&gt;</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1">// PID state section is lazy — only created on first HMController.PublishPidPool call</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1">// PID state section is lazy: only created on first HMController.PublishPidPool call</span>
 </code></pre></div>
-<p>The driver and companion both <code>OpenFileMapping</code> (not <code>Create</code>) &mdash; LocalService doesn't have permission to create.</p>
+<p>The driver and companion both <code>OpenFileMapping</code> (not <code>Create</code>): LocalService doesn't have permission to create.</p>
 <p>The SDK closes (<code>CloseHandle</code>) all sections in <code>HMController.Dispose</code> after the device removal IOCTL completes. The kernel reclaims the <code>Global\</code> namespace entry once the last handle drops. If the SDK process crashes without closing, the kernel reclaims when the process exits.</p>
 <p>The driver's stale-handle recovery loop (close + re-open every 500 reads / writes) handles the cross-session case where the SDK creates a fresh section after a previous one was closed.</p>
 <hr />
@@ -2450,7 +2450,7 @@
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Offset  Bytes                          Field
 <a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>─────── ─────────────────────────────── ──────────────────────
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>0       42 00 00 00                    SeqNo = 0x42 (66 — even, stable)
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>0       42 00 00 00                    SeqNo = 0x42 (66: even, stable)
 <a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>4       40 00 00 00                    DataSize = 64 bytes
 <a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>8       01 ff bf 00 80 00 80 ...       Data[0..63] (DualSense report 0x01 layout):
 <a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>                                         [0]   = Report ID (1)
@@ -2470,12 +2470,12 @@
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../architecture-overview/">Architecture Overview</a> &mdash; the place of these sections in the full data flow.</li>
-<li><a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a> &mdash; the driver-side reader and worker-thread mechanics.</li>
-<li><a href="../xusb-companion/">XUSB Companion</a> &mdash; the second reader of the input section and second writer of the output ring.</li>
-<li><a href="../../sdk/output-passthrough/">Output Passthrough</a> &mdash; the consumer-side API on top of the output ring.</li>
-<li><a href="../../sdk/force-feedback/">Force Feedback</a> &mdash; the consumer-side API on top of the PID state section.</li>
-<li><a href="../../sdk/sdk-reference/">SDK Reference</a> &mdash; the public API surface that hides all of this.</li>
+<li><a href="../architecture-overview/">Architecture Overview</a>: the place of these sections in the full data flow.</li>
+<li><a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>: the driver-side reader and worker-thread mechanics.</li>
+<li><a href="../xusb-companion/">XUSB Companion</a>: the second reader of the input section and second writer of the output ring.</li>
+<li><a href="../../sdk/output-passthrough/">Output Passthrough</a>: the consumer-side API on top of the output ring.</li>
+<li><a href="../../sdk/force-feedback/">Force Feedback</a>: the consumer-side API on top of the PID state section.</li>
+<li><a href="../../sdk/sdk-reference/">SDK Reference</a>: the public API surface that hides all of this.</li>
 </ul>
 
 

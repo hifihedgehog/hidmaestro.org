@@ -2139,8 +2139,8 @@
 <li>Pending record deleted.</li>
 <li>Mutex released.</li>
 </ol>
-<p>If the process dies between steps 4 and 6 &mdash; that is, the override is in place but <code>Clear</code> never ran &mdash; the pending hive still has the record. The next <code>RecoverOrphans()</code> call replays the record and restores the original.</p>
-<p>Steps 2 and 3 happen under the same mutex, so a crash mid-sequence leaves the system in a recoverable state: either step 2 didn't complete (no override in effect, no orphan record &mdash; nothing to recover) or step 3 partially completed (<code>RecoverOrphans</code> restores what step 3 mutated even if only some of the three writes landed).</p>
+<p>If the process dies between steps 4 and 6, meaning the override is in place but <code>Clear</code> never ran, the pending hive still has the record. The next <code>RecoverOrphans()</code> call replays the record and restores the original.</p>
+<p>Steps 2 and 3 happen under the same mutex, so a crash mid-sequence leaves the system in a recoverable state: either step 2 didn't complete (no override in effect, no orphan record: nothing to recover) or step 3 partially completed (<code>RecoverOrphans</code> restores what step 3 mutated even if only some of the three writes landed).</p>
 <p>The captured per-target state lets <code>Clear</code> and <code>RecoverOrphans</code> restore each target independently, which matters when only one of the three keys existed pre-<code>Set</code>.</p>
 <hr />
 <h2 id="usage-pattern">Usage pattern<a class="headerlink" href="#usage-pattern" title="Permanent link">&para;</a></h2>
@@ -2166,14 +2166,14 @@
 <p>The HKLM <code>DirectInput</code> and HKLM <code>Joystick</code> targets are system-wide per VID:PID. If a real device with that VID:PID is connected while your override is active, DirectInput consumers see the override label for it too.</p>
 <p>For VID:PIDs where you have a virtual but no real device connected (e.g. an Xbox 360 controller spoofed when no physical 360 is attached), this is exactly what you want. For VID:PIDs that might collide with a connected real device, choose your label accordingly.</p>
 <h3 id="per-user-vs-per-machine">Per-user vs per-machine<a class="headerlink" href="#per-user-vs-per-machine" title="Permanent link">&para;</a></h3>
-<p>The HKCU <code>Joystick</code> target is per-calling-user. On a single-user workstation that matches the DirectInput scope visually; on a multi-user machine, only the user who called <code>Set</code> sees the <code>joy.cpl</code> label change &mdash; the HKLM paths still carry the override for DirectInput consumers regardless of user.</p>
+<p>The HKCU <code>Joystick</code> target is per-calling-user. On a single-user workstation that matches the DirectInput scope visually; on a multi-user machine, only the user who called <code>Set</code> sees the <code>joy.cpl</code> label change: the HKLM paths still carry the override for DirectInput consumers regardless of user.</p>
 <h3 id="cache-lifetime-in-directinput-joycpl">Cache lifetime in DirectInput / <code>joy.cpl</code><a class="headerlink" href="#cache-lifetime-in-directinput-joycpl" title="Permanent link">&para;</a></h3>
 <p>Both DirectInput and <code>joy.cpl</code> cache OEM names per-process on first enumeration. A <code>joy.cpl</code> window that was already open when the override changes keeps showing the stale label until it is closed and re-opened. Games that were already running behave the same way. <strong>Set before opening <code>joy.cpl</code> or launching games.</strong></p>
 <h3 id="admin-requirement">Admin requirement<a class="headerlink" href="#admin-requirement" title="Permanent link">&para;</a></h3>
-<p>All four methods require admin (HKLM write access). Read-only diagnostics like <code>ListActive</code> could in principle work without elevation but the API is admin-only for consistency &mdash; if you can't write, you also can't recover orphans, so denying the read closes a confusing failure mode where listing reports overrides the consumer can't actually clear.</p>
+<p>All four methods require admin (HKLM write access). Read-only diagnostics like <code>ListActive</code> could in principle work without elevation but the API is admin-only for consistency: if you can't write, you also can't recover orphans, so denying the read closes a confusing failure mode where listing reports overrides the consumer can't actually clear.</p>
 <hr />
 <h2 id="why-not-just-write-hklmdirectinput">Why not just write <code>HKLM\...\DirectInput\...</code><a class="headerlink" href="#why-not-just-write-hklmdirectinput" title="Permanent link">&para;</a></h2>
-<p>The naive approach &mdash; write <code>HKLM\...\DirectInput\VID_xxxx&amp;PID_xxxx\OEM\"OEM Name"</code> and call it done &mdash; works for VID:PIDs Windows hasn't preloaded. Most clones come with a preloaded HKCU label that wins the precedence battle, and the user sees no change.</p>
+<p>The naive approach, writing <code>HKLM\...\DirectInput\VID_xxxx&amp;PID_xxxx\OEM\"OEM Name"</code> and calling it done, works for VID:PIDs Windows hasn't preloaded. Most clones come with a preloaded HKCU label that wins the precedence battle, and the user sees no change.</p>
 <p>Writing only HKLM <code>DirectInput</code> was the v1.x.0 implementation. Real-world bug reports came in for clone-PID controllers showing pre-populated names like "PC TWIN SHOCK Gamepad" even after Set was called. The fix is the three-target write under a global mutex, captured before mutation. Issue #7.</p>
 <hr />
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
@@ -2181,9 +2181,9 @@
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../sdk-reference/">SDK Reference</a> &mdash; the raw <code>HMOemNameOverride</code> API surface in context.</li>
-<li><a href="../../start/quickstart/">Quickstart</a> &mdash; usage in the example/SdkDemo walkthrough (Step 0 + Step 3a).</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/oem-name-override.md"><code>docs/oem-name-override.md</code></a> &mdash; the long-form rationale doc shipped in the repo.</li>
+<li><a href="../sdk-reference/">SDK Reference</a>: the raw <code>HMOemNameOverride</code> API surface in context.</li>
+<li><a href="../../start/quickstart/">Quickstart</a>: usage in the example/SdkDemo walkthrough (Step 0 + Step 3a).</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/oem-name-override.md"><code>docs/oem-name-override.md</code></a>: the long-form rationale doc shipped in the repo.</li>
 </ul>
 
 

@@ -1,4 +1,4 @@
-# Troubleshooting
+﻿# Troubleshooting
 
 Symptom &rarr; cause &rarr; fix table for everything that's gone wrong in HIDMaestro deployments. Organized by phase: install, create, runtime input, output / FFB, multi-controller, teardown, and Windows-side state.
 
@@ -53,7 +53,7 @@ If cleanup itself fails (rare; usually means `hmswd.exe` is denied), reboot then
 Get-ChildItem Cert:\LocalMachine\TrustedPublisher | Where-Object Subject -like '*HIDMaestro*'
 ```
 
-If missing, run `HIDMaestroTest.exe cleanup` then call `InstallDriver` again &mdash; the install will regenerate the cert and place it in all three stores.
+If missing, run `HIDMaestroTest.exe cleanup` then call `InstallDriver` again: the install will regenerate the cert and place it in all three stores.
 
 ### Subsequent install replaces with stale binary
 
@@ -72,7 +72,7 @@ icacls "C:\Windows\System32\DriverStore\FileRepository\<dir>" /grant administrat
 :: Now delete
 rmdir /s /q "C:\Windows\System32\DriverStore\FileRepository\<dir>"
 
-:: Then run InstallDriver again — fresh extraction
+:: Then run InstallDriver again: fresh extraction
 ```
 
 Almost never needed in normal operation. The self-heal sweep prevents this from happening; if you hit it, capture state and file an issue.
@@ -81,7 +81,7 @@ Almost never needed in normal operation. The self-heal sweep prevents this from 
 
 **Cause**: missing `Microsoft.UniversalStore.HardwareWorkflow.*` dependency DLLs.
 
-**Fix**: the embedded payload is missing files. Reinstall the SDK package &mdash; this means the SDK assembly itself is corrupt, not a runtime issue.
+**Fix**: the embedded payload is missing files. Reinstall the SDK package: this means the SDK assembly itself is corrupt, not a runtime issue.
 
 ---
 
@@ -100,7 +100,7 @@ set HIDMAESTRO_DIAG=1
 
 Common causes:
 
-- **xinputhid binding hung.** Xbox Series BT profiles need `xinputhid.sys` to bind on the HID child. If the kernel xinputhid allocator is in a stuck state from prior session residue, the bind never completes. Reboot fixes it (clears xinputhid kernel state). v1.3.2's 500ms `WaitForXInputSlotClaim` cap means the consumer no longer freezes for 15s on this case &mdash; the controller still creates, just may not have an XInput slot until xinputhid recovers on its own (typically next reboot).
+- **xinputhid binding hung.** Xbox Series BT profiles need `xinputhid.sys` to bind on the HID child. If the kernel xinputhid allocator is in a stuck state from prior session residue, the bind never completes. Reboot fixes it (clears xinputhid kernel state). v1.3.2's 500ms `WaitForXInputSlotClaim` cap means the consumer no longer freezes for 15s on this case: the controller still creates, just may not have an XInput slot until xinputhid recovers on its own (typically next reboot).
 - **Stale ContainerID.** The reuse-existing fast path (see [SwDevice and PnP](reference/swdevice-and-pnp.md)) leaves an empty registry shell. v1.x.x.1's per-call atomic sequence number prevents this. If you hit it on a current build, capture `teardown_diag.log` and the registry state.
 
 ### Single Xbox Series BT create takes 13-14 seconds
@@ -181,7 +181,7 @@ Console.WriteLine($"Axes declared:    {profile.AxisCount}");
 Console.WriteLine($"InputReportSize:  {profile.InputReportSize}");
 ```
 
-If those don't match what you expect, the profile is wrong &mdash; either re-extract via `HMDeviceExtractor.Extract` or use `HMProfileBuilder` to define the right shape.
+If those don't match what you expect, the profile is wrong: either re-extract via `HMDeviceExtractor.Extract` or use `HMProfileBuilder` to define the right shape.
 
 ### Xbox 360 d-pad doesn't work in XInput consumers
 
@@ -256,7 +256,7 @@ Console.WriteLine($"PID FFB enabled (load status: {bl.LoadStatus})");
 
 **Cause options**:
 
-- For Xbox 360 Wired: the xinputhid UpperFilter tripwire isn't on the XUSB companion. Check `HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\<sid>_<idx>\UpperFilters` &mdash; should contain `xinputhid`. INF carries this; if missing, the install was corrupt.
+- For Xbox 360 Wired: the xinputhid UpperFilter tripwire isn't on the XUSB companion. Check `HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\<sid>_<idx>\UpperFilters`: should contain `xinputhid`. INF carries this; if missing, the install was corrupt.
 - For Xbox Series BT: xinputhid handles vibration internally as a HID Output report. Surfaces as `HMOutputSource.HidOutput` not `HMOutputSource.XInput`.
 - For plain HID: WGI dispatches a HID Output report directly. Subscribe to `HidOutput` source, not just `XInput`.
 
@@ -354,7 +354,7 @@ If they bother you cosmetically, `HIDMaestroTest.exe cleanup` clears them.
 
 This breaks real BT Xbox controllers (Code 43). HIDMaestro shares WUDFHost with Microsoft-shipped UMDF2 drivers; killing one host kills its currently-bound devices.
 
-**Fix**: let the system manage host lifetime. If you need to force-recover from a HIDMaestro state, use `HIDMaestroTest.exe cleanup` &mdash; that goes through proper PnP removal, not host termination.
+**Fix**: let the system manage host lifetime. If you need to force-recover from a HIDMaestro state, use `HIDMaestroTest.exe cleanup`: that goes through proper PnP removal, not host termination.
 
 ---
 
@@ -375,7 +375,7 @@ HIDMaestroTest.exe cleanup
 :: re-run your consumer
 ```
 
-Reboot is the strongest reset for kernel-state issues (xinputhid stuck, DriverStore corruption, host pool sharing). Don't reach for it first &mdash; cleanup handles 99% of cases &mdash; but it's the documented escape hatch for the 1%.
+Reboot is the strongest reset for kernel-state issues (xinputhid stuck, DriverStore corruption, host pool sharing). Don't reach for it first, since cleanup handles 99% of cases. It is the documented escape hatch for the 1%.
 
 ---
 
@@ -415,9 +415,9 @@ Include:
 
 ## See also
 
-- [Driver Install and Signing](reference/driver-install-and-signing.md) &mdash; the install pipeline that produces install-phase failure modes.
-- [Lifecycle and Teardown](reference/lifecycle-and-teardown.md) &mdash; the create / dispose orchestration with per-archetype latencies.
-- [Multi-Controller](reference/multi-controller.md) &mdash; the multi-controller regression scenarios and what they catch.
-- [Cross-API Coverage](reference/cross-api-coverage.md) &mdash; per-API browser vibration / WGI / XInput dispatch paths.
-- [Testing and Verification](reference/testing-and-verification.md) &mdash; how to reproduce a regression locally with `swap_regression.ps1`.
-- [Glossary](start/glossary.md) &mdash; term definitions for the unfamiliar.
+- [Driver Install and Signing](reference/driver-install-and-signing.md): the install pipeline that produces install-phase failure modes.
+- [Lifecycle and Teardown](reference/lifecycle-and-teardown.md): the create / dispose orchestration with per-archetype latencies.
+- [Multi-Controller](reference/multi-controller.md): the multi-controller regression scenarios and what they catch.
+- [Cross-API Coverage](reference/cross-api-coverage.md): per-API browser vibration / WGI / XInput dispatch paths.
+- [Testing and Verification](reference/testing-and-verification.md): how to reproduce a regression locally with `swap_regression.ps1`.
+- [Glossary](start/glossary.md): term definitions for the unfamiliar.

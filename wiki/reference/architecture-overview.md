@@ -14,12 +14,12 @@ graph TB
         HMSWD[hmswd.exe<br/>SwDeviceCreate, instance-id, container]
     end
 
-    subgraph "Per-controller WUDFHost — main HID"
+    subgraph "Per-controller WUDFHost: main HID"
         DRV[HIDMaestro.dll<br/>UMDF2 lower filter<br/>EvtIoDeviceControl]
         WORKER[Worker thread<br/>Event-driven shared-mem reader]
     end
 
-    subgraph "Per-controller WUDFHost — XUSB companion (Xbox 360 family only)"
+    subgraph "Per-controller WUDFHost: XUSB companion (Xbox 360 family only)"
         COMP[HMXInput.dll<br/>UMDF2 function driver<br/>IOCTL_XUSB_*]
         PUMP[8 ms WAIT_FOR_INPUT pump]
     end
@@ -106,7 +106,7 @@ Lines of code: ~4,500 in public surface (`HMContext` / `HMController` / `HidDesc
 
 ### 2. `HIDMaestro.dll`: the UMDF2 driver
 
-Lives in a per-controller `WUDFHost.exe` instance. Compiled from `driver/driver.c` (1,574 lines). Acts as a UMDF2 lower filter under `mshidumdf.sys` &mdash; the standard pattern from Microsoft's [`vhidmini2` sample](https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2). The HID class stack sees a real HID device; HIDMaestro is the user-mode component that:
+Lives in a per-controller `WUDFHost.exe` instance. Compiled from `driver/driver.c` (1,574 lines). Acts as a UMDF2 lower filter under `mshidumdf.sys`: the standard pattern from Microsoft's [`vhidmini2` sample](https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2). The HID class stack sees a real HID device; HIDMaestro is the user-mode component that:
 
 - Synthesizes the descriptor from the per-controller registry key written by the SDK at create time.
 - Owns a worker thread (`WorkerThread`) that opens the per-controller shared input section and signals on `Global\HIDMaestroInputEvent<N>` to wake on each new frame.
@@ -213,7 +213,7 @@ Raises HMController.OutputReceived(packet) on poll thread
   ↓ Consumer handler decodes per (Source, ReportId)
 ```
 
-Multiple `OutputReceived` invocations per poll iteration are normal &mdash; PID FFB writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms and all three drain on the next poll.
+Multiple `OutputReceived` invocations per poll iteration are normal: PID FFB writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms and all three drain on the next poll.
 
 ---
 
@@ -298,7 +298,7 @@ HIDMaestro/
 For symmetry with PadForge's wiki, here's what's deliberately out of scope:
 
 - **A polling engine.** No internal pump thread for input. Consumers drive cadence.
-- **A controller mapper.** No deadzones, sensitivity curves, button remapping at runtime &mdash; that's the consumer's job. PadForge handles the mapping; HIDMaestro just creates the virtuals.
+- **A controller mapper.** No deadzones, sensitivity curves, button remapping at runtime: that's the consumer's job. PadForge handles the mapping; HIDMaestro just creates the virtuals.
 - **A standalone app.** No UI, no settings, no config files of its own. The catalog is JSON in a DLL; the SDK is an API.
 - **A kernel driver.** Everything is user-mode. UMDF2 + self-signed cert + TrustedPublisher. No EV cert, no `bcdedit /set testsigning`, no reboot.
 - **A bus driver.** UMDF2 cannot publish PDOs. The XUSB companion is a peer device under the System class, not a child PDO of the main HID.
@@ -324,6 +324,6 @@ For symmetry with PadForge's wiki, here's what's deliberately out of scope:
 ## References
 
 - Microsoft Learn topics on UMDF2 framework, HID Architecture, and the WUDFRd reflector. Search by topic name on [learn.microsoft.com](https://learn.microsoft.com/).
-- [Microsoft `vhidmini2` sample](https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2) &mdash; the proven UMDF2 HID minidriver pattern.
-- [DsHidMini](https://github.com/nefarius/DsHidMini) &mdash; Nefarius's UMDF2 + xinputhid project; the architectural ancestor.
-- [References](references.md) &mdash; full source bibliography for every claim in this wiki.
+- [Microsoft `vhidmini2` sample](https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2): the proven UMDF2 HID minidriver pattern.
+- [DsHidMini](https://github.com/nefarius/DsHidMini): Nefarius's UMDF2 + xinputhid project; the architectural ancestor.
+- [References](references.md): full source bibliography for every claim in this wiki.

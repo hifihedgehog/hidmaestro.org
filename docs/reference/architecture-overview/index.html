@@ -1976,12 +1976,12 @@
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        HMSWD[hmswd.exe&lt;br/&gt;SwDeviceCreate, instance-id, container]
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    end
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    subgraph &quot;Per-controller WUDFHost — main HID&quot;
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    subgraph &quot;Per-controller WUDFHost: main HID&quot;
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        DRV[HIDMaestro.dll&lt;br/&gt;UMDF2 lower filter&lt;br/&gt;EvtIoDeviceControl]
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        WORKER[Worker thread&lt;br/&gt;Event-driven shared-mem reader]
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    end
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    subgraph &quot;Per-controller WUDFHost — XUSB companion (Xbox 360 family only)&quot;
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    subgraph &quot;Per-controller WUDFHost: XUSB companion (Xbox 360 family only)&quot;
 <a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        COMP[HMXInput.dll&lt;br/&gt;UMDF2 function driver&lt;br/&gt;IOCTL_XUSB_*]
 <a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        PUMP[8 ms WAIT_FOR_INPUT pump]
 <a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    end
@@ -2061,7 +2061,7 @@
 </ul>
 <p>Lines of code: ~4,500 in public surface (<code>HMContext</code> / <code>HMController</code> / <code>HidDescriptorBuilder</code> / <code>HMProfileBuilder</code> / <code>HMDeviceExtractor</code> / <code>HMOemNameOverride</code> / value types) plus ~9,000 in <code>Internal/</code> (<code>DeviceOrchestrator</code>, <code>DeviceManager</code>, <code>SwdDeviceFactory</code>, <code>DriverBuilder</code>, <code>HidDescriptorReconstructor</code>, <code>HidReportBuilder</code>, <code>SharedMemoryIO</code>, <code>OemNameOverrideStore</code>, <code>PnputilHelper</code>, etc.).</p>
 <h3 id="2-hidmaestrodll-the-umdf2-driver">2. <code>HIDMaestro.dll</code>: the UMDF2 driver<a class="headerlink" href="#2-hidmaestrodll-the-umdf2-driver" title="Permanent link">&para;</a></h3>
-<p>Lives in a per-controller <code>WUDFHost.exe</code> instance. Compiled from <code>driver/driver.c</code> (1,574 lines). Acts as a UMDF2 lower filter under <code>mshidumdf.sys</code> &mdash; the standard pattern from Microsoft's <a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2"><code>vhidmini2</code> sample</a>. The HID class stack sees a real HID device; HIDMaestro is the user-mode component that:</p>
+<p>Lives in a per-controller <code>WUDFHost.exe</code> instance. Compiled from <code>driver/driver.c</code> (1,574 lines). Acts as a UMDF2 lower filter under <code>mshidumdf.sys</code>: the standard pattern from Microsoft's <a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2"><code>vhidmini2</code> sample</a>. The HID class stack sees a real HID device; HIDMaestro is the user-mode component that:</p>
 <ul>
 <li>Synthesizes the descriptor from the per-controller registry key written by the SDK at create time.</li>
 <li>Owns a worker thread (<code>WorkerThread</code>) that opens the per-controller shared input section and signals on <code>Global\HIDMaestroInputEvent&lt;N&gt;</code> to wake on each new frame.</li>
@@ -2166,7 +2166,7 @@
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>Raises HMController.OutputReceived(packet) on poll thread
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  ↓ Consumer handler decodes per (Source, ReportId)
 </code></pre></div>
-<p>Multiple <code>OutputReceived</code> invocations per poll iteration are normal &mdash; PID FFB writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms and all three drain on the next poll.</p>
+<p>Multiple <code>OutputReceived</code> invocations per poll iteration are normal: PID FFB writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms and all three drain on the next poll.</p>
 <hr />
 <h2 id="the-three-architecture-groups-recap">The three architecture groups (recap)<a class="headerlink" href="#the-three-architecture-groups-recap" title="Permanent link">&para;</a></h2>
 <table>
@@ -2264,7 +2264,7 @@
 <p>For symmetry with PadForge's wiki, here's what's deliberately out of scope:</p>
 <ul>
 <li><strong>A polling engine.</strong> No internal pump thread for input. Consumers drive cadence.</li>
-<li><strong>A controller mapper.</strong> No deadzones, sensitivity curves, button remapping at runtime &mdash; that's the consumer's job. PadForge handles the mapping; HIDMaestro just creates the virtuals.</li>
+<li><strong>A controller mapper.</strong> No deadzones, sensitivity curves, button remapping at runtime: that's the consumer's job. PadForge handles the mapping; HIDMaestro just creates the virtuals.</li>
 <li><strong>A standalone app.</strong> No UI, no settings, no config files of its own. The catalog is JSON in a DLL; the SDK is an API.</li>
 <li><strong>A kernel driver.</strong> Everything is user-mode. UMDF2 + self-signed cert + TrustedPublisher. No EV cert, no <code>bcdedit /set testsigning</code>, no reboot.</li>
 <li><strong>A bus driver.</strong> UMDF2 cannot publish PDOs. The XUSB companion is a peer device under the System class, not a child PDO of the main HID.</li>
@@ -2322,9 +2322,9 @@
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Microsoft Learn topics on UMDF2 framework, HID Architecture, and the WUDFRd reflector. Search by topic name on <a href="https://learn.microsoft.com/">learn.microsoft.com</a>.</li>
-<li><a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2">Microsoft <code>vhidmini2</code> sample</a> &mdash; the proven UMDF2 HID minidriver pattern.</li>
-<li><a href="https://github.com/nefarius/DsHidMini">DsHidMini</a> &mdash; Nefarius's UMDF2 + xinputhid project; the architectural ancestor.</li>
-<li><a href="../references/">References</a> &mdash; full source bibliography for every claim in this wiki.</li>
+<li><a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2">Microsoft <code>vhidmini2</code> sample</a>: the proven UMDF2 HID minidriver pattern.</li>
+<li><a href="https://github.com/nefarius/DsHidMini">DsHidMini</a>: Nefarius's UMDF2 + xinputhid project; the architectural ancestor.</li>
+<li><a href="../references/">References</a>: full source bibliography for every claim in this wiki.</li>
 </ul>
 
 

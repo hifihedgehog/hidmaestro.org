@@ -1,6 +1,6 @@
-# Shared Memory Protocol
+﻿# Shared Memory Protocol
 
-The wire format of the three pagefile-backed shared memory sections HIDMaestro uses for cross-process communication between the SDK (consumer process) and the driver (`HIDMaestro.dll` in WUDFHost) plus the XUSB companion (`HMXInput.dll` in another WUDFHost). All three are RAM-only &mdash; no disk I/O.
+The wire format of the three pagefile-backed shared memory sections HIDMaestro uses for cross-process communication between the SDK (consumer process) and the driver (`HIDMaestro.dll` in WUDFHost) plus the XUSB companion (`HMXInput.dll` in another WUDFHost). All three are RAM-only: no disk I/O.
 
 This page is the byte-level reference. For the SDK-facing API that wraps these sections, see [SDK Reference](../sdk/sdk-reference.md). For the driver-side seqlock readers, see [UMDF2 Driver Internals](umdf2-driver-internals.md).
 
@@ -23,11 +23,11 @@ Plus two named events for wake-up:
 | Input data | `Global\HIDMaestroInputEvent<N>` | Auto-reset; signaled by the SDK after every input frame. Driver worker thread waits on this. |
 | Stop | `Global\HIDMaestroStopEvent<N>` | Manual-reset; signaled by the driver to stop its worker thread on device unload. |
 
-The SDK creates all three sections and both events with `SDDL = D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)` &mdash; SYSTEM, BUILTIN\Administrators, and Everyone get `GENERIC_ALL`.
+The SDK creates all three sections and both events with `SDDL = D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)`: SYSTEM, BUILTIN\Administrators, and Everyone get `GENERIC_ALL`.
 
 The permissive DACL is required because:
 - The SDK consumer (admin) writes input frames.
-- WUDFHost runs as LocalService and **lacks** `SeCreateGlobalPrivilege`. The driver can `OpenFileMapping` but cannot `CreateFileMapping` in the `Global\` namespace &mdash; only the elevated SDK can.
+- WUDFHost runs as LocalService and **lacks** `SeCreateGlobalPrivilege`. The driver can `OpenFileMapping` but cannot `CreateFileMapping` in the `Global\` namespace: only the elevated SDK can.
 - Unelevated WGI / GameInput consumers may need to read indirectly via shared section paths.
 
 The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared-section permissions.
@@ -39,10 +39,10 @@ The boundary is the IOCTL surface, which is mediated by the kernel HID stack and
 ```c
 #pragma pack(push, 1)
 typedef struct _HIDMAESTRO_SHARED_INPUT {
-    volatile ULONG  SeqNo;           //  4 bytes — incremented each write
-    ULONG           DataSize;        //  4 bytes — HID input report data size (excluding Report ID)
-    UCHAR           Data[256];       // 256 bytes — HID input report data (native descriptor format)
-    UCHAR           GipData[14];     //  14 bytes — GIP-format data for XUSB GET_STATE
+    volatile ULONG  SeqNo;           //  4 bytes: incremented each write
+    ULONG           DataSize;        //  4 bytes: HID input report data size (excluding Report ID)
+    UCHAR           Data[256];       // 256 bytes: HID input report data (native descriptor format)
+    UCHAR           GipData[14];     //  14 bytes: GIP-format data for XUSB GET_STATE
 } HIDMAESTRO_SHARED_INPUT, *PHIDMAESTRO_SHARED_INPUT;
 #pragma pack(pop)
 // Total: 278 bytes
@@ -58,7 +58,7 @@ Covers every HID input report size in the profile database without truncation. D
 
 ### Why 14 bytes for `GipData`?
 
-The XUSB companion reads ONLY this slice on `IOCTL_XUSB_GET_STATE`. The SDK packs LX/LY/RX/RY/LT/RT/buttons into the 14 bytes for Xbox-VID profiles regardless of the descriptor declared in `Data` &mdash; so the same controller can serve DirectInput (descriptor-formatted bytes in `Data`) and XInput (GIP-formatted bytes in `GipData`) from one shared write.
+The XUSB companion reads ONLY this slice on `IOCTL_XUSB_GET_STATE`. The SDK packs LX/LY/RX/RY/LT/RT/buttons into the 14 bytes for Xbox-VID profiles regardless of the descriptor declared in `Data`: so the same controller can serve DirectInput (descriptor-formatted bytes in `Data`) and XInput (GIP-formatted bytes in `GipData`) from one shared write.
 
 Layout:
 
@@ -73,7 +73,7 @@ Layout:
 | 12 | 8 | btnLow (A=0x01 B=0x02 X=0x04 Y=0x08 LB=0x10 RB=0x20 LS=0x40 RS=0x80) |
 | 13 | 8 | btnHigh (Back=0x01 Start=0x02 hat<<2 [bits 2-5] Guide=0x40) |
 
-For non-Xbox-VID profiles, the GIP buffer is left zeroed (no XUSB companion is bound; the bytes are unused). The SDK's `_packsGipBuffer` flag short-circuits the packing entirely &mdash; ~60-80 instructions saved per frame on DualSense / Switch Pro / generic gamepad paths.
+For non-Xbox-VID profiles, the GIP buffer is left zeroed (no XUSB companion is bound; the bytes are unused). The SDK's `_packsGipBuffer` flag short-circuits the packing entirely: ~60-80 instructions saved per frame on DualSense / Switch Pro / generic gamepad paths.
 
 ### Seqlock write protocol (writer)
 
@@ -97,7 +97,7 @@ ULONG seq1, seq2;
 int retries = 4;
 do {
     seq1 = src->SeqNo;
-    if (seq1 & 1) { seq1 = src->SeqNo; }   // mid-write — re-read once
+    if (seq1 & 1) { seq1 = src->SeqNo; }   // mid-write: re-read once
     MemoryBarrier();
     /* copy fields */
     MemoryBarrier();
@@ -106,13 +106,13 @@ do {
 } while (--retries > 0);
 ```
 
-If `seq1 != seq2` after 4 retries, the read is unstable and is treated as "no new data" &mdash; will retry on the next event signal.
+If `seq1 != seq2` after 4 retries, the read is unstable and is treated as "no new data": will retry on the next event signal.
 
 The SDK's writer is single-threaded (the consumer's input thread) so reader contention is rare. Two readers (driver worker and companion `IOCTL_XUSB_GET_STATE` handler) can read concurrently; both use the seqlock and don't interfere.
 
 ### Cadence
 
-The SDK doesn't pump frames itself &mdash; the consumer drives cadence. Typical rates:
+The SDK doesn't pump frames itself: the consumer drives cadence. Typical rates:
 
 - **PadForge**: 1000 Hz (consumer's polling-loop rate).
 - **SdkDemo**: 125 Hz (just enough to drive the example).
@@ -130,17 +130,17 @@ The driver's worker thread wakes on `SetEvent` so its CPU cost scales with submi
 
 #pragma pack(push, 1)
 typedef struct _HIDMAESTRO_OUTPUT_SLOT {
-    volatile ULONG  SeqNo;           //  4 bytes — per-slot SeqNo, equal to Head value at write time
-    UCHAR           Source;          //  1 byte  — HIDMAESTRO_OUTPUT_SOURCE_*
-    UCHAR           ReportId;        //  1 byte  — HID Report ID (0 if no Report IDs)
-    USHORT          DataSize;        //  2 bytes — bytes valid in Data[]
-    UCHAR           Data[256];       // 256 bytes — payload
+    volatile ULONG  SeqNo;           //  4 bytes: per-slot SeqNo, equal to Head value at write time
+    UCHAR           Source;          //  1 byte: HIDMAESTRO_OUTPUT_SOURCE_*
+    UCHAR           ReportId;        //  1 byte: HID Report ID (0 if no Report IDs)
+    USHORT          DataSize;        //  2 bytes: bytes valid in Data[]
+    UCHAR           Data[256];       // 256 bytes: payload
 } HIDMAESTRO_OUTPUT_SLOT;
 // Per-slot total: 264 bytes
 
 typedef struct _HIDMAESTRO_SHARED_OUTPUT {
-    volatile ULONG          Head;            //  4 bytes — monotonic total writes
-    ULONG                   _Reserved;       //  4 bytes — reserved for future layout version
+    volatile ULONG          Head;            //  4 bytes: monotonic total writes
+    ULONG                   _Reserved;       //  4 bytes: reserved for future layout version
     HIDMAESTRO_OUTPUT_SLOT  Slots[64];       // 64 × 264 = 16896 bytes
 } HIDMAESTRO_SHARED_OUTPUT;
 #pragma pack(pop)
@@ -159,7 +159,7 @@ Single-producer (the driver or companion, whichever IOCTL fires) → single-cons
 
 For `Source = HidOutput` / `HidFeature`, `ReportId` is the HID Report ID byte (0 if descriptor uses none). For `Source = XInput`, `ReportId` is reserved (0); `Data` is the 5-byte XINPUT_VIBRATION-style payload from the IOCTL_XUSB_SET_STATE input buffer.
 
-The driver does **not** classify rumble vs haptic vs adaptive trigger &mdash; that distinction is semantic and lives in the consumer. See [Output Passthrough](../sdk/output-passthrough.md).
+The driver does **not** classify rumble vs haptic vs adaptive trigger: that distinction is semantic and lives in the consumer. See [Output Passthrough](../sdk/output-passthrough.md).
 
 ### Ring-buffer write protocol
 
@@ -198,21 +198,21 @@ while (lastSeen < currentHead)
     // Torn-write detection: read SeqNo before and after the field read
     uint slotSeqBefore = slot->SeqNo;
     if (slotSeqBefore != nextSeq) {
-        // The slot we expected has been overwritten — reader fell behind by ≥64
+        // The slot we expected has been overwritten: reader fell behind by ≥64
         // Skip ahead; this is the "drop" path
         lastSeen = currentHead;
         break;
     }
     // ... read Source, ReportId, DataSize, Data
     uint slotSeqAfter = slot->SeqNo;
-    if (slotSeqAfter != slotSeqBefore) continue;   // torn — retry
+    if (slotSeqAfter != slotSeqBefore) continue;   // torn: retry
 
     OutputReceived?.Invoke(controller, packet);
     lastSeen = nextSeq;
 }
 ```
 
-If `slotSeqBefore != nextSeq`, the reader has fallen behind by at least 64 writes &mdash; the slot we were going to read has been overwritten. The reader skips ahead to current Head and resumes; the consumer would see a SeqNo gap if it tracks them.
+If `slotSeqBefore != nextSeq`, the reader has fallen behind by at least 64 writes: the slot we were going to read has been overwritten. The reader skips ahead to current Head and resumes; the consumer would see a SeqNo gap if it tracks them.
 
 ### Reader-stall threshold
 
@@ -222,7 +222,7 @@ Pre-1.1.40 the channel was single-slot, latest-write-wins. `pid.dll` writes Set 
 
 ### Periodic mapping refresh
 
-The driver and companion both close and re-open the output mapping every 500 writes (~2 s at typical XInput polling rate) for stale-handle recovery. If the SDK tears down and recreates the section between sessions, the cached handle points at the old destroyed kernel object &mdash; writes go nowhere. Periodic re-open picks up the fresh section.
+The driver and companion both close and re-open the output mapping every 500 writes (~2 s at typical XInput polling rate) for stale-handle recovery. If the SDK tears down and recreates the section between sessions, the cached handle points at the old destroyed kernel object: writes go nowhere. Periodic re-open picks up the fresh section.
 
 ---
 
@@ -231,8 +231,8 @@ The driver and companion both close and re-open the output mapping every 500 wri
 ```c
 #pragma pack(push, 1)
 typedef struct _HIDMAESTRO_SHARED_PID_STATE {
-    volatile ULONG  SeqNo;                   //  4 bytes — seqlock
-    UCHAR           PidEnabled;              //  1 byte — 0 until first PublishPidPool
+    volatile ULONG  SeqNo;                   //  4 bytes: seqlock
+    UCHAR           PidEnabled;              //  1 byte: 0 until first PublishPidPool
     UCHAR           _pad0[3];
 
     /* Block Load Report (0x12) */
@@ -251,14 +251,14 @@ typedef struct _HIDMAESTRO_SHARED_PID_STATE {
     UCHAR           _pad1[2];
 
     /* Driver-side EBI free-list */
-    volatile ULONG  EbiAllocBitmap;          //  4 bytes — bit N = EBI N+1 allocated
-    volatile ULONG  EbiAllocatedCount;       //  4 bytes — count
+    volatile ULONG  EbiAllocBitmap;          //  4 bytes: bit N = EBI N+1 allocated
+    volatile ULONG  EbiAllocatedCount;       //  4 bytes: count
 } HIDMAESTRO_SHARED_PID_STATE;
 #pragma pack(pop)
 // Total: 28 bytes
 ```
 
-Both producer and consumer in this case &mdash; the SDK consumer writes Pool / State, the driver writes Block Load and EBI bitmap. **Different field groups**, partitioned to avoid contention.
+Both producer and consumer in this case: the SDK consumer writes Pool / State, the driver writes Block Load and EBI bitmap. **Different field groups**, partitioned to avoid contention.
 
 ### `PidEnabled`: the FFB gate
 
@@ -271,7 +271,7 @@ This means a non-FFB consumer (PadForge with a non-FFB device, SdkDemo) can igno
 
 ### Wire layout matches HID PID 1.0 reports
 
-The `BL_*`, `Pool_*`, `State_*` field groups are wire-format compatible with the HID PID 1.0 report layouts they correspond to. The driver can `memcpy` directly into the IOCTL output buffer with minimal packing &mdash; no field-by-field rebuilding.
+The `BL_*`, `Pool_*`, `State_*` field groups are wire-format compatible with the HID PID 1.0 report layouts they correspond to. The driver can `memcpy` directly into the IOCTL output buffer with minimal packing: no field-by-field rebuilding.
 
 ### EBI auto-allocation (v1.1.37+)
 
@@ -301,7 +301,7 @@ The bitmap is **outside** the seqlock'd block intentionally so EBI alloc/free ne
 
 The consumer reads the assigned EBI via `HMController.GetCurrentPidBlockLoad()`. See [Force Feedback](../sdk/force-feedback.md) for the consumer-side pattern.
 
-`PID Block Free` (Output 0x1B) writes are captured to the output ring as `HidOutput` so the consumer's handler can clear the bit if it wants to track. The driver does **not** auto-clear &mdash; deliberate; the consumer is responsible for that bookkeeping.
+`PID Block Free` (Output 0x1B) writes are captured to the output ring as `HidOutput` so the consumer's handler can clear the bit if it wants to track. The driver does **not** auto-clear: deliberate; the consumer is responsible for that bookkeeping.
 
 ---
 
@@ -313,10 +313,10 @@ The SDK consumer creates all three sections + both events in `SetupController` b
 // In DeviceOrchestrator.SetupController
 SharedMemoryIO.EnsureInputMapping(controllerIndex);    // creates Global\HIDMaestroInput<N> + Event
 SharedMemoryIO.EnsureOutputMapping(controllerIndex);   // creates Global\HIDMaestroOutput<N>
-// PID state section is lazy — only created on first HMController.PublishPidPool call
+// PID state section is lazy: only created on first HMController.PublishPidPool call
 ```
 
-The driver and companion both `OpenFileMapping` (not `Create`) &mdash; LocalService doesn't have permission to create.
+The driver and companion both `OpenFileMapping` (not `Create`): LocalService doesn't have permission to create.
 
 The SDK closes (`CloseHandle`) all sections in `HMController.Dispose` after the device removal IOCTL completes. The kernel reclaims the `Global\` namespace entry once the last handle drops. If the SDK process crashes without closing, the kernel reclaims when the process exits.
 
@@ -333,7 +333,7 @@ Global\HIDMaestroInput3 view (after SDK write):
 
 Offset  Bytes                          Field
 ─────── ─────────────────────────────── ──────────────────────
-0       42 00 00 00                    SeqNo = 0x42 (66 — even, stable)
+0       42 00 00 00                    SeqNo = 0x42 (66: even, stable)
 4       40 00 00 00                    DataSize = 64 bytes
 8       01 ff bf 00 80 00 80 ...       Data[0..63] (DualSense report 0x01 layout):
                                          [0]   = Report ID (1)
@@ -357,9 +357,9 @@ DirectInput, SDL3 / HIDAPI, browser RawInput-fallback, and WGI all see the new b
 
 ## See also
 
-- [Architecture Overview](architecture-overview.md) &mdash; the place of these sections in the full data flow.
-- [UMDF2 Driver Internals](umdf2-driver-internals.md) &mdash; the driver-side reader and worker-thread mechanics.
-- [XUSB Companion](xusb-companion.md) &mdash; the second reader of the input section and second writer of the output ring.
-- [Output Passthrough](../sdk/output-passthrough.md) &mdash; the consumer-side API on top of the output ring.
-- [Force Feedback](../sdk/force-feedback.md) &mdash; the consumer-side API on top of the PID state section.
-- [SDK Reference](../sdk/sdk-reference.md) &mdash; the public API surface that hides all of this.
+- [Architecture Overview](architecture-overview.md): the place of these sections in the full data flow.
+- [UMDF2 Driver Internals](umdf2-driver-internals.md): the driver-side reader and worker-thread mechanics.
+- [XUSB Companion](xusb-companion.md): the second reader of the input section and second writer of the output ring.
+- [Output Passthrough](../sdk/output-passthrough.md): the consumer-side API on top of the output ring.
+- [Force Feedback](../sdk/force-feedback.md): the consumer-side API on top of the PID state section.
+- [SDK Reference](../sdk/sdk-reference.md): the public API surface that hides all of this.

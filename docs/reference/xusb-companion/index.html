@@ -1996,14 +1996,14 @@
 
 
 <h1 id="xusb-companion">XUSB Companion<a class="headerlink" href="#xusb-companion" title="Permanent link">&para;</a></h1>
-<p><code>HMXInput.dll</code> is a UMDF2 function driver that registers the XUSB device interface for non-xinputhid Xbox profiles. Created <strong>only</strong> for profiles where <code>vid == 0x045E</code> and <code>driverMode != "xinputhid"</code> &mdash; i.e. the Xbox 360 Wired family.</p>
+<p><code>HMXInput.dll</code> is a UMDF2 function driver that registers the XUSB device interface for non-xinputhid Xbox profiles. Created <strong>only</strong> for profiles where <code>vid == 0x045E</code> and <code>driverMode != "xinputhid"</code>: i.e. the Xbox 360 Wired family.</p>
 <p>The companion is a <strong>separate device node</strong> at <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code>, paired with the main HID device (<code>ROOT\VID_045E&amp;PID_028E&amp;IG_00\NNNN</code>) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because <code>mshidumdf.sys</code> suppresses XUSB IOCTLs on devices it hosts.</p>
 <p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c"><code>driver/companion.c</code></a> (745 lines), <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf"><code>driver/hidmaestro_xusb.inf</code></a>.</p>
 <p>For the main HID driver, see <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>. For why this exists at all (and not as a child PDO of the main HID), see <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
 <hr />
 <h2 id="why-a-separate-device">Why a separate device<a class="headerlink" href="#why-a-separate-device" title="Permanent link">&para;</a></h2>
 <p>UMDF2 drivers cannot publish PDOs as children of a bus. The WDF child-list / PDO-init APIs are KMDF-only; UMDF2 linker errors confirm. Real Xbox controllers expose XUSB and HID on a single physical device because the kernel-mode <code>xusb22.sys</code> is a bus driver that publishes both interfaces; we can't replicate that in user mode.</p>
-<p>The workaround is two peer device nodes that share a ContainerID. From the user's perspective (Settings, Device Manager, <code>xinput1_4</code>), they're one logical controller. From the OS's perspective they're two devnodes &mdash; one HIDClass, one System.</p>
+<p>The workaround is two peer device nodes that share a ContainerID. From the user's perspective (Settings, Device Manager, <code>xinput1_4</code>), they're one logical controller. From the OS's perspective they're two devnodes: one HIDClass, one System.</p>
 <p>The shared ContainerID (<code>{48494430-4D41-4553-5452-4F00...&lt;idx&gt;}</code>) is what makes Settings group them into one entry and what makes <code>xinput1_4!FUN_18000c728</code> dedupe them into a single XInput slot. See <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
 <hr />
 <h2 id="setup-class-system-not-xnacomposite">Setup class: System (not XnaComposite)<a class="headerlink" href="#setup-class-system-not-xnacomposite" title="Permanent link">&para;</a></h2>
@@ -2011,9 +2011,9 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Class       = System
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ClassGuid   = {4D36E97D-E325-11CE-BFC1-08002BE10318}
 </code></pre></div>
-<p><strong>Why System and not XnaComposite?</strong> Windows.Gaming.Input has a <code>OnPnpDeviceAdded</code> classifier that walks a hard-coded ClassGuid pass-list (<a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04">Ghidra-traced on Win11 26200</a>). XnaComposite triggers classifier branch 1 and creates a WGI Gamepad entity automatically &mdash; which would be a <strong>second</strong> WGI entity alongside the main HID device's HID-path Gamepad, hanging Windows.Gaming.Input.</p>
+<p><strong>Why System and not XnaComposite?</strong> Windows.Gaming.Input has a <code>OnPnpDeviceAdded</code> classifier that walks a hard-coded ClassGuid pass-list (<a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04">Ghidra-traced on Win11 26200</a>). XnaComposite triggers classifier branch 1 and creates a WGI Gamepad entity automatically: which would be a <strong>second</strong> WGI entity alongside the main HID device's HID-path Gamepad, hanging Windows.Gaming.Input.</p>
 <p>System class isn't on the classifier pass-list at all, so WGI doesn't auto-classify the companion. We then admit the companion to WGI's XUSB dispatch path manually via the <code>xinputhid</code> UpperFilter tripwire (see below).</p>
-<p><code>xinput1_4.dll</code>'s discovery enumerates <code>GUID_DEVINTERFACE_XUSB {EC87F1E3-...}</code> directly and does <strong>not</strong> filter by setup class &mdash; so HIDMAESTRO under System class is still XInput-discoverable via its <code>AddInterface</code> entry.</p>
+<p><code>xinput1_4.dll</code>'s discovery enumerates <code>GUID_DEVINTERFACE_XUSB {EC87F1E3-...}</code> directly and does <strong>not</strong> filter by setup class: so HIDMAESTRO under System class is still XInput-discoverable via its <code>AddInterface</code> entry.</p>
 <hr />
 <h2 id="hardware-id-matching">Hardware ID matching<a class="headerlink" href="#hardware-id-matching" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[Standard.NTamd64]
@@ -2022,8 +2022,8 @@
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>%DeviceDesc% = XUSB_Install, root\VID_045E&amp;PID_0719&amp;XI_00
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>%DeviceDesc% = XUSB_Install, root\HIDMaestroXUSB
 </code></pre></div>
-<p>Three VID-specific PIDs (Xbox 360 Wired, Xbox 360 Wireless Receiver, etc.) plus a generic <code>root\HIDMaestroXUSB</code> fallback. PnP's <code>DEVPKEY_Device_MatchingDeviceId</code> carries the right VID:PID string when the SDK writes the hardware ID list at create time. New Xbox 360 PIDs that aren't in the specific list fall through to the generic alias &mdash; still works, but loses the per-PID INF behavior.</p>
-<p>The <code>&amp;XI_00</code> suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code>, not <code>root\VID_*&amp;PID_*&amp;XI_00\*</code> &mdash; the hardware IDs above just give PnP something to match against during INF binding.</p>
+<p>Three VID-specific PIDs (Xbox 360 Wired, Xbox 360 Wireless Receiver, etc.) plus a generic <code>root\HIDMaestroXUSB</code> fallback. PnP's <code>DEVPKEY_Device_MatchingDeviceId</code> carries the right VID:PID string when the SDK writes the hardware ID list at create time. New Xbox 360 PIDs that aren't in the specific list fall through to the generic alias: still works, but loses the per-PID INF behavior.</p>
+<p>The <code>&amp;XI_00</code> suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code>, not <code>root\VID_*&amp;PID_*&amp;XI_00\*</code>: the hardware IDs above just give PnP something to match against during INF binding.</p>
 <hr />
 <h2 id="the-xinputhid-upperfilter-tripwire">The <code>xinputhid</code> UpperFilter tripwire<a class="headerlink" href="#the-xinputhid-upperfilter-tripwire" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[XUSB_HW_AddReg]
@@ -2036,14 +2036,14 @@
 <li>The device's ClassGuid is in a hard-coded four-entry pass-list (<code>HIDClass</code>, <code>XnaComposite</code>, two others), <strong>OR</strong></li>
 <li><code>IsDeviceOrAncestorFilteredBy(path, L"xinputhid")</code> returns true. This walks the ancestor chain's <code>UpperFilters</code> MULTI_SZ and does a literal <code>wcsncmp</code> against <code>"xinputhid"</code>.</li>
 </ol>
-<p>Path 1 doesn't admit System-class devices. Path 2 does &mdash; a <code>wcsncmp</code> doesn't care whether <code>xinputhid.sys</code> actually attached, only whether the string appears in the registry. So writing <code>UpperFilters = "xinputhid"</code> in the INF AddReg satisfies the wstring compare without loading the kernel filter.</p>
-<p>WGI then sees the companion publishing <code>GUID_DEVINTERFACE_XUSB</code> and dispatches via <code>LAB_18005f241</code> (the XUSB path). <code>IOCTL_XUSB_SET_STATE</code> from Chromium's <code>put_Vibration</code> lands in the companion's IOCTL handler with FF FF motor bytes &mdash; the empirical confirmation that this works.</p>
+<p>Path 1 doesn't admit System-class devices. Path 2 does: a <code>wcsncmp</code> doesn't care whether <code>xinputhid.sys</code> actually attached, only whether the string appears in the registry. So writing <code>UpperFilters = "xinputhid"</code> in the INF AddReg satisfies the wstring compare without loading the kernel filter.</p>
+<p>WGI then sees the companion publishing <code>GUID_DEVINTERFACE_XUSB</code> and dispatches via <code>LAB_18005f241</code> (the XUSB path). <code>IOCTL_XUSB_SET_STATE</code> from Chromium's <code>put_Vibration</code> lands in the companion's IOCTL handler with FF FF motor bytes: the empirical confirmation that this works.</p>
 <p>The same string is <strong>also</strong> written per-instance by the SDK to the <strong>main HID device</strong> for XUSB-companion profiles. That second write blocks WGI's <code>HidClient::CreateProvider</code> from synthesizing a duplicate HID-backed Gamepad for the same logical controller, so WGI shows exactly one Gamepad with live input and working vibration instead of two pads splitting the responsibilities.</p>
 <hr />
 <h2 id="what-hidmaestro-publishes">What HIDMAESTRO publishes<a class="headerlink" href="#what-hidmaestro-publishes" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">WdfDeviceCreateDeviceInterface</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">XUSB_GUID</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
 </code></pre></div>
-<p><strong>Only</strong> <code>GUID_DEVINTERFACE_XUSB</code>. Not <code>WinExInput</code> (<code>{6C53D5FD-...}</code>) &mdash; Ghidra decomp of <code>Windows.Gaming.Input.dll</code> (Win11 26200) found zero references to that GUID; it is <strong>not</strong> WGI's actual <code>GamepadAdded</code> source. Pre-v1.x.x INFs registered both; the duplicate-WGI-Gamepad hang documented in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md"><code>memory:feedback-one-wgi-device-per-controller.md</code></a> was the consequence.</p>
+<p><strong>Only</strong> <code>GUID_DEVINTERFACE_XUSB</code>. Not <code>WinExInput</code> (<code>{6C53D5FD-...}</code>): Ghidra decomp of <code>Windows.Gaming.Input.dll</code> (Win11 26200) found zero references to that GUID; it is <strong>not</strong> WGI's actual <code>GamepadAdded</code> source. Pre-v1.x.x INFs registered both; the duplicate-WGI-Gamepad hang documented in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md"><code>memory:feedback-one-wgi-device-per-controller.md</code></a> was the consequence.</p>
 <hr />
 <h2 id="per-instance-device-context">Per-instance device context<a class="headerlink" href="#per-instance-device-context" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">_COMPANION_CTX</span><span class="w"> </span><span class="p">{</span>
@@ -2170,11 +2170,11 @@
 <a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="n">SHORT</span><span class="w"> </span><span class="n">lx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">SHORT</span><span class="p">)(</span><span class="n">gipBuf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">gipBuf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mh">0x8000</span><span class="p">;</span>
 <a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a><span class="c1">// ... LX/LY/RX/RY same shape</span>
 </code></pre></div>
-<p>This is the v1.3.3 fix for issue #19 (Xbox 360 d-pad stuck on XInput). Pre-v1.3.3 the SDK never wrote the hat bits into <code>btnHigh</code> &mdash; XInput consumers hitting <code>xusb22</code> directly (SDL3 XInput backend, sample-quality XInput apps) saw no d-pad on Xbox 360 wired. HID-derived consumers (joy.cpl/DI, SDL3-HID, browsers via WGI) were unaffected because <code>BuildReportInto</code> correctly populated the descriptor's Hat Switch usage. v1.3.3 packs the hat into bits 2-5 of <code>btnHigh</code>; the companion's <code>IOCTL_XUSB_GET_STATE</code> handler unpacks back. See <code>HMController.cs:340-368</code> for the SDK side.</p>
+<p>This is the v1.3.3 fix for issue #19 (Xbox 360 d-pad stuck on XInput). Pre-v1.3.3 the SDK never wrote the hat bits into <code>btnHigh</code>: XInput consumers hitting <code>xusb22</code> directly (SDL3 XInput backend, sample-quality XInput apps) saw no d-pad on Xbox 360 wired. HID-derived consumers (joy.cpl/DI, SDL3-HID, browsers via WGI) were unaffected because <code>BuildReportInto</code> correctly populated the descriptor's Hat Switch usage. v1.3.3 packs the hat into bits 2-5 of <code>btnHigh</code>; the companion's <code>IOCTL_XUSB_GET_STATE</code> handler unpacks back. See <code>HMController.cs:340-368</code> for the SDK side.</p>
 <p>The Guide button (<code>HMButton.Guide</code> &rarr; bit 0x40 of <code>btnHigh</code>) is translated to the undocumented <code>XINPUT_GAMEPAD_GUIDE</code> (0x0400) bit returned by <code>XInputGetStateEx</code>.</p>
 <hr />
 <h2 id="ioctl_xusb_wait_for_input-the-async-input-pump"><code>IOCTL_XUSB_WAIT_FOR_INPUT</code>: the async input pump<a class="headerlink" href="#ioctl_xusb_wait_for_input-the-async-input-pump" title="Permanent link">&para;</a></h2>
-<p>WGI's <code>XusbDevice::QueueInputBuffer</code> (<code>Windows.Gaming.Input.dll @ 0x18006af0c</code>) issues <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> async via <code>InputOutputIoctlAsync</code> and waits for the 29-byte XUSB state to arrive. Completing it synchronously &mdash; or with an error &mdash; <strong>kills the pump</strong> (verified empirically), and <code>Gamepad::SendControllerVibration</code> silently bails at the <code>flag_0x184</code> gate because <code>OnInputResumed</code> never fires on the WGI Gamepad's <code>IGameControllerInputSink</code>.</p>
+<p>WGI's <code>XusbDevice::QueueInputBuffer</code> (<code>Windows.Gaming.Input.dll @ 0x18006af0c</code>) issues <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> async via <code>InputOutputIoctlAsync</code> and waits for the 29-byte XUSB state to arrive. Completing it synchronously, or with an error, <strong>kills the pump</strong> (verified empirically), and <code>Gamepad::SendControllerVibration</code> silently bails at the <code>flag_0x184</code> gate because <code>OnInputResumed</code> never fires on the WGI Gamepad's <code>IGameControllerInputSink</code>.</p>
 <p>So the companion has a manual-dispatch queue (<code>WaitForInputQueue</code>) and an 8 ms periodic timer (<code>CompanionPumpTimer</code>) that drains it:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">VOID</span><span class="w"> </span><span class="nf">CompanionPumpTimer</span><span class="p">(</span><span class="n">WDFTIMER</span><span class="w"> </span><span class="n">Timer</span><span class="p">)</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">{</span>
@@ -2224,7 +2224,7 @@
 </tr>
 </tbody>
 </table>
-<p>These constants are not documented anywhere &mdash; the values come from decomp + binary-search testing. See <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md"><code>memory:project-xinputhid-upperfilter-tripwire.md</code></a> for the discovery story.</p>
+<p>These constants are not documented anywhere: the values come from decomp + binary-search testing. See <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md"><code>memory:project-xinputhid-upperfilter-tripwire.md</code></a> for the discovery story.</p>
 <hr />
 <h2 id="ioctl_xusb_set_state-rumble-capture"><code>IOCTL_XUSB_SET_STATE</code>: rumble capture<a class="headerlink" href="#ioctl_xusb_set_state-rumble-capture" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">case</span><span class="w"> </span><span class="no">IOCTL_XUSB_SET_STATE</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2254,7 +2254,7 @@
 <a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="n">MemoryBarrier</span><span class="p">();</span>
 <a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="n">dst</span><span class="o">-&gt;</span><span class="n">Head</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newSeq</span><span class="p">;</span>
 </code></pre></div>
-<p><code>max(Head, OutputSeqNoLocal) + 1</code> prevents going backwards when both writers race &mdash; whichever increments <code>Head</code> last wins; the other's <code>OutputSeqNoLocal</code> catches up on the next write.</p>
+<p><code>max(Head, OutputSeqNoLocal) + 1</code> prevents going backwards when both writers race: whichever increments <code>Head</code> last wins; the other's <code>OutputSeqNoLocal</code> catches up on the next write.</p>
 <hr />
 <h2 id="stale-handle-recovery">Stale-handle recovery<a class="headerlink" href="#stale-handle-recovery" title="Permanent link">&para;</a></h2>
 <p>Both the input and output mappings have a stale-handle recovery loop. If the SDK tears down and recreates a shared memory section between sessions (RemoveAllVirtualControllers &rarr; Cleanup &rarr; EnsureInputMapping), the companion's cached handle points at the old destroyed section. SeqNo will never advance.</p>
@@ -2273,24 +2273,24 @@
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>UmdfHostProcessSharing      = ProcessSharingDisabled
 </code></pre></div>
 <p>Same rationale as the main HID INF. The async <code>WAIT_FOR_INPUT</code> pump + 8 ms periodic timer would otherwise serialize across every HIDMAESTRO instance in a single host. With per-instance hosts, each companion has its own thread pool and the pumps run in parallel.</p>
-<p>For 6 controllers (any mix), expect 6-12 <code>WUDFHost.exe</code> processes &mdash; one per main HID instance plus one per companion (companions only exist for non-xinputhid Xbox profiles).</p>
+<p>For 6 controllers (any mix), expect 6-12 <code>WUDFHost.exe</code> processes: one per main HID instance plus one per companion (companions only exist for non-xinputhid Xbox profiles).</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../architecture-overview/">Architecture Overview</a> &mdash; the companion's place in the full stack.</li>
-<li><a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a> &mdash; the main HID driver this companion is paired with.</li>
-<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a> &mdash; how the companion gets its instance ID and ContainerID, and why <code>SwDeviceCreate</code> is the only way.</li>
-<li><a href="../cross-api-coverage/">Cross-API Coverage</a> &mdash; the WGI dispatch path the UpperFilter tripwire admits.</li>
-<li><a href="../../sdk/output-passthrough/">Output Passthrough</a> &mdash; the output ring the rumble bytes travel through.</li>
+<li><a href="../architecture-overview/">Architecture Overview</a>: the companion's place in the full stack.</li>
+<li><a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>: the main HID driver this companion is paired with.</li>
+<li><a href="../swdevice-and-pnp/">SwDevice and PnP</a>: how the companion gets its instance ID and ContainerID, and why <code>SwDeviceCreate</code> is the only way.</li>
+<li><a href="../cross-api-coverage/">Cross-API Coverage</a>: the WGI dispatch path the UpperFilter tripwire admits.</li>
+<li><a href="../../sdk/output-passthrough/">Output Passthrough</a>: the output ring the rumble bytes travel through.</li>
 </ul>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a> &mdash; full Ghidra decomp of <code>Windows.Gaming.Input.dll</code>'s <code>OnPnpDeviceAdded</code>, <code>IsDeviceOrAncestorFilteredBy</code>, and the <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> 29-byte response format that backs every reverse-engineered claim on this page.</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a> &mdash; the per-instance WUDFHost CPU-saturation investigation.</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/issues/19">HIDMaestro issue #19</a> &mdash; Xbox 360 d-pad XInput regression and v1.3.3 fix that motivated the current GIP <code>btnHigh</code> packing.</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c"><code>driver/companion.c</code></a> &mdash; the companion source itself, all 745 lines.</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf"><code>driver/hidmaestro_xusb.inf</code></a> &mdash; the INF that registers the System-class device with the <code>xinputhid</code> UpperFilter tripwire.</li>
-<li><a href="../references/">References</a> &mdash; full source bibliography.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a>: full Ghidra decomp of <code>Windows.Gaming.Input.dll</code>'s <code>OnPnpDeviceAdded</code>, <code>IsDeviceOrAncestorFilteredBy</code>, and the <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> 29-byte response format that backs every reverse-engineered claim on this page.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a>: the per-instance WUDFHost CPU-saturation investigation.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/issues/19">HIDMaestro issue #19</a>: Xbox 360 d-pad XInput regression and v1.3.3 fix that motivated the current GIP <code>btnHigh</code> packing.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c"><code>driver/companion.c</code></a>: the companion source itself, all 745 lines.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf"><code>driver/hidmaestro_xusb.inf</code></a>: the INF that registers the System-class device with the <code>xinputhid</code> UpperFilter tripwire.</li>
+<li><a href="../references/">References</a>: full source bibliography.</li>
 </ul>
 
 

@@ -1,4 +1,4 @@
-# OEM Name Override
+﻿# OEM Name Override
 
 `HMOemNameOverride` overrides the label `joy.cpl` and DirectInput consumers show for a given USB VID:PID. Use it when you want a HIDMaestro virtual (or any device sharing that VID:PID) to display a specific name in `joy.cpl` and DirectInput, overriding any Windows-shipped pre-populated label.
 
@@ -118,9 +118,9 @@ The pending hive at `HKLM\SOFTWARE\HIDMaestroOemOverrides` is written **before**
 10. Pending record deleted.
 11. Mutex released.
 
-If the process dies between steps 4 and 6 &mdash; that is, the override is in place but `Clear` never ran &mdash; the pending hive still has the record. The next `RecoverOrphans()` call replays the record and restores the original.
+If the process dies between steps 4 and 6, meaning the override is in place but `Clear` never ran, the pending hive still has the record. The next `RecoverOrphans()` call replays the record and restores the original.
 
-Steps 2 and 3 happen under the same mutex, so a crash mid-sequence leaves the system in a recoverable state: either step 2 didn't complete (no override in effect, no orphan record &mdash; nothing to recover) or step 3 partially completed (`RecoverOrphans` restores what step 3 mutated even if only some of the three writes landed).
+Steps 2 and 3 happen under the same mutex, so a crash mid-sequence leaves the system in a recoverable state: either step 2 didn't complete (no override in effect, no orphan record: nothing to recover) or step 3 partially completed (`RecoverOrphans` restores what step 3 mutated even if only some of the three writes landed).
 
 The captured per-target state lets `Clear` and `RecoverOrphans` restore each target independently, which matters when only one of the three keys existed pre-`Set`.
 
@@ -161,7 +161,7 @@ For VID:PIDs where you have a virtual but no real device connected (e.g. an Xbox
 
 ### Per-user vs per-machine
 
-The HKCU `Joystick` target is per-calling-user. On a single-user workstation that matches the DirectInput scope visually; on a multi-user machine, only the user who called `Set` sees the `joy.cpl` label change &mdash; the HKLM paths still carry the override for DirectInput consumers regardless of user.
+The HKCU `Joystick` target is per-calling-user. On a single-user workstation that matches the DirectInput scope visually; on a multi-user machine, only the user who called `Set` sees the `joy.cpl` label change: the HKLM paths still carry the override for DirectInput consumers regardless of user.
 
 ### Cache lifetime in DirectInput / `joy.cpl`
 
@@ -169,13 +169,13 @@ Both DirectInput and `joy.cpl` cache OEM names per-process on first enumeration.
 
 ### Admin requirement
 
-All four methods require admin (HKLM write access). Read-only diagnostics like `ListActive` could in principle work without elevation but the API is admin-only for consistency &mdash; if you can't write, you also can't recover orphans, so denying the read closes a confusing failure mode where listing reports overrides the consumer can't actually clear.
+All four methods require admin (HKLM write access). Read-only diagnostics like `ListActive` could in principle work without elevation but the API is admin-only for consistency: if you can't write, you also can't recover orphans, so denying the read closes a confusing failure mode where listing reports overrides the consumer can't actually clear.
 
 ---
 
 ## Why not just write `HKLM\...\DirectInput\...`
 
-The naive approach &mdash; write `HKLM\...\DirectInput\VID_xxxx&PID_xxxx\OEM\"OEM Name"` and call it done &mdash; works for VID:PIDs Windows hasn't preloaded. Most clones come with a preloaded HKCU label that wins the precedence battle, and the user sees no change.
+The naive approach, writing `HKLM\...\DirectInput\VID_xxxx&PID_xxxx\OEM\"OEM Name"` and calling it done, works for VID:PIDs Windows hasn't preloaded. Most clones come with a preloaded HKCU label that wins the precedence battle, and the user sees no change.
 
 Writing only HKLM `DirectInput` was the v1.x.0 implementation. Real-world bug reports came in for clone-PID controllers showing pre-populated names like "PC TWIN SHOCK Gamepad" even after Set was called. The fix is the three-target write under a global mutex, captured before mutation. Issue #7.
 
@@ -189,6 +189,6 @@ The full sequence lives in `OemNameOverrideStore.cs` (~325 lines). The API surfa
 
 ## See also
 
-- [SDK Reference](sdk-reference.md) &mdash; the raw `HMOemNameOverride` API surface in context.
-- [Quickstart](../start/quickstart.md) &mdash; usage in the example/SdkDemo walkthrough (Step 0 + Step 3a).
-- [`docs/oem-name-override.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/oem-name-override.md) &mdash; the long-form rationale doc shipped in the repo.
+- [SDK Reference](sdk-reference.md): the raw `HMOemNameOverride` API surface in context.
+- [Quickstart](../start/quickstart.md): usage in the example/SdkDemo walkthrough (Step 0 + Step 3a).
+- [`docs/oem-name-override.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/oem-name-override.md): the long-form rationale doc shipped in the repo.

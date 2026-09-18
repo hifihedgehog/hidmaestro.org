@@ -1,12 +1,12 @@
-# Quickstart
+﻿# Quickstart
 
 The shortest possible path from "I just cloned this repo" to "I have a virtual Xbox 360 controller and a virtual DualSense both visible in `joy.cpl`, both responding to input, and rumble events being captured".
 
-The walkthrough mirrors `example/SdkDemo/Program.cs` &mdash; a minimal SDK consumer that exercises every public surface.
+The walkthrough mirrors `example/SdkDemo/Program.cs`: a minimal SDK consumer that exercises every public surface.
 
 ## Prerequisites
 
-- HIDMaestro built (`scripts\build_all.cmd` &mdash; see [Installation](installation.md)).
+- HIDMaestro built (`scripts\build_all.cmd`: see [Installation](installation.md)).
 - An elevated terminal. `CreateController` and `InstallDriver` require admin.
 
 ```cmd
@@ -38,7 +38,7 @@ using var ctx = new HMContext();
 int loaded = ctx.LoadDefaultProfiles();   // returns 231
 ```
 
-`HMContext` is the SDK's process-wide entry point. The constructor is cheap &mdash; it kicks off three background prewarm tasks (driver-payload extraction to `%TEMP%`, profile catalog parse, GameInput service warm-up) but doesn't block.
+`HMContext` is the SDK's process-wide entry point. The constructor is cheap: it kicks off three background prewarm tasks (driver-payload extraction to `%TEMP%`, profile catalog parse, GameInput service warm-up) but doesn't block.
 
 `LoadDefaultProfiles` reads the embedded JSON catalog out of `HIDMaestro.Core.dll`. Consumers don't need to ship profile files alongside their app. To load profiles from disk instead (custom directory, modded profiles), use `LoadProfilesFromDirectory(path)`.
 
@@ -80,7 +80,7 @@ using var ctrl1 = ctx.CreateController(x360);
 
 Single-controller wall time: ~200 ms warm. Two mixed: ~1 s. The second create overlaps `pnputil` work with the first's PnP-binding wait so it's not strictly serial.
 
-`ctrl0` is the DualSense at controller index 0. `ctrl1` is the Xbox 360 Wired at index 1. The XInput slot allocator hands the Xbox 360 user-index 0 (DualSense doesn't claim an XInput slot &mdash; it's a non-Xbox-VID profile).
+`ctrl0` is the DualSense at controller index 0. `ctrl1` is the Xbox 360 Wired at index 1. The XInput slot allocator hands the Xbox 360 user-index 0 (DualSense doesn't claim an XInput slot: it's a non-Xbox-VID profile).
 
 `using var` matters: `Dispose` removes the device and frees the kernel slot. Forgetting it leaks the virtual until `HMContext.Dispose()` runs.
 
@@ -92,7 +92,7 @@ Single-controller wall time: ~200 ms warm. Two mixed: ~1 s. The second create ov
 HMOemNameOverride.Set(x360.VendorId, x360.ProductId, "My Custom 360");
 ```
 
-`joy.cpl` and DirectInput consumers will now show "My Custom 360" instead of "Controller (XBOX 360 For Windows)" for any VID_045E:PID_028E device until you `Clear`. The label sources from three registry locations and Windows pre-populates at least one for many clone PIDs &mdash; `Set` writes all three in a single transaction under a global mutex, capturing the prior values to the pending hive first so a crash doesn't leave the override stuck. See [OEM Name Override](../sdk/oem-name-override.md) for the full mechanism.
+`joy.cpl` and DirectInput consumers will now show "My Custom 360" instead of "Controller (XBOX 360 For Windows)" for any VID_045E:PID_028E device until you `Clear`. The label sources from three registry locations and Windows pre-populates at least one for many clone PIDs: `Set` writes all three in a single transaction under a global mutex, capturing the prior values to the pending hive first so a crash doesn't leave the override stuck. See [OEM Name Override](../sdk/oem-name-override.md) for the full mechanism.
 
 ---
 
@@ -116,9 +116,9 @@ ctrl1.OutputReceived += (sender, packet) =>
 };
 ```
 
-The output channel is a 64-slot ring drained on every SDK poll (~125 Hz). Multiple `OutputReceived` invocations per poll iteration are normal &mdash; DirectInput PID FFB writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms and all three surface here. See [Output Passthrough](../sdk/output-passthrough.md) for the wire format and decoding.
+The output channel is a 64-slot ring drained on every SDK poll (~125 Hz). Multiple `OutputReceived` invocations per poll iteration are normal: DirectInput PID FFB writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms and all three surface here. See [Output Passthrough](../sdk/output-passthrough.md) for the wire format and decoding.
 
-Handlers run on the SDK's poll thread, **not** your UI thread. Marshal back if needed. Keep handlers cheap &mdash; the ring will overwrite the oldest packets if a reader stalls past ~512 ms.
+Handlers run on the SDK's poll thread, **not** your UI thread. Marshal back if needed. Keep handlers cheap: the ring will overwrite the oldest packets if a reader stalls past ~512 ms.
 
 ---
 
@@ -152,7 +152,7 @@ while (sw.Elapsed < TimeSpan.FromSeconds(5))
 }
 ```
 
-`HMGamepadState` is the abstract input frame. Analog inputs live in a single `Dictionary<HMAxis, float> Axes` keyed by HID usage; values normalize to `[0..1]` (0.5 = centered for signed axes, 0.0 = released for unsigned). Buttons stay as a flags bitmask, hat as a cardinal/diagonal enum. The SDK encodes into the active profile's HID descriptor &mdash; you don't need to know whether the target is a DualSense, Xbox 360, or arcade stick.
+`HMGamepadState` is the abstract input frame. Analog inputs live in a single `Dictionary<HMAxis, float> Axes` keyed by HID usage; values normalize to `[0..1]` (0.5 = centered for signed axes, 0.0 = released for unsigned). Buttons stay as a flags bitmask, hat as a cardinal/diagonal enum. The SDK encodes into the active profile's HID descriptor: you don't need to know whether the target is a DualSense, Xbox 360, or arcade stick.
 
 For the common 4-stick + 2-trigger gamepad shape, `HMGamepadStateHelpers.StandardAxes(profile, ...)` resolves the canonical `(LX, LY, RX, RY, LT, RT)` slots into the right axis keys per profile (Sony's Z=right-stick, Rx=left-trigger axis map is honored). For HOTAS / wheel / pedal devices, drive any descriptor-declared usage directly: `state.Axes[HMAxis.Slider] = 0.7f`.
 

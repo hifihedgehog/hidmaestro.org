@@ -1,4 +1,4 @@
-# Lifecycle and Teardown
+﻿# Lifecycle and Teardown
 
 The full create / dispose orchestration. Per-archetype create budget, the three wait gates (`WaitForHidChild`, `WaitForDeviceStarted`, `WaitForXInputSlotClaim`), the SwD-first removal ordering, batch teardown, and the self-heal `RemoveAllVirtualControllers` that runs on `InstallDriver`.
 
@@ -27,7 +27,7 @@ For the SDK-side API, see [SDK Reference](../sdk/sdk-reference.md). For the unde
    Global\HIDMaestroOutput<N>         (created)
    Global\HIDMaestroInputEvent<N>     (created)
    Global\HIDMaestroStopEvent<N>      (created)
-   PID state section is lazy — only created on first PublishPidPool
+   PID state section is lazy: only created on first PublishPidPool
 5. Identity derivation (issue #60)
    token, ContainerID, ParentIdPrefix, serial: all from the identity key,
    or from the index when the caller passed none
@@ -57,13 +57,13 @@ After `SwDeviceCreate` (or `SetupDiCreateDeviceInfoW`) returns success, the devi
 
 PnP creates the HID child node under the parent we just created. Polls `CM_Locate_DevNodeW` for the expected child instance ID. Typical: <100 ms warm. Slow machines (Atom Z8350): up to 2 s. Cap at 10 s.
 
-If this times out, `SetupController` throws `InvalidOperationException` and best-effort cleanup runs. Cause: usually a corrupt INF or DriverStore inconsistency &mdash; rerun `RemoveAllVirtualControllers` then `InstallDriver` to repair.
+If this times out, `SetupController` throws `InvalidOperationException` and best-effort cleanup runs. Cause: usually a corrupt INF or DriverStore inconsistency: rerun `RemoveAllVirtualControllers` then `InstallDriver` to repair.
 
 ### Gate 2: `WaitForDeviceStarted` (5 s)
 
 Polls the HID child's `DEVPKEY_Device_DevNodeStatus` for `DN_STARTED`. The driver isn't fully bound until this status flips. Typical: <50 ms warm. Cap at 5 s.
 
-Without this gate, an immediate `SubmitState` after `CreateController` returns could land before the driver has opened the shared section &mdash; the seqno never increments and no input reaches the consumer.
+Without this gate, an immediate `SubmitState` after `CreateController` returns could land before the driver has opened the shared section: the seqno never increments and no input reaches the consumer.
 
 ### Gate 3: `WaitForXInputSlotClaim` (500 ms post-v1.3.2)
 
@@ -143,9 +143,9 @@ Without this, when a prior process crashed or was force-killed (Dispose never ra
 - The subsequent `/add-driver` then sees package-already-present + "Needed repairing" and **restores the stale bytes from `pnputil`'s internal cache** rather than installing the fresh extracted binary.
 - Net effect: every launch since the first one serves the stale driver forever, the v1.1.5 self-heal code never actually loads, input keeps hanging, and the only escape is manual `devcon` + TrustedInstaller `takeown` of the FileRepository subdirectory (which users do not have).
 
-Running the sweep here FIRST removes the bound devices via `devcon` (returning "Removed on reboot" is sufficient &mdash; the INF becomes eligible for package deletion immediately), so `FullDeploy`'s `/delete-driver` call actually succeeds and the fresh extracted binary replaces the DriverStore contents.
+Running the sweep here FIRST removes the bound devices via `devcon` (returning "Removed on reboot" is sufficient: the INF becomes eligible for package deletion immediately), so `FullDeploy`'s `/delete-driver` call actually succeeds and the fresh extracted binary replaces the DriverStore contents.
 
-The same call is exposed publicly as `HMContext.RemoveAllVirtualControllers()` for consumers who want explicit defensive cleanup (e.g. on app exit). In normal operation, individual `HMController.Dispose()` is sufficient &mdash; there is no per-process cleanup obligation on shutdown.
+The same call is exposed publicly as `HMContext.RemoveAllVirtualControllers()` for consumers who want explicit defensive cleanup (e.g. on app exit). In normal operation, individual `HMController.Dispose()` is sufficient: there is no per-process cleanup obligation on shutdown.
 
 ---
 
@@ -173,13 +173,13 @@ For SwD-enumerated devices, step 4 uses the SwD-first ordering (see below). For 
 
 ## SwD-first removal ordering (v1.3.1)
 
-Two of the three architecture groups own a SwDevice-enumerated parent: Xbox 360 Wired (XUSB companion is SwD) and Xbox Series BT (main HID is SwD). SwDevice lifetimes are anchored to the `HSWDEVICE` handle, **not** the PnP devnode &mdash; children of a SwD parent cannot fully unwind their query-remove cascade until the parent's handle drops its kernel refcount.
+Two of the three architecture groups own a SwDevice-enumerated parent: Xbox 360 Wired (XUSB companion is SwD) and Xbox Series BT (main HID is SwD). SwDevice lifetimes are anchored to the `HSWDEVICE` handle, **not** the PnP devnode: children of a SwD parent cannot fully unwind their query-remove cascade until the parent's handle drops its kernel refcount.
 
 ### Pre-v1.3.1: HID-children-first (broken)
 
 ```
 1. DIF_REMOVE on every HID child first
-2. WaitForDeviceRemoval per child (2,000 ms timeout each — always times out
+2. WaitForDeviceRemoval per child (2,000 ms timeout each: always times out
    because the parent is still holding the lifetime lock)
 3. Finally close the SwDevice handle
 
@@ -195,13 +195,13 @@ PadForge users with Xbox Series BT virtuals saw 11+ second "Disposing controller
 1. Close the SwDevice handle FIRST via hmswd.exe remove
 2. Block on CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED for the parent
 3. Mop up any HID children that survived the cascade
-   (usually zero — the SwD parent's release fires its children's removal in one cascade)
+   (usually zero: the SwD parent's release fires its children's removal in one cascade)
 
 Net cost: ~135 ms for Xbox 360 Wired
           ~500 ms for Xbox Series BT
 ```
 
-`CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED` is the kernel-side guarantee that the cascade has propagated, not just that the handle closed. Critical for callers that immediately follow with a recreate (live profile switch &mdash; the new controller's `SetupController` would race the old one's cleanup if we returned too early).
+`CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED` is the kernel-side guarantee that the cascade has propagated, not just that the handle closed. Critical for callers that immediately follow with a recreate (live profile switch: the new controller's `SetupController` would race the old one's cleanup if we returned too early).
 
 A second optimization in the same change: when a HIDMAESTRO sweep walks registry entries that exist only as `PHANTOM` (registry residue from prior sessions, no live devnode), skip the `hmswd.exe` `SwDeviceCreate`-reconnect roundtrip entirely. Saves ~50-75 ms per stale entry and prevents creep across same-process recreation cycles.
 
@@ -253,14 +253,14 @@ Internal sequence:
 2. Parallel.ForEach: each controller's Dispose runs concurrently
    (each takes its own per-controller lock; no contention)
 3. Set _batchDisposing = false
-4. RemoveOrphanHidChildrenBatch — single sweep
+4. RemoveOrphanHidChildrenBatch: single sweep
 ```
 
 The per-controller `Dispose` checks `_batchDisposing`; when set, it skips the per-controller orphan sweep that would otherwise run inside each `TeardownController`.
 
 For 4-6 mixed controllers the cleanup typically completes in 1.5-4 s end to end.
 
-`HMContext.Dispose()` itself uses an equivalent path internally &mdash; consumers don't need to call `DisposeControllersInParallel` explicitly unless they want the per-controller wall-clock telemetry.
+`HMContext.Dispose()` itself uses an equivalent path internally: consumers don't need to call `DisposeControllersInParallel` explicitly unless they want the per-controller wall-clock telemetry.
 
 ### Single-element / empty input
 
@@ -282,7 +282,7 @@ if (arr.Length == 1)
 
 ## Live profile switch
 
-Switching a slot's profile mid-session (`HMController.Dispose()` then `HMContext.CreateControllerAt(index, newProfile)`) is **synchronous** by design. Slot-allocation determinism requires the old devnode fully gone before the new one is created &mdash; otherwise the new device would race the old one's removal and might land in a slot the old one hasn't released yet.
+Switching a slot's profile mid-session (`HMController.Dispose()` then `HMContext.CreateControllerAt(index, newProfile)`) is **synchronous** by design. Slot-allocation determinism requires the old devnode fully gone before the new one is created: otherwise the new device would race the old one's removal and might land in a slot the old one hasn't released yet.
 
 Round-trip latencies are the dispose + create numbers above. PadForge's user-perceived "switch slot 1 from DualSense to Xbox 360 Wired" is ~850 ms post-v1.3.x.
 
@@ -301,15 +301,15 @@ var ctrl0 = ctx.CreateController(ctx.GetProfile("dualsense")!);
 var ctrl1 = ctx.CreateController(ctx.GetProfile("xbox-360-wired")!);
 var ctrl2 = ctx.CreateController(ctx.GetProfile("switch-pro")!);
 
-ctrl1.Dispose();    // dispose middle one — others stay live, slots renumber
+ctrl1.Dispose();    // dispose middle one: others stay live, slots renumber
 // ctrl0 still works at index 0
 // ctrl2 still works at index 2
 // indices 1 is free; next CreateController fills it
 ```
 
-Slot indices don't compact automatically. If you want sparse-to-dense compaction (after disposing index 1, want index 2 to become index 1), you have to dispose index 2 and recreate at index 1. The XInput user-index allocator handles this on its side independently &mdash; an XInput slot-N controller becoming slot-1 means a brief disconnect/reconnect at the XInput level for slot 2 consumers.
+Slot indices don't compact automatically. If you want sparse-to-dense compaction (after disposing index 1, want index 2 to become index 1), you have to dispose index 2 and recreate at index 1. The XInput user-index allocator handles this on its side independently: an XInput slot-N controller becoming slot-1 means a brief disconnect/reconnect at the XInput level for slot 2 consumers.
 
-PadForge does this compaction explicitly via the "bubble-up cascade" in its Step 5 InputManager &mdash; see PadForge's wiki for the consumer-side implementation. The SDK doesn't enforce a particular scheme.
+PadForge does this compaction explicitly via the "bubble-up cascade" in its Step 5 InputManager: see PadForge's wiki for the consumer-side implementation. The SDK doesn't enforce a particular scheme.
 
 ---
 
@@ -346,7 +346,7 @@ For deliberate cleanup (e.g. uninstalling HIDMaestro entirely), use:
 HIDMaestroTest.exe cleanup
 ```
 
-Which calls `RemoveAllVirtualControllers` + driver package uninstall. Don't reach for raw `pnputil /remove-device` or `devcon` &mdash; the cleanup command is the right interface.
+Which calls `RemoveAllVirtualControllers` + driver package uninstall. Don't reach for raw `pnputil /remove-device` or `devcon`: the cleanup command is the right interface.
 
 ---
 
@@ -357,7 +357,7 @@ Which calls `RemoveAllVirtualControllers` + driver package uninstall. Don't reac
 1. `HIDMaestroTest cleanup` (or `HMContext.RemoveAllVirtualControllers()`) FIRST to evict the devices.
 2. Plain `pnputil /delete-driver` (no `/uninstall`) if a package delete is even needed.
 
-`InstallDriver` is **idempotent across version bumps** &mdash; manual uninstall before reinstall is almost never the right move.
+`InstallDriver` is **idempotent across version bumps**: manual uninstall before reinstall is almost never the right move.
 
 The cleanup command does the right thing because:
 
@@ -370,9 +370,9 @@ The cleanup command does the right thing because:
 
 ## See also
 
-- [SDK Reference](../sdk/sdk-reference.md) &mdash; the public API that drives all of this.
-- [SwDevice and PnP](swdevice-and-pnp.md) &mdash; the per-controller PnP machinery.
-- [Multi-Controller](multi-controller.md) &mdash; multi-controller create / dispose patterns.
-- [Driver Install and Signing](driver-install-and-signing.md) &mdash; the InstallDriver step.
-- [Testing and Verification](testing-and-verification.md) &mdash; the regression battery that validates this end-to-end.
-- [Troubleshooting](../troubleshooting.md) &mdash; lifecycle-related symptoms and fixes.
+- [SDK Reference](../sdk/sdk-reference.md): the public API that drives all of this.
+- [SwDevice and PnP](swdevice-and-pnp.md): the per-controller PnP machinery.
+- [Multi-Controller](multi-controller.md): multi-controller create / dispose patterns.
+- [Driver Install and Signing](driver-install-and-signing.md): the InstallDriver step.
+- [Testing and Verification](testing-and-verification.md): the regression battery that validates this end-to-end.
+- [Troubleshooting](../troubleshooting.md): lifecycle-related symptoms and fixes.

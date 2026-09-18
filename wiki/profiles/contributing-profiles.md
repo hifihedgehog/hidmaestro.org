@@ -1,4 +1,4 @@
-# Contributing Profiles
+﻿# Contributing Profiles
 
 This is the **user-facing** page for submitting a controller profile to the catalog. The catalog ships with HIDMaestro and gets pulled into every consumer (PadForge, anyone else integrating the SDK), so contributing your device's profile means every HIDMaestro user can emulate it without owning one themselves.
 
@@ -43,10 +43,10 @@ The extractor's dropdown shows it as `VID_XXXX:PID_YYYY`. Copy that.
 | Option | When to pick |
 |--------|-------------|
 | **USB** | Wired through a USB cable (or USB-A receiver for wireless devices that present as USB). |
-| **Bluetooth** | Native Bluetooth pairing. Some controllers behave differently on BT vs USB &mdash; submit one profile per mode if so. |
+| **Bluetooth** | Native Bluetooth pairing. Some controllers behave differently on BT vs USB: submit one profile per mode if so. |
 | **BLE** | Bluetooth Low Energy. Newer wheels and some HOTAS sticks use this. |
 | **Wireless adapter** | Vendor-specific receivers (Xbox Wireless Adapter for Windows, Logitech Lightspeed). |
-| **Other** | Anything else &mdash; mention what in the Notes field. |
+| **Other** | Anything else: mention what in the Notes field. |
 
 ### Windows build
 
@@ -78,9 +78,9 @@ That's the shape that helps a maintainer review faster.
 
 Three boxes the template requires:
 
-1. **I physically own this device.** &mdash; profiles are extracted from real hardware. Synthesized / guessed descriptors don't go in the catalog.
-2. **The JSON was produced by `HIDMaestroProfileExtractor` without manual edits.** &mdash; ensures the profile matches what real users will see when running their own extraction.
-3. **I'm okay with redistribution under the HIDMaestro license** (MIT). &mdash; the catalog ships with the SDK and reaches every downstream consumer.
+1. **I physically own this device.** Profiles are extracted from real hardware. Synthesized / guessed descriptors don't go in the catalog.
+2. **The JSON was produced by `HIDMaestroProfileExtractor` without manual edits.** Ensures the profile matches what real users will see when running their own extraction.
+3. **I'm okay with redistribution under the HIDMaestro license** (MIT). The catalog ships with the SDK and reaches every downstream consumer.
 
 ---
 
@@ -110,7 +110,7 @@ Examples in the catalog:
 - `dualshock-4-v1.json` (USB) and `dualshock-4-v1-full.json` (BT, full extended report)
 - `dualsense.json` (USB) and `dualsense-bt.json` (BT) and `dualsense-bt-full.json` (BT extended)
 - `xbox-360-wired.json` and `xbox-360-wireless.json` (different PIDs, different connection)
-- `g29.json` (USB Logitech G driver mode) and `g29-ps4.json` (USB PS4 mode &mdash; different PID)
+- `g29.json` (USB Logitech G driver mode) and `g29-ps4.json` (USB PS4 mode: different PID)
 
 If you're not sure which mode produces which JSON, run the extractor in each mode and submit both.
 
@@ -134,9 +134,9 @@ This is rare. The HIDAPI algorithm covers ~98% of HID devices well; only vendor-
 
 ## Tips for high-quality contributions
 
-- **Run the extractor in the device's "default" mode.** If your DualSense has a "performance mode" toggle, capture standard mode first &mdash; that's what most users will encounter.
-- **Pick the right top-level collection.** Devices with multiple collections (Joystick + Gamepad on the same VID:PID) appear multiple times in the dropdown. Pick the one whose `(UsageLabel)` matches what you want games to see &mdash; (Gamepad) for gamepad-shaped controllers, (Joystick) for sticks/wheels.
-- **Test the round-trip.** After extracting, save the JSON to `C:\my-profiles\<id>.json`, then `HIDMaestroTest.exe emulate --profile-dir C:\my-profiles <id>` and check `joy.cpl` shows your device with the right name. If it doesn't, the extraction may have grabbed the wrong collection &mdash; try a different dropdown entry.
+- **Run the extractor in the device's "default" mode.** If your DualSense has a "performance mode" toggle, capture standard mode first: that's what most users will encounter.
+- **Pick the right top-level collection.** Devices with multiple collections (Joystick + Gamepad on the same VID:PID) appear multiple times in the dropdown. Pick the one whose `(UsageLabel)` matches what you want games to see: (Gamepad) for gamepad-shaped controllers, (Joystick) for sticks/wheels.
+- **Test the round-trip.** After extracting, save the JSON to `C:\my-profiles\<id>.json`, then `HIDMaestroTest.exe emulate --profile-dir C:\my-profiles <id>` and check `joy.cpl` shows your device with the right name. If it doesn't, the extraction may have grabbed the wrong collection: try a different dropdown entry.
 - **Capture both wired and wireless** if your device supports both. Two contributions, two issues.
 - **Include firmware version** in Notes if you know it. Some controllers' descriptors changed across firmware revisions.
 
@@ -165,7 +165,7 @@ The maintainer doesn't ask for a CLA. The license box is the contract.
 
 ## See also
 
-- [Profile Extractor](profile-extractor.md) &mdash; the tool that produces the JSON you're contributing.
-- [Profile System](profile-system.md) &mdash; the schema the JSON conforms to.
-- [Profile contribution issue template](https://github.com/hifihedgehog/HIDMaestro/issues/new?template=profile-contribution.yml) &mdash; the form to fill out.
-- [Latest release](https://github.com/hifihedgehog/HIDMaestro/releases/latest) &mdash; download the extractor.
+- [Profile Extractor](profile-extractor.md): the tool that produces the JSON you're contributing.
+- [Profile System](profile-system.md): the schema the JSON conforms to.
+- [Profile contribution issue template](https://github.com/hifihedgehog/HIDMaestro/issues/new?template=profile-contribution.yml): the form to fill out.
+- [Latest release](https://github.com/hifihedgehog/HIDMaestro/releases/latest): download the extractor.

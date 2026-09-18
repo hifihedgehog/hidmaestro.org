@@ -2157,7 +2157,7 @@
 </code></pre></div>
 <p>Vendor folder names are slugs of the manufacturer (<code>thrustmaster</code>, <code>8bitdo</code>, <code>vkbsim</code>). File names are slugs of the model (<code>xbox-360-wired</code>, <code>t-flight-hotas-x</code>, <code>dualsense-edge-bt</code>).</p>
 <p>The full vendor list at v1.3.4: 8bitdo, amazon, asetek, cammus, ch-products, fanatec, flydigi, google, heusinkveld, honeycomb, hori, logitech, microsoft, misc, moza, nacon, nintendo, pxn, razer, sega, simagic, simucube, snk, sony, steelseries, taito, thrustmaster, turtle-beach, valve, virpil, vkbsim, winwing.</p>
-<p>The <code>misc/</code> vendor catches everything else &mdash; arcade controllers, niche racing pedals, devices the contributor couldn't slot into a clean vendor namespace.</p>
+<p>The <code>misc/</code> vendor catches everything else: arcade controllers, niche racing pedals, devices the contributor couldn't slot into a clean vendor namespace.</p>
 <hr />
 <h2 id="schema">Schema<a class="headerlink" href="#schema" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
@@ -2279,7 +2279,7 @@
 <td><code>triggerMode</code></td>
 <td>string | null</td>
 <td>null</td>
-<td>Profile-level annotation describing the descriptor's trigger encoding: <code>combined</code> (descriptor declares one Z axis carrying <code>LT - RT</code>), <code>separate</code> (descriptor declares independent Z + Rz), or null for non-gamepad. <strong>Note:</strong> every Xbox profile surfaces in DirectInput as 5 axes with combined Z regardless of this annotation &mdash; the velocity-usage trick + xinputhid synthesis collapse separate-trigger descriptors into the canonical <code>xusb22.sys</code> 5-axis shape. WGI / browser see separate triggers via Vx/Vy + GameInput registry mapping.</td>
+<td>Profile-level annotation describing the descriptor's trigger encoding: <code>combined</code> (descriptor declares one Z axis carrying <code>LT - RT</code>), <code>separate</code> (descriptor declares independent Z + Rz), or null for non-gamepad. <strong>Note:</strong> every Xbox profile surfaces in DirectInput as 5 axes with combined Z regardless of this annotation: the velocity-usage trick + xinputhid synthesis collapse separate-trigger descriptors into the canonical <code>xusb22.sys</code> 5-axis shape. WGI / browser see separate triggers via Vx/Vy + GameInput registry mapping.</td>
 </tr>
 <tr>
 <td><code>driverMode</code></td>
@@ -2291,7 +2291,7 @@
 <td><code>driverPid</code></td>
 <td>string | null</td>
 <td>null</td>
-<td>PID override for hardware-ID matching only. The driver's INF-bind process matches against this PID; applications still see the real <code>pid</code> field via <code>HidD_GetAttributes</code>. Used for xinputhid-bound profiles where the real PID would be claimed by GameInput / HIDAPI &mdash; a sentinel like <code>0x0001</code> here makes those backends skip the device so SDL3 falls through to its XInput backend with the correct identity.</td>
+<td>PID override for hardware-ID matching only. The driver's INF-bind process matches against this PID; applications still see the real <code>pid</code> field via <code>HidD_GetAttributes</code>. Used for xinputhid-bound profiles where the real PID would be claimed by GameInput / HIDAPI: a sentinel like <code>0x0001</code> here makes those backends skip the device so SDL3 falls through to its XInput backend with the correct identity.</td>
 </tr>
 <tr>
 <td><code>companionOnly</code></td>
@@ -2350,8 +2350,8 @@
 <p>Write the reasoning into <code>notes</code> when you make this call in a profile of your own. The next person to compare the profile against a descriptor dump will find the mismatch and needs to know it was a decision.</p>
 <hr />
 <h2 id="vendor-blob-fields-extendedreport-extendedoutputreport">Vendor-blob fields (<code>extendedReport</code> / <code>extendedOutputReport</code>)<a class="headerlink" href="#vendor-blob-fields-extendedreport-extendedoutputreport" title="Permanent link">&para;</a></h2>
-<p>Some controllers' descriptors declare their input as a single opaque vendor-defined field — Sony BT (DualSense, DualSense Edge, DS4 BT) is the canonical example, but Switch Pro and various wheels follow the same pattern. The descriptor doesn't say which bytes carry sticks vs buttons vs gyro vs CRC; the wire format is firmware convention.</p>
-<p>Pre-v1.3.5 the SDK couldn't pack these — it would fall back to whatever simpler input report the descriptor declared first (Sony BT: Report 1, 9 bytes), which Steam Input misclassified and parsers like <code>dualsense-tester</code> couldn't read. v1.3.5 makes the byte layout data: profile JSON describes every field's type, position, and bit range; the SDK walks the field list as a generic codec.</p>
+<p>Some controllers' descriptors declare their input as a single opaque vendor-defined field: Sony BT (DualSense, DualSense Edge, DS4 BT) is the canonical example, but Switch Pro and various wheels follow the same pattern. The descriptor doesn't say which bytes carry sticks vs buttons vs gyro vs CRC; the wire format is firmware convention.</p>
+<p>Pre-v1.3.5 the SDK couldn't pack these: it would fall back to whatever simpler input report the descriptor declared first (Sony BT: Report 1, 9 bytes), which Steam Input misclassified and parsers like <code>dualsense-tester</code> couldn't read. v1.3.5 makes the byte layout data: profile JSON describes every field's type, position, and bit range; the SDK walks the field list as a generic codec.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&quot;extendedReport&quot;: {
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  &quot;reportId&quot;: &quot;0x31&quot;,     // hex string; emitted as the report ID byte
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  &quot;size&quot;: 78,             // total bytes including report ID at byte 0
@@ -2434,9 +2434,9 @@
 <p><code>semantic</code> is the dictionary key consumers see in <code>OutputDecoded.Fields</code> and pass to <code>HMOutputEncoder.Encode</code>. Pick names per your domain.</p>
 <h3 id="field-positioning-syntax">Field positioning syntax<a class="headerlink" href="#field-positioning-syntax" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>"byte": N</code> — single byte at offset N (0-indexed; byte 0 is the report ID)</li>
-<li><code>"bytes": "N-M"</code> — inclusive range [N..M] (used by <code>crc32-le</code>, <code>rgb24</code>, <code>bytes-passthrough</code>)</li>
-<li><code>"bits": "L-H"</code> — sub-byte bit range [L..H] within the byte/byte-range</li>
+<li><code>"byte": N</code>: single byte at offset N (0-indexed; byte 0 is the report ID)</li>
+<li><code>"bytes": "N-M"</code>: inclusive range [N..M] (used by <code>crc32-le</code>, <code>rgb24</code>, <code>bytes-passthrough</code>)</li>
+<li><code>"bits": "L-H"</code>: sub-byte bit range [L..H] within the byte/byte-range</li>
 </ul>
 <h3 id="crc32-scope">CRC32 scope<a class="headerlink" href="#crc32-scope" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&quot;scope&quot;: {
@@ -2463,7 +2463,7 @@
 <p>A profile with neither <code>armOn</code> nor <code>alwaysArmed</code> never runs the codec on the input direction, which is the correct default for every USB Sony profile and every plain-HID gamepad. The output direction ignores both fields.</p>
 <hr />
 <h3 id="when-to-use-extendedreport-vs-leave-it-unset">When to use <code>extendedReport</code> vs leave it unset<a class="headerlink" href="#when-to-use-extendedreport-vs-leave-it-unset" title="Permanent link">&para;</a></h3>
-<p>Set <code>extendedReport</code> only when the descriptor's first declared input is an opaque vendor blob and the wire format requires firmware-convention byte placement. For controllers whose descriptors fully describe the input report (Xbox 360 wired, DualSense USB, Switch Pro, every plain-HID gamepad), the descriptor-driven encoder packs correctly without an <code>extendedReport</code> block — leave it null/unset.</p>
+<p>Set <code>extendedReport</code> only when the descriptor's first declared input is an opaque vendor blob and the wire format requires firmware-convention byte placement. For controllers whose descriptors fully describe the input report (Xbox 360 wired, DualSense USB, Switch Pro, every plain-HID gamepad), the descriptor-driven encoder packs correctly without an <code>extendedReport</code> block: leave it null/unset.</p>
 <p><code>extendedOutputReport</code> is independent: even when the input descriptor is fully self-describing, declaring an <code>extendedOutputReport</code> lets consumers use <code>HMOutputEncoder.Encode(profile, fields)</code> to produce wire-format bytes for driving real devices without inline byte-packing. v1.3.5 ships output blocks for DS5 USB (Report 0x02), DS5 Edge USB, DS4 v1/v2 USB (Report 0x05), in addition to BT output blocks for the DS5 family (Report 0x31) and DS4 BT (Report 0x11).</p>
 <p>When <code>extendedReport</code> is set, the descriptor should declare the matching report ID first so the kernel HID stack delivers the right ID to consumers. The Sony BT profiles in v1.3.5 reorder their descriptors to put Report 0x31 (DS5 family) or Report 0x11 (DS4 family) INPUT before Report 1.</p>
 <hr />
@@ -2478,7 +2478,7 @@
 <p>Lightest stack. One <code>DIF_REMOVE</code> on the ROOT parent tears down the entire tree. No XUSB companion device, no Microsoft upper filter.</p>
 <h3 id="2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose">2. Non-xinputhid Xbox (~200-700 ms create, ~135 ms dispose)<a class="headerlink" href="#2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Xbox-VID profiles (<code>vid == 0x045E</code>) where <code>driverMode</code> is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running <code>HMXInput.dll</code>. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.</p>
-<p>Includes Xbox 360 Wired (<code>xbox-360-wired</code>), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, Xbox Adaptive (with caveats &mdash; this is a 6-profile group).</p>
+<p>Includes Xbox 360 Wired (<code>xbox-360-wired</code>), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, Xbox Adaptive (with caveats: this is a 6-profile group).</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ROOT\VID_045E&amp;PID_028E&amp;IG_00\NNNN    ← UMDF2 driver (main HID device)
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  │                                    UpperFilters += &quot;xinputhid&quot; per-instance
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  │                                    (SDK-written; blocks WGI from synthesizing
@@ -2490,13 +2490,13 @@
 <a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>  │                                    UpperFilters = &quot;xinputhid&quot; from INF
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>  │                                    (admits the companion to WGI&#39;s XUSB
 <a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>  │                                    dispatch; xinputhid.sys does not actually
-<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>  │                                    attach — wrong device class).
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>  │                                    attach: wrong device class).
 <a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>  └─ XUSB interface → XInput slot + WGI Gamepad
 </code></pre></div>
 <p>Medium stack, fast on both sides post-v1.3.2. Two device trees to tear down. The XUSB companion runs its own WUDFHost instance hosting <code>HMXInput.dll</code>, which needs its own PnP release cycle.</p>
 <h3 id="3-xinputhid-xbox-150-600-ms-create-500-ms-dispose">3. xinputhid Xbox (~150-600 ms create, ~500 ms dispose)<a class="headerlink" href="#3-xinputhid-xbox-150-600-ms-create-500-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Profiles with <code>driverMode: "xinputhid"</code>. These match <code>xinputhid.inf [GIP_Hid]</code> by hardware ID (<code>HID\VID_045E&amp;PID_0B13&amp;IG_00</code>), which binds Microsoft's <code>xinputhid.sys</code> as an upper filter on the HID child. xinputhid provides XInput delivery and 16-button HID descriptor synthesis natively: no XUSB companion needed, single Device Manager entry.</p>
-<p>Includes Xbox Series BT (<code>xbox-series-xs-bt</code>), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT &mdash; the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.</p>
+<p>Includes Xbox Series BT (<code>xbox-series-xs-bt</code>), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT: the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\&lt;sid&gt;_NNNN
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  │                                  ← UMDF2 driver via SwDeviceCreate
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  │                                    (mshidumdf host). Explicit non-sentinel
@@ -2514,7 +2514,7 @@
 </code></pre></div>
 <p>Both sides fast post-v1.3.2. xinputhid is a Microsoft inbox kernel filter driver; we don't ship it. The SwD-first removal ordering in v1.3.1 closes the SwD parent first, and the children cascade automatically.</p>
 <blockquote>
-<p>The 16-button synthesis is a <strong>known trade-off</strong>. Win11's xinputhid replaces the source descriptor's button declaration with a 15+ button Xbox One layout. This is incompatible with profiles that need the Xbox 360's 10-button fidelity through DirectInput (<code>btnfix.c</code> exists in the repo as an experimental approach but is incomplete &mdash; the trade-off stands as of v1.3.4). For Xbox 360 Wired the catalog profile uses driverMode=null + XUSB companion to keep 10 buttons through DI; for Xbox Series BT it accepts 16 buttons because the source descriptor already has 12 and the +4 are dead bits.</p>
+<p>The 16-button synthesis is a <strong>known trade-off</strong>. Win11's xinputhid replaces the source descriptor's button declaration with a 15+ button Xbox One layout. This is incompatible with profiles that need the Xbox 360's 10-button fidelity through DirectInput (<code>btnfix.c</code> exists in the repo as an experimental approach but is incomplete: the trade-off stands as of v1.3.4). For Xbox 360 Wired the catalog profile uses driverMode=null + XUSB companion to keep 10 buttons through DI; for Xbox Series BT it accepts 16 buttons because the source descriptor already has 12 and the +4 are dead bits.</p>
 </blockquote>
 <hr />
 <h2 id="how-createcontroller-resolves-a-profile">How <code>CreateController</code> resolves a profile<a class="headerlink" href="#how-createcontroller-resolves-a-profile" title="Permanent link">&para;</a></h2>
@@ -2541,7 +2541,7 @@
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1">// Custom directory of JSON profiles</span>
 <a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-profiles&quot;</span><span class="p">);</span>
 <a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1">// Mix both — embedded first, then custom (custom IDs win on collision)</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1">// Mix both: embedded first, then custom (custom IDs win on collision)</span>
 <a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
 <a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-overrides&quot;</span><span class="p">);</span>
 <a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
@@ -2550,7 +2550,7 @@
 <a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>
 <a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="c1">// Enumerate</span>
 <a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">AllProfiles</span><span class="p">)</span>
-<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;{profile.Id} — {profile.Name}&quot;</span><span class="p">);</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;{profile.Id}: {profile.Name}&quot;</span><span class="p">);</span>
 </code></pre></div>
 <p>Profiles are loaded into the context's catalog. Duplicate IDs are skipped (first wins). Schema files (<code>schema.json</code>) are ignored.</p>
 <p>A consumer that wants to ship a <strong>subset</strong> of the catalog (e.g. only racing wheels) loads just that subset:</p>
@@ -2566,7 +2566,7 @@
 <a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
 <a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">modded</span><span class="p">);</span><span class="w">   </span><span class="c1">// not loaded into ctx.AllProfiles</span>
 </code></pre></div>
-<p>The modded profile isn't registered in the catalog &mdash; it's used directly for one <code>CreateController</code> call. See <a href="../custom-profiles/">Custom Profiles</a> for the full clone / build / spoof patterns.</p>
+<p>The modded profile isn't registered in the catalog: it's used directly for one <code>CreateController</code> call. See <a href="../custom-profiles/">Custom Profiles</a> for the full clone / build / spoof patterns.</p>
 <hr />
 <h2 id="a-verbatim-profile-dissected-xbox-360-wired">A verbatim profile dissected: Xbox 360 Wired<a class="headerlink" href="#a-verbatim-profile-dissected-xbox-360-wired" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
@@ -2588,9 +2588,9 @@
 </code></pre></div>
 <p><strong><code>descriptor</code></strong> is the HIDMaestro-emitted descriptor. <strong><code>nativeDescriptor</code></strong> is the original from a real Xbox 360 controller. They differ because the catalog version uses Vx/Vy velocity usages to carry separate trigger values without DirectInput recognizing them as axes. The native descriptor declares Z + Rz directly; HIDMaestro's emitted version uses Z (combined trigger) + Vx + Vy (separate triggers) so DirectInput sees 5 axes (matching real xusb22.sys behavior) while WGI / browsers see separate triggers via the GameInput registry mapping. See <a href="../../reference/cross-api-coverage/">Cross-API Coverage</a>.</p>
 <p><strong><code>inputReportSize</code>: 18</strong> is data + 1 Report ID byte (the descriptor declares Report ID 0x01).</p>
-<p><strong><code>triggerMode</code>: "combined"</strong> annotates the descriptor's trigger encoding for this profile. The HIDMaestro-emitted descriptor declares one Z axis carrying <code>LT - RT</code> per real xusb22 DI semantics. <strong>All Xbox profiles</strong> present as 5 axes with combined Z in DirectInput regardless of <code>triggerMode</code> value &mdash; on profiles where <code>triggerMode == "separate"</code> (e.g. Xbox Series BT), xinputhid's synthesis layer collapses the descriptor's separate Z + Rz back into combined Z by the time DI reads the preparsed data. WGI and browser see separate triggers through the Vx/Vy + GameInput-mapping path.</p>
-<p><strong><code>driverMode</code></strong> is <strong>not present</strong> &mdash; null = plain HID via mshidumdf. With <code>vid == 0x045E</code>, this profile lands in <strong>architecture group 2</strong> (non-xinputhid Xbox + XUSB companion).</p>
-<p><strong><code>buttonMap</code></strong> is <strong>not present</strong> &mdash; identity Xbox layout (<code>HMButton.A</code> &rarr; descriptor button 0, etc.).</p>
+<p><strong><code>triggerMode</code>: "combined"</strong> annotates the descriptor's trigger encoding for this profile. The HIDMaestro-emitted descriptor declares one Z axis carrying <code>LT - RT</code> per real xusb22 DI semantics. <strong>All Xbox profiles</strong> present as 5 axes with combined Z in DirectInput regardless of <code>triggerMode</code> value: on profiles where <code>triggerMode == "separate"</code> (e.g. Xbox Series BT), xinputhid's synthesis layer collapses the descriptor's separate Z + Rz back into combined Z by the time DI reads the preparsed data. WGI and browser see separate triggers through the Vx/Vy + GameInput-mapping path.</p>
+<p><strong><code>driverMode</code></strong> is <strong>not present</strong>: null = plain HID via mshidumdf. With <code>vid == 0x045E</code>, this profile lands in <strong>architecture group 2</strong> (non-xinputhid Xbox + XUSB companion).</p>
+<p><strong><code>buttonMap</code></strong> is <strong>not present</strong>: identity Xbox layout (<code>HMButton.A</code> &rarr; descriptor button 0, etc.).</p>
 <hr />
 <h2 id="catalog-statistics">Catalog statistics<a class="headerlink" href="#catalog-statistics" title="Permanent link">&para;</a></h2>
 <p>As of v1.3.4:</p>
@@ -2640,12 +2640,12 @@
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../custom-profiles/">Custom Profiles</a> &mdash; clone, modify, build from scratch, spoof.</li>
-<li><a href="../profile-extractor/">Profile Extractor</a> &mdash; the GUI tool that reads profiles back from real devices.</li>
-<li><a href="../contributing-profiles/">Contributing Profiles</a> &mdash; submit a captured profile via GitHub issue.</li>
-<li><a href="../../reference/cross-api-coverage/">Cross-API Coverage</a> &mdash; the per-API translation a profile drives at runtime.</li>
-<li><a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> &mdash; per-architecture-group teardown latencies.</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/profiles/schema.json"><code>profiles/schema.json</code></a> &mdash; the canonical JSON Schema.</li>
+<li><a href="../custom-profiles/">Custom Profiles</a>: clone, modify, build from scratch, spoof.</li>
+<li><a href="../profile-extractor/">Profile Extractor</a>: the GUI tool that reads profiles back from real devices.</li>
+<li><a href="../contributing-profiles/">Contributing Profiles</a>: submit a captured profile via GitHub issue.</li>
+<li><a href="../../reference/cross-api-coverage/">Cross-API Coverage</a>: the per-API translation a profile drives at runtime.</li>
+<li><a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a>: per-architecture-group teardown latencies.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/profiles/schema.json"><code>profiles/schema.json</code></a>: the canonical JSON Schema.</li>
 </ul>
 
 

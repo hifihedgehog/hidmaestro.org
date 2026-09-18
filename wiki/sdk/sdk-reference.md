@@ -1,4 +1,4 @@
-# SDK Reference
+﻿# SDK Reference
 
 The full public surface of `HIDMaestro.Core.dll`. Five primary types: `HMContext` (process-wide entry point), `HMController` (live virtual device), `HMProfile` (immutable profile handle), `HMProfileBuilder` (custom-profile builder), and `HMGamepadState` (abstract input frame). Plus `HidDescriptorBuilder`, `HMDeviceExtractor`, `HMOemNameOverride`, and the PID FFB output types.
 
@@ -6,12 +6,12 @@ This page documents every method's contract, thread safety, throw conditions, an
 
 The deep-dive subjects each get their own page:
 
-- [HID Descriptor Builder](hid-descriptor-builder.md) &mdash; `HidDescriptorBuilder` API.
-- [Force Feedback](force-feedback.md) &mdash; `PublishPidPool` / `PublishPidBlockLoad` / `PublishPidState` / `GetCurrentPidBlockLoad`.
-- [Output Passthrough](output-passthrough.md) &mdash; `OutputReceived` event, `HMOutputPacket`, `HMOutputSource`.
-- [OEM Name Override](oem-name-override.md) &mdash; `HMOemNameOverride.Set` / `Clear` / `RecoverOrphans` / `ListActive`.
-- [Custom Profiles](../profiles/custom-profiles.md) &mdash; the `HMProfileBuilder` patterns.
-- [Profile Extractor](../profiles/profile-extractor.md) &mdash; `HMDeviceExtractor` API used by the GUI tool.
+- [HID Descriptor Builder](hid-descriptor-builder.md): `HidDescriptorBuilder` API.
+- [Force Feedback](force-feedback.md): `PublishPidPool` / `PublishPidBlockLoad` / `PublishPidState` / `GetCurrentPidBlockLoad`.
+- [Output Passthrough](output-passthrough.md): `OutputReceived` event, `HMOutputPacket`, `HMOutputSource`.
+- [OEM Name Override](oem-name-override.md): `HMOemNameOverride.Set` / `Clear` / `RecoverOrphans` / `ListActive`.
+- [Custom Profiles](../profiles/custom-profiles.md): the `HMProfileBuilder` patterns.
+- [Profile Extractor](../profiles/profile-extractor.md): `HMDeviceExtractor` API used by the GUI tool.
 
 ---
 
@@ -42,7 +42,7 @@ public static void RemoveAllVirtualControllers();
 
 `IsDriverInstalled` returns true if a HIDMaestro driver package matching the embedded payload's manifest hash is currently in the DriverStore. Does not require admin.
 
-`InstallDriver` extracts the embedded driver files to `%TEMP%`, generates / installs a self-signed code-signing certificate, signs the binaries, and registers them with `pnputil`. Idempotent &mdash; if the same hash is already installed, returns immediately. The temp extraction is deleted on success. **Requires admin** (`UnauthorizedAccessException` if not elevated). Throws `InvalidOperationException` if any signing or `pnputil` step fails. Always runs `RemoveAllVirtualControllers` first as a self-heal so a stale INF can't pin the install. See [Driver Install and Signing](../reference/driver-install-and-signing.md) for the full sequence.
+`InstallDriver` extracts the embedded driver files to `%TEMP%`, generates / installs a self-signed code-signing certificate, signs the binaries, and registers them with `pnputil`. Idempotent: if the same hash is already installed, returns immediately. The temp extraction is deleted on success. **Requires admin** (`UnauthorizedAccessException` if not elevated). Throws `InvalidOperationException` if any signing or `pnputil` step fails. Always runs `RemoveAllVirtualControllers` first as a self-heal so a stale INF can't pin the install. See [Driver Install and Signing](../reference/driver-install-and-signing.md) for the full sequence.
 
 `RemoveAllVirtualControllers` is static and instance-free. Removes every HIDMaestro virtual device on the system, including orphans from previous runs that crashed before disposing. **Requires admin.** Use this from a "cleanup" command-line subcommand or as a defensive call after a force-kill. The proven pattern: `HIDMaestroTest cleanup` invokes it.
 
@@ -61,7 +61,7 @@ public int LoadProfilesFromDirectory(string profilesDir);
 
 `LoadDefaultProfiles` loads the embedded catalog (231 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
 
-`LoadProfilesFromDirectory(path)` loads `*.json` from a directory matching the [Profile System](../profiles/profile-system.md) schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (`schema.json`) are skipped. Does not auto-load the embedded catalog &mdash; call both if you want catalog + custom.
+`LoadProfilesFromDirectory(path)` loads `*.json` from a directory matching the [Profile System](../profiles/profile-system.md) schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (`schema.json`) are skipped. Does not auto-load the embedded catalog: call both if you want catalog + custom.
 
 ### Controller lifecycle
 
@@ -114,7 +114,7 @@ The per-family mechanism is in [SwDevice and PnP](../reference/swdevice-and-pnp.
 
 `DisposeControllersInParallel(controllers, perCallback)` disposes a set of controllers concurrently with the per-controller HID orphan sweep suppressed and run once at the end. Use from any caller that already has a list to dispose together (e.g. a test harness's end-of-run cleanup, a consumer's app exit). The per-controller wall-clock for each `Dispose` call is reported via the optional callback. Single-element or empty inputs degrade to plain serial dispose. Internal context disposal uses an equivalent path.
 
-`FinalizeNames` re-applies friendly names to every live controller. Call **once after creating ALL controllers** &mdash; there is a Windows PnP race where the first controller's friendly name gets overwritten by the second controller's driver-bind activity. Re-applying after PnP has settled makes the writes stick. Polls each HID child for `DN_STARTED` (driver fully bound) before re-applying; on fast machines exits in <100 ms, on slow machines adapts up to 5 s.
+`FinalizeNames` re-applies friendly names to every live controller. Call **once after creating ALL controllers**: there is a Windows PnP race where the first controller's friendly name gets overwritten by the second controller's driver-bind activity. Re-applying after PnP has settled makes the writes stick. Polls each HID child for `DN_STARTED` (driver fully bound) before re-applying; on fast machines exits in <100 ms, on slow machines adapts up to 5 s.
 
 ### Disposal
 
@@ -144,11 +144,11 @@ public void SubmitState(in HMGamepadState state);
 public void SubmitRawReport(ReadOnlySpan<byte> report);
 ```
 
-`SubmitState` translates the abstract `HMGamepadState` into the active profile's HID report layout and writes it to shared memory. Cadence is set by the consumer &mdash; there is no internal pump thread. Typical rates: 1000 Hz for high-fidelity input passthrough (PadForge), 250 Hz for bench testing, 8 Hz for a profile that's only sending the occasional button event.
+`SubmitState` translates the abstract `HMGamepadState` into the active profile's HID report layout and writes it to shared memory. Cadence is set by the consumer: there is no internal pump thread. Typical rates: 1000 Hz for high-fidelity input passthrough (PadForge), 250 Hz for bench testing, 8 Hz for a profile that's only sending the occasional button event.
 
 For Xbox-VID profiles (`vid == 0x045E`), the same call also packs a 14-byte GIP-format buffer for the XUSB companion to read on `IOCTL_XUSB_GET_STATE`. Non-Xbox profiles skip this packing entirely (~60-80 instructions per frame saved).
 
-`SubmitRawReport(report)` pushes a raw HID input report for features `HMGamepadState` doesn't model: DualSense touchpad coordinates, gyroscope, sensor packets, vendor extensions. Pass **data bytes only** &mdash; do NOT include a Report ID prefix. The driver prepends the Report ID automatically. For profiles with no Report ID, pass the full report as-is.
+`SubmitRawReport(report)` pushes a raw HID input report for features `HMGamepadState` doesn't model: DualSense touchpad coordinates, gyroscope, sensor packets, vendor extensions. Pass **data bytes only**: do NOT include a Report ID prefix. The driver prepends the Report ID automatically. For profiles with no Report ID, pass the full report as-is.
 
 Throws `ArgumentException` if `report` is empty or exceeds the 256-byte shared-section payload capacity.
 
@@ -162,9 +162,9 @@ public event Action<HMController, HMOutputPacket>? OutputReceived;
 
 Raised on the SDK's output-polling thread (~125 Hz, ~8 ms cadence) whenever a host application sends a rumble, haptic, FFB, feature, or LED command to this virtual. Multiple invocations per poll iteration are normal (DirectInput PID FFB writes Set Effect &rarr; Set Constant Force &rarr; Effect Operation Start within 1-3 ms; the ring buffer drains all three on the next poll).
 
-Handlers run on the polling thread, **not the consumer's UI thread**. Marshal back to UI thread if needed. Keep handlers cheap &mdash; the ring buffer holds 64 slots × 256-byte payload; if a reader stalls past ~512 ms while the producer is bursting, the oldest packets get overwritten.
+Handlers run on the polling thread, **not the consumer's UI thread**. Marshal back to UI thread if needed. Keep handlers cheap: the ring buffer holds 64 slots × 256-byte payload; if a reader stalls past ~512 ms while the producer is bursting, the oldest packets get overwritten.
 
-`HMOutputPacket` carries `Source` (HidOutput / HidFeature / XInput), `ReportId`, `Data` (a `ReadOnlyMemory<byte>` over the SDK's reusable buffer &mdash; copy if you need it past the handler return), and a monotonic `SeqNo`.
+`HMOutputPacket` carries `Source` (HidOutput / HidFeature / XInput), `ReportId`, `Data` (a `ReadOnlyMemory<byte>` over the SDK's reusable buffer: copy if you need it past the handler return), and a monotonic `SeqNo`.
 
 See [Output Passthrough](output-passthrough.md) for the wire format and consumer-side decoding patterns.
 
@@ -195,7 +195,7 @@ ctrl.OutputDecoded += (_, e) =>
 };
 ```
 
-The inverse direction — synthesize parsed fields, encode wire bytes — uses `HMOutputEncoder.Encode`:
+The inverse direction, synthesizing parsed fields and encoding wire bytes, uses `HMOutputEncoder.Encode`:
 
 ```csharp
 public static class HMOutputEncoder
@@ -219,13 +219,13 @@ public HMPidBlockLoad GetCurrentPidBlockLoad();
 
 The four shared-section publish/read methods. The driver answers `HidD_GetFeature` for the canonical PID Report IDs (Pool 0x13, Block Load 0x12, State 0x14) directly from a per-controller shared state section the consumer fills via these methods.
 
-`PublishPidPool` is the gate &mdash; until called at least once, the driver returns `STATUS_NO_SUCH_DEVICE` for the Pool Report so DirectInput cleanly concludes "device exists but no FFB" rather than retrying. First call enables FFB on this controller; subsequent calls update pool state.
+`PublishPidPool` is the gate: until called at least once, the driver returns `STATUS_NO_SUCH_DEVICE` for the Pool Report so DirectInput cleanly concludes "device exists but no FFB" rather than retrying. First call enables FFB on this controller; subsequent calls update pool state.
 
-`PublishPidBlockLoad` is now optional (v1.1.37+). The driver allocates EBIs synchronously inside its `SetFeature(0x11 Create New Effect)` IOCTL handler &mdash; the consumer reads the assigned EBI via `GetCurrentPidBlockLoad` rather than writes its own. Manual writes are still supported (overwrite the driver's allocation) but no longer needed for the canonical handshake.
+`PublishPidBlockLoad` is now optional (v1.1.37+). The driver allocates EBIs synchronously inside its `SetFeature(0x11 Create New Effect)` IOCTL handler: the consumer reads the assigned EBI via `GetCurrentPidBlockLoad` rather than writes its own. Manual writes are still supported (overwrite the driver's allocation) but no longer needed for the canonical handshake.
 
 `PublishPidState` reflects current device state for the most-recently-referenced effect: paused, actuators enabled, safety switch, effect playing, etc. Update on Effect Operation Start/Stop, Device Reset, Device Pause, or Actuators Enable/Disable.
 
-The descriptor must declare the PID FFB block. Use `HidDescriptorBuilder.AddPidFfbBlock` &mdash; that method emits the canonical "minimum viable" block with exactly the right report-ID / collection / usage shape. Do **not** add additional Feature reports inside the same Application Collection; the four-feature variant from vJoy's reference descriptor causes `pid.dll` to AV. See [Force Feedback](force-feedback.md) for the full architecture.
+The descriptor must declare the PID FFB block. Use `HidDescriptorBuilder.AddPidFfbBlock`: that method emits the canonical "minimum viable" block with exactly the right report-ID / collection / usage shape. Do **not** add additional Feature reports inside the same Application Collection; the four-feature variant from vJoy's reference descriptor causes `pid.dll` to AV. See [Force Feedback](force-feedback.md) for the full architecture.
 
 ### Disposal
 
@@ -233,7 +233,7 @@ The descriptor must declare the PID FFB block. Use `HidDescriptorBuilder.AddPidF
 public void Dispose();
 ```
 
-Removes the virtual device from PnP, frees the per-controller shared memory section, signals the output-polling thread to stop, and releases handles. Idempotent &mdash; safe to call multiple times. Called automatically when the owning `HMContext` is disposed.
+Removes the virtual device from PnP, frees the per-controller shared memory section, signals the output-polling thread to stop, and releases handles. Idempotent: safe to call multiple times. Called automatically when the owning `HMContext` is disposed.
 
 ---
 
@@ -276,7 +276,7 @@ Null `Axes` is the hot-path-cost-free idle case: the encoder's dict walk is gate
 
 For features `HMGamepadState` does not model (Sony touchpad finger coordinates, gyro/accel for non-IMU profiles, vendor extensions), use `SubmitRawReport` with bytes you assembled per the profile's descriptor.
 
-### `HMGamepadStateHelpers.StandardAxes` &mdash; ergonomic 6-slot shortcut
+### `HMGamepadStateHelpers.StandardAxes`: ergonomic 6-slot shortcut
 
 Most consumers want the canonical `(LX, LY, RX, RY, LT, RT)` convention. The static helper resolves those into the active profile's actual axis keys (Sony's Z=right-stick, Rx=left-trigger axis map is honored automatically) and returns a fresh dict ready to assign to `state.Axes`.
 
@@ -292,7 +292,7 @@ ctrl.SubmitState(new HMGamepadState
 });
 ```
 
-Use the helper for tests and demos. For 1000 Hz hot paths, allocate one `Dictionary<HMAxis, float>` and update entries directly by HMAxis key &mdash; same code path, no per-frame dict allocation. Discover which axes a profile exposes via `HMProfile.Sticks` / `HMProfile.Triggers` (variable-length lists derived from the layout's role tags) or `HMProfile.AvailableAxes` (every `HMAxis` the descriptor declares).
+Use the helper for tests and demos. For 1000 Hz hot paths, allocate one `Dictionary<HMAxis, float>` and update entries directly by HMAxis key: same code path, no per-frame dict allocation. Discover which axes a profile exposes via `HMProfile.Sticks` / `HMProfile.Triggers` (variable-length lists derived from the layout's role tags) or `HMProfile.AvailableAxes` (every `HMAxis` the descriptor declares).
 
 ### `HMAxis` enum
 
@@ -301,7 +301,7 @@ public enum HMAxis : ushort
 {
     None = 0,
 
-    // Generic Desktop (page 0x01) &mdash; (page << 8 | usage)
+    // Generic Desktop (page 0x01): (page << 8 | usage)
     X = 0x0130, Y = 0x0131, Z = 0x0132, Rx = 0x0133, Ry = 0x0134, Rz = 0x0135,
     Slider = 0x0136, Dial = 0x0137, Wheel = 0x0138,
     Vx = 0x0140, Vy = 0x0141, Vz = 0x0142,
@@ -382,7 +382,7 @@ Bits 13 to 15 were added in v1.5.0 and bits 16 to 17 in v1.5.1. All are additive
 
 The SDK applies the active profile's `buttonMap` (where present) to translate from the abstract `HMButton` bit position to the descriptor button index. Sony profiles remap so `HMButton.A &rarr; Cross`, `HMButton.X &rarr; Square`, etc. Xbox profiles use identity mapping.
 
-`HMButton.Guide` reaches XInput consumers via `XInputGetStateEx` as the undocumented `XINPUT_GAMEPAD_GUIDE` (0x0400) bit. Reaches WGI / browser via the System Main Menu HID usage on xinputhid profiles, or via the GIP buffer's `btnHigh` bit 6 (0x40) on XUSB-companion profiles &mdash; the companion translates 0x40 to `XINPUT_GAMEPAD_GUIDE` in `IOCTL_XUSB_GET_STATE`.
+`HMButton.Guide` reaches XInput consumers via `XInputGetStateEx` as the undocumented `XINPUT_GAMEPAD_GUIDE` (0x0400) bit. Reaches WGI / browser via the System Main Menu HID usage on xinputhid profiles, or via the GIP buffer's `btnHigh` bit 6 (0x40) on XUSB-companion profiles: the companion translates 0x40 to `XINPUT_GAMEPAD_GUIDE` in `IOCTL_XUSB_GET_STATE`.
 
 ### HMHat
 
@@ -438,7 +438,7 @@ public sealed class HMProfile
     public int   StickBits { get; }
     public int   TriggerBits { get; }
 
-    // v1.3.9 — authored physical layout (discriminated union, 16 kinds)
+    // v1.3.9: authored physical layout (discriminated union, 16 kinds)
     public HMLayout? Layout { get; }
     public IReadOnlyList<HMSimpleStick>   Sticks { get; }    // derived from Layout role tags
     public IReadOnlyList<HMSimpleTrigger> Triggers { get; }
@@ -461,7 +461,7 @@ public sealed class HMProfile
 }
 ```
 
-Profiles are immutable. Mutation goes through `HMProfileBuilder.FromProfile(existing)` &mdash; build a new profile with the changes you want.
+Profiles are immutable. Mutation goes through `HMProfileBuilder.FromProfile(existing)`: build a new profile with the changes you want.
 
 `IsDeployable` is false for placeholder catalog entries that have no descriptor yet. `CreateController` will throw `ArgumentException` for those. The catalog ships only deployable profiles by default; placeholders are an internal concept that survived from the catalog generator.
 
@@ -636,9 +636,9 @@ public static class HMDeviceExtractor
 }
 ```
 
-`ListDevices` enumerates every HID-class device. Returns one entry per HID interface (a single physical device with multiple top-level collections appears multiple times &mdash; pick by `TopLevelUsage`). Non-elevated.
+`ListDevices` enumerates every HID-class device. Returns one entry per HID interface (a single physical device with multiple top-level collections appears multiple times: pick by `TopLevelUsage`). Non-elevated.
 
-`Extract(device)` reconstructs the descriptor from `HidD_GetPreparsedData` using the libusb/hidapi algorithm (Chromium WebHID team's reverse engineering of Microsoft's preparsed-data layout). Output is logically equivalent to the device's real descriptor &mdash; same report IDs, field layouts, logical ranges, usage pages, sizes &mdash; but not byte-for-byte identical. For HIDMaestro's purpose (creating a virtual that behaves the same as the physical), logical equivalence is the correct fidelity bar; filter drivers can mutate the descriptor before it reaches user mode anyway. Non-elevated.
+`Extract(device)` reconstructs the descriptor from `HidD_GetPreparsedData` using the libusb/hidapi algorithm (Chromium WebHID team's reverse engineering of Microsoft's preparsed-data layout). Output is logically equivalent to the device's real descriptor, with the same report IDs, field layouts, logical ranges, usage pages and sizes, but it is not byte-for-byte identical. For HIDMaestro's purpose (creating a virtual that behaves the same as the physical), logical equivalence is the correct fidelity bar; filter drivers can mutate the descriptor before it reaches user mode anyway. Non-elevated.
 
 Throws `InvalidOperationException` if the device disconnected between enumeration and extraction, or if preparsed data can't be reconstructed.
 
@@ -741,15 +741,15 @@ See [Output Passthrough](output-passthrough.md) and [Force Feedback](force-feedb
 | `HMOemNameOverride.Set` / `Clear` | Any (admin) | Global mutex around all three registry writes. |
 | `HMDeviceExtractor.ListDevices` / `Extract` | Any | Read-only. Re-enumerates on every call. |
 
-Avoid disposing an `HMController` from inside its own `OutputReceived` handler &mdash; the dispose path joins the polling thread, which would deadlock on the handler-return wait. If you need event-driven dispose, capture the controller and call `Dispose` from a different thread.
+Avoid disposing an `HMController` from inside its own `OutputReceived` handler: the dispose path joins the polling thread, which would deadlock on the handler-return wait. If you need event-driven dispose, capture the controller and call `Dispose` from a different thread.
 
 ---
 
 ## See also
 
-- [Quickstart](../start/quickstart.md) &mdash; the SDK methods in their canonical order.
-- [HID Descriptor Builder](hid-descriptor-builder.md) &mdash; full `HidDescriptorBuilder` reference.
-- [Force Feedback](force-feedback.md) &mdash; PID FFB descriptor authoring + publish/read patterns.
-- [Output Passthrough](output-passthrough.md) &mdash; output ring buffer mechanics and decoding.
-- [Custom Profiles](../profiles/custom-profiles.md) &mdash; `HMProfileBuilder` patterns end-to-end.
-- [Profile System](../profiles/profile-system.md) &mdash; the JSON schema `HMProfile` corresponds to.
+- [Quickstart](../start/quickstart.md): the SDK methods in their canonical order.
+- [HID Descriptor Builder](hid-descriptor-builder.md): full `HidDescriptorBuilder` reference.
+- [Force Feedback](force-feedback.md): PID FFB descriptor authoring + publish/read patterns.
+- [Output Passthrough](output-passthrough.md): output ring buffer mechanics and decoding.
+- [Custom Profiles](../profiles/custom-profiles.md): `HMProfileBuilder` patterns end-to-end.
+- [Profile System](../profiles/profile-system.md): the JSON schema `HMProfile` corresponds to.

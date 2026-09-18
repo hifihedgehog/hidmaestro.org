@@ -1,10 +1,10 @@
-# Profile Extractor
+﻿# Profile Extractor
 
-`HIDMaestroProfileExtractor.exe` is a standalone WPF tool that produces a HIDMaestro profile JSON from any HID device currently plugged into Windows. It ships in every release ZIP under `HIDMaestroProfileExtractor/`. No admin required, no live input capture, no gameplay involvement &mdash; the tool reads only the cached HID descriptor Windows has already parsed.
+`HIDMaestroProfileExtractor.exe` is a standalone WPF tool that produces a HIDMaestro profile JSON from any HID device currently plugged into Windows. It ships in every release ZIP under `HIDMaestroProfileExtractor/`. No admin required, no live input capture, no gameplay involvement: the tool reads only the cached HID descriptor Windows has already parsed.
 
 The same `HMDeviceExtractor` API the GUI calls is also available to consumers that want a "scan for connected devices" flow inside their own UI (PadForge does this), and via the `HIDMaestroTest extract-profile` CLI command for scripting.
 
-If you want to **submit** an extracted profile to the catalog, see [Contributing Profiles](contributing-profiles.md) &mdash; this page covers the tool itself. For the SDK API behind the tool, see [SDK Reference#hmdeviceextractor](../sdk/sdk-reference.md#hmdeviceextractor).
+If you want to **submit** an extracted profile to the catalog, see [Contributing Profiles](contributing-profiles.md): this page covers the tool itself. For the SDK API behind the tool, see [SDK Reference#hmdeviceextractor](../sdk/sdk-reference.md#hmdeviceextractor).
 
 ---
 
@@ -56,7 +56,7 @@ The save-and-ship JSON. Schema matches `profiles/schema.json` exactly:
 }
 ```
 
-`inputReportSize` is deliberately left null on extract &mdash; `HidP_GetCaps`'s `ReportByteLength` includes a Report ID byte for some no-Report-ID devices on certain Windows builds, producing an off-by-one vs. what the descriptor actually writes. Leaving it null lets the SDK derive the correct value from the reconstructed descriptor at `CreateController` time.
+`inputReportSize` is deliberately left null on extract: `HidP_GetCaps`'s `ReportByteLength` includes a Report ID byte for some no-Report-ID devices on certain Windows builds, producing an off-by-one vs. what the descriptor actually writes. Leaving it null lets the SDK derive the correct value from the reconstructed descriptor at `CreateController` time.
 
 `notes` is timestamped and includes a provenance disclaimer. A maintainer reviewing a contribution will want to know how the descriptor was obtained.
 
@@ -104,11 +104,11 @@ The tool calls `HMDeviceExtractor.Extract(device)`. Internally:
 6. **Build the profile** with inferred `type`, `connection`, slug-from-product-string ID, timestamped notes.
 7. **Return** as `HMProfile`.
 
-Step 5 is the interesting one. Windows doesn't expose the original device descriptor bytes through any user-mode API &mdash; only the preparsed blob. The [HIDAPI algorithm](https://github.com/libusb/hidapi/blob/master/windows/hidapi_descriptor_reconstruct.c) (originally contributed by the Chromium WebHID team) walks the blob's `LinkCollection`, `ButtonCaps`, `ValueCaps`, and Usage tables and emits a HID descriptor byte stream that, when re-parsed by `HidP_GetCaps`, produces the same preparsed blob (within the bounds of legal HID descriptor variations).
+Step 5 is the interesting one. Windows doesn't expose the original device descriptor bytes through any user-mode API: only the preparsed blob. The [HIDAPI algorithm](https://github.com/libusb/hidapi/blob/master/windows/hidapi_descriptor_reconstruct.c) (originally contributed by the Chromium WebHID team) walks the blob's `LinkCollection`, `ButtonCaps`, `ValueCaps`, and Usage tables and emits a HID descriptor byte stream that, when re-parsed by `HidP_GetCaps`, produces the same preparsed blob (within the bounds of legal HID descriptor variations).
 
-The output is **logically equivalent** to the device's real descriptor: same report IDs, field layouts, logical ranges, usage pages, sizes. It's not byte-for-byte identical &mdash; the original descriptor might have used a 2-byte Logical Maximum where the reconstruction emits a 4-byte form, or the order of unrelated items might differ. For HIDMaestro's purpose (creating a virtual that behaves the same as the physical), logical equivalence is the correct fidelity bar; filter drivers can mutate the descriptor before it reaches user mode anyway.
+The output is **logically equivalent** to the device's real descriptor: same report IDs, field layouts, logical ranges, usage pages, sizes. It's not byte-for-byte identical: the original descriptor might have used a 2-byte Logical Maximum where the reconstruction emits a 4-byte form, or the order of unrelated items might differ. For HIDMaestro's purpose (creating a virtual that behaves the same as the physical), logical equivalence is the correct fidelity bar; filter drivers can mutate the descriptor before it reaches user mode anyway.
 
-The reconstruction code is ~1000 lines of `HidDescriptorReconstructor.cs` &mdash; the longest single source file in the SDK after `DeviceOrchestrator.cs` and `DeviceManager.cs`.
+The reconstruction code is ~1000 lines of `HidDescriptorReconstructor.cs`: the longest single source file in the SDK after `DeviceOrchestrator.cs` and `DeviceManager.cs`.
 
 ---
 
@@ -126,7 +126,7 @@ This typically happens with:
 
 - **Vendor-private descriptors** that use undocumented usage pages or non-standard report layouts. Some early Logitech wheels and Nacon devices fall here.
 - **Compound devices** where multiple top-level collections share quirky vendor-specific items.
-- **Composite USB devices** where the HID interface isn't the primary &mdash; the cached preparsed data may be stale or incomplete.
+- **Composite USB devices** where the HID interface isn't the primary: the cached preparsed data may be stale or incomplete.
 
 For these, capture the actual descriptor bytes from the wire:
 
@@ -152,7 +152,7 @@ HIDMaestroTest.exe extract-profile --vid 046D --pid C216 --out logitech-dual-act
 HIDMaestroTest.exe extract-profile --path "\\?\HID#VID_046D&PID_C216#..." --out my-profile.json
 ```
 
-The CLI is non-elevated &mdash; same as the GUI. Useful for scripted contribution workflows.
+The CLI is non-elevated: same as the GUI. Useful for scripted contribution workflows.
 
 ---
 
@@ -160,9 +160,9 @@ The CLI is non-elevated &mdash; same as the GUI. Useful for scripted contributio
 
 | Scenario | Recommended path |
 |----------|-----------------|
-| End user wants to contribute a profile from a controller they own | **GUI** &mdash; `HIDMaestroProfileExtractor.exe` |
-| You're scripting batch extraction across many devices | **CLI** &mdash; `HIDMaestroTest extract-profile` |
-| Your consumer has its own UI and wants "scan for devices" inline | **API** &mdash; `HMDeviceExtractor.ListDevices()` + `HMDeviceExtractor.Extract(dev)` |
+| End user wants to contribute a profile from a controller they own | **GUI**: `HIDMaestroProfileExtractor.exe` |
+| You're scripting batch extraction across many devices | **CLI**: `HIDMaestroTest extract-profile` |
+| Your consumer has its own UI and wants "scan for devices" inline | **API**: `HMDeviceExtractor.ListDevices()` + `HMDeviceExtractor.Extract(dev)` |
 | You want raw byte fidelity (descriptor reconstruction isn't enough) | Capture from the wire (USBPcap / hidraw), hand-author the JSON |
 
 PadForge uses the API path: its Devices page shows every connected HID device and offers an inline "Extract profile" button that calls `HMDeviceExtractor.Extract` and displays the JSON in a modal. The user can then save it or post it directly to the GitHub contribution issue.
@@ -179,7 +179,7 @@ PadForge uses the API path: its Devices page shows every connected HID device an
 
 ## See also
 
-- [Contributing Profiles](contributing-profiles.md) &mdash; the user-facing flow for submitting an extracted profile.
-- [Custom Profiles](custom-profiles.md) &mdash; deploy an extracted profile via `HMContext.CreateController`.
-- [Profile System](profile-system.md) &mdash; the JSON schema the extractor emits.
-- [SDK Reference](../sdk/sdk-reference.md) &mdash; the `HMDeviceExtractor` API in context.
+- [Contributing Profiles](contributing-profiles.md): the user-facing flow for submitting an extracted profile.
+- [Custom Profiles](custom-profiles.md): deploy an extracted profile via `HMContext.CreateController`.
+- [Profile System](profile-system.md): the JSON schema the extractor emits.
+- [SDK Reference](../sdk/sdk-reference.md): the `HMDeviceExtractor` API in context.

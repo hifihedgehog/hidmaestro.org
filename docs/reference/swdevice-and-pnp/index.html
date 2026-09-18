@@ -2039,17 +2039,17 @@
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Slot 2: NOT CONNECTED
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Slot 3: NOT CONNECTED
 </code></pre></div>
-<p>Or in 4-controller mixed configurations, the lowest user-index assigned was 1, not 0. With 4 Xbox-family virtuals you'd see slots 1, 2, 3 (and one missing &mdash; XInput's 4-slot cap is hit by 1+2+3+4, but if the allocator skips 0, you only get 3 working).</p>
+<p>Or in 4-controller mixed configurations, the lowest user-index assigned was 1, not 0. With 4 Xbox-family virtuals you'd see slots 1, 2, 3 (and one missing: XInput's 4-slot cap is hit by 1+2+3+4, but if the allocator skips 0, you only get 3 working).</p>
 <h3 id="ghidra-trace">Ghidra trace<a class="headerlink" href="#ghidra-trace" title="Permanent link">&para;</a></h3>
 <p>The behavior comes from <code>xinput1_4.dll</code>'s slot allocator. Decomp (Win11 26200):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// FUN_18000de2c — tests for slot-1-skip eligibility</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// FUN_18000de2c: tests for slot-1-skip eligibility</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">ULONG</span><span class="w"> </span><span class="nf">FUN_18000de2c</span><span class="p">(</span><span class="n">DEVICE_INFO</span><span class="w"> </span><span class="o">*</span><span class="n">dev</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">memcmp</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">ContainerId</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">NULL_SENTINEL_GUID</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">StringContains</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">HardwareIds</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XINPUT_EMBEDDED_DEVICE&quot;</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1">// FUN_18000c728 at 0x18000C8AE — sets bit 2 on the device struct</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1">// FUN_18000c728 at 0x18000C8AE: sets bit 2 on the device struct</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FUN_18000de2c</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">test</span><span class="w"> </span><span class="n">al</span><span class="p">,</span><span class="w"> </span><span class="n">al</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">jne</span><span class="w">     </span><span class="n">L_set_bit_2</span>
@@ -2057,14 +2057,14 @@
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nl">L_set_bit_2</span><span class="p">:</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="n">or</span><span class="w">      </span><span class="n">dword</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="p">[</span><span class="n">rbx</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="w">    </span><span class="c1">// ← bit 2 set on bit-2 path</span>
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1">// FUN_18000f85c — fallback slot allocator</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1">// FUN_18000f85c: fallback slot allocator</span>
 <a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">FeatureManagerFlag_0x39EB83D</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">Flags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="c1">// bit-2 device + feature flag on → SKIP iter 0</span>
 <a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="p">}</span>
 <a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="c1">// FUN_18000f178 — promotes first bit-2 slot to &quot;primary&quot;</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="c1">// FUN_18000f08c — query-time swap surfaces empty slot 1 to consumers</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="c1">// FUN_18000f178: promotes first bit-2 slot to &quot;primary&quot;</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="c1">// FUN_18000f08c: query-time swap surfaces empty slot 1 to consumers</span>
 </code></pre></div>
 <p>The chain: null-sentinel ContainerID &rarr; bit 2 set on the device struct &rarr; slot allocator skips iter 0 (only when Feature Manager flag <code>0x39EB83D</code> is on, which it is on Win11 26200) &rarr; first bit-2 slot becomes "primary" &rarr; query-time swap surfaces an empty slot 1 to consumers.</p>
 <p>Setting <code>XINPUT_EMBEDDED_DEVICE</code> in HardwareIDs would also trigger this; the null-sentinel ContainerID is one of two sufficient conditions.</p>
@@ -2105,7 +2105,7 @@
 </tbody>
 </table>
 <p><code>&lt;token&gt;</code> is the controller's identity token: <code>HM_0000</code> for the default key of index 0, <code>HM_</code> plus sixteen hex digits for a consumer key. See <a href="#stable-device-identity">Stable device identity</a> below.</p>
-<p><strong>Plain HID</strong> profiles (DualSense, wheels, HOTAS, etc.) don't go through XInput, so the slot-1-skip bug doesn't apply &mdash; staying on the simpler SetupAPI path is fine.</p>
+<p><strong>Plain HID</strong> profiles (DualSense, wheels, HOTAS, etc.) don't go through XInput, so the slot-1-skip bug doesn't apply: staying on the simpler SetupAPI path is fine.</p>
 <p><strong>Non-xinputhid Xbox</strong> profiles do go through XInput, but only via the XUSB <strong>companion</strong>. The main HID device on the ROOT\ path doesn't carry the XInput device interface; the companion does. So only the companion needs SWD's explicit ContainerID. The main HID stays on SetupAPI.</p>
 <p><strong>xinputhid Xbox</strong> profiles bind <code>xinputhid.sys</code> as a kernel filter on the HID child, and <code>xinputhid</code> is what publishes the XUSB interface. There's no separate companion; the main HID device must itself be SWD-enumerated with a real ContainerID so its XInput dispatch lands in slot 0.</p>
 <hr />
@@ -2120,7 +2120,7 @@
 <p>Replacing <code>&amp;</code> with <code>_</code> between VID and PID avoids the heuristic. The <code>&amp;IG_00</code> suffix is <strong>preserved</strong> because:</p>
 <ul>
 <li>The HID child inherits its parent's enumerator name as the first segment of its instance path.</li>
-<li>HIDAPI / SDL3 / Chromium all blocklist <code>&amp;IG_</code> substrings to avoid duplicating XInput-claimed devices &mdash; we want the suffix in the instance path so those skip the device.</li>
+<li>HIDAPI / SDL3 / Chromium all blocklist <code>&amp;IG_</code> substrings to avoid duplicating XInput-claimed devices: we want the suffix in the instance path so those skip the device.</li>
 </ul>
 <p>So we get the best of both: PnP enumerates the SWD parent (no <code>&amp;</code> in <code>VID_*&amp;PID_*</code>), and the HID-class libraries skip the inherited <code>&amp;IG_00</code> substring on the children.</p>
 <hr />
@@ -2292,10 +2292,10 @@
 </code></pre></div>
 <p>Returns instance-id on success (<code>OK &lt;full-instance-id&gt;</code>); writes errors to stderr.</p>
 <p>The helper is included in the SDK's embedded resource payload alongside the driver DLLs. Total binary size: ~25 KB. Lifetime per call: &lt;1 second (call, get instance-ID, exit).</p>
-<p>The performance overhead of OOP-helper SwDeviceCreate has been verified empirically as <strong>not observable</strong> vs an in-process call &mdash; the P/Invoke marshaling path itself takes long enough that adding <code>Process.Start</code> doesn't move the needle. Architectural-cleanup alone doesn't justify chasing the 0x8007007E mystery.</p>
+<p>The performance overhead of OOP-helper SwDeviceCreate has been verified empirically as <strong>not observable</strong> vs an in-process call: the P/Invoke marshaling path itself takes long enough that adding <code>Process.Start</code> doesn't move the needle. Architectural-cleanup alone doesn't justify chasing the 0x8007007E mystery.</p>
 <hr />
 <h2 id="swdevice-removal">SwDevice removal<a class="headerlink" href="#swdevice-removal" title="Permanent link">&para;</a></h2>
-<p><code>SWDeviceLifetimeParentPresent</code> (a value of the <code>SW_DEVICE_LIFETIME</code> enum &mdash; search Microsoft Learn for the exact name) keeps the device alive across process exit. The only documented removal path:</p>
+<p><code>SWDeviceLifetimeParentPresent</code> (a value of the <code>SW_DEVICE_LIFETIME</code> enum: search Microsoft Learn for the exact name) keeps the device alive across process exit. The only documented removal path:</p>
 <ol>
 <li>Re-<code>SwDeviceCreate</code> with <strong>identical args</strong>. The docs guarantee this returns a fresh handle to the existing device (not a new device). The companion uses <code>FindExistingCompanion</code> lookup by <code>ControllerIndex</code> to find the right (suffix, ContainerID) tuple to pass.</li>
 <li><strong>Downgrade lifetime</strong> from <code>SWDeviceLifetimeParentPresent</code> to <code>SWDeviceLifetimeHandle</code> via <code>SwDeviceSetLifetime</code>.</li>
@@ -2310,7 +2310,7 @@
 <p>Same args as <code>create</code>; the helper does the reconnect-then-downgrade-then-close dance.</p>
 <hr />
 <h2 id="swd-first-removal-ordering-v131">SwD-first removal ordering (v1.3.1)<a class="headerlink" href="#swd-first-removal-ordering-v131" title="Permanent link">&para;</a></h2>
-<p>Two of the three architecture groups (Xbox 360 Wired and Xbox Series BT) own a SwDevice-enumerated parent. SwDevice lifetimes are anchored to the <code>HSWDEVICE</code> handle, <strong>not</strong> the PnP devnode &mdash; children of a SwD parent cannot fully unwind their query-remove cascade until the parent's handle drops its kernel refcount.</p>
+<p>Two of the three architecture groups (Xbox 360 Wired and Xbox Series BT) own a SwDevice-enumerated parent. SwDevice lifetimes are anchored to the <code>HSWDEVICE</code> handle, <strong>not</strong> the PnP devnode: children of a SwD parent cannot fully unwind their query-remove cascade until the parent's handle drops its kernel refcount.</p>
 <p>Pre-v1.3.1 disposal:</p>
 <ol>
 <li><code>DeviceManager.RemoveDevice</code> issued <code>DIF_REMOVE</code> on every HID child first.</li>
@@ -2321,7 +2321,7 @@
 <p>v1.3.1 inverts the order:</p>
 <ol>
 <li>For any <code>SWD\</code> parent, <strong>close the SwDevice handle FIRST</strong> via <code>SwdDeviceFactory.Remove</code>.</li>
-<li>Block on <code>CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED</code> (a value of the <code>CM_NOTIFY_ACTION</code> enum on Microsoft Learn) for the parent &mdash; so callers know the kernel has actually propagated removal, not just that the handle closed.</li>
+<li>Block on <code>CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED</code> (a value of the <code>CM_NOTIFY_ACTION</code> enum on Microsoft Learn) for the parent: so callers know the kernel has actually propagated removal, not just that the handle closed.</li>
 <li>Mop up any HID children that survived the cascade. Usually none, because the SwD parent's release fires its children's removal in one cascade.</li>
 <li>Net cost: ~135 ms for Xbox 360 Wired, ~500 ms for Xbox Series BT.</li>
 </ol>
@@ -2345,26 +2345,26 @@
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>...
 </code></pre></div>
 <p>PID hex is <code>A7B4</code>; per-call sequence increments globally per process; controller index varies per call.</p>
-<p><code>FindExistingCompanion</code> walks <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\</code> and matches devices whose <code>Device Parameters\ControllerIndex</code> value matches the controller we're operating on. The suffix isn't load-bearing for matching &mdash; it's there to make the kernel <code>(enumerator + suffix + ContainerId)</code> tuple unique.</p>
+<p><code>FindExistingCompanion</code> walks <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\</code> and matches devices whose <code>Device Parameters\ControllerIndex</code> value matches the controller we're operating on. The suffix isn't load-bearing for matching: it's there to make the kernel <code>(enumerator + suffix + ContainerId)</code> tuple unique.</p>
 <p>For across-process matching (e.g. <code>RemoveAllVirtualControllers</code> from a fresh process sweeping orphans from a prior crashed session), the <code>HIDMAESTRO</code> enumerator name is the stable identifier. The sweep walks every <code>SWD\HIDMAESTRO*\*</code> entry regardless of token.</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../architecture-overview/">Architecture Overview</a> &mdash; PnP layer's place in the full stack.</li>
-<li><a href="../xusb-companion/">XUSB Companion</a> &mdash; the device the SwDevice path is most needed for.</li>
-<li><a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> &mdash; the SDK orchestration that drives <code>SwDeviceCreate</code> and the SwD-first removal ordering.</li>
-<li><a href="../multi-controller/">Multi-Controller</a> &mdash; why per-controller ContainerIDs scale.</li>
-<li><a href="../driver-install-and-signing/">Driver Install and Signing</a> &mdash; the broader install flow that creates these devnodes.</li>
+<li><a href="../architecture-overview/">Architecture Overview</a>: PnP layer's place in the full stack.</li>
+<li><a href="../xusb-companion/">XUSB Companion</a>: the device the SwDevice path is most needed for.</li>
+<li><a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>: the SDK orchestration that drives <code>SwDeviceCreate</code> and the SwD-first removal ordering.</li>
+<li><a href="../multi-controller/">Multi-Controller</a>: why per-controller ContainerIDs scale.</li>
+<li><a href="../driver-install-and-signing/">Driver Install and Signing</a>: the broader install flow that creates these devnodes.</li>
 </ul>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
-<p>The Win32 PnP API symbols below are documented on <a href="https://learn.microsoft.com/">learn.microsoft.com</a> &mdash; search by the exact symbol name; the page is one click away.</p>
+<p>The Win32 PnP API symbols below are documented on <a href="https://learn.microsoft.com/">learn.microsoft.com</a>: search by the exact symbol name; the page is one click away.</p>
 <ul>
-<li><code>SwDeviceCreate</code> &mdash; the API and <code>pContainerId</code> parameter.</li>
-<li><code>SetupDiCreateDeviceInfoW</code> &mdash; the older device-creation API.</li>
-<li><code>DEVPKEY_Device_ContainerId</code> &mdash; ContainerID semantics, including the null-sentinel default.</li>
-<li><code>SW_DEVICE_LIFETIME</code> &mdash; <code>SWDeviceLifetimeParentPresent</code> vs <code>Handle</code> lifetime.</li>
-<li><code>CM_NOTIFY_ACTION</code> &mdash; the <code>DEVICEINSTANCEREMOVED</code> action used as the kernel-side removal guarantee.</li>
-<li><a href="../references/">References</a> &mdash; full source bibliography.</li>
+<li><code>SwDeviceCreate</code>: the API and <code>pContainerId</code> parameter.</li>
+<li><code>SetupDiCreateDeviceInfoW</code>: the older device-creation API.</li>
+<li><code>DEVPKEY_Device_ContainerId</code>: ContainerID semantics, including the null-sentinel default.</li>
+<li><code>SW_DEVICE_LIFETIME</code>: <code>SWDeviceLifetimeParentPresent</code> vs <code>Handle</code> lifetime.</li>
+<li><code>CM_NOTIFY_ACTION</code>: the <code>DEVICEINSTANCEREMOVED</code> action used as the kernel-side removal guarantee.</li>
+<li><a href="../references/">References</a>: full source bibliography.</li>
 </ul>
 
 

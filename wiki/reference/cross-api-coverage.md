@@ -1,4 +1,4 @@
-# Cross-API Coverage
+﻿# Cross-API Coverage
 
 How a single HIDMaestro virtual device reaches DirectInput, XInput, SDL3 / HIDAPI, browser Gamepad, and Windows.Gaming.Input simultaneously, and the tricks each path requires. Most user-mode virtual-controller projects get one or two of these APIs right; HIDMaestro targets all five.
 
@@ -12,24 +12,24 @@ This page is the per-API breakdown. The general data flow lives in [Architecture
 
 ### What we deliver
 
-- **Correct axes for the profile.** Sticks at X/Y, Rx/Ry as the descriptor declares them. **All Xbox profiles** (Xbox 360 Wired, Xbox Series BT, Xbox One BT, Xbox Elite v2 BT) present **combined** triggers in DirectInput &mdash; one Z axis carrying `LT - RT`, matching real `xusb22.sys` behavior. Sony profiles (DualSense, DualShock 4) present separate triggers in DI as Z and Rz, matching their native descriptors.
+- **Correct axes for the profile.** Sticks at X/Y, Rx/Ry as the descriptor declares them. **All Xbox profiles** (Xbox 360 Wired, Xbox Series BT, Xbox One BT, Xbox Elite v2 BT) present **combined** triggers in DirectInput: one Z axis carrying `LT - RT`, matching real `xusb22.sys` behavior. Sony profiles (DualSense, DualShock 4) present separate triggers in DI as Z and Rz, matching their native descriptors.
 - **Correct VID/PID.** Read from `HidD_GetAttributes`, set per-profile.
 - **Correct product / manufacturer / serial strings.** Per-instance serial (`HM-CTL-<index>`) lets DirectInput disambiguate two virtuals with the same VID:PID/ProductString.
 - **HID PID 1.0 force feedback.** `pid.dll` discovers the canonical PID block in the descriptor and the round-trip (Pool, Block Load, Set Effect, Effect Operation Start) works. See [Force Feedback](../sdk/force-feedback.md).
 
 ### How
 
-`mshidumdf.sys` is the function driver under HidClass; HIDMaestro.dll is the lower filter. DirectInput pulls preparsed data from the kernel HID stack just like a real device. No DI-specific shenanigans &mdash; just a correct descriptor and `IOCTL_UMDF_HID_GET_FEATURE` wired to the PID state shared section.
+`mshidumdf.sys` is the function driver under HidClass; HIDMaestro.dll is the lower filter. DirectInput pulls preparsed data from the kernel HID stack just like a real device. No DI-specific shenanigans: just a correct descriptor and `IOCTL_UMDF_HID_GET_FEATURE` wired to the PID state shared section.
 
 ### The Vx/Vy velocity-usage trick (every Xbox profile)
 
-Real Xbox controllers (360, Series, One, Elite) all expose a **combined** trigger axis (Z) in DirectInput &mdash; that's `xusb22.sys`'s legacy DI shape. Browsers and WGI need separate trigger values. Previous user-mode virtual solutions had to choose: correct DI (5 axes, combined Z) or correct browser (6 axes, separate triggers).
+Real Xbox controllers (360, Series, One, Elite) all expose a **combined** trigger axis (Z) in DirectInput: that's `xusb22.sys`'s legacy DI shape. Browsers and WGI need separate trigger values. Previous user-mode virtual solutions had to choose: correct DI (5 axes, combined Z) or correct browser (6 axes, separate triggers).
 
-HIDMaestro uses HID **velocity usages** (Vx and Vy, Usage Page 0x01, Usages 0x40 and 0x41 per HID Usage Tables 1.5 §4 &mdash; [usb.org/document-library](https://www.usb.org/document-library)) to carry separate trigger values in the same HID report. DirectInput does **not** map velocity usages to any axis slot &mdash; it sees 5 axes (X, Y, Rx, Ry, combined Z), matching real `xusb22.sys` for every Xbox controller. Microsoft GameInput / WGI enumerates Vx/Vy as additional axes and reads separate trigger data via the GameInput registry mapping (see WGI section below).
+HIDMaestro uses HID **velocity usages** (Vx and Vy, Usage Page 0x01, Usages 0x40 and 0x41 per HID Usage Tables 1.5 §4, listed at [usb.org/document-library](https://www.usb.org/document-library)) to carry separate trigger values in the same HID report. DirectInput does **not** map velocity usages to any axis slot. It sees 5 axes (X, Y, Rx, Ry, combined Z), matching real `xusb22.sys` for every Xbox controller. Microsoft GameInput / WGI enumerates Vx/Vy as additional axes and reads separate trigger data via the GameInput registry mapping (see WGI section below).
 
 Result: 5 axes and combined Z trigger in DirectInput (matching real `xusb22.sys` for the entire Xbox family), separate triggers in the browser (matching real XInput), all from one HID descriptor.
 
-The velocity usages are emitted by appending raw bytes via `HidDescriptorBuilder.AddRaw` &mdash; the fluent `AddTrigger` doesn't emit Vx/Vy because their byte-alignment validation is different. The catalog Xbox profiles do this manually; custom profiles needing the trick follow the same pattern.
+The velocity usages are emitted by appending raw bytes via `HidDescriptorBuilder.AddRaw`: the fluent `AddTrigger` doesn't emit Vx/Vy because their byte-alignment validation is different. The catalog Xbox profiles do this manually; custom profiles needing the trick follow the same pattern.
 
 ---
 
@@ -42,7 +42,7 @@ The velocity usages are emitted by appending raw bytes via `HidDescriptorBuilder
 - **Single-slot allocation contiguously from 0** for Xbox-family profiles.
 - **Separate triggers** (LT, RT independent).
 - **Correct button mapping** including Guide via `XInputGetStateEx` (the undocumented 0x0400 bit).
-- **D-pad** (fixed in v1.3.3 &mdash; pre-v1.3.3 the SDK never wrote hat bits into the GIP buffer; consumers hitting `xusb22` directly missed the d-pad).
+- **D-pad** (fixed in v1.3.3: pre-v1.3.3 the SDK never wrote hat bits into the GIP buffer; consumers hitting `xusb22` directly missed the d-pad).
 - **Rumble passthrough** via `IOCTL_XUSB_SET_STATE` &rarr; `OutputReceived(HMOutputSource.XInput)`.
 
 ### How: two paths
@@ -71,11 +71,11 @@ Since v1.3.21 (issue #37) the virtual Pro ships the real BLUETOOTH descriptor, e
 
 `xinput1_4.dll` hard-caps at 4 slots. This **only constrains Xbox-family profiles** (xbox-360-wired, xbox-series-xs-bt, etc.); non-Xbox profiles (DualSense, Switch Pro, wheels, sticks) don't claim XInput slots and can run beyond 4 simultaneously through DInput / HIDAPI / WGI / RawInput / Browser.
 
-For up-to-date multi-slot testing, use Nefarius's [MultiPadTester](https://github.com/nefarius/MultiPadTester) &mdash; the historical 4-slot WGI cap was fixed upstream per `nefarius/MultiPadTester#15`.
+For up-to-date multi-slot testing, use Nefarius's [MultiPadTester](https://github.com/nefarius/MultiPadTester): the historical 4-slot WGI cap was fixed upstream per `nefarius/MultiPadTester#15`.
 
 ### XInput slot-claim wait
 
-`SetupController` runs three wait budgets after device create. The third &mdash; `WaitForXInputSlotClaim` &mdash; was 15 s pre-v1.3.2. The slot-claim wait was the **dominant cost**: distribution is bimodal (xinputhid publishes the slot in <100 ms when healthy, never publishes when xinputhid's allocator is in a stuck state), so the prior 15 s budget burned the full duration on every stuck case. PadForge users observed 13-14 s freezes on a single Xbox Series BT create.
+`SetupController` runs three wait budgets after device create. The third, `WaitForXInputSlotClaim`, was 15 s pre-v1.3.2. The slot-claim wait was the **dominant cost**: distribution is bimodal (xinputhid publishes the slot in <100 ms when healthy, never publishes when xinputhid's allocator is in a stuck state), so the prior 15 s budget burned the full duration on every stuck case. PadForge users observed 13-14 s freezes on a single Xbox Series BT create.
 
 The 500 ms cap (post-v1.3.2) sits ~5x above the slowest observed healthy claim and degrades the stuck case to a near-imperceptible pause. Controller stays functional via DI / HIDAPI / Browser / WGI when XInput doesn't pick it up; XInput consumers see the slot appear lazily on their next poll cycle.
 
@@ -120,13 +120,13 @@ By using `VID_*&PID_*&IG_00` as the device enumerator, the HID child's device pa
 
 - **[Chromium RawInput](https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/raw_input_data_fetcher_win.cc)** skips it (prevents duplicate gamepad entries).
 - **[HIDAPI](https://github.com/libusb/hidapi/blob/master/windows/hid.c)** skips it (by design for XInput-handled devices).
-- **[SDL3](https://github.com/libsdl-org/SDL/tree/main/src/joystick/windows)** still detects it &mdash; it falls through to the RawInput backend and maps by VID/PID.
+- **[SDL3](https://github.com/libsdl-org/SDL/tree/main/src/joystick/windows)** still detects it: it falls through to the RawInput backend and maps by VID/PID.
 
 One string in a device path controls three different detection paths across three different libraries.
 
 ### The BTHLEDEVICE spoof
 
-HIDAPI detects Bluetooth controllers by checking for `BTHLEDEVICE` in the device's CompatibleIDs (see HIDAPI's Windows backend at [`windows/hid.c`](https://github.com/libusb/hidapi/blob/master/windows/hid.c) &mdash; the `hid_get_device_info` bus-type detection). HIDMaestro sets this property from user mode during device creation, **without Bluetooth hardware** and **without a kernel bus driver**.
+HIDAPI detects Bluetooth controllers by checking for `BTHLEDEVICE` in the device's CompatibleIDs (see HIDAPI's Windows backend at [`windows/hid.c`](https://github.com/libusb/hidapi/blob/master/windows/hid.c): the `hid_get_device_info` bus-type detection). HIDMaestro sets this property from user mode during device creation, **without Bluetooth hardware** and **without a kernel bus driver**.
 
 SDL3 then uses its Bluetooth-specific controller parsing path, which handles the descriptor correctly. Without this spoof, SDL3's default parser produces zeros for certain virtual device configurations.
 
@@ -134,7 +134,7 @@ For BT-mode profiles only (`connection: "bluetooth"` in the JSON). USB profiles 
 
 ### Custom SDL3 fork
 
-PadForge's SDL3 fork (branch `feat/hidmaestro-filter`) adds a substring filter list at `SDL_OpenJoystick` so SDL doesn't open HIDMaestro virtuals **as input devices** when PadForge owns those virtuals. This is a **PadForge-side concern** &mdash; PadForge needs to enumerate physical controllers (via SDL) without re-enumerating its own HIDMaestro virtuals as input.
+PadForge's SDL3 fork (branch `feat/hidmaestro-filter`) adds a substring filter list at `SDL_OpenJoystick` so SDL doesn't open HIDMaestro virtuals **as input devices** when PadForge owns those virtuals. This is a **PadForge-side concern**: PadForge needs to enumerate physical controllers (via SDL) without re-enumerating its own HIDMaestro virtuals as input.
 
 If you write a different consumer that doesn't need this filter (an emulator that just reads its own HIDMaestro output as gamepads is a corner case), you can use stock SDL3.
 
@@ -168,7 +168,7 @@ In all three cases the consumer's `OutputReceived` handler fires; only the wire 
 
 ### Chromium's controller order quirk
 
-Chromium uses **alphabetical / lexical GUID ordering** for the gamepad list. Any match to physical creation order is coincidental. If your consumer cares about controller ordering at the browser layer, sort or remap on the consumer side &mdash; the SDK creates virtuals in deterministic order, but Chromium reorders.
+Chromium uses **alphabetical / lexical GUID ordering** for the gamepad list. Any match to physical creation order is coincidental. If your consumer cares about controller ordering at the browser layer, sort or remap on the consumer side: the SDK creates virtuals in deterministic order, but Chromium reorders.
 
 Chromium also caches gamepad slots within a session. Adding/removing controllers during a Chromium session leaves stale duplicate slots with identical inputs. **Restart Chromium to clear.** Not a HIDMaestro bug.
 
@@ -180,7 +180,7 @@ Edge uses Chromium's pipeline so behaves identically. Firefox's Gamepad implemen
 
 ## Windows.Gaming.Input (WGI)
 
-The WinRT API surface that powers `Gamepad.Vibration`, `RawGameController`, `IGameController`, etc. Used by Chromium for browser Gamepad and by UWP / WinUI games. **Most fragile of the five surfaces** &mdash; the most empirical investigation went into making this work.
+The WinRT API surface that powers `Gamepad.Vibration`, `RawGameController`, `IGameController`, etc. Used by Chromium for browser Gamepad and by UWP / WinUI games. **Most fragile of the five surfaces**: the most empirical investigation went into making this work.
 
 ### What we deliver
 
@@ -200,7 +200,7 @@ Decomp of `Windows.Gaming.Input.dll` (Win11 26200) shows that `ProviderManagerWo
 
 Both branches are reverse-engineered from the Win11 26200 binary; the full Ghidra output and ProcMon traces are archived at [`docs/investigations/wgi-silent-sink-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04).
 
-Path 1 admits plain HID profiles (HIDClass) automatically. Path 2 is what admits the System-class XUSB companion via the registry-string tripwire &mdash; see [XUSB Companion](xusb-companion.md).
+Path 1 admits plain HID profiles (HIDClass) automatically. Path 2 is what admits the System-class XUSB companion via the registry-string tripwire: see [XUSB Companion](xusb-companion.md).
 
 `System` class is **not** on the pass-list. So plain System-class devices are skipped by WGI unless they also have `"xinputhid"` in their UpperFilters.
 
@@ -208,7 +208,7 @@ Path 1 admits plain HID profiles (HIDClass) automatically. Path 2 is what admits
 
 Initially obvious choice: XnaComposite is on the pass-list. Why pick System?
 
-XnaComposite triggers classifier branch 1 and creates a WGI Gamepad entity automatically &mdash; which would be a **second** WGI entity alongside the main HID device's HID-path Gamepad. Two WGI Gamepads splitting input and vibration on one logical controller hangs the entire `Windows.Gaming.Input` subsystem. Recovery: `Restart-Service -Force GameInputSvc`.
+XnaComposite triggers classifier branch 1 and creates a WGI Gamepad entity automatically: which would be a **second** WGI entity alongside the main HID device's HID-path Gamepad. Two WGI Gamepads splitting input and vibration on one logical controller hangs the entire `Windows.Gaming.Input` subsystem. Recovery: `Restart-Service -Force GameInputSvc`.
 
 The System class isn't classified at all, then admitted via the UpperFilter tripwire and dispatched via the XUSB path. Exactly one Gamepad entity per logical controller. See [`memory:feedback-one-wgi-device-per-controller.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md).
 
@@ -228,7 +228,7 @@ This was discovered by Ghidra-decompiling `Windows.Gaming.Input.dll` and seeing 
 
 ### `IOCTL_XUSB_WAIT_FOR_INPUT`: the async input pump
 
-WGI's `XusbDevice::QueueInputBuffer` issues `IOCTL_XUSB_WAIT_FOR_INPUT` async. **Completing it synchronously kills the WGI input pump** &mdash; verified empirically. The XUSB companion has a manual-dispatch queue and an 8 ms periodic timer that drains pended requests with the right 29-byte response format. See [XUSB Companion](xusb-companion.md).
+WGI's `XusbDevice::QueueInputBuffer` issues `IOCTL_XUSB_WAIT_FOR_INPUT` async. **Completing it synchronously kills the WGI input pump**: verified empirically. The XUSB companion has a manual-dispatch queue and an 8 ms periodic timer that drains pended requests with the right 29-byte response format. See [XUSB Companion](xusb-companion.md).
 
 ### XUSB `IOCTL_XUSB_WAIT_FOR_INPUT` 29-byte response format
 
@@ -240,7 +240,7 @@ WGI's `XusbDevice::QueueInputBuffer` issues `IOCTL_XUSB_WAIT_FOR_INPUT` async. *
 | 10 | `0x14` | Non-zero gate byte |
 | 11..28 | XUSB state | Buttons / triggers / sticks |
 
-These constants come from Ghidra + binary-search testing. The `state[9]=0x00` magic byte is the most counterintuitive &mdash; in the Microsoft tooling that generated these state frames, that field would presumably mean something specific, but in our context the only thing that matters is that the `XusbInputParser` template matches it.
+These constants come from Ghidra + binary-search testing. The `state[9]=0x00` magic byte is the most counterintuitive: in the Microsoft tooling that generated these state frames, that field would presumably mean something specific, but in our context the only thing that matters is that the `XusbInputParser` template matches it.
 
 ---
 
@@ -263,7 +263,7 @@ Chromium's RawInput parser surfaces any trailing Const Input item as a phantom a
 
 ## Microsoft GameInput (newer API)
 
-The official product name is **Microsoft GameInput** (note the spacing &mdash; no dot, `GameInput` is one word). The DLL on Windows is `GameInput.dll`. Distinct from the older `Windows.Gaming.Input` WinRT surface (WGI), but on current Windows builds both run through the same kernel-side dispatch. Reads device-to-Gamepad mapping from `HKLM\SYSTEM\CurrentControlSet\Control\GameInput\Devices\`.
+The official product name is **Microsoft GameInput** (note the spacing: no dot, `GameInput` is one word). The DLL on Windows is `GameInput.dll`. Distinct from the older `Windows.Gaming.Input` WinRT surface (WGI), but on current Windows builds both run through the same kernel-side dispatch. Reads device-to-Gamepad mapping from `HKLM\SYSTEM\CurrentControlSet\Control\GameInput\Devices\`.
 
 We don't currently target Microsoft GameInput differently from WGI. Investigation in 2026-04 confirmed:
 
@@ -312,19 +312,19 @@ See [Testing and Verification](testing-and-verification.md) for the regression b
 
 ## See also
 
-- [Architecture Overview](architecture-overview.md) &mdash; the full data flow these per-API mechanics fit into.
-- [XUSB Companion](xusb-companion.md) &mdash; the XInput / WGI dispatch path for non-xinputhid Xbox profiles.
-- [UMDF2 Driver Internals](umdf2-driver-internals.md) &mdash; the driver IOCTLs the kernel HID stack marshals from these APIs.
-- [HID Descriptor Builder](../sdk/hid-descriptor-builder.md) &mdash; the velocity-usage trick + button/trigger byte alignment.
-- [Profile System](../profiles/profile-system.md) &mdash; the three architecture groups that determine which path applies.
+- [Architecture Overview](architecture-overview.md): the full data flow these per-API mechanics fit into.
+- [XUSB Companion](xusb-companion.md): the XInput / WGI dispatch path for non-xinputhid Xbox profiles.
+- [UMDF2 Driver Internals](umdf2-driver-internals.md): the driver IOCTLs the kernel HID stack marshals from these APIs.
+- [HID Descriptor Builder](../sdk/hid-descriptor-builder.md): the velocity-usage trick + button/trigger byte alignment.
+- [Profile System](../profiles/profile-system.md): the three architecture groups that determine which path applies.
 
 ## References
 
-- HID Usage Tables 1.5 &mdash; Vx/Vy usage codes (Generic Desktop §4). Download from [usb.org/document-library](https://www.usb.org/document-library).
-- [W3C Gamepad API](https://www.w3.org/TR/gamepad/) &mdash; STANDARD_GAMEPAD mapping bucket.
-- [Chromium gamepad backend](https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/) &mdash; `&IG_` skip semantics in RawInput.
-- [HIDAPI](https://github.com/libusb/hidapi) &mdash; the Windows backend at `windows/hid.c` has bus type detection (`BTHLEDEVICE` CompatibleIDs check).
-- [SDL3](https://github.com/libsdl-org/SDL) &mdash; XInput / RawInput / HIDAPI fallback hierarchy under `src/joystick/windows/`.
-- XInput documentation &mdash; search Microsoft Learn for "XInput Game Controller APIs". 4-slot cap, `XInputGetState` semantics.
-- [`docs/investigations/wgi-silent-sink-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04) &mdash; Ghidra decomp of WGI's `OnPnpDeviceAdded` classifier and `IsDeviceOrAncestorFilteredBy`.
-- [References](references.md) &mdash; full source bibliography for every claim in this wiki.
+- HID Usage Tables 1.5: Vx/Vy usage codes (Generic Desktop §4). Download from [usb.org/document-library](https://www.usb.org/document-library).
+- [W3C Gamepad API](https://www.w3.org/TR/gamepad/): STANDARD_GAMEPAD mapping bucket.
+- [Chromium gamepad backend](https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/): `&IG_` skip semantics in RawInput.
+- [HIDAPI](https://github.com/libusb/hidapi): the Windows backend at `windows/hid.c` has bus type detection (`BTHLEDEVICE` CompatibleIDs check).
+- [SDL3](https://github.com/libsdl-org/SDL): XInput / RawInput / HIDAPI fallback hierarchy under `src/joystick/windows/`.
+- XInput documentation: search Microsoft Learn for "XInput Game Controller APIs". 4-slot cap, `XInputGetState` semantics.
+- [`docs/investigations/wgi-silent-sink-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04): Ghidra decomp of WGI's `OnPnpDeviceAdded` classifier and `IsDeviceOrAncestorFilteredBy`.
+- [References](references.md): full source bibliography for every claim in this wiki.

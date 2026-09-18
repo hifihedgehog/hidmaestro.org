@@ -1,4 +1,4 @@
-# Profile System
+﻿# Profile System
 
 Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 231 ship in the embedded catalog across 32 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 16 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
 
@@ -45,7 +45,7 @@ Vendor folder names are slugs of the manufacturer (`thrustmaster`, `8bitdo`, `vk
 
 The full vendor list at v1.3.4: 8bitdo, amazon, asetek, cammus, ch-products, fanatec, flydigi, google, heusinkveld, honeycomb, hori, logitech, microsoft, misc, moza, nacon, nintendo, pxn, razer, sega, simagic, simucube, snk, sony, steelseries, taito, thrustmaster, turtle-beach, valve, virpil, vkbsim, winwing.
 
-The `misc/` vendor catches everything else &mdash; arcade controllers, niche racing pedals, devices the contributor couldn't slot into a clean vendor namespace.
+The `misc/` vendor catches everything else: arcade controllers, niche racing pedals, devices the contributor couldn't slot into a clean vendor namespace.
 
 ---
 
@@ -97,9 +97,9 @@ The `misc/` vendor catches everything else &mdash; arcade controllers, niche rac
 | `inputReportSize` | int \| null | derived | Total wire size of the input report in bytes (data **+ 1 for Report ID** if the descriptor declares one). When null, derived at runtime from the descriptor. |
 | `nativeDescriptor` | string \| null | null | The original physical device's descriptor before any HIDMaestro-side modifications. Kept as a record; not used at runtime. |
 | `deviceDescription` | string \| null | `productString` | The Device Manager display name (`FriendlyName` PnP property). Some catalog profiles (Logitech F310) carry a curated `deviceDescription` distinct from `productString`. |
-| `triggerMode` | string \| null | null | Profile-level annotation describing the descriptor's trigger encoding: `combined` (descriptor declares one Z axis carrying `LT - RT`), `separate` (descriptor declares independent Z + Rz), or null for non-gamepad. **Note:** every Xbox profile surfaces in DirectInput as 5 axes with combined Z regardless of this annotation &mdash; the velocity-usage trick + xinputhid synthesis collapse separate-trigger descriptors into the canonical `xusb22.sys` 5-axis shape. WGI / browser see separate triggers via Vx/Vy + GameInput registry mapping. |
+| `triggerMode` | string \| null | null | Profile-level annotation describing the descriptor's trigger encoding: `combined` (descriptor declares one Z axis carrying `LT - RT`), `separate` (descriptor declares independent Z + Rz), or null for non-gamepad. **Note:** every Xbox profile surfaces in DirectInput as 5 axes with combined Z regardless of this annotation: the velocity-usage trick + xinputhid synthesis collapse separate-trigger descriptors into the canonical `xusb22.sys` 5-axis shape. WGI / browser see separate triggers via Vx/Vy + GameInput registry mapping. |
 | `driverMode` | string \| null | null | One of: `xinputhid` (binds Microsoft's xinputhid kernel filter for GIP-over-HID profiles like Xbox Series BT / One BT / Elite v2 BT), `xusb22` (binds the legacy xusb22 upper filter), or null/`hid` (plain HID via `mshidumdf`). The catalog's Xbox-VID profiles overwhelmingly use `null` plus the implicit XUSB companion path; `xusb22` is supported in the deserializer but rarely needed because the SwD-enumerated companion serves the same role with explicit ContainerID control. |
-| `driverPid` | string \| null | null | PID override for hardware-ID matching only. The driver's INF-bind process matches against this PID; applications still see the real `pid` field via `HidD_GetAttributes`. Used for xinputhid-bound profiles where the real PID would be claimed by GameInput / HIDAPI &mdash; a sentinel like `0x0001` here makes those backends skip the device so SDL3 falls through to its XInput backend with the correct identity. |
+| `driverPid` | string \| null | null | PID override for hardware-ID matching only. The driver's INF-bind process matches against this PID; applications still see the real `pid` field via `HidD_GetAttributes`. Used for xinputhid-bound profiles where the real PID would be claimed by GameInput / HIDAPI: a sentinel like `0x0001` here makes those backends skip the device so SDL3 falls through to its XInput backend with the correct identity. |
 | `companionOnly` | bool | false | If true, the runtime skips main-HID-device creation and runs only the XUSB companion. DI reads from XInput (5 axes), browser reads from XInput (separate triggers). Used for cases where real hardware uses xusb22.sys without an HID interface. |
 | `buttonMap` | int[] \| null | identity | Optional remapping table. Index = `HMButton` bit position; value = descriptor button index. Sony profiles use this to swap A/B/X/Y &harr; Cross/Circle/Square/Triangle. `-1` means "abstract bit not in this descriptor" (the bit is dropped, never identity-mapped). Values at or past the declared button count address the contiguous 1-bit vendor run continuing the button array, where the DualSense Edge's paddles and Fn buttons live on real hardware (v1.5.1, issue #48). |
 | `axisMap` | object \| null | heuristic | Axis semantic override. Keys are hex HID usage codes (`"0x32"` for Z); values are semantic names (`"leftStickX"`, `"rightTrigger"`). Sony profiles override `Z/Rz &rarr; rightStick`. |
@@ -123,9 +123,9 @@ Write the reasoning into `notes` when you make this call in a profile of your ow
 
 ## Vendor-blob fields (`extendedReport` / `extendedOutputReport`)
 
-Some controllers' descriptors declare their input as a single opaque vendor-defined field — Sony BT (DualSense, DualSense Edge, DS4 BT) is the canonical example, but Switch Pro and various wheels follow the same pattern. The descriptor doesn't say which bytes carry sticks vs buttons vs gyro vs CRC; the wire format is firmware convention.
+Some controllers' descriptors declare their input as a single opaque vendor-defined field: Sony BT (DualSense, DualSense Edge, DS4 BT) is the canonical example, but Switch Pro and various wheels follow the same pattern. The descriptor doesn't say which bytes carry sticks vs buttons vs gyro vs CRC; the wire format is firmware convention.
 
-Pre-v1.3.5 the SDK couldn't pack these — it would fall back to whatever simpler input report the descriptor declared first (Sony BT: Report 1, 9 bytes), which Steam Input misclassified and parsers like `dualsense-tester` couldn't read. v1.3.5 makes the byte layout data: profile JSON describes every field's type, position, and bit range; the SDK walks the field list as a generic codec.
+Pre-v1.3.5 the SDK couldn't pack these: it would fall back to whatever simpler input report the descriptor declared first (Sony BT: Report 1, 9 bytes), which Steam Input misclassified and parsers like `dualsense-tester` couldn't read. v1.3.5 makes the byte layout data: profile JSON describes every field's type, position, and bit range; the SDK walks the field list as a generic codec.
 
 ```jsonc
 "extendedReport": {
@@ -165,9 +165,9 @@ Pre-v1.3.5 the SDK couldn't pack these — it would fall back to whatever simple
 
 ### Field positioning syntax
 
-- `"byte": N` — single byte at offset N (0-indexed; byte 0 is the report ID)
-- `"bytes": "N-M"` — inclusive range [N..M] (used by `crc32-le`, `rgb24`, `bytes-passthrough`)
-- `"bits": "L-H"` — sub-byte bit range [L..H] within the byte/byte-range
+- `"byte": N`: single byte at offset N (0-indexed; byte 0 is the report ID)
+- `"bytes": "N-M"`: inclusive range [N..M] (used by `crc32-le`, `rgb24`, `bytes-passthrough`)
+- `"bits": "L-H"`: sub-byte bit range [L..H] within the byte/byte-range
 
 ### CRC32 scope
 
@@ -209,7 +209,7 @@ A profile with neither `armOn` nor `alwaysArmed` never runs the codec on the inp
 
 ### When to use `extendedReport` vs leave it unset
 
-Set `extendedReport` only when the descriptor's first declared input is an opaque vendor blob and the wire format requires firmware-convention byte placement. For controllers whose descriptors fully describe the input report (Xbox 360 wired, DualSense USB, Switch Pro, every plain-HID gamepad), the descriptor-driven encoder packs correctly without an `extendedReport` block — leave it null/unset.
+Set `extendedReport` only when the descriptor's first declared input is an opaque vendor blob and the wire format requires firmware-convention byte placement. For controllers whose descriptors fully describe the input report (Xbox 360 wired, DualSense USB, Switch Pro, every plain-HID gamepad), the descriptor-driven encoder packs correctly without an `extendedReport` block: leave it null/unset.
 
 `extendedOutputReport` is independent: even when the input descriptor is fully self-describing, declaring an `extendedOutputReport` lets consumers use `HMOutputEncoder.Encode(profile, fields)` to produce wire-format bytes for driving real devices without inline byte-packing. v1.3.5 ships output blocks for DS5 USB (Report 0x02), DS5 Edge USB, DS4 v1/v2 USB (Report 0x05), in addition to BT output blocks for the DS5 family (Report 0x31) and DS4 BT (Report 0x11).
 
@@ -238,7 +238,7 @@ Lightest stack. One `DIF_REMOVE` on the ROOT parent tears down the entire tree. 
 
 Xbox-VID profiles (`vid == 0x045E`) where `driverMode` is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running `HMXInput.dll`. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.
 
-Includes Xbox 360 Wired (`xbox-360-wired`), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, Xbox Adaptive (with caveats &mdash; this is a 6-profile group).
+Includes Xbox 360 Wired (`xbox-360-wired`), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, Xbox Adaptive (with caveats: this is a 6-profile group).
 
 ```
 ROOT\VID_045E&PID_028E&IG_00\NNNN    ← UMDF2 driver (main HID device)
@@ -252,7 +252,7 @@ SWD\HIDMAESTRO\<sid>_NNNN            ← XUSB companion (HMXInput.dll)
   │                                    UpperFilters = "xinputhid" from INF
   │                                    (admits the companion to WGI's XUSB
   │                                    dispatch; xinputhid.sys does not actually
-  │                                    attach — wrong device class).
+  │                                    attach: wrong device class).
   └─ XUSB interface → XInput slot + WGI Gamepad
 ```
 
@@ -262,7 +262,7 @@ Medium stack, fast on both sides post-v1.3.2. Two device trees to tear down. The
 
 Profiles with `driverMode: "xinputhid"`. These match `xinputhid.inf [GIP_Hid]` by hardware ID (`HID\VID_045E&PID_0B13&IG_00`), which binds Microsoft's `xinputhid.sys` as an upper filter on the HID child. xinputhid provides XInput delivery and 16-button HID descriptor synthesis natively: no XUSB companion needed, single Device Manager entry.
 
-Includes Xbox Series BT (`xbox-series-xs-bt`), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT &mdash; the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.
+Includes Xbox Series BT (`xbox-series-xs-bt`), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT: the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.
 
 ```
 SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\<sid>_NNNN
@@ -283,7 +283,7 @@ SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\<sid>_NNNN
 
 Both sides fast post-v1.3.2. xinputhid is a Microsoft inbox kernel filter driver; we don't ship it. The SwD-first removal ordering in v1.3.1 closes the SwD parent first, and the children cascade automatically.
 
-> The 16-button synthesis is a **known trade-off**. Win11's xinputhid replaces the source descriptor's button declaration with a 15+ button Xbox One layout. This is incompatible with profiles that need the Xbox 360's 10-button fidelity through DirectInput (`btnfix.c` exists in the repo as an experimental approach but is incomplete &mdash; the trade-off stands as of v1.3.4). For Xbox 360 Wired the catalog profile uses driverMode=null + XUSB companion to keep 10 buttons through DI; for Xbox Series BT it accepts 16 buttons because the source descriptor already has 12 and the +4 are dead bits.
+> The 16-button synthesis is a **known trade-off**. Win11's xinputhid replaces the source descriptor's button declaration with a 15+ button Xbox One layout. This is incompatible with profiles that need the Xbox 360's 10-button fidelity through DirectInput (`btnfix.c` exists in the repo as an experimental approach but is incomplete: the trade-off stands as of v1.3.4). For Xbox 360 Wired the catalog profile uses driverMode=null + XUSB companion to keep 10 buttons through DI; for Xbox Series BT it accepts 16 buttons because the source descriptor already has 12 and the +4 are dead bits.
 
 ---
 
@@ -315,7 +315,7 @@ ctx.LoadDefaultProfiles();
 // Custom directory of JSON profiles
 ctx.LoadProfilesFromDirectory(@"C:\my-profiles");
 
-// Mix both — embedded first, then custom (custom IDs win on collision)
+// Mix both: embedded first, then custom (custom IDs win on collision)
 ctx.LoadDefaultProfiles();
 ctx.LoadProfilesFromDirectory(@"C:\my-overrides");
 
@@ -324,7 +324,7 @@ HMProfile? p = ctx.GetProfile("xbox-360-wired");
 
 // Enumerate
 foreach (var profile in ctx.AllProfiles)
-    Console.WriteLine($"{profile.Id} — {profile.Name}");
+    Console.WriteLine($"{profile.Id}: {profile.Name}");
 ```
 
 Profiles are loaded into the context's catalog. Duplicate IDs are skipped (first wins). Schema files (`schema.json`) are ignored.
@@ -348,7 +348,7 @@ var modded = new HMProfileBuilder()
 using var ctrl = ctx.CreateController(modded);   // not loaded into ctx.AllProfiles
 ```
 
-The modded profile isn't registered in the catalog &mdash; it's used directly for one `CreateController` call. See [Custom Profiles](custom-profiles.md) for the full clone / build / spoof patterns.
+The modded profile isn't registered in the catalog: it's used directly for one `CreateController` call. See [Custom Profiles](custom-profiles.md) for the full clone / build / spoof patterns.
 
 ---
 
@@ -377,11 +377,11 @@ The modded profile isn't registered in the catalog &mdash; it's used directly fo
 
 **`inputReportSize`: 18** is data + 1 Report ID byte (the descriptor declares Report ID 0x01).
 
-**`triggerMode`: "combined"** annotates the descriptor's trigger encoding for this profile. The HIDMaestro-emitted descriptor declares one Z axis carrying `LT - RT` per real xusb22 DI semantics. **All Xbox profiles** present as 5 axes with combined Z in DirectInput regardless of `triggerMode` value &mdash; on profiles where `triggerMode == "separate"` (e.g. Xbox Series BT), xinputhid's synthesis layer collapses the descriptor's separate Z + Rz back into combined Z by the time DI reads the preparsed data. WGI and browser see separate triggers through the Vx/Vy + GameInput-mapping path.
+**`triggerMode`: "combined"** annotates the descriptor's trigger encoding for this profile. The HIDMaestro-emitted descriptor declares one Z axis carrying `LT - RT` per real xusb22 DI semantics. **All Xbox profiles** present as 5 axes with combined Z in DirectInput regardless of `triggerMode` value: on profiles where `triggerMode == "separate"` (e.g. Xbox Series BT), xinputhid's synthesis layer collapses the descriptor's separate Z + Rz back into combined Z by the time DI reads the preparsed data. WGI and browser see separate triggers through the Vx/Vy + GameInput-mapping path.
 
-**`driverMode`** is **not present** &mdash; null = plain HID via mshidumdf. With `vid == 0x045E`, this profile lands in **architecture group 2** (non-xinputhid Xbox + XUSB companion).
+**`driverMode`** is **not present**: null = plain HID via mshidumdf. With `vid == 0x045E`, this profile lands in **architecture group 2** (non-xinputhid Xbox + XUSB companion).
 
-**`buttonMap`** is **not present** &mdash; identity Xbox layout (`HMButton.A` &rarr; descriptor button 0, etc.).
+**`buttonMap`** is **not present**: identity Xbox layout (`HMButton.A` &rarr; descriptor button 0, etc.).
 
 ---
 
@@ -406,9 +406,9 @@ The largest single-vendor folders are Thrustmaster (19), Logitech (24), Microsof
 
 ## See also
 
-- [Custom Profiles](custom-profiles.md) &mdash; clone, modify, build from scratch, spoof.
-- [Profile Extractor](profile-extractor.md) &mdash; the GUI tool that reads profiles back from real devices.
-- [Contributing Profiles](contributing-profiles.md) &mdash; submit a captured profile via GitHub issue.
-- [Cross-API Coverage](../reference/cross-api-coverage.md) &mdash; the per-API translation a profile drives at runtime.
-- [Lifecycle and Teardown](../reference/lifecycle-and-teardown.md) &mdash; per-architecture-group teardown latencies.
-- [`profiles/schema.json`](https://github.com/hifihedgehog/HIDMaestro/blob/master/profiles/schema.json) &mdash; the canonical JSON Schema.
+- [Custom Profiles](custom-profiles.md): clone, modify, build from scratch, spoof.
+- [Profile Extractor](profile-extractor.md): the GUI tool that reads profiles back from real devices.
+- [Contributing Profiles](contributing-profiles.md): submit a captured profile via GitHub issue.
+- [Cross-API Coverage](../reference/cross-api-coverage.md): the per-API translation a profile drives at runtime.
+- [Lifecycle and Teardown](../reference/lifecycle-and-teardown.md): per-architecture-group teardown latencies.
+- [`profiles/schema.json`](https://github.com/hifihedgehog/HIDMaestro/blob/master/profiles/schema.json): the canonical JSON Schema.

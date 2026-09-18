@@ -1907,7 +1907,7 @@
 
 <h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
 <p>Authoritative sources for every load-bearing claim in this wiki. Each entry covers a specific topic plus the wiki pages that cite it.</p>
-<p>A note on linking: this page deliberately avoids deep <code>learn.microsoft.com</code> URLs that may have moved during one of Microsoft's documentation reshuffles. For Microsoft-published material, the topic, header, or symbol name is cited verbatim &mdash; search Microsoft Learn for the exact symbol and the page is one click away. GitHub repos and stable spec roots are linked directly.</p>
+<p>A note on linking: this page deliberately avoids deep <code>learn.microsoft.com</code> URLs that may have moved during one of Microsoft's documentation reshuffles. For Microsoft-published material, the topic, header, or symbol name is cited verbatim: search Microsoft Learn for the exact symbol and the page is one click away. GitHub repos and stable spec roots are linked directly.</p>
 <p>If a wiki page makes a claim that isn't backed by something here, it falls into one of three buckets: (a) author-empirical, validated by the regression battery in <code>test/regression/swap_regression.ps1</code>; (b) directly traceable to HIDMaestro's own source under <a href="https://github.com/hifihedgehog/HIDMaestro">github.com/hifihedgehog/HIDMaestro</a>; (c) Ghidra decomp from this project's investigations, archived under <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations"><code>docs/investigations/</code></a>.</p>
 <hr />
 <h2 id="hid-specification">HID specification<a class="headerlink" href="#hid-specification" title="Permanent link">&para;</a></h2>
@@ -1920,9 +1920,9 @@
 <p><strong>USB HID Usage Tables (HUT) 1.5.</strong> Defines the Generic Desktop Page (Usage Page 0x01), where:</p>
 </li>
 <li>0x30 X, 0x31 Y, 0x32 Z, 0x33 Rx, 0x34 Ry, 0x35 Rz, 0x39 Hat Switch</li>
-<li><strong>0x40 Vx, 0x41 Vy</strong> &mdash; the velocity usages used in <a href="../cross-api-coverage/">Cross-API Coverage</a> for the separate-trigger trick.</li>
+<li><strong>0x40 Vx, 0x41 Vy</strong>: the velocity usages used in <a href="../cross-api-coverage/">Cross-API Coverage</a> for the separate-trigger trick.</li>
 <li>
-<p>0x04 Joystick, 0x05 Game Pad &mdash; the application TLCs used by <code>HidDescriptorBuilder.Joystick()</code> / <code>Gamepad()</code>.</p>
+<p>0x04 Joystick, 0x05 Game Pad: the application TLCs used by <code>HidDescriptorBuilder.Joystick()</code> / <code>Gamepad()</code>.</p>
 </li>
 <li>
 <p><strong>HID Physical Interface Device (PID) 1.0.</strong> Defines Report IDs 0x11 Create New Effect, 0x12 Block Load, 0x13 PID Pool, 0x14 PID State, 0x1A Effect Operation, 0x1B Block Free, 0x1C Device Control, 0x1D Device Gain, plus the Physical Interface Device usage page (0x0F) and every effect-type code referenced by <code>HidDescriptorBuilder.AddPidFfbBlock</code>'s emitted bytes. Backs <a href="../../sdk/force-feedback/">Force Feedback</a> section by section.</p>
@@ -1933,34 +1933,34 @@
 <p>For symbols below, search <a href="https://learn.microsoft.com/">learn.microsoft.com</a> by exact name unless a verified URL is given.</p>
 <ul>
 <li>
-<p><strong>User-Mode Driver Framework (UMDF) 2</strong> &mdash; the framework HIDMaestro.dll runs under. Topic: "Getting started with UMDF version 2." Defines <code>EvtIoDeviceControl</code>, <code>WDFDEVICE</code> lifetime, queue dispatch policies, and the WUDFRd reflector model. Backs <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a> and <a href="../architecture-overview/">Architecture Overview</a>.</p>
+<p><strong>User-Mode Driver Framework (UMDF) 2</strong>: the framework HIDMaestro.dll runs under. Topic: "Getting started with UMDF version 2." Defines <code>EvtIoDeviceControl</code>, <code>WDFDEVICE</code> lifetime, queue dispatch policies, and the WUDFRd reflector model. Backs <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a> and <a href="../architecture-overview/">Architecture Overview</a>.</p>
 </li>
 <li>
-<p><strong><code>UmdfHostProcessSharing</code> directive</strong> &mdash; topic: "Specifying WDF Directives in INF Files." Documents <code>ProcessSharingEnabled</code> (default) vs <code>ProcessSharingDisabled</code> (HIDMaestro's choice). Backs the per-instance WUDFHost claim in <a href="../architecture-overview/">Architecture Overview</a> and <a href="../multi-controller/">Multi-Controller</a>.</p>
+<p><strong><code>UmdfHostProcessSharing</code> directive</strong>: topic: "Specifying WDF Directives in INF Files." Documents <code>ProcessSharingEnabled</code> (default) vs <code>ProcessSharingDisabled</code> (HIDMaestro's choice). Backs the per-instance WUDFHost claim in <a href="../architecture-overview/">Architecture Overview</a> and <a href="../multi-controller/">Multi-Controller</a>.</p>
 </li>
 <li>
-<p><strong><code>mshidumdf.sys</code></strong> &mdash; the Windows-shipped HID minidriver proxy that hosts UMDF2 HID drivers. The reference sample is Microsoft's <a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2"><code>vhidmini2</code></a> (in the public Windows-driver-samples repo on GitHub).</p>
+<p><strong><code>mshidumdf.sys</code></strong>: the Windows-shipped HID minidriver proxy that hosts UMDF2 HID drivers. The reference sample is Microsoft's <a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2"><code>vhidmini2</code></a> (in the public Windows-driver-samples repo on GitHub).</p>
 </li>
 <li>
-<p><strong><code>SwDeviceCreate</code> (cfgmgr32 / swdevice.h)</strong> &mdash; topic: "SwDeviceCreate function." The <code>pContainerId</code> parameter is the linchpin of the slot-1-skip fix in <a href="../swdevice-and-pnp/">SwDevice and PnP</a>. The <code>SWDeviceLifetimeParentPresent</code> lifetime flag and the only-documented-teardown-path are described in the same topic.</p>
+<p><strong><code>SwDeviceCreate</code> (cfgmgr32 / swdevice.h)</strong>: topic: "SwDeviceCreate function." The <code>pContainerId</code> parameter is the linchpin of the slot-1-skip fix in <a href="../swdevice-and-pnp/">SwDevice and PnP</a>. The <code>SWDeviceLifetimeParentPresent</code> lifetime flag and the only-documented-teardown-path are described in the same topic.</p>
 </li>
 <li>
-<p><strong><code>SetupDiCreateDeviceInfoW</code></strong> &mdash; topic: "SetupDiCreateDeviceInfoW function." The older device-creation API used by HIDMaestro for plain HID profiles. Does NOT expose ContainerID assignment (the gap that forced the SwDevice migration).</p>
+<p><strong><code>SetupDiCreateDeviceInfoW</code></strong>: topic: "SetupDiCreateDeviceInfoW function." The older device-creation API used by HIDMaestro for plain HID profiles. Does NOT expose ContainerID assignment (the gap that forced the SwDevice migration).</p>
 </li>
 <li>
-<p><strong><code>DEVPKEY_Device_ContainerId</code></strong> &mdash; topic by exact name. Defines the GUID that groups multiple devnodes as one logical device, including the null sentinel <code>{00000000-0000-0000-FFFF-FFFFFFFFFFFF}</code> that triggers the slot-1-skip path documented in <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
+<p><strong><code>DEVPKEY_Device_ContainerId</code></strong>: topic by exact name. Defines the GUID that groups multiple devnodes as one logical device, including the null sentinel <code>{00000000-0000-0000-FFFF-FFFFFFFFFFFF}</code> that triggers the slot-1-skip path documented in <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
 </li>
 <li>
-<p><strong><code>pnputil</code></strong> &mdash; topic: "PnPUtil command syntax." The <code>/add-driver</code>, <code>/install</code>, <code>/delete-driver</code>, <code>/remove-device</code> semantics referenced in <a href="../driver-install-and-signing/">Driver Install and Signing</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
+<p><strong><code>pnputil</code></strong>: topic: "PnPUtil command syntax." The <code>/add-driver</code>, <code>/install</code>, <code>/delete-driver</code>, <code>/remove-device</code> semantics referenced in <a href="../driver-install-and-signing/">Driver Install and Signing</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 </li>
 <li>
-<p><strong><code>CM_NOTIFY_ACTION</code> enumeration</strong> &mdash; topic by exact name. Defines <code>CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED</code>, used as the kernel-side guarantee in <a href="../swdevice-and-pnp/">SwDevice and PnP</a>'s SwD-first removal ordering.</p>
+<p><strong><code>CM_NOTIFY_ACTION</code> enumeration</strong>: topic by exact name. Defines <code>CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED</code>, used as the kernel-side guarantee in <a href="../swdevice-and-pnp/">SwDevice and PnP</a>'s SwD-first removal ordering.</p>
 </li>
 <li>
-<p><strong>HID class architecture (HidClass.sys)</strong> &mdash; topic: "HID Architecture." Backs the kernel-side stack diagram in <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>.</p>
+<p><strong>HID class architecture (HidClass.sys)</strong>: topic: "HID Architecture." Backs the kernel-side stack diagram in <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>.</p>
 </li>
 <li>
-<p><strong><code>xinputhid.inf [GIP_Hid]</code></strong> &mdash; the inbox INF that binds <code>xinputhid.sys</code> as a HID upper filter for Xbox Series / One / Elite v2 BT controllers. Lives at <code>C:\Windows\INF\xinputhid.inf</code> on every Win10/11 install. The <code>[GIP_Hid]</code> Match section is the documented mechanism for <a href="../../profiles/profile-system/">Profile System</a>'s xinputhid Xbox group.</p>
+<p><strong><code>xinputhid.inf [GIP_Hid]</code></strong>: the inbox INF that binds <code>xinputhid.sys</code> as a HID upper filter for Xbox Series / One / Elite v2 BT controllers. Lives at <code>C:\Windows\INF\xinputhid.inf</code> on every Win10/11 install. The <code>[GIP_Hid]</code> Match section is the documented mechanism for <a href="../../profiles/profile-system/">Profile System</a>'s xinputhid Xbox group.</p>
 </li>
 </ul>
 <hr />
@@ -1970,32 +1970,32 @@
 <p><strong>XInput.</strong> Topic: "XInput Game Controller APIs" on Microsoft Learn. The 4-slot cap, <code>XInputGetState</code>, <code>XInputSetState</code>, <code>XINPUT_STATE</code> packet layout. Backs <a href="../cross-api-coverage/">Cross-API Coverage</a>'s XInput section.</p>
 </li>
 <li>
-<p><strong><code>XInputGetStateEx</code></strong> &mdash; ordinal 100 export of <code>xinput1_3.dll</code> / <code>xinput1_4.dll</code>. Returns <code>XINPUT_GAMEPAD_GUIDE</code> (0x0400) in <code>wButtons</code>. Not in Microsoft's public XInput documentation; widely documented in community projects (search "XInputGetStateEx ordinal 100"). Backs the Guide button claims throughout the wiki.</p>
+<p><strong><code>XInputGetStateEx</code></strong>: ordinal 100 export of <code>xinput1_3.dll</code> / <code>xinput1_4.dll</code>. Returns <code>XINPUT_GAMEPAD_GUIDE</code> (0x0400) in <code>wButtons</code>. Not in Microsoft's public XInput documentation; widely documented in community projects (search "XInputGetStateEx ordinal 100"). Backs the Guide button claims throughout the wiki.</p>
 </li>
 <li>
 <p><strong><code>GUID_DEVINTERFACE_XUSB</code></strong> = <code>{EC87F1E3-C13B-4100-B5F7-8B84D54260CB}</code>. Defined in <code>Xinput.h</code>. The interface class <code>xinput1_4.dll</code> walks for discovery.</p>
 </li>
 <li>
-<p><strong>XUSB / GIP wire format</strong> &mdash; not officially documented by Microsoft. HIDMaestro's understanding comes from Ghidra decomp of <code>xinput1_4.dll</code> and <code>xusb22.sys</code> plus empirical probing of <code>xinputhid.sys</code>, archived in <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations"><code>docs/investigations/</code></a>. The IOCTL codes (<code>0x80006000</code> <code>IOCTL_XUSB_GET_INFORMATION</code>, <code>0x8000E004</code> <code>IOCTL_XUSB_GET_CAPABILITIES</code>, etc.) match the empirical probe results in <a href="../xusb-companion/">XUSB Companion</a>.</p>
+<p><strong>XUSB / GIP wire format</strong>: not officially documented by Microsoft. HIDMaestro's understanding comes from Ghidra decomp of <code>xinput1_4.dll</code> and <code>xusb22.sys</code> plus empirical probing of <code>xinputhid.sys</code>, archived in <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations"><code>docs/investigations/</code></a>. The IOCTL codes (<code>0x80006000</code> <code>IOCTL_XUSB_GET_INFORMATION</code>, <code>0x8000E004</code> <code>IOCTL_XUSB_GET_CAPABILITIES</code>, etc.) match the empirical probe results in <a href="../xusb-companion/">XUSB Companion</a>.</p>
 </li>
 </ul>
 <hr />
 <h2 id="microsoft-gameinput-and-windowsgaminginput">Microsoft GameInput and Windows.Gaming.Input<a class="headerlink" href="#microsoft-gameinput-and-windowsgaminginput" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>Microsoft GameInput</strong> (the modern API) &mdash; product page at <a href="https://www.microsoft.com/en-us/gaming">gaming.microsoft.com</a> (search "GameInput") and developer docs on Microsoft Learn. The product name HIDMaestro user-facing copy uses (per the <a href="../../start/glossary/">Glossary</a> entry).</p>
+<p><strong>Microsoft GameInput</strong> (the modern API): product page at <a href="https://www.microsoft.com/en-us/gaming">gaming.microsoft.com</a> (search "GameInput") and developer docs on Microsoft Learn. The product name HIDMaestro user-facing copy uses (per the <a href="../../start/glossary/">Glossary</a> entry).</p>
 </li>
 <li>
-<p><strong>Windows.Gaming.Input</strong> (the older WinRT surface) &mdash; the WinRT API exposed by <code>Windows.Gaming.Input.dll</code>. Documented on Microsoft Learn under the <code>Windows.Gaming.Input</code> namespace.</p>
+<p><strong>Windows.Gaming.Input</strong> (the older WinRT surface): the WinRT API exposed by <code>Windows.Gaming.Input.dll</code>. Documented on Microsoft Learn under the <code>Windows.Gaming.Input</code> namespace.</p>
 </li>
 <li>
-<p><strong>GameInput device mapping registry</strong> &mdash; the <code>HKLM\SYSTEM\CurrentControlSet\Control\GameInput\Devices\</code> hive. Not Microsoft-documented; HIDMaestro's understanding is reverse-engineered. Investigation: <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a>.</p>
+<p><strong>GameInput device mapping registry</strong>: the <code>HKLM\SYSTEM\CurrentControlSet\Control\GameInput\Devices\</code> hive. Not Microsoft-documented; HIDMaestro's understanding is reverse-engineered. Investigation: <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a>.</p>
 </li>
 <li>
-<p><strong><code>ProviderManagerWorker::OnPnpDeviceAdded</code> classifier pass-list</strong> &mdash; reverse-engineered via Ghidra decomp of <code>Windows.Gaming.Input.dll</code> on Win11 26200. Source: same investigation. Backs the dispatch claims in <a href="../cross-api-coverage/">Cross-API Coverage</a> and the System-class choice in <a href="../xusb-companion/">XUSB Companion</a>.</p>
+<p><strong><code>ProviderManagerWorker::OnPnpDeviceAdded</code> classifier pass-list</strong>: reverse-engineered via Ghidra decomp of <code>Windows.Gaming.Input.dll</code> on Win11 26200. Source: same investigation. Backs the dispatch claims in <a href="../cross-api-coverage/">Cross-API Coverage</a> and the System-class choice in <a href="../xusb-companion/">XUSB Companion</a>.</p>
 </li>
 <li>
-<p><strong><code>IsDeviceOrAncestorFilteredBy</code> <code>wcsncmp</code> against <code>"xinputhid"</code></strong> &mdash; same Ghidra source. Backs the UpperFilter tripwire in <a href="../xusb-companion/">XUSB Companion</a>.</p>
+<p><strong><code>IsDeviceOrAncestorFilteredBy</code> <code>wcsncmp</code> against <code>"xinputhid"</code></strong>: same Ghidra source. Backs the UpperFilter tripwire in <a href="../xusb-companion/">XUSB Companion</a>.</p>
 </li>
 </ul>
 <hr />
@@ -2005,42 +2005,42 @@
 <p><strong>DirectInput.</strong> Topic: "DirectInput" under "Previous Versions" on Microsoft Learn. The 8-axis enumeration (X, Y, Z, Rx, Ry, Rz, Slider0, Slider1), POVs, button caps. Backs the DirectInput claims in <a href="../cross-api-coverage/">Cross-API Coverage</a>.</p>
 </li>
 <li>
-<p><strong><code>pid.dll</code> PID FFB enumerator</strong> &mdash; the DirectInput-shipped DLL that walks HID PID descriptors and exposes effects to DI consumers. Closed-source Microsoft component. The Gamepad-TLC AV in <code>PID_EffectOperation+0x52</code> is documented in <a href="https://github.com/hifihedgehog/HIDMaestro/issues/16">HIDMaestro issue #16</a>; reproducible against the canonical four-feature vJoy descriptor on Windows 10/11.</p>
+<p><strong><code>pid.dll</code> PID FFB enumerator</strong>: the DirectInput-shipped DLL that walks HID PID descriptors and exposes effects to DI consumers. Closed-source Microsoft component. The Gamepad-TLC AV in <code>PID_EffectOperation+0x52</code> is documented in <a href="https://github.com/hifihedgehog/HIDMaestro/issues/16">HIDMaestro issue #16</a>; reproducible against the canonical four-feature vJoy descriptor on Windows 10/11.</p>
 </li>
 <li>
-<p><strong>vJoy reference descriptor</strong> &mdash; <a href="https://github.com/njz3/vJoy">github.com/njz3/vJoy</a> maintains the descriptor headers (<code>hidReportDesc.h</code>, <code>hidReportDescSingle.h</code>, <code>hidReportDescFfb.h</code>). The four-feature descriptor that triggers the <code>pid.dll</code> AV.</p>
+<p><strong>vJoy reference descriptor</strong>: <a href="https://github.com/njz3/vJoy">github.com/njz3/vJoy</a> maintains the descriptor headers (<code>hidReportDesc.h</code>, <code>hidReportDescSingle.h</code>, <code>hidReportDescFfb.h</code>). The four-feature descriptor that triggers the <code>pid.dll</code> AV.</p>
 </li>
 </ul>
 <hr />
 <h2 id="library-source-code">Library source code<a class="headerlink" href="#library-source-code" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>HIDAPI</strong> &mdash; <a href="https://github.com/libusb/hidapi">github.com/libusb/hidapi</a>. The Windows backend at <code>windows/hid.c</code> is where the bus type detection (USB / Bluetooth / SPI), the <code>BTHLEDEVICE</code> CompatibleIDs check (backs the BT-spoof claim in <a href="../cross-api-coverage/">Cross-API Coverage</a>), and the <code>&amp;IG_</code> skip logic live. The preparsed-data reconstruction algorithm <code>HMDeviceExtractor</code> ports lives in <code>windows/hidapi_descriptor_reconstruct.c</code> (originally contributed by the Chromium WebHID team).</p>
+<p><strong>HIDAPI</strong>: <a href="https://github.com/libusb/hidapi">github.com/libusb/hidapi</a>. The Windows backend at <code>windows/hid.c</code> is where the bus type detection (USB / Bluetooth / SPI), the <code>BTHLEDEVICE</code> CompatibleIDs check (backs the BT-spoof claim in <a href="../cross-api-coverage/">Cross-API Coverage</a>), and the <code>&amp;IG_</code> skip logic live. The preparsed-data reconstruction algorithm <code>HMDeviceExtractor</code> ports lives in <code>windows/hidapi_descriptor_reconstruct.c</code> (originally contributed by the Chromium WebHID team).</p>
 </li>
 <li>
-<p><strong>SDL3</strong> &mdash; <a href="https://github.com/libsdl-org/SDL">github.com/libsdl-org/SDL</a>. The XInput / RawInput / HIDAPI fallback hierarchy is in <code>src/joystick/windows/</code>. The <code>SDL_HINT_JOYSTICK_XINPUT</code> hint is documented at <a href="https://wiki.libsdl.org/">wiki.libsdl.org</a> (search the hint name).</p>
+<p><strong>SDL3</strong>: <a href="https://github.com/libsdl-org/SDL">github.com/libsdl-org/SDL</a>. The XInput / RawInput / HIDAPI fallback hierarchy is in <code>src/joystick/windows/</code>. The <code>SDL_HINT_JOYSTICK_XINPUT</code> hint is documented at <a href="https://wiki.libsdl.org/">wiki.libsdl.org</a> (search the hint name).</p>
 </li>
 <li>
-<p><strong>SDL community gamepad mapping database</strong> &mdash; <a href="https://github.com/mdqinc/SDL_GameControllerDB">github.com/mdqinc/SDL_GameControllerDB</a>. The community-maintained <code>gamecontrollerdb.txt</code>. Spoofed-VID/PID profiles in <a href="../../profiles/custom-profiles/">Custom Profiles</a> inherit mappings from here.</p>
+<p><strong>SDL community gamepad mapping database</strong>: <a href="https://github.com/mdqinc/SDL_GameControllerDB">github.com/mdqinc/SDL_GameControllerDB</a>. The community-maintained <code>gamecontrollerdb.txt</code>. Spoofed-VID/PID profiles in <a href="../../profiles/custom-profiles/">Custom Profiles</a> inherit mappings from here.</p>
 </li>
 <li>
-<p><strong>Chromium gamepad implementation</strong> &mdash; <a href="https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/">source.chromium.org/chromium/chromium/src/+/main:device/gamepad/</a>. The platform-specific backends are under <code>device/gamepad/{windows,linux,mac}/</code>. The <code>&amp;IG_</code> skip in the Raw Input backend is in <code>raw_input_data_fetcher_win.cc</code>.</p>
+<p><strong>Chromium gamepad implementation</strong>: <a href="https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/">source.chromium.org/chromium/chromium/src/+/main:device/gamepad/</a>. The platform-specific backends are under <code>device/gamepad/{windows,linux,mac}/</code>. The <code>&amp;IG_</code> skip in the Raw Input backend is in <code>raw_input_data_fetcher_win.cc</code>.</p>
 </li>
 </ul>
 <hr />
 <h2 id="reference-virtual-controller-projects">Reference virtual-controller projects<a class="headerlink" href="#reference-virtual-controller-projects" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>DsHidMini</strong> &mdash; <a href="https://github.com/nefarius/DsHidMini">github.com/nefarius/DsHidMini</a>. The architectural ancestor of HIDMaestro: UMDF2 + xinputhid for DualShock 3 emulation. Provides the proven UMDF2-as-HID-minidriver pattern.</p>
+<p><strong>DsHidMini</strong>: <a href="https://github.com/nefarius/DsHidMini">github.com/nefarius/DsHidMini</a>. The architectural ancestor of HIDMaestro: UMDF2 + xinputhid for DualShock 3 emulation. Provides the proven UMDF2-as-HID-minidriver pattern.</p>
 </li>
 <li>
-<p><strong>ViGEmBus</strong> &mdash; <a href="https://github.com/nefarius/ViGEmBus">github.com/nefarius/ViGEmBus</a>. The retired-but-still-used kernel-mode virtual controller bus driver. Referenced as "what HIDMaestro replaces."</p>
+<p><strong>ViGEmBus</strong>: <a href="https://github.com/nefarius/ViGEmBus">github.com/nefarius/ViGEmBus</a>. The retired-but-still-used kernel-mode virtual controller bus driver. Referenced as "what HIDMaestro replaces."</p>
 </li>
 <li>
-<p><strong>vJoy</strong> &mdash; the active-maintenance fork at <a href="https://github.com/njz3/vJoy">github.com/njz3/vJoy</a> is the canonical source for <code>hidReportDescFfb.h</code> (the four-feature descriptor that traps <code>pid.dll</code>).</p>
+<p><strong>vJoy</strong>: the active-maintenance fork at <a href="https://github.com/njz3/vJoy">github.com/njz3/vJoy</a> is the canonical source for <code>hidReportDescFfb.h</code> (the four-feature descriptor that traps <code>pid.dll</code>).</p>
 </li>
 <li>
-<p><strong>VHF (Microsoft Virtual HID Framework)</strong> &mdash; kernel-only; the alternative HIDMaestro deliberately avoids. Topic: "Virtual HID Framework (VHF)" on Microsoft Learn.</p>
+<p><strong>VHF (Microsoft Virtual HID Framework)</strong>: kernel-only; the alternative HIDMaestro deliberately avoids. Topic: "Virtual HID Framework (VHF)" on Microsoft Learn.</p>
 </li>
 </ul>
 <hr />
@@ -2048,16 +2048,16 @@
 <p>For .NET API symbols below, search <a href="https://learn.microsoft.com/en-us/dotnet/api/">learn.microsoft.com/en-us/dotnet/api/</a> by exact name.</p>
 <ul>
 <li>
-<p><strong>.NET self-signed certificate generation</strong> &mdash; <code>System.Security.Cryptography.X509Certificates.CertificateRequest</code>. The API HIDMaestro uses in <a href="../driver-install-and-signing/">Driver Install and Signing</a> to mint the per-machine self-signed cert.</p>
+<p><strong>.NET self-signed certificate generation</strong>: <code>System.Security.Cryptography.X509Certificates.CertificateRequest</code>. The API HIDMaestro uses in <a href="../driver-install-and-signing/">Driver Install and Signing</a> to mint the per-machine self-signed cert.</p>
 </li>
 <li>
-<p><strong>Driver signing</strong> &mdash; the trust path that lets a self-signed cert in <code>Cert:\LocalMachine\TrustedPublisher</code> install a UMDF2 driver without WHQL submission. Search Microsoft Learn for "Driver Signing" / "Driver signing requirements" for the current authoritative description.</p>
+<p><strong>Driver signing</strong>: the trust path that lets a self-signed cert in <code>Cert:\LocalMachine\TrustedPublisher</code> install a UMDF2 driver without WHQL submission. Search Microsoft Learn for "Driver Signing" / "Driver signing requirements" for the current authoritative description.</p>
 </li>
 <li>
-<p><strong><code>Inf2Cat.exe</code></strong> &mdash; topic by exact name on Microsoft Learn. Embedded in the SDK alongside the WDK-required dependencies.</p>
+<p><strong><code>Inf2Cat.exe</code></strong>: topic by exact name on Microsoft Learn. Embedded in the SDK alongside the WDK-required dependencies.</p>
 </li>
 <li>
-<p><strong><code>signtool.exe</code></strong> &mdash; topic by exact name on Microsoft Learn.</p>
+<p><strong><code>signtool.exe</code></strong>: topic by exact name on Microsoft Learn.</p>
 </li>
 </ul>
 <hr />
@@ -2065,19 +2065,19 @@
 <p>These archive Ghidra decomp output, ProcMon traces, registry dumps, and empirical probe results that back claims throughout the wiki.</p>
 <ul>
 <li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a> &mdash; the multi-controller WUDFHost CPU saturation investigation. Backs the <code>UmdfHostProcessSharing = ProcessSharingDisabled</code> claim in <a href="../architecture-overview/">Architecture Overview</a> and <a href="../multi-controller/">Multi-Controller</a>.</p>
+<p><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a>: the multi-controller WUDFHost CPU saturation investigation. Backs the <code>UmdfHostProcessSharing = ProcessSharingDisabled</code> claim in <a href="../architecture-overview/">Architecture Overview</a> and <a href="../multi-controller/">Multi-Controller</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a> &mdash; the WGI dispatch / <code>IsDeviceOrAncestorFilteredBy</code> / classifier pass-list / <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> 29-byte format reverse engineering. Backs all of <a href="../xusb-companion/">XUSB Companion</a> and <a href="../cross-api-coverage/">Cross-API Coverage</a>'s WGI sections.</p>
+<p><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a>: the WGI dispatch / <code>IsDeviceOrAncestorFilteredBy</code> / classifier pass-list / <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> 29-byte format reverse engineering. Backs all of <a href="../xusb-companion/">XUSB Companion</a> and <a href="../cross-api-coverage/">Cross-API Coverage</a>'s WGI sections.</p>
 </li>
 <li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/README.md">HIDMaestro README</a> &mdash; primary source for the catalog count, performance numbers, and validation results referenced in <a href="../multi-controller/">Multi-Controller</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
+<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/README.md">HIDMaestro README</a>: primary source for the catalog count, performance numbers, and validation results referenced in <a href="../multi-controller/">Multi-Controller</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/issues/16">HIDMaestro issue #16</a> &mdash; the four-feature pid.dll AV report. Backs <a href="../../sdk/force-feedback/">Force Feedback</a>'s "only one Feature report" rule.</p>
+<p><a href="https://github.com/hifihedgehog/HIDMaestro/issues/16">HIDMaestro issue #16</a>: the four-feature pid.dll AV report. Backs <a href="../../sdk/force-feedback/">Force Feedback</a>'s "only one Feature report" rule.</p>
 </li>
 <li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/issues/19">HIDMaestro issue #19</a> &mdash; the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in <a href="../xusb-companion/">XUSB Companion</a>.</p>
+<p><a href="https://github.com/hifihedgehog/HIDMaestro/issues/19">HIDMaestro issue #19</a>: the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in <a href="../xusb-companion/">XUSB Companion</a>.</p>
 </li>
 <li>
 <p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a>: the 60-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> and <a href="../testing-and-verification/">Testing and Verification</a>.</p>
@@ -2087,10 +2087,10 @@
 <h2 id="web-standards">Web standards<a class="headerlink" href="#web-standards" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>W3C Gamepad API</strong> &mdash; <a href="https://www.w3.org/TR/gamepad/">w3.org/TR/gamepad/</a>. The W3C standard implemented by Chromium (Edge / Chrome / Brave / Opera), Firefox, Safari, and others. The <code>mapping = "standard"</code> STANDARD_GAMEPAD bucket referenced in <a href="../cross-api-coverage/">Cross-API Coverage</a> is at <a href="https://www.w3.org/TR/gamepad/#remapping">w3.org/TR/gamepad/#remapping</a>.</p>
+<p><strong>W3C Gamepad API</strong>: <a href="https://www.w3.org/TR/gamepad/">w3.org/TR/gamepad/</a>. The W3C standard implemented by Chromium (Edge / Chrome / Brave / Opera), Firefox, Safari, and others. The <code>mapping = "standard"</code> STANDARD_GAMEPAD bucket referenced in <a href="../cross-api-coverage/">Cross-API Coverage</a> is at <a href="https://www.w3.org/TR/gamepad/#remapping">w3.org/TR/gamepad/#remapping</a>.</p>
 </li>
 <li>
-<p><strong>WebHID API</strong> &mdash; <a href="https://wicg.github.io/webhid/">wicg.github.io/webhid/</a>. The browser API that motivated the Chromium WebHID team's Windows preparsed-data reconstruction algorithm now ported into HIDMaestro's <code>HMDeviceExtractor</code>.</p>
+<p><strong>WebHID API</strong>: <a href="https://wicg.github.io/webhid/">wicg.github.io/webhid/</a>. The browser API that motivated the Chromium WebHID team's Windows preparsed-data reconstruction algorithm now ported into HIDMaestro's <code>HMDeviceExtractor</code>.</p>
 </li>
 </ul>
 <hr />
@@ -2107,9 +2107,9 @@
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../start/glossary/">Glossary</a> &mdash; one-line definitions for every term.</li>
-<li><a href="../architecture-overview/">Architecture Overview</a> &mdash; the assembled architecture every other page refers back to.</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/README.md">HIDMaestro README</a> &mdash; the primary author-curated summary.</li>
+<li><a href="../../start/glossary/">Glossary</a>: one-line definitions for every term.</li>
+<li><a href="../architecture-overview/">Architecture Overview</a>: the assembled architecture every other page refers back to.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/README.md">HIDMaestro README</a>: the primary author-curated summary.</li>
 </ul>
 
 

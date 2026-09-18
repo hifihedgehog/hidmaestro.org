@@ -49,7 +49,7 @@ The velocity usages are emitted by appending raw bytes via `HidDescriptorBuilder
 
 **Path 1: xinputhid Xbox profiles** (Xbox Series BT family). The HID child binds Microsoft's `xinputhid.sys` as an upper filter. `xinputhid` natively publishes the XUSB device interface and translates `IOCTL_XUSB_*` to its own internal HID-out / HID-in path. HIDMaestro just provides the descriptor and bytes.
 
-**Path 2: non-xinputhid Xbox profiles** (Xbox 360 Wired family). The HIDMaestro **XUSB companion** at `SWD\HIDMAESTRO\<token>` registers the XUSB device interface itself. The companion handles every `IOCTL_XUSB_*` directly, reading the 14-byte GIP buffer the SDK packs in shared memory and translating to `XINPUT_GAMEPAD` wire format. See [XUSB Companion](xusb-companion.md).
+**Path 2: non-xinputhid Xbox profiles** (Xbox 360 Wired family). The HIDMaestro **XUSB companion** at `SWD\HIDMAESTRO\<sid>_NNNN` registers the XUSB device interface itself. The companion handles every `IOCTL_XUSB_*` directly, reading the 14-byte GIP buffer the SDK packs in shared memory and translating to `XINPUT_GAMEPAD` wire format. See [XUSB Companion](xusb-companion.md).
 
 ### The slot-1-skip fix
 

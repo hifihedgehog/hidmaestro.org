@@ -434,6 +434,8 @@
       
         
       
+        
+      
     
     
     
@@ -503,6 +505,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/platform-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform support
   
 
     
@@ -2269,7 +2299,7 @@
 <hr />
 <h2 id="atom-z8350-fixture-slow-hardware-validation">Atom Z8350 fixture (slow-hardware validation)<a class="headerlink" href="#atom-z8350-fixture-slow-hardware-validation" title="Permanent link">&para;</a></h2>
 <p>The regression battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Slow-hardware target for validating the event-driven harness without time-based settles.</p>
-<p>Full battery: ~75 minutes wall time at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>. Its last run, on v1.7.3, passed 57/57, the same result as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed &mdash; a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.</p>
+<p>Full battery: ~75 minutes wall time at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>. Same 28/28 PASS as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed &mdash; a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.</p>
 <p>See <a href="../testing-and-verification/">Testing and Verification</a>.</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>

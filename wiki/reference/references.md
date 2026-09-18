@@ -1,4 +1,4 @@
-# References
+﻿# References
 
 Authoritative sources for every load-bearing claim in this wiki. Each entry covers a specific topic plus the wiki pages that cite it.
 
@@ -137,7 +137,7 @@ These archive Ghidra decomp output, ProcMon traces, registry dumps, and empirica
 
 - [HIDMaestro issue #19](https://github.com/hifihedgehog/HIDMaestro/issues/19) &mdash; the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in [XUSB Companion](xusb-companion.md).
 
-- [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1): the 59-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
+- [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1): the 60-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
 
 ---
 

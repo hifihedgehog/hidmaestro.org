@@ -434,6 +434,8 @@
       
         
       
+        
+      
     
     
     
@@ -503,6 +505,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/platform-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform support
   
 
     
@@ -1924,16 +1954,11 @@
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense-composite&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">);</span>
 </code></pre></div>
 <p>That is the entire setup. A composite persona is created the same way as any other profile.</p>
-<p>Composite personas need a driver-backed USB device for their audio endpoints, since no user-mode API can create a Windows audio endpoint. HIDMaestro ships that transport, <a href="https://github.com/vadimgrn/usbip-win2">usbip-win2</a> 0.9.7.7, <strong>inside <code>HIDMaestro.Core.dll</code></strong> and deploys it on the first composite create, exactly the way it already ships and deploys its own UMDF2 driver. There is no second package, no separate download, and nothing for a user to go find.</p>
-<p>What that means in practice:</p>
-<ul>
-<li><strong>The install is one-time and automatic.</strong> It needs the same elevation <code>InstallDriver</code> needs. On every later create it is a no-op.</li>
-<li><strong>USB blinks once.</strong> usbip-win2's extension INF matches the generic USB 3.0 root-hub hardware ID, so PnP re-enumerates the root hubs during install. That happens once per machine, on the very first composite controller it ever creates, and again only if the pinned version changes.</li>
-<li><strong>The binary is verified twice.</strong> Its SHA256 is checked against the upstream release's published digest when the SDK is built, and again on the extracted copy before it is executed. A mismatch fails rather than running an unverified installer.</li>
-<li><strong>The license notice ships with it.</strong> usbip-win2 is BSD-2-Clause and redistributed unmodified. The required notice is embedded in the assembly and written to disk beside the binary at deploy time.</li>
-<li><strong>The version pin is deliberate.</strong> 0.9.7.8 has two open kernel-pool-corruption reports (<a href="https://github.com/vadimgrn/usbip-win2/issues/180">#180</a>, <a href="https://github.com/vadimgrn/usbip-win2/issues/181">#181</a>). Any bump waits on those closing.</li>
-</ul>
-<p>Two optional APIs exist for consumers that want control over <em>when</em> the one-time install happens:</p>
+<p>Composite personas use the bundled <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.8.0">usbip-win2 0.9.8.0 package</a>. Both x64 and ARM64 signed driver packages are embedded in HIDMaestro.Core.dll.</p>
+<p>The build checks the upstream installer hashes, extracts the signed INF/SYS/CAT files, and verifies each file before embedding it. The SDK uses an administrator-only staging directory and adds the packages through PnP. It retains the existing packages and never invokes the vendor uninstaller.</p>
+<p>An update requires detached USB/IP imports. Readiness is checked against the configured hashes, loaded driver images, and new IOCTL layout. USB devices can briefly reconnect during installation. The SDK keeps the zero-copy receive mode and preserves the profile's serial identity.</p>
+<p>The new driver rejects the old SDK's attach structure. Update every consumer's SDK before upgrading a shared host. See <a href="../../start/platform-support/">platform support</a> for source-build availability and validation limits.
+Two optional APIs exist for consumers that want control over <em>when</em> the one-time install happens:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Informational: has this machine already got the transport?</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kt">bool</span><span class="w"> </span><span class="n">ready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HMContext</span><span class="p">.</span><span class="n">IsUsbipBackendAvailable</span><span class="p">;</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>

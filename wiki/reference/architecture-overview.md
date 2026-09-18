@@ -1,4 +1,4 @@
-# Architecture Overview
+﻿# Architecture Overview
 
 The 30,000-foot view of HIDMaestro: every component, what it owns, and how data flows from a consumer's `SubmitState` call to a game seeing input. Use this page as the starting point for the architecture chapter; the deep-dive subpages cover one component each.
 
@@ -100,7 +100,7 @@ Responsibilities:
 - Run the per-controller output-reader background thread that drains the shared output ring at ~125 Hz.
 - Manage HID PID 1.0 force-feedback shared state.
 - Manage `joy.cpl` OEM-name overrides with crash-safe restore.
-- Embed and load the 234-profile catalog.
+- Embed and load the 231-profile catalog.
 
 Lines of code: ~4,500 in public surface (`HMContext` / `HMController` / `HidDescriptorBuilder` / `HMProfileBuilder` / `HMDeviceExtractor` / `HMOemNameOverride` / value types) plus ~9,000 in `Internal/` (`DeviceOrchestrator`, `DeviceManager`, `SwdDeviceFactory`, `DriverBuilder`, `HidDescriptorReconstructor`, `HidReportBuilder`, `SharedMemoryIO`, `OemNameOverrideStore`, `PnputilHelper`, etc.).
 
@@ -120,13 +120,14 @@ Detail: [UMDF2 Driver Internals](umdf2-driver-internals.md).
 
 ### 3. `HMXInput.dll`: the XUSB companion
 
-Lives in a separate per-controller `WUDFHost.exe`. Compiled from `driver/companion.c` (745 lines). Acts as a UMDF2 function driver under the System setup class. Created **only for non-xinputhid Xbox profiles** (Xbox 360 Wired family). Responsibilities:
+Lives in a separate per-controller `WUDFHost.exe`. Compiled from `driver/companion.c` (957 lines). Acts as a UMDF2 function driver under the System setup class. Created **only for non-xinputhid Xbox profiles** (Xbox 360 Wired family). Responsibilities:
 
 - Register the XUSB device interface (`{EC87F1E3-...}`) for `xinput1_4.dll` discovery.
 - Run an 8 ms `WAIT_FOR_INPUT` pump that drains pended `IOCTL_XUSB_WAIT_FOR_INPUT` requests with 29-byte XUSB-state replies. Required for WGI's async input pump (`XusbDevice::QueueInputBuffer`).
 - Translate the 14-byte GIP-format buffer the SDK packs in shared memory into XINPUT_GAMEPAD wire format on `IOCTL_XUSB_GET_STATE`.
 - Capture `IOCTL_XUSB_SET_STATE` 5-byte vibration packets and publish them into the output ring as `HMOutputSource.XInput`.
-- Carry a registry-string `UpperFilters = "xinputhid"` &mdash; **not** to load the kernel filter (System class isn't a filter target), but to pass WGI's `IsDeviceOrAncestorFilteredBy` `wcsncmp` check that admits the device to WGI's XUSB dispatch path.
+- Answer `IOCTL_XUSB_GET_BATTERY_INFO` and `IOCTL_XUSB_GET_LED_STATE`. Both replies carry a two-byte version word before the payload, and the battery reply is `00 00 01 03`, wired and full.
+- Carry a registry-string `UpperFilters = "xinputhid"`. This does **not** load the kernel filter, because the System class is not a filter target. It passes WGI's `IsDeviceOrAncestorFilteredBy` `wcsncmp` check, which admits the device to WGI's XUSB dispatch path.
 
 INF: `hidmaestro_xusb.inf`. Class GUID: `{4D36E97D-...}` (System). Created via `SwDeviceCreate` with explicit per-controller ContainerID (shared with the main HID device).
 
@@ -142,7 +143,7 @@ Lifetime: `SWDeviceLifetimeParentPresent` so the device persists past process ex
 
 Detail: [SwDevice and PnP](swdevice-and-pnp.md).
 
-### 5. The 234-profile catalog
+### 5. The 231-profile catalog
 
 Embedded as a JSON resource inside `HIDMaestro.Core.dll`. 32 vendor folders, ~4-25 profiles each. See [Profile System](../profiles/profile-system.md) for the schema and runtime classification.
 
@@ -284,7 +285,7 @@ HIDMaestro/
 ├── tools/HIDMaestroProfileExtractor/  ; standalone WPF extractor GUI
 ├── example/SdkDemo/                ; minimal SDK consumer
 ├── test/                           ; HIDMaestroTest CLI + regression battery + probes
-├── profiles/                       ; 234 profile JSONs
+├── profiles/                       ; 231 profile JSONs
 ├── scripts/                        ; build, signing, verification, multi-pad-check
 ├── build/                          ; build outputs (driver DLLs, hmswd.exe, stamped INFs)
 └── docs/                           ; README screenshots, investigation notes

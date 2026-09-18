@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -508,6 +510,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platform-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform support
   
 
     
@@ -1947,7 +1977,7 @@
 </tr>
 <tr>
 <td><strong>Profile</strong></td>
-<td>A JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code> describing one real-world controller's identity (VID, PID, product string, manufacturer string) and HID characteristics (descriptor, input report size, trigger mode, connection). 234 ship in the embedded catalog. Every controller HIDMaestro creates is parameterized by exactly one profile.</td>
+<td>A JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code> describing one real-world controller's identity (VID, PID, product string, manufacturer string) and HID characteristics (descriptor, input report size, trigger mode, connection). 231 ship in the embedded catalog. Every controller HIDMaestro creates is parameterized by exactly one profile.</td>
 </tr>
 <tr>
 <td><strong>HMContext</strong></td>
@@ -2042,7 +2072,7 @@
 </tr>
 <tr>
 <td><strong>Sticky reuse-fast-path</strong></td>
-<td>The empty devnode shell a <code>SwDeviceCreate</code> produced in releases before v1.1.31 when its <code>(enumerator + instanceId + ContainerId)</code> tuple matched a device that a <code>DIF_REMOVE</code> had left half-removed in the kernel. The handle-lifetime teardown removed the cause, and since v1.8.0 every life reuses one fixed tuple on purpose. See <a href="../../reference/swdevice-and-pnp/">SwDevice and PnP</a>.</td>
+<td>The empty devnode shell a <code>SwDeviceCreate</code> produced in releases before v1.1.31 when its <code>(enumerator + instanceId + ContainerId)</code> tuple matched a device that a <code>DIF_REMOVE</code> had left half-removed in the kernel. The handle-lifetime teardown removed the cause; since v1.8.0 every life reuses one fixed tuple on purpose. See <a href="../../reference/swdevice-and-pnp/">SwDevice and PnP</a>.</td>
 </tr>
 <tr>
 <td><strong>&amp;IG_</strong></td>

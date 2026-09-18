@@ -434,6 +434,8 @@
       
         
       
+        
+      
     
     
     
@@ -503,6 +505,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/platform-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform support
   
 
     
@@ -2243,7 +2273,7 @@
 </tbody>
 </table>
 <p>The last row is the one hazard: a <code>SWD</code> instance key that exists before the software device does leaves a record PnP stamps with a SYSTEM-only <code>Properties</code> subkey and never enumerates, and an administrator cannot delete it. Nothing in the SDK creates one.</p>
-<p><code>FindExistingCompanion</code> still matches by <code>ControllerIndex</code> in Device Parameters, so cleanup and teardown sweep across instances regardless of which session created them. Battery scenarios S59 (derivation) and S60 (nine lives per family, overlap, profile change at one key) hold the behavior.</p>
+<p><code>FindExistingCompanion</code> still matches by <code>ControllerIndex</code> in Device Parameters, so cleanup and teardown sweep across instances regardless of which session created them. Battery scenarios S58 (derivation) and S59 (nine lives per family, overlap, profile change at one key) hold the behavior.</p>
 <hr />
 <h2 id="why-hmswdexe-exists-as-a-separate-native-binary">Why <code>hmswd.exe</code> exists as a separate native binary<a class="headerlink" href="#why-hmswdexe-exists-as-a-separate-native-binary" title="Permanent link">&para;</a></h2>
 <p><code>.NET 10</code>'s P/Invoke to <code>cfgmgr32!SwDeviceCreate</code> on Win11 26200 returns <code>0x8007007E ERROR_MOD_NOT_FOUND</code> synchronously, while the identical C call succeeds. We tried, in order:</p>

@@ -9,7 +9,7 @@ Everything between an empty project and a live virtual controller.
 - **[Installation](installation.md)**: reference `HIDMaestro.Core.dll` from
   a release ZIP or build from source. The driver install is
   self-bootstrapping: no EV certificate, no test-signing mode, no manual
-  signing. Windows 10/11 x64, .NET 10, admin required for
+  signing. Windows 10/11 x64 and Windows 11 ARM64, .NET 10, admin required for
   `CreateController`.
 - **[Quickstart](quickstart.md)**: the `example/SdkDemo` walkthrough. Load
   the embedded profile catalog, install the driver, create a DualSense and

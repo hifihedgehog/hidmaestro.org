@@ -30,16 +30,13 @@ using var ctrl = ctx.CreateController(ctx.GetProfile("dualsense-composite")!);
 
 That is the entire setup. A composite persona is created the same way as any other profile.
 
-Composite personas need a driver-backed USB device for their audio endpoints, since no user-mode API can create a Windows audio endpoint. HIDMaestro ships that transport, [usbip-win2](https://github.com/vadimgrn/usbip-win2) 0.9.7.7, **inside `HIDMaestro.Core.dll`** and deploys it on the first composite create, exactly the way it already ships and deploys its own UMDF2 driver. There is no second package, no separate download, and nothing for a user to go find.
+Composite personas use the bundled [usbip-win2 0.9.8.0 package](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.8.0). Both x64 and ARM64 signed driver packages are embedded in HIDMaestro.Core.dll.
 
-What that means in practice:
+The build checks the upstream installer hashes, extracts the signed INF/SYS/CAT files, and verifies each file before embedding it. The SDK uses an administrator-only staging directory and adds the packages through PnP. It retains the existing packages and never invokes the vendor uninstaller.
 
-- **The install is one-time and automatic.** It needs the same elevation `InstallDriver` needs. On every later create it is a no-op.
-- **USB blinks once.** usbip-win2's extension INF matches the generic USB 3.0 root-hub hardware ID, so PnP re-enumerates the root hubs during install. That happens once per machine, on the very first composite controller it ever creates, and again only if the pinned version changes.
-- **The binary is verified twice.** Its SHA256 is checked against the upstream release's published digest when the SDK is built, and again on the extracted copy before it is executed. A mismatch fails rather than running an unverified installer.
-- **The license notice ships with it.** usbip-win2 is BSD-2-Clause and redistributed unmodified. The required notice is embedded in the assembly and written to disk beside the binary at deploy time.
-- **The version pin is deliberate.** 0.9.7.8 has two open kernel-pool-corruption reports ([#180](https://github.com/vadimgrn/usbip-win2/issues/180), [#181](https://github.com/vadimgrn/usbip-win2/issues/181)). Any bump waits on those closing.
+An update requires detached USB/IP imports. Readiness is checked against the configured hashes, loaded driver images, and new IOCTL layout. USB devices can briefly reconnect during installation. The SDK keeps the zero-copy receive mode and preserves the profile's serial identity.
 
+The new driver rejects the old SDK's attach structure. Update every consumer's SDK before upgrading a shared host. See [platform support](../start/platform-support.md) for source-build availability and validation limits.
 Two optional APIs exist for consumers that want control over *when* the one-time install happens:
 
 ```csharp

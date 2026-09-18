@@ -74,6 +74,7 @@ nav:
   - Start:
       - start/index.md
       - Installation: start/installation.md
+      - Platform support: start/platform-support.md
       - Quickstart: start/quickstart.md
       - Glossary: start/glossary.md
   - SDK:

@@ -21,7 +21,7 @@ CATS = [
    "A Switch Pro that answers back", "Controller audio and haptics",
    "Capture a controller you own"]),
  ("catalog", "The catalog", [
-   "234 device profiles", "Devices are JSON"]),
+   "231 device profiles", "Devices are JSON"]),
  ("latency", "Latency and transport", [
    "~35 µs measured input latency", "Event-driven output at 0.15 ms",
    "No socket, no batching cap", "The comparison, honestly",
@@ -34,9 +34,9 @@ CATS = [
  ("sdk", "The SDK", [
    "One DLL", "Self-bootstrapping install", "A UI instead of code"]),
  ("validation", "Validation", [
-   "Validated across the stack", "Judged by the real consumers"]),
+   "Regression coverage", "Judged by the real consumers"]),
  ("platform", "Platform and licensing", [
-   "No kernel driver, no test-signing", "The composite exception, stated",
+   "UMDF2 standard profiles", "The composite exception, stated",
    "Windows 10 and 11", "MIT licensed"]),
 ]
 

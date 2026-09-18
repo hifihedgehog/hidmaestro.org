@@ -59,7 +59,7 @@ public int LoadProfilesFromDirectory(string profilesDir);
 
 `GetProfile(id)` looks up by stable ID slug (e.g. `"xbox-360-wired"`, `"dualsense"`, `"thrustmaster-t300rs"`). Returns null if no such profile is loaded. Case-insensitive.
 
-`LoadDefaultProfiles` loads the embedded catalog (234 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
+`LoadDefaultProfiles` loads the embedded catalog (231 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
 
 `LoadProfilesFromDirectory(path)` loads `*.json` from a directory matching the [Profile System](../profiles/profile-system.md) schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (`schema.json`) are skipped. Does not auto-load the embedded catalog &mdash; call both if you want catalog + custom.
 
@@ -104,9 +104,9 @@ using var pad = ctx.CreateController(profile, "slot0:" + profile.Id);
 Rules:
 
 - A null, empty or blank key uses the controller index (`index:<N>`), which is what the one-argument overloads do. `HMController.IdentityKey` reports the effective key.
-- Keys are trimmed and case-sensitive. Two live controllers in one context cannot share a key. The `InvalidOperationException` names the index that holds it.
+- Keys are trimmed and case-sensitive. Two live controllers in one context cannot share a key; `InvalidOperationException` names the index that holds it.
 - A different profile at the same key keeps the identity and refreshes the descriptor.
-- DirectInput's instance GUID is DirectInput's own per-VID/PID ordinal and is not derived from the key. It moves when a same-VID/PID pad in front of it leaves.
+- DirectInput's instance GUID is DirectInput's own per-VID/PID ordinal and is not derived from the key; it moves when a same-VID/PID pad in front of it leaves.
 
 The per-family mechanism is in [SwDevice and PnP](../reference/swdevice-and-pnp.md#stable-device-identity).
 

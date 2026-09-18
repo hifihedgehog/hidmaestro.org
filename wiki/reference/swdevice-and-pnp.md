@@ -178,7 +178,7 @@ The identity lab (`test/probes/identity_lab`, three lives per variant on 26200) 
 
 The last row is the one hazard: a `SWD` instance key that exists before the software device does leaves a record PnP stamps with a SYSTEM-only `Properties` subkey and never enumerates, and an administrator cannot delete it. Nothing in the SDK creates one.
 
-`FindExistingCompanion` still matches by `ControllerIndex` in Device Parameters, so cleanup and teardown sweep across instances regardless of which session created them. Battery scenarios S59 (derivation) and S60 (nine lives per family, overlap, profile change at one key) hold the behavior.
+`FindExistingCompanion` still matches by `ControllerIndex` in Device Parameters, so cleanup and teardown sweep across instances regardless of which session created them. Battery scenarios S58 (derivation) and S59 (nine lives per family, overlap, profile change at one key) hold the behavior.
 
 ---
 

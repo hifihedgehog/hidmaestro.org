@@ -1,6 +1,6 @@
-# Testing and Verification
+﻿# Testing and Verification
 
-Two test pipelines: `scripts/verify.py` for cross-API correctness on a live deployment, and `test/regression/swap_regression.ps1` for the 59-scenario lifecycle battery. Both gate the release pipeline. A tag without 59/59 PASS doesn't ship.
+The regression battery has 58 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and native architecture selection. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
 
 For the wiki coverage of where these pipelines fit, see [Build and Release](build-and-release.md). For the underlying SDK mechanics they exercise, see [SDK Reference](../sdk/sdk-reference.md) and [Lifecycle and Teardown](lifecycle-and-teardown.md).
 
@@ -137,7 +137,7 @@ python scripts\verify.py --controllers 6 --filter order
 
 ## `test/regression/swap_regression.ps1`: lifecycle battery
 
-The 59-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the `PRESENT` state after each one.
+The 60-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the `PRESENT` state after each one.
 
 ```powershell
 # from an ELEVATED PowerShell, repo root or anywhere
@@ -155,7 +155,7 @@ The 59-scenario battery that drives `HIDMaestroTest.exe` through every interesti
 
 Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 minutes on Ryzen-class, ~75 minutes on Atom Z8350 fixture (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`).
 
-### The scenarios
+### What each scenario catches
 
 | Scenario | Pattern | Catches |
 |----------|---------|---------|
@@ -164,7 +164,7 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 | **S03_Single_LongCycle_8swaps** | 8 alternating swaps | Suffix-allocator stress + repeated DIF_REMOVE+hmswd-remove path. |
 | **S04_Single_BT_360_BT** | BT first | Initial xinputhid bind path before any non-xinputhid create. |
 | **S05_Single_Mixed_Families** | `360 → DS → Switch → BT → 360` | Cross-family swaps (XUSB companion, plain HID, xinputhid gamepad). |
-| **S06_Single_SameProfileSwap** | `BT → BT` (same id) | Recreating the identical profile at the same identity binds again at the same paths. |
+| **S06_Single_SameProfileSwap** | `BT → BT` (same id) | Per-call unique suffix lets identical-profile recreation work. |
 | **S07_Multi_CreateAll_Idle** | 4 mixed, idle, quit | Baseline multi-slot teardown via clean process exit. |
 | **S08_Multi_SwapOneSlot** | 4 wired, swap slot 1 | Single-slot swap doesn't leak across siblings. |
 | **S09_Multi_SwapAllSlots** | 4 wired, swap each slot | Concurrent live-swap of every slot. |
@@ -185,14 +185,13 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 | **S24_PidFfb_RoundTrip** | DI PID FFB shared-section round-trip on a custom HOTAS | `PublishPidPool / PublishPidState` reach driver's HID feature replies. |
 | **S25_PidFfb_AllocFree** | PID FFB allocate-then-free under burst + multi-controller | Two controllers' independent EBI tables; pool exhaustion. |
 | **S26_PidFfb_FfbTest** | DI PID FFB end-to-end via SharpDX/DI8 (`FfbTest`) | The PID FFB invariants S24/S25 cover at the SDK boundary actually deliver to a real DI consumer. |
-| **S27_Xbox360_Dpad_XInput** | xbox-360-wired d-pad through XUSB companion (`XInputGetState`) | Closes #19 &mdash; `wButtons.DPAD_*` matches expected mask. |
+| **S27_Xbox360_Dpad_XInput** | xbox-360-wired d-pad through XUSB companion (`XInputGetState`) | Closes #19: `wButtons.DPAD_*` matches expected mask. |
 | **S28_Hat_Resolution_Encoder** | Pure encoder unit-test across hat resolutions 8 / 16 / 360 | v1.3.4 hat-input priority chain: `HMHat / HatRaw / HatHundredths / HatDegrees` produce correct descriptor field values. |
-| **S58_Identity_Derivation** | Identity key derivation, no device (issue #60) | The default key reproduces the index-shaped ids, a consumer key derives deterministic collision-free ids, persona serials derive as documented. |
-| **S59_Identity_Battery** | One controller per family across nine lives (issue #60) | Parent id, ParentIdPrefix, ContainerId, HID children, interface paths, DirectInput GUID, SDL3 path and USB serial identical across lives, plus empty-shell checks, overlap and a profile change at one key. |
-| **S58_Identity_Derivation** | Identity key derivation, no device (issue #60) | The default key reproduces the index-shaped ids, a consumer key derives deterministic collision-free ids, persona serials derive as documented. |
-| **S59_Identity_Battery** | One controller per family across nine lives (issue #60) | Parent id, ParentIdPrefix, ContainerId, HID children, interface paths, DirectInput GUID, SDL3 path and USB serial identical across lives, plus empty-shell checks, overlap and a profile change at one key. |
+| **S58_Identity_Derivation** | Identity key derivation, no device | The default key reproduces the index-shaped ids, a consumer key derives deterministic collision-free ids, and persona serials derive as documented. |
+| **S59_Identity_Battery** | One controller per family across nine lives | Parent id, ParentIdPrefix, ContainerId, HID children, interface paths, DirectInput GUID, SDL3 path and USB serial stay identical across every life. Also empty shells, two pads of one VID/PID overlapping, and a profile change at one key. |
+| **S60_Xusb_Battery** | The XUSB battery reply on xbox-360-wired | The four bytes position by position, the LED reply's own version word, what `XInputGetBatteryInformation` hands a caller, and SDL's power-state mapping over those values. |
 
-Each scenario covers a specific historical bug or invariant. The full list is the codified history of what's broken in this area before.
+Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. [The repository's own table](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md) carries every scenario.
 
 ---
 
@@ -242,11 +241,11 @@ These five fixes interact; missing any one makes the harness hang on Win11. Pres
 
 ### Slow-hardware fixture
 
-The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Its last run, on v1.7.3, passed 57/57 at `HIDMAESTRO_TIMEOUT_SCALE=2`.
+The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Same 28/28 PASS at `HIDMAESTRO_TIMEOUT_SCALE=2`. Validated on each release.
 
 The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed &mdash; a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
 
-The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there. ~75 minutes wall time for the full battery.
+The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there. ~75 minutes wall time for the full 28 scenarios.
 
 ---
 
@@ -294,7 +293,7 @@ The pre-tag validation pipeline (`scripts\pre-tag-validate.cmd`) is the gate:
 
 1. Clean build &mdash; no stale Resources/ snapshots.
 2. `verify.py --controllers 4` &mdash; cross-API correctness on a multi-controller deployment.
-3. `swap_regression.ps1`: full 59-scenario battery. **59/59 PASS required.**
+3. `swap_regression.ps1`: full 60-scenario battery. **60/60 PASS required.**
 4. `HIDMaestroTest cleanup` &mdash; verify no leftover devnodes after the battery.
 5. Profile extractor smoke test &mdash; the GUI tool opens, populates, extracts.
 
@@ -310,3 +309,8 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 - [Force Feedback](../sdk/force-feedback.md) &mdash; what S24-S26 validate.
 - [Multi-Controller](multi-controller.md) &mdash; what S07, S15, S20, S23 validate.
 - [`test/regression/README.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md) &mdash; the in-repo battery doc.
+
+
+## ARM64 and USB/IP validation
+
+See [platform support](../start/platform-support.md#validation) for cross-compilation and x64 Sandbox installation/upgrade evidence. ARM64 hardware execution has not been tested, and the Atom fixture was unavailable for this update.

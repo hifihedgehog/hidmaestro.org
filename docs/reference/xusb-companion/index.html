@@ -434,6 +434,8 @@
       
         
       
+        
+      
     
     
     
@@ -503,6 +505,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/platform-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform support
   
 
     
@@ -1380,6 +1410,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-version-word-on-get_battery_info-and-get_led_state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The version word on GET_BATTERY_INFO and GET_LED_STATE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ioctl_xusb_get_state" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1839,6 +1880,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-version-word-on-get_battery_info-and-get_led_state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The version word on GET_BATTERY_INFO and GET_LED_STATE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ioctl_xusb_get_state" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1945,7 +1997,7 @@
 
 <h1 id="xusb-companion">XUSB Companion<a class="headerlink" href="#xusb-companion" title="Permanent link">&para;</a></h1>
 <p><code>HMXInput.dll</code> is a UMDF2 function driver that registers the XUSB device interface for non-xinputhid Xbox profiles. Created <strong>only</strong> for profiles where <code>vid == 0x045E</code> and <code>driverMode != "xinputhid"</code> &mdash; i.e. the Xbox 360 Wired family.</p>
-<p>The companion is a <strong>separate device node</strong> at <code>SWD\HIDMAESTRO\&lt;token&gt;</code>, paired with the main HID device (<code>ROOT\VID_045E&amp;PID_028E&amp;IG_00\&lt;token&gt;</code>) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because <code>mshidumdf.sys</code> suppresses XUSB IOCTLs on devices it hosts.</p>
+<p>The companion is a <strong>separate device node</strong> at <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code>, paired with the main HID device (<code>ROOT\VID_045E&amp;PID_028E&amp;IG_00\NNNN</code>) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because <code>mshidumdf.sys</code> suppresses XUSB IOCTLs on devices it hosts.</p>
 <p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c"><code>driver/companion.c</code></a> (745 lines), <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf"><code>driver/hidmaestro_xusb.inf</code></a>.</p>
 <p>For the main HID driver, see <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>. For why this exists at all (and not as a child PDO of the main HID), see <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
 <hr />
@@ -1971,7 +2023,7 @@
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>%DeviceDesc% = XUSB_Install, root\HIDMaestroXUSB
 </code></pre></div>
 <p>Three VID-specific PIDs (Xbox 360 Wired, Xbox 360 Wireless Receiver, etc.) plus a generic <code>root\HIDMaestroXUSB</code> fallback. PnP's <code>DEVPKEY_Device_MatchingDeviceId</code> carries the right VID:PID string when the SDK writes the hardware ID list at create time. New Xbox 360 PIDs that aren't in the specific list fall through to the generic alias &mdash; still works, but loses the per-PID INF behavior.</p>
-<p>The <code>&amp;XI_00</code> suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses <code>SWD\HIDMAESTRO\&lt;token&gt;</code>, not <code>root\VID_*&amp;PID_*&amp;XI_00\*</code> &mdash; the hardware IDs above just give PnP something to match against during INF binding.</p>
+<p>The <code>&amp;XI_00</code> suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses <code>SWD\HIDMAESTRO\&lt;sid&gt;_NNNN</code>, not <code>root\VID_*&amp;PID_*&amp;XI_00\*</code> &mdash; the hardware IDs above just give PnP something to match against during INF binding.</p>
 <hr />
 <h2 id="the-xinputhid-upperfilter-tripwire">The <code>xinputhid</code> UpperFilter tripwire<a class="headerlink" href="#the-xinputhid-upperfilter-tripwire" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[XUSB_HW_AddReg]
@@ -2047,7 +2099,7 @@
 </tr>
 <tr>
 <td><code>GET_LED_STATE</code></td>
-<td>Always returns "ring quadrant 0" (our virtual has no real LED).</td>
+<td>Returns <code>00 00 06</code>: the same two-byte version word, then ring quadrant 0. A virtual pad has no LED.</td>
 </tr>
 <tr>
 <td><code>GET_STATE</code></td>
@@ -2063,7 +2115,7 @@
 </tr>
 <tr>
 <td><code>GET_BATTERY_INFO</code></td>
-<td>Returns wired-power level (always 0xFF, full charge).</td>
+<td>Returns <code>00 00 01 03</code>: a two-byte version word, then WIRED and FULL.</td>
 </tr>
 <tr>
 <td><code>GET_INFORMATION_EX</code></td>
@@ -2079,6 +2131,10 @@
 </tr>
 </tbody>
 </table>
+<hr />
+<h2 id="the-version-word-on-get_battery_info-and-get_led_state">The version word on <code>GET_BATTERY_INFO</code> and <code>GET_LED_STATE</code><a class="headerlink" href="#the-version-word-on-get_battery_info-and-get_led_state" title="Permanent link">&para;</a></h2>
+<p>Both replies put a two-byte XUSBVersion word first and the payload after it. A caller reads the payload from byte 2, because <code>XInputGetBatteryInformation</code> copies out of a struct whose first member is that word. The companion leaves the word zero, which no caller reads back.</p>
+<p>Through v1.8.0 the battery reply packed WIRED and FULL at bytes 1 and 2, one byte early, so a caller read the type as NiMH and the level as EMPTY. SDL maps any type other than WIRED, UNKNOWN or DISCONNECTED to on-battery and EMPTY to 10 percent, so every game that surfaces battery showed a flat reading on a pad that has no battery. Fixed in v1.8.1 (<a href="https://github.com/hifihedgehog/HIDMaestro/issues/61">issue #61</a>) and held by battery scenario S60.</p>
 <hr />
 <h2 id="ioctl_xusb_get_state"><code>IOCTL_XUSB_GET_STATE</code><a class="headerlink" href="#ioctl_xusb_get_state" title="Permanent link">&para;</a></h2>
 <p>Reads the 14-byte GIP buffer from shared memory (seqlocked) and unpacks into <code>XINPUT_GAMEPAD</code>:</p>

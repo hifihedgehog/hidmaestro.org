@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://hidmaestro.org/docs/start/quickstart/">
       
       
-        <link rel="prev" href="../installation/">
+        <link rel="prev" href="../platform-support/">
       
       
         <link rel="next" href="../glossary/">
@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -508,6 +510,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platform-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform support
   
 
     
@@ -1876,7 +1906,7 @@
 <hr />
 <h2 id="step-1-context-profiles">Step 1: context + profiles<a class="headerlink" href="#step-1-context-profiles" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMContext</span><span class="p">();</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kt">int</span><span class="w"> </span><span class="n">loaded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span><span class="w">   </span><span class="c1">// returns 234</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kt">int</span><span class="w"> </span><span class="n">loaded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span><span class="w">   </span><span class="c1">// returns 231</span>
 </code></pre></div>
 <p><code>HMContext</code> is the SDK's process-wide entry point. The constructor is cheap &mdash; it kicks off three background prewarm tasks (driver-payload extraction to <code>%TEMP%</code>, profile catalog parse, GameInput service warm-up) but doesn't block.</p>
 <p><code>LoadDefaultProfiles</code> reads the embedded JSON catalog out of <code>HIDMaestro.Core.dll</code>. Consumers don't need to ship profile files alongside their app. To load profiles from disk instead (custom directory, modded profiles), use <code>LoadProfilesFromDirectory(path)</code>.</p>
@@ -2066,7 +2096,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../installation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Installation">
+          <a href="../platform-support/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Platform support">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2076,7 +2106,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Installation
+                Platform support
               </div>
             </div>
           </a>

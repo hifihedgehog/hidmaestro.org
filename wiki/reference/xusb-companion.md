@@ -1,8 +1,8 @@
-# XUSB Companion
+﻿# XUSB Companion
 
 `HMXInput.dll` is a UMDF2 function driver that registers the XUSB device interface for non-xinputhid Xbox profiles. Created **only** for profiles where `vid == 0x045E` and `driverMode != "xinputhid"` &mdash; i.e. the Xbox 360 Wired family.
 
-The companion is a **separate device node** at `SWD\HIDMAESTRO\<token>`, paired with the main HID device (`ROOT\VID_045E&PID_028E&IG_00\<token>`) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because `mshidumdf.sys` suppresses XUSB IOCTLs on devices it hosts.
+The companion is a **separate device node** at `SWD\HIDMAESTRO\<sid>_NNNN`, paired with the main HID device (`ROOT\VID_045E&PID_028E&IG_00\NNNN`) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because `mshidumdf.sys` suppresses XUSB IOCTLs on devices it hosts.
 
 Source: [`driver/companion.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c) (745 lines), [`driver/hidmaestro_xusb.inf`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf).
 
@@ -49,7 +49,7 @@ System class isn't on the classifier pass-list at all, so WGI doesn't auto-class
 
 Three VID-specific PIDs (Xbox 360 Wired, Xbox 360 Wireless Receiver, etc.) plus a generic `root\HIDMaestroXUSB` fallback. PnP's `DEVPKEY_Device_MatchingDeviceId` carries the right VID:PID string when the SDK writes the hardware ID list at create time. New Xbox 360 PIDs that aren't in the specific list fall through to the generic alias &mdash; still works, but loses the per-PID INF behavior.
 
-The `&XI_00` suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses `SWD\HIDMAESTRO\<token>`, not `root\VID_*&PID_*&XI_00\*` &mdash; the hardware IDs above just give PnP something to match against during INF binding.
+The `&XI_00` suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses `SWD\HIDMAESTRO\<sid>_NNNN`, not `root\VID_*&PID_*&XI_00\*` &mdash; the hardware IDs above just give PnP something to match against during INF binding.
 
 ---
 
@@ -136,14 +136,22 @@ These are the canonical XUSB IOCTLs. Microsoft does not publicly document the XU
 |-------|---------|
 | `GET_INFORMATION` | Returns minimal "1 controller present" payload for `xinput1_4`'s discovery. |
 | `GET_CAPABILITIES` | Returns a synthesized `XINPUT_CAPABILITIES_EX` (gamepad subtype, supports rumble). |
-| `GET_LED_STATE` | Always returns "ring quadrant 0" (our virtual has no real LED). |
+| `GET_LED_STATE` | Returns `00 00 06`: the same two-byte version word, then ring quadrant 0. A virtual pad has no LED. |
 | `GET_STATE` | Returns `XINPUT_GAMEPAD` packed from the GIP buffer in shared memory. |
 | `SET_STATE` | Captures the 5-byte vibration payload to the output ring as `HMOutputSource.XInput`. |
 | `WAIT_GUIDE` | Pended; never completes (real Guide button is async). |
-| `GET_BATTERY_INFO` | Returns wired-power level (always 0xFF, full charge). |
+| `GET_BATTERY_INFO` | Returns `00 00 01 03`: a two-byte version word, then WIRED and FULL. |
 | `GET_INFORMATION_EX` | Extended info; same semantics as `GET_INFORMATION`. |
 | `WAIT_FOR_INPUT` | Pended in `WaitForInputQueue`; pumped by `CompanionPumpTimer`. |
 | `POWER_INFO` | Stub. |
+
+---
+
+## The version word on `GET_BATTERY_INFO` and `GET_LED_STATE`
+
+Both replies put a two-byte XUSBVersion word first and the payload after it. A caller reads the payload from byte 2, because `XInputGetBatteryInformation` copies out of a struct whose first member is that word. The companion leaves the word zero, which no caller reads back.
+
+Through v1.8.0 the battery reply packed WIRED and FULL at bytes 1 and 2, one byte early, so a caller read the type as NiMH and the level as EMPTY. SDL maps any type other than WIRED, UNKNOWN or DISCONNECTED to on-battery and EMPTY to 10 percent, so every game that surfaces battery showed a flat reading on a pad that has no battery. Fixed in v1.8.1 ([issue #61](https://github.com/hifihedgehog/HIDMaestro/issues/61)) and held by battery scenario S60.
 
 ---
 

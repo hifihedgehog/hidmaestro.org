@@ -87,7 +87,7 @@
             <h2 class="display-s spec-h reveal">The catalog</h2>
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
-                    <dt>234 device profiles</dt>
+                    <dt>231 device profiles</dt>
                     <dd>Embedded profiles across 32 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code.</dd>
                 </div>
                 <div class="spec-row">
@@ -110,7 +110,7 @@
                 </div>
                 <div class="spec-row">
                     <dt>No socket, no batching cap</dt>
-                    <dd>HIDMaestro talks to its driver through shared memory on the same machine. No socket, no USBIP stack, no kernel transport driver in the path. Both directions are event-driven with no batching cap: input signals the driver per frame, and the driver signals each captured rumble/FFB/LED packet back to the consumer.</dd>
+                    <dd>Standard profiles use shared memory between the SDK and UMDF2 drivers. Input and output are signaled per frame or packet. Composite profiles use the bundled USB/IP transport over a loopback connection.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>The comparison, honestly</dt>
@@ -118,7 +118,7 @@
                 </div>
                 <div class="spec-row">
                     <dt>Networking at the right layer</dt>
-                    <dd>Networking belongs in the application, not in the device driver. Tools built on USB/IP put a kernel USBIP driver and a listening socket in front of every user, even for purely local play. USB/IP can also only present USB devices, so a controller paired over Bluetooth shows up with the wrong bus type. HIDMaestro keeps the device layer local and sets bus type per profile. Network play still happens, at the right layer: PadForge, built on HIDMaestro, shares controllers across PCs with its Remote Link feature, both directions with feedback returning to the real device, at no cost to local play.</dd>
+                    <dd>Standard profiles keep controller traffic in shared memory. Composite profiles use a local loopback USB/IP connection. Applications can build network sharing above the SDK, as PadForge does with Remote Link.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Fast to start, fast to recover</dt>
@@ -164,7 +164,7 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>One DLL</dt>
-                    <dd>HIDMaestro.Core.dll carries the 234-profile catalog, the driver binaries, and the signing tools embedded. Grab it from a release ZIP or build from source. Pick a profile, call CreateController, submit input. Dispose it and the device disappears, with no leftover PnP state.</dd>
+                    <dd>HIDMaestro.Core.dll contains the 231-profile catalog, x64 and ARM64 driver/helper payloads, signing tools, and both signed USB/IP packages. Source builds select native drivers by OS architecture. The OpenVR plugin remains x64 for its SteamVR host.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Self-bootstrapping install</dt>
@@ -181,8 +181,8 @@
             <h2 class="display-s spec-h reveal">Validation</h2>
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
-                    <dt>Validated across the stack</dt>
-                    <dd>A 59-scenario regression battery checks DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, WGI, and the device identity of every family across nine lives, on every change. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</dd>
+                    <dt>Regression coverage</dt>
+                    <dd>The battery has 58 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, and native architecture selection. A USB/IP correction passed 22 targeted kernel checks in x64 VMs. Production signing and the full HIDMaestro integration gate remain pending. ARM64 hardware execution is unverified.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Judged by the real consumers</dt>
@@ -195,16 +195,16 @@
             <h2 class="display-s spec-h reveal">Platform and licensing</h2>
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
-                    <dt>No kernel driver, no test-signing</dt>
-                    <dd>Runs entirely in user mode via UMDF2, loaded by a locally trusted self-signed certificate. No test-signing mode, no purchased certificate, no reboot. It installs on a normal PC, not just a developer box, and a bug cannot blue-screen the machine.</dd>
+                    <dt>UMDF2 standard profiles</dt>
+                    <dd>Standard profiles run through the Windows UMDF2 stack and a locally trusted signing certificate. Composite profiles use the bundled Microsoft-signed USB/IP transport. The installation does not enable Windows test-signing mode.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>The composite exception, stated</dt>
-                    <dd>HIDMaestro is Windows optimized and focused on game controllers and HID game devices. Within that scope it gives you exact hardware identity with no kernel driver, no network layer, and no per-device code. The composite USB personas are the one deliberate exception: controller audio needs a driver-backed USB device, so those profiles deploy a signed third-party transport that ships inside the DLL. Pick any other profile and nothing kernel-mode is ever installed.</dd>
+                    <dd>Composite Sony and Valve profiles use the bundled usbip-win2 0.9.8.0 kernel transport. Both signed architecture packages are verified and embedded. The SDK adds them through Windows PnP without invoking the vendor uninstaller. Older SDK consumers must be updated before changing a shared host because the attach ABI changed.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Windows 10 and 11</dt>
-                    <dd>Windows 10 or 11, x64, with the .NET 10 runtime. Administrator privileges are required for virtual device creation. Building from source takes Visual Studio 2022 or later with Windows SDK/WDK 10.0.26100.0.</dd>
+                    <dd>The source tree targets Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. One AnyCPU SDK embeds both native payloads. ARM64 applications cross-compile, but hardware execution remains untested. Published v1.7.3 downloads predate ARM64 support.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>MIT licensed</dt>
@@ -233,7 +233,7 @@
         <tr><td>Kernel driver required</td><td class="us">No, except the composite USB personas</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td><td>No (on VHF)</td></tr>
         <tr><td>Installs without test-signing</td><td class="us">Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
         <tr><td>Network play</td><td class="us">App layer via consumers (PadForge Remote Link)</td><td>In the driver: +1-5 ms wired, +10-50 ms Wi-Fi</td><td>No</td><td>No</td><td>No</td></tr>
-        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 234 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
+        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 231 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
         <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td><td>Write C, or raw descriptor</td></tr>
         <tr><td>Local single-press latency</td><td class="us">~35 µs measured</td><td>168 µs published</td><td>N/A</td><td>N/A</td><td>Not published</td></tr>
         <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Retired</td><td>Stale</td><td>Active</td></tr>
@@ -252,11 +252,11 @@
                 </details>
                 <details class="detail">
                     <summary>Do I need to enable test-signing mode?</summary>
-                    <div class="detail-body">No. The driver runs entirely in user mode via UMDF2 and loads under a locally trusted self-signed certificate that InstallDriver() creates for you. No test-signing mode, no purchased certificate, no reboot.</div>
+                    <div class="detail-body">No. Standard profiles use UMDF2 with a locally trusted certificate. The bundled USB/IP kernel packages retain their upstream Microsoft signatures. The SDK does not enable Windows test-signing mode.</div>
                 </details>
                 <details class="detail">
                     <summary>Does anything kernel-mode get installed?</summary>
-                    <div class="detail-body">Not for the standard profiles. The composite USB personas are the one deliberate exception: controller audio needs a driver-backed USB device, so those profiles deploy a signed third-party transport that ships inside the DLL. Pick any other profile and nothing kernel-mode is ever installed.</div>
+                    <div class="detail-body">Composite Sony and Valve profiles install the bundled usbip-win2 0.9.8.0 transport. Standard profiles use the Windows UMDF2 stack. Update older SDK consumers before upgrading the shared USB/IP driver.</div>
                 </details>
                 <details class="detail">
                     <summary>Can I add a controller you don't ship?</summary>
@@ -264,11 +264,15 @@
                 </details>
                 <details class="detail">
                     <summary>How is this different from ViGEmBus, vJoy, or VIIPER?</summary>
-                    <div class="detail-body">Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 234 of them, down to the bus type, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side.</div>
+                    <div class="detail-body">Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 231 of them, down to the bus type, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side.</div>
                 </details>
                 <details class="detail">
                     <summary>Does it work with Steam?</summary>
                     <div class="detail-body">Yes. Steam recognizes the virtual controllers as the hardware their profiles declare, and the Valve personas go further: Steam files them under its own hardware, with the regression battery starting the actual Steam client to prove it claims and classifies all three.</div>
+                </details>
+                <details class="detail">
+                    <summary>Does HIDMaestro support ARM64?</summary>
+                    <div class="detail-body">The ARM64 implementation and applications cross-compile, but hardware execution is untested. The USB/IP 0.9.8.0 integration failed driver-lifecycle tests and blocks deployment. Published v1.7.3 downloads are x64-only.</div>
                 </details>
             </div>
         </section>

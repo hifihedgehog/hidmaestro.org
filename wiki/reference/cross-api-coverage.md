@@ -210,7 +210,7 @@ Initially obvious choice: XnaComposite is on the pass-list. Why pick System?
 
 XnaComposite triggers classifier branch 1 and creates a WGI Gamepad entity automatically: which would be a **second** WGI entity alongside the main HID device's HID-path Gamepad. Two WGI Gamepads splitting input and vibration on one logical controller hangs the entire `Windows.Gaming.Input` subsystem. Recovery: `Restart-Service -Force GameInputSvc`.
 
-The System class isn't classified at all, then admitted via the UpperFilter tripwire and dispatched via the XUSB path. Exactly one Gamepad entity per logical controller. See [`memory:feedback-one-wgi-device-per-controller.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md).
+The System class isn't classified at all, then admitted via the UpperFilter tripwire and dispatched via the XUSB path. Exactly one Gamepad entity per logical controller. A second entity for the same controller hangs WGI.
 
 ### The GameInput registry override
 

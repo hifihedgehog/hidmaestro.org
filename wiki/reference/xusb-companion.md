@@ -83,7 +83,7 @@ The same string is **also** written per-instance by the SDK to the **main HID de
 WdfDeviceCreateDeviceInterface(device, &XUSB_GUID, NULL);
 ```
 
-**Only** `GUID_DEVINTERFACE_XUSB`. Not `WinExInput` (`{6C53D5FD-...}`): Ghidra decomp of `Windows.Gaming.Input.dll` (Win11 26200) found zero references to that GUID; it is **not** WGI's actual `GamepadAdded` source. Pre-v1.x.x INFs registered both; the duplicate-WGI-Gamepad hang documented in [`memory:feedback-one-wgi-device-per-controller.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md) was the consequence.
+**Only** `GUID_DEVINTERFACE_XUSB`. Not `WinExInput` (`{6C53D5FD-...}`): Ghidra decomp of `Windows.Gaming.Input.dll` (Win11 26200) found zero references to that GUID; it is **not** WGI's actual `GamepadAdded` source. Pre-v1.x.x INFs registered both, and the duplicate-WGI-Gamepad hang was the consequence.
 
 ---
 
@@ -228,7 +228,7 @@ The 29-byte response format was nailed down in the same Ghidra pass:
 | 10 | 0x14 | Non-zero gate byte. |
 | (rest) | XUSB-shaped state from GIP buffer | Buttons / triggers / sticks. |
 
-These constants are not documented anywhere: the values come from decomp + binary-search testing. See [`memory:project-xinputhid-upperfilter-tripwire.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md) for the discovery story.
+These constants are not documented anywhere. The values come from decomp plus binary-search testing.
 
 ---
 

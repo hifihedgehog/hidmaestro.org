@@ -251,7 +251,7 @@ The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on th
 
 ## `test/probes/`: one-off investigation tools
 
-The `test/probes/` directory holds investigation tools used during HIDMaestro development. These are not part of the regression battery and are not built by `build_all.cmd`. They're WIP / situational and are listed in MEMORY for future-Claude awareness:
+The `test/probes/` directory holds investigation tools used during HIDMaestro development. These are not part of the regression battery and are not built by `build_all.cmd`. They are situational and often unfinished:
 
 - `descriptor_swap_check`
 - `dinput_enum`

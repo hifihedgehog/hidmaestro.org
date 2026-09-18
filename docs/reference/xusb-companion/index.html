@@ -2043,7 +2043,7 @@
 <h2 id="what-hidmaestro-publishes">What HIDMAESTRO publishes<a class="headerlink" href="#what-hidmaestro-publishes" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">WdfDeviceCreateDeviceInterface</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">XUSB_GUID</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
 </code></pre></div>
-<p><strong>Only</strong> <code>GUID_DEVINTERFACE_XUSB</code>. Not <code>WinExInput</code> (<code>{6C53D5FD-...}</code>): Ghidra decomp of <code>Windows.Gaming.Input.dll</code> (Win11 26200) found zero references to that GUID; it is <strong>not</strong> WGI's actual <code>GamepadAdded</code> source. Pre-v1.x.x INFs registered both; the duplicate-WGI-Gamepad hang documented in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md"><code>memory:feedback-one-wgi-device-per-controller.md</code></a> was the consequence.</p>
+<p><strong>Only</strong> <code>GUID_DEVINTERFACE_XUSB</code>. Not <code>WinExInput</code> (<code>{6C53D5FD-...}</code>): Ghidra decomp of <code>Windows.Gaming.Input.dll</code> (Win11 26200) found zero references to that GUID; it is <strong>not</strong> WGI's actual <code>GamepadAdded</code> source. Pre-v1.x.x INFs registered both, and the duplicate-WGI-Gamepad hang was the consequence.</p>
 <hr />
 <h2 id="per-instance-device-context">Per-instance device context<a class="headerlink" href="#per-instance-device-context" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">_COMPANION_CTX</span><span class="w"> </span><span class="p">{</span>
@@ -2224,7 +2224,7 @@
 </tr>
 </tbody>
 </table>
-<p>These constants are not documented anywhere: the values come from decomp + binary-search testing. See <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/CLAUDE.md"><code>memory:project-xinputhid-upperfilter-tripwire.md</code></a> for the discovery story.</p>
+<p>These constants are not documented anywhere. The values come from decomp plus binary-search testing.</p>
 <hr />
 <h2 id="ioctl_xusb_set_state-rumble-capture"><code>IOCTL_XUSB_SET_STATE</code>: rumble capture<a class="headerlink" href="#ioctl_xusb_set_state-rumble-capture" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">case</span><span class="w"> </span><span class="no">IOCTL_XUSB_SET_STATE</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>

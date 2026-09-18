@@ -1,8 +1,8 @@
-# Installation
+﻿# Installation
 
 Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.
 
-The ARM64 and usbip-win2 0.9.8.0 changes remain under validation. The transport upgrade failed driver-lifecycle tests and is not ready for deployment. Published v1.7.3 downloads predate those additions. See [validation results](platform-support.md#validation).
+The ARM64 and usbip-win2 0.9.8.0 changes remain under validation. The transport upgrade failed driver-lifecycle tests and is not ready for deployment. Published v1.8.1 downloads predate those additions. See [validation results](platform-support.md#validation).
 
 ## Requirements
 

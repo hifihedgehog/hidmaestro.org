@@ -1,8 +1,8 @@
-# Platform support
+﻿# Platform support
 
 The [ARM64 validation branch](https://github.com/hifihedgehog/HIDMaestro/tree/arm64-usbip-0980) builds one `HIDMaestro.Core.dll` for x64 and ARM64 Windows. The SDK contains native driver and helper payloads for both architectures and selects them from the operating system's architecture. An emulated x64 consumer on ARM64 Windows therefore selects ARM64 drivers.
 
-The published v1.7.3 release predates this change. This implementation remains under validation and is not ready for deployment. A separate correction to the USB/IP driver passed targeted kernel tests. Production signing and the full integration gate remain pending.
+The published v1.8.1 release predates this change. This implementation remains under validation and is not ready for deployment. A separate correction to the USB/IP driver passed targeted kernel tests. Production signing and the full integration gate remain pending.
 
 | Component | x64 Windows | ARM64 Windows |
 |---|---|---|

@@ -1,6 +1,6 @@
-# Build and release
+﻿# Build and release
 
-The ARM64 implementation builds one AnyCPU SDK containing x64 and ARM64 native payloads. It remains under validation. USB/IP 0.9.8.0 failed driver-lifecycle tests, which blocks deployment and release. Published v1.7.3 downloads predate these changes. See [platform support](../start/platform-support.md) for the results.
+The ARM64 implementation builds one AnyCPU SDK containing x64 and ARM64 native payloads. It remains under validation. USB/IP 0.9.8.0 failed driver-lifecycle tests, which blocks deployment and release. Published v1.8.1 downloads predate these changes. See [platform support](../start/platform-support.md) for the results.
 
 ## Prerequisites
 

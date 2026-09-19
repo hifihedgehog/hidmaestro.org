@@ -688,6 +688,9 @@ a { color: inherit; text-decoration: none; }
 }
 .mf-copy { position: sticky; top: 7rem; }
 .mf-copy em { font-style: normal; color: var(--ember); }
+.mf-copy p + p { margin-top: 1.1rem; }
+.mf-copy p a { color: var(--ember-bright); border-bottom: 1px solid rgba(242,101,42,0.35); transition: border-color 0.2s; }
+.mf-copy p a:hover { border-bottom-color: var(--ember); }
 @media (max-width: 980px) {
     .mf-layout { grid-template-columns: 1fr; }
     .mf-copy { position: static; }

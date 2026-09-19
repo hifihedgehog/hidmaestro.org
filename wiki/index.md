@@ -1,4 +1,4 @@
----
+﻿---
 title: Home
 hide:
   - navigation
@@ -58,6 +58,34 @@ whenever you need a virtual gamepad. It replaces ViGEmBus and vJoy with one
 user-mode driver, 231 embedded profiles, runtime-built custom profiles,
 HID PID 1.0 force feedback, and live-swap teardown that does not leak PnP
 state.
+
+## Who ships it
+
+Twenty-plus independent open-source projects have adopted HIDMaestro, across
+six languages, for a combined installed base of about 574,000 downloads.
+Roughly 27,700 of those builds ship or fetch the runtime directly.
+
+[PadForge](https://padforge.org/) is the flagship. It is built on this SDK end
+to end and drives more of the surface than any other consumer: every profile
+family, live profile swapping, multi-controller slots, force feedback,
+controller audio and haptics, the Valve personas, and the virtual VR
+controllers. Its Softpedia listing is an Editor's Pick at 5.0 out of 5. To
+watch the SDK work without writing any code, install PadForge.
+
+Others include [foundation-sunshine](https://github.com/AlkaidLab/foundation-sunshine),
+a Sunshine fork whose DualSense support is built on HIDMaestro,
+[JoystickGremlinEx](https://github.com/muchimi/JoystickGremlinEx), which drives
+the SDK from Python over pythonnet,
+[Nearcade](https://github.com/TheRealFame/Nearcade), which pins it as a
+submodule, and
+[dualsense-command](https://github.com/shiftedx/dualsense-command), which
+bundles the runtime in its bridge installers.
+
+LizardByte's [libvirtualhid](https://github.com/LizardByte/libvirtualhid), from
+the organization behind Sunshine, reuses this project's force-feedback
+descriptor byte for byte and says so in its own source: "HIDMaestro's
+MIT-licensed `MinimumViablePidFfbBlock`, byte-for-byte." Their alternatives
+table lists HIDMaestro beside ViGEmBus, inputtino and WinUHid.
 
 ## What HIDMaestro is not
 

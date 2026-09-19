@@ -1,11 +1,11 @@
-[
+﻿[
     {
         "t":  "Exact hardware identity",
         "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
     },
     {
         "t":  "231 device profiles",
-        "d":  "Embedded profiles across 32 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code."
+        "d":  "Embedded profiles across 46 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code."
     },
     {
         "t":  "Devices are JSON",

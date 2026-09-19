@@ -1,4 +1,4 @@
-/* =====================================================================
+﻿/* =====================================================================
    HIDMaestro site v9.
 
    The padforge.org v6 design system, carried over whole per the
@@ -658,6 +658,10 @@ a { color: inherit; text-decoration: none; }
     color: var(--text-hi);
 }
 .mf span { font-size: 0.88rem; color: var(--text-muted); }
+/* Adopter names are links. Base `a` inherits and strips underline, so
+   they need their own affordance to read as clickable. */
+.mf b a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(242,101,42,0.45); transition: border-color 0.2s, color 0.2s; }
+.mf b a:hover { color: var(--ember); border-bottom-color: var(--ember); }
 @media (max-width: 700px) { .mf { flex-direction: column; gap: 0.2rem; } }
 
 /* ══════════════════════════════════════════════════════════════════════

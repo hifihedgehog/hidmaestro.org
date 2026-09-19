@@ -1,6 +1,6 @@
 ﻿# Profile System
 
-Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 231 ship in the embedded catalog across 32 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 16 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
+Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 231 ship in the embedded catalog across 46 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 29 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
 
 This page documents the JSON schema field-by-field, the three runtime architecture groups a profile can fall into, and how the SDK resolves a profile into a deployable virtual device at `CreateController` time.
 

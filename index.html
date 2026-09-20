@@ -1,25 +1,25 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIDMaestro: Virtual controllers with real identity</title>
-    <meta name="description" content="User-mode virtual game controllers for Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type, at ~35 µs measured latency.">
-    <meta name="keywords" content="HIDMaestro, virtual controller, UMDF2, DirectInput, XInput, SDL3, gamepad emulation, HID descriptor, controller emulation, ViGEmBus alternative, vJoy alternative, VIIPER alternative">
+    <meta name="description" content="User-mode virtual game controllers for x64 and ARM64 Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type, at ~35 µs measured latency.">
+    <meta name="keywords" content="HIDMaestro, virtual controller, UMDF2, DirectInput, XInput, SDL3, gamepad emulation, HID descriptor, controller emulation, ARM64, Windows on Arm, ViGEmBus alternative, vJoy alternative, VIIPER alternative">
     <meta property="og:title" content="HIDMaestro: Virtual controllers with real identity">
-    <meta property="og:description" content="User-mode virtual game controllers for Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type.">
+    <meta property="og:description" content="User-mode virtual game controllers for x64 and ARM64 Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type.">
     <meta property="og:image" content="https://hidmaestro.org/assets/logo.png">
     <meta property="og:url" content="https://hidmaestro.org">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="HIDMaestro: Virtual controllers with real identity">
-    <meta name="twitter:description" content="User-mode virtual game controllers for Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware.">
+    <meta name="twitter:description" content="User-mode virtual game controllers for x64 and ARM64 Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware.">
     <meta name="twitter:image" content="https://hidmaestro.org/assets/logo.png">
     <link rel="icon" type="image/png" href="assets/icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -52,6 +52,9 @@
         <div class="hero-cta reveal" data-d="3">
             <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary" target="_blank" rel="noopener">Download latest release</a>
             <a href="/docs/" class="btn btn-ghost">Read the docs</a>
+        </div>
+        <div class="hero-new-row reveal" data-d="4">
+            <a class="hero-new" href="docs/start/platform-support/"><b>New in v1.9.0</b><span>ARM64 Windows support</span></a>
         </div>
     </div>
 
@@ -88,7 +91,7 @@
                     A C# SDK and a matching user-mode driver. Your code picks a
                     profile, and the game on the other side sees the real thing.
                 </p>
-                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 27 capabilities</a>
+                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 28 capabilities</a>
             </div>
 
             <div class="manifest reveal" data-d="1">
@@ -96,6 +99,7 @@
                 <div class="mf" style="--mf: var(--brand-ps)"><b>231 device profiles</b><span>Xbox 360 to HOTAS, every one a JSON file</span></div>
                 <div class="mf" style="--mf: var(--brand-xbox)"><b>~35 &micro;s measured latency</b><span>10,000 iterations, reproducible with one command</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Every gaming API at once</b><span>DirectInput, XInput, SDL3, browser, WGI, RawInput</span></div>
+                <div class="mf" style="--mf: var(--brand-ps)"><b>Native on ARM64 Windows</b><span>One DLL holds both driver sets and installs the matching one</span></div>
                 <div class="mf" style="--mf: var(--brand-steam)"><b>Valve personas Steam recognizes</b><span>The Steam Deck and both Steam Controllers, filed as Valve hardware</span></div>
                 <div class="mf" style="--mf: var(--brand-nin)"><b>A Switch Pro that answers back</b><span>The Nintendo handshake, answered over real Bluetooth</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Controller audio and haptics</b><span>The pad's speaker, microphone, and voice-coil endpoints</span></div>
@@ -328,7 +332,7 @@
                 <div class="details reveal" data-d="3">
                     <details class="detail">
                         <summary>Reference the SDK</summary>
-                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 231-profile catalog, the driver binaries, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
+                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 231-profile catalog, the driver binaries for x64 and ARM64, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
                     </details>
                     <details class="detail">
                         <summary>Install the driver</summary>
@@ -424,7 +428,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary" target="_blank" rel="noopener">Download latest release</a>
             <a href="https://github.com/hifihedgehog/HIDMaestro" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
         </div>
-        <p class="reveal" data-d="3">v1.9.0 ships for x64 and ARM64 Windows. <a href="docs/start/platform-support/">Read what was measured on each</a>.</p>
+        <p class="dl-arch reveal" data-d="3">v1.9.0 adds <b>ARM64 Windows</b>. Each release has an x64 ZIP and an ARM64 ZIP, and HIDMaestro.Core.dll is the same file in both. <a href="docs/start/platform-support/">Read what was measured on each</a>.</p>
         <div class="dl-meta reveal" data-d="3">
             <span>One DLL</span><span>x64 and ARM64</span><span>MIT</span>
         </div>

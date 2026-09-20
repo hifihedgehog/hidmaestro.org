@@ -1,4 +1,4 @@
-﻿[
+[
     {
         "t":  "Exact hardware identity",
         "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
@@ -36,7 +36,7 @@
         "d":  "The input number is real propagation, measured over 10,000 single-press iterations and reproducible with one command. The methodology is published in the repository at docs/testing/latency.md."
     },
     {
-        "t":  "Event-driven output at 0.18 ms",
+        "t":  "Event-driven output at 0.15 ms",
         "d":  "Rumble, force feedback, and LED packets are signaled to the consumer per captured packet at ~0.18 ms median, roughly 50x faster than the 9.4 ms poll-quantized path it replaced, with idle controllers costing zero measurable CPU."
     },
     {
@@ -100,8 +100,12 @@
         "d":  "Free and open source. Use it in your own projects, commercial or otherwise, with no restrictions."
     },
     {
+        "t":  "Native on ARM64 Windows",
+        "d":  "From v1.9.0 the HID driver, the XInput companion and the device helper are built for ARM64 as well as x64, and the INFs carry an NTARM64 section. HIDMaestro.Core.dll holds both sets and installs the one matching the operating system. Composite personas use a Microsoft-signed ARM64 build of the USB transport. The release has an ARM64 ZIP with an ARM64 test app and profile extractor. No ARM64 machine has run the regression battery yet."
+    },
+    {
         "t":  "Windows 10 and 11",
-        "d":  "Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. v1.9.0 publishes a ZIP for each. ARM64 hardware has not run the regression battery."
+        "d":  "Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. v1.9.0 publishes a ZIP for each."
     },
     {
         "t":  "A UI instead of code",

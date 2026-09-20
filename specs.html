@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -195,16 +195,20 @@
             <h2 class="display-s spec-h reveal">Platform and licensing</h2>
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
+                    <dt>Native on ARM64 Windows</dt>
+                    <dd>From v1.9.0 the HID driver, the XInput companion and the device helper are built for ARM64 as well as x64, and the INFs carry an NTARM64 section. HIDMaestro.Core.dll holds both sets and installs the one matching the operating system. Composite personas use a Microsoft-signed ARM64 build of the USB transport. The release has an ARM64 ZIP with an ARM64 test app and profile extractor. No ARM64 machine has run the regression battery yet.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Windows 10 and 11</dt>
+                    <dd>Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. v1.9.0 publishes a ZIP for each.</dd>
+                </div>
+                <div class="spec-row">
                     <dt>UMDF2 standard profiles</dt>
                     <dd>Standard profiles run through the Windows UMDF2 stack and a locally trusted signing certificate. Composite profiles use the bundled Microsoft-signed USB/IP transport. The installation does not enable Windows test-signing mode.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>The composite exception, stated</dt>
                     <dd>Composite Sony and Valve profiles use the bundled usbip-win2 0.9.7.5 kernel transport, redistributed unmodified and verified against the upstream SHA256 at build and again before execution. The SDK installs it silently on a machine that has none and never invokes the vendor uninstaller. A machine HIDMaestro put on 0.9.7.7 is moved to 0.9.7.5 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused.</dd>
-                </div>
-                <div class="spec-row">
-                    <dt>Windows 10 and 11</dt>
-                    <dd>Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. v1.9.0 publishes a ZIP for each. ARM64 hardware has not run the regression battery.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>MIT licensed</dt>

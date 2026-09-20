@@ -11,7 +11,7 @@ import io, json, html, os
 from html import unescape
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-feats = json.load(io.open(os.path.join(ROOT, "_features.json"), encoding="utf-8"))
+feats = json.load(io.open(os.path.join(ROOT, "_features.json"), encoding="utf-8-sig"))
 
 pool = {f["t"]: f["d"] for f in feats}
 
@@ -36,8 +36,9 @@ CATS = [
  ("validation", "Validation", [
    "Regression coverage", "Judged by the real consumers"]),
  ("platform", "Platform and licensing", [
+   "Native on ARM64 Windows", "Windows 10 and 11",
    "UMDF2 standard profiles", "The composite exception, stated",
-   "Windows 10 and 11", "MIT licensed"]),
+   "MIT licensed"]),
 ]
 
 used = set()
@@ -87,7 +88,7 @@ rows.append(
 '            </div>\n'
 '        </section>')
 
-faq = json.load(io.open(os.path.join(ROOT, "_faq.json"), encoding="utf-8"))
+faq = json.load(io.open(os.path.join(ROOT, "_faq.json"), encoding="utf-8-sig"))
 faq_rows = "\n".join(
     '                <details class="detail">\n'
     '                    <summary>%s</summary>\n'
@@ -117,7 +118,7 @@ page = '''<!DOCTYPE html>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>

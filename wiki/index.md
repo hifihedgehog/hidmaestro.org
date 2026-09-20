@@ -48,6 +48,11 @@ does.</p>
     <h3>Technical Reference</h3>
     <p>Architecture, driver internals, the shared memory protocol, PnP lifecycle, and how every gaming API is satisfied.</p>
   </a>
+  <a href="start/platform-support/">
+    <span class="pf-eyebrow">New in v1.9.0</span>
+    <h3>ARM64 Windows</h3>
+    <p>One DLL now serves x64 and ARM64. What ships for each architecture, and what was measured on each.</p>
+  </a>
 </div>
 
 ## What HIDMaestro is
@@ -58,6 +63,10 @@ whenever you need a virtual gamepad. It replaces ViGEmBus and vJoy with one
 user-mode driver, 231 embedded profiles, runtime-built custom profiles,
 HID PID 1.0 force feedback, and live-swap teardown that does not leak PnP
 state.
+
+v1.9.0 adds ARM64 Windows. The same `HIDMaestro.Core.dll` carries a driver
+set for x64 and one for ARM64 and installs the one matching the machine. See
+[platform support](start/platform-support.md).
 
 ## Who ships it
 

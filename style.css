@@ -746,3 +746,35 @@ a { color: inherit; text-decoration: none; }
 
 /* Giving: the second and third paragraphs need their own air. */
 .give p + p { margin-top: 0.6rem; }
+
+/* What the current release added, under the hero buttons. One line, and
+   it links to the page that proves it. Cyan because ember already marks
+   the headline word and the primary button in this viewport. The row
+   carries the reveal so the link keeps its own hover transition. */
+.hero-new-row { margin-top: 1.7rem; }
+.hero-new {
+    display: inline-flex; align-items: center; gap: 0.75rem;
+    padding: 0.42rem 1.15rem 0.42rem 0.45rem;
+    border: 1px solid var(--hairline); border-radius: 100px;
+    background: rgba(255,255,255,0.03);
+    font-size: 0.9rem; color: var(--text);
+    transition: border-color 0.35s var(--ease), background 0.35s var(--ease), color 0.35s var(--ease);
+}
+.hero-new b {
+    font-family: var(--font-mono); font-weight: 600; font-size: 0.66rem;
+    letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;
+    padding: 0.34rem 0.7rem; border-radius: 100px;
+    color: #04161c; background: var(--telemetry);
+}
+.hero-new:hover { color: var(--text-hi); border-color: rgba(111,195,214,0.5); background: rgba(255,255,255,0.06); }
+/* Keeps the line whole on a 360px phone. */
+@media (max-width: 420px) {
+    .hero-new { gap: 0.55rem; font-size: 0.84rem; padding-right: 0.95rem; }
+    .hero-new b { letter-spacing: 0.1em; padding: 0.32rem 0.55rem; }
+}
+
+/* The architecture line under the download buttons. */
+.dl-arch { max-width: 56ch; margin: 2.2rem auto 0; font-size: 0.98rem; color: var(--text-muted); text-wrap: pretty; }
+.dl-arch b { color: var(--text-hi); font-weight: 600; }
+.dl-arch a { color: var(--ember-bright); border-bottom: 1px solid rgba(242,101,42,0.35); transition: border-color 0.2s; }
+.dl-arch a:hover { border-bottom-color: var(--ember); }

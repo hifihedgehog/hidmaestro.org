@@ -30,13 +30,11 @@ using var ctrl = ctx.CreateController(ctx.GetProfile("dualsense-composite")!);
 
 That is the entire setup. A composite persona is created the same way as any other profile.
 
-Composite personas use the bundled [usbip-win2 0.9.7.7 package](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.7). Both x64 and ARM64 signed driver packages are embedded in HIDMaestro.Core.dll.
+Composite personas use the bundled [usbip-win2 0.9.7.5 release](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.5). The x64 and ARM64 installers are both embedded in HIDMaestro.Core.dll, unmodified and Microsoft-signed.
 
-The build checks the upstream installer hashes, extracts the signed INF/SYS/CAT files, and verifies each file before embedding it. The SDK uses an administrator-only staging directory and adds the packages through PnP. It retains the existing packages and never invokes the vendor uninstaller.
+The build checks each installer against the upstream release hash before embedding it, and the SDK checks the extracted copy again before running it. The SDK runs the installer only on a machine that has no usbip-win2, and USB devices blink once during that first-time install. A machine that HIDMaestro put on usbip-win2 0.9.7.7, which is what releases through v1.8.1 installed, is moved to 0.9.7.5 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. Measured on 26200, the move took 878 ms. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then 0.9.7.7 keeps working. Any other usbip-win2 version was installed by another program and is left as it is. `HIDMAESTRO_KEEP_TRANSPORT=1` turns the move off.
 
-An update requires detached USB/IP imports. Readiness is checked against the configured hashes, loaded driver images, and new IOCTL layout. USB devices can briefly reconnect during installation. The SDK keeps the zero-copy receive mode and preserves the profile's serial identity.
-
-The new driver rejects the old SDK's attach structure. Update every consumer's SDK before upgrading a shared host. See [platform support](../start/platform-support.md) for source-build availability and validation limits.
+See [platform support](../start/platform-support.md) for the version choice and validation limits.
 Two optional APIs exist for consumers that want control over *when* the one-time install happens:
 
 ```csharp

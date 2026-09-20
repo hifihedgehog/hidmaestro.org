@@ -164,7 +164,7 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>One DLL</dt>
-                    <dd>HIDMaestro.Core.dll contains the 231-profile catalog, the x64 driver and helper payloads, the signing tools, and the signed USB/IP package. The OpenVR plugin is x64 for its SteamVR host.</dd>
+                    <dd>HIDMaestro.Core.dll contains the 231-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Self-bootstrapping install</dt>
@@ -200,11 +200,11 @@
                 </div>
                 <div class="spec-row">
                     <dt>The composite exception, stated</dt>
-                    <dd>Composite Sony and Valve profiles use the bundled usbip-win2 0.9.7.7 kernel transport, redistributed unmodified and verified against the upstream SHA256 at build and again before execution. The SDK adds them through Windows PnP without invoking the vendor uninstaller. Older SDK consumers must be updated before changing a shared host because the attach ABI changed.</dd>
+                    <dd>Composite Sony and Valve profiles use the bundled usbip-win2 0.9.7.5 kernel transport, redistributed unmodified and verified against the upstream SHA256 at build and again before execution. The SDK installs it silently on a machine that has none and never invokes the vendor uninstaller. A machine HIDMaestro put on 0.9.7.7 is moved to 0.9.7.5 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Windows 10 and 11</dt>
-                    <dd>The source tree targets Windows 10/11 on x64, with .NET 10 and a 64-bit consumer. ARM64 support is in development on a branch and is not in a published release. Published v1.8.1 downloads are x64-only.</dd>
+                    <dd>Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. v1.9.0 publishes a ZIP for each. ARM64 hardware has not run the regression battery.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>MIT licensed</dt>
@@ -256,7 +256,7 @@
                 </details>
                 <details class="detail">
                     <summary>Does anything kernel-mode get installed?</summary>
-                    <div class="detail-body">Composite Sony and Valve profiles install the bundled usbip-win2 0.9.7.7 transport. Standard profiles use the Windows UMDF2 stack. Update older SDK consumers before upgrading the shared USB/IP driver.</div>
+                    <div class="detail-body">Composite Sony and Valve profiles install the bundled usbip-win2 0.9.7.5 transport on a machine that has none. Standard profiles use the Windows UMDF2 stack. A machine HIDMaestro put on 0.9.7.7 is moved to 0.9.7.5 automatically, with no window and no USB device dropping, so there is nothing to do when updating.</div>
                 </details>
                 <details class="detail">
                     <summary>Can I add a controller you don't ship?</summary>
@@ -272,7 +272,7 @@
                 </details>
                 <details class="detail">
                     <summary>Does HIDMaestro support ARM64?</summary>
-                    <div class="detail-body">Not in a published release. ARM64 builds and a USB/IP transport upgrade are in development on a branch, and the upgrade currently fails driver-lifecycle validation. Published v1.8.1 downloads are x64-only.</div>
+                    <div class="detail-body">Yes, from v1.9.0. One HIDMaestro.Core.dll serves x64 and ARM64 and carries a native driver payload for each, and the release has an ARM64 ZIP with an ARM64 test app and profile extractor. The ARM64 payload builds and is signed, and no ARM64 machine has run the regression battery yet.</div>
                 </details>
             </div>
         </section>

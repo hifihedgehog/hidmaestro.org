@@ -2,7 +2,7 @@
 
 Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.
 
-The ARM64 and usbip-win2 0.9.7.7 changes remain under validation. The transport upgrade failed driver-lifecycle tests and is not ready for deployment. Published v1.8.1 downloads predate those additions. See [validation results](platform-support.md#validation).
+v1.9.0 ships for x64 and ARM64. See [platform support](platform-support.md#validation) for what was measured on each.
 
 ## Requirements
 
@@ -51,20 +51,20 @@ Dispose the controller to remove it. Dispose the context to release its controll
 scripts\build_all.cmd
 ~~~
 
-Use -Architecture arm64 when preparing ARM64 test applications. The native build creates both payloads before compiling the SDK. One SDK build embeds the prepared files. Missing native files stop the build.
+The native build creates both payloads before compiling the SDK. Missing native files stop the SDK build.
 
 For one ARM64 application:
 
 ~~~powershell
-dotnet build test\HIDMaestroTest.csproj -r win-arm64
+dotnet build test\HIDMaestroTest.csproj -c Release -p:HMTargetArchitecture=arm64
 ~~~
 
 See [Build and release](../reference/build-and-release.md) for output directories and validation.
 
 ## Composite profiles and upgrades
 
-Composite profiles install the bundled USB/IP transport when needed. No separate download is required on the consumer's machine. The build verifies upstream hashes, and the runtime checks package hashes and loaded images.
+Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.7.5, the first time one is created on a machine that has none. No separate download is required on the consumer's machine. The build verifies the upstream hashes, and the SDK verifies the installer again before running it.
 
-Close USB/IP consumers before an update. USB devices can briefly reconnect during PnP installation. Older HIDMaestro SDKs use a different attach layout and cannot create composites through the new driver. Update their SDKs before changing a shared host.
+A machine that HIDMaestro put on usbip-win2 0.9.7.7, which is what releases through v1.8.1 installed, is moved to 0.9.7.5 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. Measured on 26200, the move took 878 ms. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then 0.9.7.7 keeps working. Any other usbip-win2 version was installed by another program and is left as it is. `HIDMAESTRO_KEEP_TRANSPORT=1` turns the move off. There is nothing for a user to do when moving to v1.9.0. USB devices blink once during a first-time install on a machine with no transport, while Windows re-enumerates the root hubs.
 
-See [platform support](platform-support.md) for the architecture matrix and measured results. ARM64 hardware execution has not yet been tested.
+See [platform support](platform-support.md) for the architecture matrix and measured results. ARM64 hardware has not run the battery.

@@ -2120,7 +2120,7 @@
 
 
 <h1 id="testing-and-verification">Testing and Verification<a class="headerlink" href="#testing-and-verification" title="Permanent link">&para;</a></h1>
-<p>The regression battery has 60 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and native architecture selection. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
+<p>The regression battery has 60 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and device identity. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
 <p>For the wiki coverage of where these pipelines fit, see <a href="../build-and-release/">Build and Release</a>. For the underlying SDK mechanics they exercise, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 <hr />
 <h2 id="scriptsverifypy-cross-api-correctness"><code>scripts/verify.py</code>: cross-API correctness<a class="headerlink" href="#scriptsverifypy-cross-api-correctness" title="Permanent link">&para;</a></h2>
@@ -2492,7 +2492,7 @@
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md"><code>test/regression/README.md</code></a>: the in-repo battery doc.</li>
 </ul>
 <h2 id="arm64-and-usbip-validation">ARM64 and USB/IP validation<a class="headerlink" href="#arm64-and-usbip-validation" title="Permanent link">&para;</a></h2>
-<p>See <a href="../../start/platform-support/#validation">platform support</a> for cross-compilation and x64 Sandbox installation/upgrade evidence. ARM64 hardware execution has not been tested, and the Atom fixture was unavailable for this update.</p>
+<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.9.0 gate result and the usbip-win2 0.9.7.5 deployment measured on x64. ARM64 hardware has not run the battery, and the Atom fixture was unavailable for this release.</p>
 
 
 

@@ -9,7 +9,7 @@
     },
     {
         "q":  "Does anything kernel-mode get installed?",
-        "a":  "Composite Sony and Valve profiles install the bundled usbip-win2 0.9.7.7 transport. Standard profiles use the Windows UMDF2 stack. Update older SDK consumers before upgrading the shared USB/IP driver."
+        "a":  "Composite Sony and Valve profiles install the bundled usbip-win2 0.9.7.5 transport on a machine that has none. Standard profiles use the Windows UMDF2 stack. A machine with a working usbip-win2 keeps the one it has, so there is nothing to do when updating."
     },
     {
         "q":  "Can I add a controller you don\u0027t ship?",
@@ -25,6 +25,6 @@
     },
     {
         "q":  "Does HIDMaestro support ARM64?",
-        "a":  "Not in a published release. ARM64 builds and a USB/IP transport upgrade are in development on a branch, and the upgrade currently fails driver-lifecycle validation. Published v1.8.1 downloads are x64-only."
+        "a":  "Yes, from v1.9.0. One HIDMaestro.Core.dll serves x64 and ARM64 and carries a native driver payload for each, and the release has an ARM64 ZIP with an ARM64 test app and profile extractor. The ARM64 payload builds and is signed, and no ARM64 machine has run the regression battery yet."
     }
 ]

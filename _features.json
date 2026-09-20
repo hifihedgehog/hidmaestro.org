@@ -81,7 +81,7 @@
     },
     {
         "t":  "One DLL",
-        "d":  "HIDMaestro.Core.dll contains the 231-profile catalog, the x64 driver and helper payloads, the signing tools, and the signed USB/IP package. The OpenVR plugin is x64 for its SteamVR host."
+        "d":  "HIDMaestro.Core.dll contains the 231-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host."
     },
     {
         "t":  "Regression coverage",
@@ -93,7 +93,7 @@
     },
     {
         "t":  "The composite exception, stated",
-        "d":  "Composite Sony and Valve profiles use the bundled usbip-win2 0.9.7.7 kernel transport, redistributed unmodified and verified against the upstream SHA256 at build and again before execution. The SDK adds them through Windows PnP without invoking the vendor uninstaller. Older SDK consumers must be updated before changing a shared host because the attach ABI changed."
+        "d":  "Composite Sony and Valve profiles use the bundled usbip-win2 0.9.7.5 kernel transport, redistributed unmodified and verified against the upstream SHA256 at build and again before execution. The SDK installs it silently on a machine that has none and never invokes the vendor uninstaller. A machine that already has a working usbip-win2, including 0.9.7.7 from an earlier release, keeps it."
     },
     {
         "t":  "MIT licensed",
@@ -101,7 +101,7 @@
     },
     {
         "t":  "Windows 10 and 11",
-        "d":  "The source tree targets Windows 10/11 on x64, with .NET 10 and a 64-bit consumer. ARM64 support is in development on a branch and is not in a published release. Published v1.8.1 downloads are x64-only."
+        "d":  "Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. v1.9.0 publishes a ZIP for each. ARM64 hardware has not run the regression battery."
     },
     {
         "t":  "A UI instead of code",

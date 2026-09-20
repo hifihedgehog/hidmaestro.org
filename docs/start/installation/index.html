@@ -1755,7 +1755,7 @@
 
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
 <p>Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.</p>
-<p>The ARM64 and usbip-win2 0.9.7.7 changes remain under validation. The transport upgrade failed driver-lifecycle tests and is not ready for deployment. Published v1.8.1 downloads predate those additions. See <a href="../platform-support/#validation">validation results</a>.</p>
+<p>v1.9.0 ships for x64 and ARM64. See <a href="../platform-support/#validation">platform support</a> for what was measured on each.</p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1809,15 +1809,15 @@
 <h2 id="build-from-source">Build from source<a class="headerlink" href="#build-from-source" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">scripts</span><span class="p">\</span><span class="n">build_all</span><span class="p">.</span><span class="n">cmd</span>
 </code></pre></div>
-<p>Use -Architecture arm64 when preparing ARM64 test applications. The native build creates both payloads before compiling the SDK. One SDK build embeds the prepared files. Missing native files stop the build.</p>
+<p>The native build creates both payloads before compiling the SDK. Missing native files stop the SDK build.</p>
 <p>For one ARM64 application:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">dotnet</span> <span class="n">build</span> <span class="n">test</span><span class="p">\</span><span class="n">HIDMaestroTest</span><span class="p">.</span><span class="n">csproj</span> <span class="n">-r</span> <span class="n">win-arm64</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">dotnet</span> <span class="n">build</span> <span class="n">test</span><span class="p">\</span><span class="n">HIDMaestroTest</span><span class="p">.</span><span class="n">csproj</span> <span class="n">-c</span> <span class="n">Release</span> <span class="n">-p</span><span class="p">:</span><span class="n">HMTargetArchitecture</span><span class="p">=</span><span class="n">arm64</span>
 </code></pre></div>
 <p>See <a href="../../reference/build-and-release/">Build and release</a> for output directories and validation.</p>
 <h2 id="composite-profiles-and-upgrades">Composite profiles and upgrades<a class="headerlink" href="#composite-profiles-and-upgrades" title="Permanent link">&para;</a></h2>
-<p>Composite profiles install the bundled USB/IP transport when needed. No separate download is required on the consumer's machine. The build verifies upstream hashes, and the runtime checks package hashes and loaded images.</p>
-<p>Close USB/IP consumers before an update. USB devices can briefly reconnect during PnP installation. Older HIDMaestro SDKs use a different attach layout and cannot create composites through the new driver. Update their SDKs before changing a shared host.</p>
-<p>See <a href="../platform-support/">platform support</a> for the architecture matrix and measured results. ARM64 hardware execution has not yet been tested.</p>
+<p>Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.7.5, the first time one is created on a machine that has none. No separate download is required on the consumer's machine. The build verifies the upstream hashes, and the SDK verifies the installer again before running it.</p>
+<p>A machine that already has a working usbip-win2, including 0.9.7.7 from an earlier HIDMaestro release, keeps the one it has. The interface HIDMaestro uses is the same in both, and the SDK does not reinstall or downgrade it. There is nothing for a user to do when moving to v1.9.0. USB devices blink once during a first-time install while Windows re-enumerates the root hubs.</p>
+<p>See <a href="../platform-support/">platform support</a> for the architecture matrix and measured results. ARM64 hardware has not run the battery.</p>
 
 
 

@@ -1,6 +1,6 @@
 ﻿# Testing and Verification
 
-The regression battery has 58 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and native architecture selection. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
+The regression battery has 60 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and native architecture selection. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
 
 For the wiki coverage of where these pipelines fit, see [Build and Release](build-and-release.md). For the underlying SDK mechanics they exercise, see [SDK Reference](../sdk/sdk-reference.md) and [Lifecycle and Teardown](lifecycle-and-teardown.md).
 
@@ -161,22 +161,22 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 |----------|---------|---------|
 | **S01_Single_360_BT_360** | `360 → BT → 360` | The original SwDevice teardown leaving a phantom xinputhid-bound BT child. |
 | **S02_Single_360_BT_360_BT** | `+ → BT` | Secondary regression: leftover surfacing only after a 4th swap. |
-| **S03_Single_LongCycle_8swaps** | 8 alternating swaps | Suffix-allocator stress + repeated DIF_REMOVE+hmswd-remove path. |
+| **S03_Single_LongCycle_8swaps** | 8 alternating swaps | Repeated DIF_REMOVE and hmswd-remove path under a fixed identity token. |
 | **S04_Single_BT_360_BT** | BT first | Initial xinputhid bind path before any non-xinputhid create. |
 | **S05_Single_Mixed_Families** | `360 → DS → Switch → BT → 360` | Cross-family swaps (XUSB companion, plain HID, xinputhid gamepad). |
-| **S06_Single_SameProfileSwap** | `BT → BT` (same id) | Per-call unique suffix lets identical-profile recreation work. |
+| **S06_Single_SameProfileSwap** | `BT → BT` (same id) | A fixed identity tuple recreates cleanly after teardown destroys the software device. |
 | **S07_Multi_CreateAll_Idle** | 4 mixed, idle, quit | Baseline multi-slot teardown via clean process exit. |
 | **S08_Multi_SwapOneSlot** | 4 wired, swap slot 1 | Single-slot swap doesn't leak across siblings. |
 | **S09_Multi_SwapAllSlots** | 4 wired, swap each slot | Concurrent live-swap of every slot. |
 | **S10_Multi_RemoveOne** | 3 mixed, `remove 1` | `Dispose` without replacement leaves no residue. |
 | **S11_Multi_MultipleXinputhid** | 3 different xinputhid + swap | xinputhid INF-match handling under multiple concurrent binds. |
 | **S12_ForceKill_Recovery** | Hard-kill, then clean session | `RemoveAllVirtualControllers` purges orphans from a force-kill. |
-| **S13_AcrossProcess_Recreation** | `proc1 (BT+360) → quit → proc2 (BT+360) + swaps` | Per-process suffix prefix actually varies. Catches the kernel reuse-existing trap. |
+| **S13_AcrossProcess_Recreation** | `proc1 (BT+360) → quit → proc2 (BT+360) + swaps` | The same identity token recreates across processes. Catches the kernel reuse-existing trap. |
 | **S14_Single_RapidSwaps_NoSettle** | 4 swaps queued back-to-back, no inter-command sleep | Per-controllerIndex teardown gate + reentrancy in Setup/Teardown. |
 | **S15_Multi_SixControllers** | 6 mixed (beyond XInput's 4) + swap slot 5 | Slot-allocator skip + ContainerID encoding for high indices. |
 | **S16_Single_SameVidPid** | `xbox-360-wired ↔ xbox-360-arcade-stick` (both 045E:028E) | Registry-reuse path when only profile-level metadata differs. |
 | **S17_ForceKill_MidCascade** | Hard-kill 5s into a Series BT teardown's xinputhid filter unbind | Worst-case force-kill timing; phantoms left in mid-cascade state. |
-| **S18_Single_AlternatingPattern** | `A → B → A → C → A → B → A` | Suffix allocator state when revisiting prior profiles. |
+| **S18_Single_AlternatingPattern** | `A → B → A → C → A → B → A` | Registry and devnode state when revisiting prior profiles at one identity. |
 | **S19_Multi_RapidMultiSlotSwap** | 4 controllers, swap each slot's profile back-to-back, no settle | PadForge's `ApplyAscendingIndexPreemption` async-dispose path. |
 | **S20_Multi_HeterogeneousCascade** | 4 controllers, every family in one batch, then `quit` | `DisposeControllersInParallel` correctness with all four families. |
 | **S21_Custom_CreateIdle** | Custom (BEEF:F000) create + idle + quit | Runtime-built profile loads, binds, tears down through the same path. |
@@ -191,7 +191,7 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 | **S59_Identity_Battery** | One controller per family across nine lives | Parent id, ParentIdPrefix, ContainerId, HID children, interface paths, DirectInput GUID, SDL3 path and USB serial stay identical across every life. Also empty shells, two pads of one VID/PID overlapping, and a profile change at one key. |
 | **S60_Xusb_Battery** | The XUSB battery reply on xbox-360-wired | The four bytes position by position, the LED reply's own version word, what `XInputGetBatteryInformation` hands a caller, and SDL's power-state mapping over those values. |
 
-Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. [The repository's own table](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md) carries every scenario.
+Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1) is the authoritative full list.
 
 ---
 
@@ -214,7 +214,7 @@ The script prints leftover instance IDs when a scenario fails:
 
 ```
 [FAIL] S08_Multi_SwapOneSlot 47832ms
-       Leftover: SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\<suffix>_0001
+       Leftover: SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\HM_0001
 ```
 
 For deeper inspection, every test process runs with `HIDMAESTRO_DIAG=1` in its environment, so `%TEMP%\HIDMaestro\teardown_diag.log` records every `TeardownController` call (entry/exit/timing) and every `SwdDeviceFactory.Remove` outcome (`hr` plus `present`-after-remove).
@@ -241,11 +241,11 @@ These five fixes interact; missing any one makes the harness hang on Win11. Pres
 
 ### Slow-hardware fixture
 
-The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Same 28/28 PASS at `HIDMAESTRO_TIMEOUT_SCALE=2`. Validated on each release.
+The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Same 60/60 PASS at `HIDMAESTRO_TIMEOUT_SCALE=2`. Validated on each release.
 
 The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
 
-The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there. ~75 minutes wall time for the full 28 scenarios.
+The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there. ~75 minutes wall time for the full 60 scenarios.
 
 ---
 

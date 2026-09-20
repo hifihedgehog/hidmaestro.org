@@ -170,7 +170,7 @@
             <div class="stat reveal" data-d="1"><div class="stat-n">574<em>K</em></div><div class="stat-l">Combined installed base</div></div>
             <div class="stat reveal" data-d="2"><div class="stat-n">~35<em>&micro;s</em></div><div class="stat-l">Median single-press</div></div>
             <div class="stat reveal" data-d="3"><div class="stat-n">60</div><div class="stat-l">Battery scenarios</div></div>
-            <div class="stat reveal" data-d="4"><div class="stat-n">0</div><div class="stat-l">Kernel drivers installed</div></div>
+            <div class="stat reveal" data-d="4"><div class="stat-n">0</div><div class="stat-l">Kernel drivers for standard profiles</div></div>
         </div>
     </div>
 </section>
@@ -290,7 +290,7 @@
 
         <div class="details reveal" data-d="2" style="max-width:760px; margin-inline:auto">
             <details class="detail">
-                <summary>58 regression scenarios</summary>
+                <summary>60 regression scenarios</summary>
                 <div class="detail-body">A 60-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, WGI, the battery reply a pad gives XInput, and the device identity of every family across nine lives. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
             </details>
             <details class="detail">
@@ -426,12 +426,12 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
         </div>
         <p class="reveal" data-d="3">Published v1.8.1 downloads are x64-only. ARM64 support and the USB/IP update remain under validation. <a href="docs/start/platform-support/">Read the validation results</a>.</p>
         <div class="dl-meta reveal" data-d="3">
-            <span>One DLL</span><span>x64 / ARM64 source builds</span><span>MIT</span>
+            <span>One DLL</span><span>x64 source builds</span><span>MIT</span>
         </div>
         <div class="details reveal" data-d="3" style="max-width:720px; margin:2.6rem auto 0; text-align:left">
             <details class="detail">
                 <summary>Prerequisites</summary>
-                <div class="detail-body">Windows 10/11 on x64 or Windows 11 on ARM64, .NET 10, and administrator privileges for virtual device creation. Source builds need Visual Studio C++ tools for both architectures and Windows SDK/WDK 10.0.26100.0. ARM64 hardware execution remains unverified. <a href="docs/start/platform-support/">Platform support and validation</a>.</div>
+                <div class="detail-body">Windows 10/11 on x64, .NET 10, and administrator privileges for virtual device creation. Source builds need Visual Studio C++ tools for x64 and Windows SDK/WDK 10.0.26100.0. ARM64 support is in development and is not in a published release. <a href="docs/start/platform-support/">Platform support and validation</a>.</div>
             </details>
             <details class="detail">
                 <summary>Not a developer?</summary>

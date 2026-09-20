@@ -2640,7 +2640,7 @@
 <p><strong>Fix</strong>: check the consumer's stdout for the specific step that failed. Common causes:</p>
 <ul>
 <li><strong>Antivirus holding files.</strong> Real-time scanning of <code>%TEMP%\HIDMaestro\&lt;hash&gt;\</code> causes <code>signtool</code> or <code>Inf2Cat</code> to fail with sharing violations. Whitelist <code>%TEMP%\HIDMaestro\</code> in your AV.</li>
-<li><strong>Network failure during timestamp step.</strong> <code>signtool /tr http://timestamp.digicert.com</code> requires HTTP egress. Air-gapped or proxied environments may need a different timestamp URL via <code>HIDMAESTRO_TIMESTAMP_URL</code>.</li>
+<li><strong>No network step exists.</strong> Driver signing runs offline: <code>signtool sign /a /sm /s My /n &lt;cert&gt; /fd SHA256</code>, with no timestamp server, so an air-gapped or proxied environment changes nothing here.</li>
 <li><strong>Corrupt embedded payload.</strong> Reinstall the SDK (download a fresh release ZIP).</li>
 </ul>
 <h3 id="pnputil-returns-needed-repairing"><code>pnputil</code> returns "Needed repairing"<a class="headerlink" href="#pnputil-returns-needed-repairing" title="Permanent link">&para;</a></h3>
@@ -2695,7 +2695,8 @@
 <p><strong>Cause</strong>: pre-SWD-migration; null-sentinel ContainerID triggered <code>xinput1_4!FUN_18000de2c</code>'s bit-2 path.</p>
 <p><strong>Fix</strong>: upgrade to a build with the SWD migration (current). Verify your build:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>HIDMaestroTest.exe info xbox-360-wired
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>:: should show &quot;driverMode: null&quot; and the SWD-enumerated companion path
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>:: should show &quot;Driver Mode:    (default)&quot;. For the companion devnode:
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>:: Get-PnpDevice -InstanceId &#39;SWD\HIDMAESTRO\*&#39;
 </code></pre></div>
 <p>If you're on the latest build and still see slot-1-skip, the per-controller ContainerID may have been reset to null-sentinel by a hardware ID list change. File an issue with <code>Get-PnpDevice ... | Format-List *</code> output.</p>
 <h3 id="subsequent-run-after-a-fresh-boot-is-fast-2-s-same-boot-relaunch-is-slow-65-s-and-xinput-loses-visibility">Subsequent run after a fresh boot is fast (~2 s); same-boot relaunch is slow (65 s) and XInput loses visibility<a class="headerlink" href="#subsequent-run-after-a-fresh-boot-is-fast-2-s-same-boot-relaunch-is-slow-65-s-and-xinput-loses-visibility" title="Permanent link">&para;</a></h3>
@@ -2815,7 +2816,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>findstr /i &quot;ProcessSharingDisabled&quot; driver\hidmaestro.inf driver\hidmaestro_xusb.inf
 </code></pre></div>
 <p>Both INFs should show the line. If missing, fix the INF and rebuild. Verify per-instance hosts at runtime:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nb">Get-Process</span> <span class="n">WUDFHost</span> <span class="p">|</span> <span class="nb">Measure-Object</span> <span class="n">-Property</span> <span class="n">Count</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">(</span><span class="nb">Get-Process</span> <span class="n">WUDFHost</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span><span class="p">).</span><span class="n">Count</span>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c"># Expected: N main HID instances + M XUSB companion instances (matches your controller count)</span>
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c"># Regression: 1-2 hosts regardless of controller count</span>
 </code></pre></div>
@@ -2876,10 +2877,6 @@
 <td><code>HIDMAESTRO_QUIET=1</code></td>
 <td>Suppresses redundant ProcessExit RemoveAllVirtualControllers call. Used by the regression harness</td>
 </tr>
-<tr>
-<td><code>HIDMAESTRO_TIMESTAMP_URL</code></td>
-<td>Override the RFC 3161 timestamp server for signtool. Default <code>http://timestamp.digicert.com</code></td>
-</tr>
 </tbody>
 </table>
 <p>Logs to inspect:</p>
@@ -2899,17 +2896,13 @@
 <td><code>%TEMP%\HIDMaestro\hmswd_self.log</code></td>
 <td>Every <code>SwDeviceCreate</code> / <code>SwDeviceClose</code> call's hresult</td>
 </tr>
-<tr>
-<td><code>%TEMP%\HIDMaestro\&lt;hash&gt;\install.log</code></td>
-<td>Inf2Cat / signtool / pnputil output during install</td>
-</tr>
 </tbody>
 </table>
 <hr />
 <h2 id="reporting-an-issue">Reporting an issue<a class="headerlink" href="#reporting-an-issue" title="Permanent link">&para;</a></h2>
 <p>Include:</p>
 <ol>
-<li><strong>HIDMaestro version</strong> (<code>HIDMaestroTest.exe info</code> shows it).</li>
+<li><strong>HIDMaestro version</strong> (the release ZIP name, or the <code>HIDMaestro.Core.dll</code> file version under Properties, Details).</li>
 <li><strong>Windows version</strong> (<code>winver</code> or Settings &rarr; About).</li>
 <li><strong>The full consumer stdout</strong> during the failing operation.</li>
 <li><strong><code>%TEMP%\HIDMaestro\teardown_diag.log</code></strong> if the issue is create/dispose-related.</li>

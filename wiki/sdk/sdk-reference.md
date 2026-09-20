@@ -303,7 +303,7 @@ public enum HMAxis : ushort
 
     // Generic Desktop (page 0x01): (page << 8 | usage)
     X = 0x0130, Y = 0x0131, Z = 0x0132, Rx = 0x0133, Ry = 0x0134, Rz = 0x0135,
-    Slider = 0x0136, Dial = 0x0137, Wheel = 0x0138,
+    Slider = 0x0136, Dial = 0x0137, Wheel = 0x0138, Hat = 0x0139,
     Vx = 0x0140, Vy = 0x0141, Vz = 0x0142,
     Vbrx = 0x0143, Vbry = 0x0144, Vbrz = 0x0145, Vno = 0x0146,
 
@@ -463,7 +463,7 @@ public sealed class HMProfile
 
 Profiles are immutable. Mutation goes through `HMProfileBuilder.FromProfile(existing)`: build a new profile with the changes you want.
 
-`IsDeployable` is false for placeholder catalog entries that have no descriptor yet. `CreateController` will throw `ArgumentException` for those. The catalog ships only deployable profiles by default; placeholders are an internal concept that survived from the catalog generator.
+`IsDeployable` is false for placeholder catalog entries that have no descriptor yet. `CreateController` will throw `ArgumentException` for those. `IsDeployable` is false for catalog entries that carry no descriptor yet, and `CreateController` throws `ArgumentException` for those. 133 of the 231 embedded profiles are deployable. The remaining 98 are identity-only entries awaiting a descriptor capture.
 
 `HatLogicalMin` / `HatLogicalMax` are the HID-spec values declared in the descriptor. For an octant hat, `Min=0 Max=7` (or equivalents); for a 16-position hat `Min=0 Max=15`; for a 360-position continuous hat `Min=0 Max=359`. The count of distinct positions is `Max - Min + 1`.
 
@@ -519,7 +519,7 @@ For consumers that just want "give me sticks and triggers for the simple framewo
 
 Each entry surfaces the `HMAxis` key the consumer writes through. `HMGamepadStateHelpers.StandardAxes(profile, leftStickX, leftStickY, ..., leftTrigger, rightTrigger)` maps the canonical 6-slot convention into the right axis keys for the active profile (so a Sony pad's Z=right-stick mapping is honored automatically).
 
-Profiles whose physical layout is unknown or undocumented declare `kind: "unspecified"` (`HMUnspecifiedLayout`); 30 of the 126 shipped profiles fall into this bucket rather than fabricate a layout. The classifier still resolves their descriptor's standard usages into the simple slots.
+Profiles whose physical layout is unknown or undocumented declare `kind: "unspecified"` (`HMUnspecifiedLayout`); 33 of the 133 profiles that carry a layout fall into this bucket rather than fabricate one. The classifier still resolves their descriptor's standard usages into the simple slots.
 
 ---
 

@@ -108,7 +108,7 @@ Step 5 is the interesting one. Windows doesn't expose the original device descri
 
 The output is **logically equivalent** to the device's real descriptor: same report IDs, field layouts, logical ranges, usage pages, sizes. It's not byte-for-byte identical: the original descriptor might have used a 2-byte Logical Maximum where the reconstruction emits a 4-byte form, or the order of unrelated items might differ. For HIDMaestro's purpose (creating a virtual that behaves the same as the physical), logical equivalence is the correct fidelity bar; filter drivers can mutate the descriptor before it reaches user mode anyway.
 
-The reconstruction code is ~1000 lines of `HidDescriptorReconstructor.cs`: the longest single source file in the SDK after `DeviceOrchestrator.cs` and `DeviceManager.cs`.
+The reconstruction code is ~1000 lines of `HidDescriptorReconstructor.cs`: the fifth-longest source file in the SDK after `DeviceOrchestrator.cs`, `HMController.cs`, `DeviceManager.cs` and `HidReportBuilder.cs`.
 
 ---
 
@@ -143,12 +143,12 @@ Then drop the bytes into the `descriptor` field of a hand-authored profile JSON.
 
 ```cmd
 :: List all extractable HID devices
-HIDMaestroTest.exe list-hid
+HIDMaestroTest.exe extract-profile
 
 :: Extract by VID:PID and write to a file
-HIDMaestroTest.exe extract-profile --vid 046D --pid C216 --out logitech-dual-action.json
+HIDMaestroTest.exe extract-profile 046D C216 > logitech-dual-action.json
 
-:: Extract by full device path (use list-hid output)
+:: Extract by full device path (use extract-profile output)
 HIDMaestroTest.exe extract-profile --path "\\?\HID#VID_046D&PID_C216#..." --out my-profile.json
 ```
 

@@ -11,19 +11,19 @@ This page documents the JSON schema field-by-field, the three runtime architectu
 ```
 profiles/
   schema.json                       # JSON Schema document for all profiles
-  scraped_descriptors.json          # 50+ raw descriptors recovered from real devices
+  scraped_descriptors.json          # 22 raw descriptors recovered from real devices
   linux-kernel-fixed-descriptors.json  # patched descriptors from the Linux kernel
   microsoft/
     xbox-360-wired.json
     xbox-series-xs-bt.json
     xbox-elite-v2.json
-    ...22 Microsoft profiles
+    ...23 Microsoft profiles
   sony/
     dualsense.json
     dualsense-edge.json
     dualshock-4-v1.json
     dualshock-3.json
-    ...13 Sony profiles
+    ...16 Sony profiles
   nintendo/
     switch-pro.json
     switch2-pro.json
@@ -37,13 +37,13 @@ profiles/
     t300rs.json
     t-flight-hotas-4.json
     t16000m.json
-    ...19 Thrustmaster profiles
+    ...20 Thrustmaster profiles
   ...28 more vendor folders
 ```
 
 Vendor folder names are slugs of the manufacturer (`thrustmaster`, `8bitdo`, `vkbsim`). File names are slugs of the model (`xbox-360-wired`, `t-flight-hotas-x`, `dualsense-edge-bt`).
 
-The full vendor list at v1.3.4: 8bitdo, amazon, asetek, cammus, ch-products, fanatec, flydigi, google, heusinkveld, honeycomb, hori, logitech, microsoft, misc, moza, nacon, nintendo, pxn, razer, sega, simagic, simucube, snk, sony, steelseries, taito, thrustmaster, turtle-beach, valve, virpil, vkbsim, winwing.
+The full vendor list at v1.8.1: 8bitdo, amazon, asetek, cammus, ch-products, fanatec, flydigi, google, heusinkveld, honeycomb, hori, logitech, microsoft, misc, moza, nacon, nintendo, pxn, razer, sega, simagic, simucube, snk, sony, steelseries, taito, thrustmaster, turtle-beach, valve, virpil, vkbsim, winwing.
 
 The `misc/` vendor catches everything else: arcade controllers, niche racing pedals, devices the contributor couldn't slot into a clean vendor namespace.
 
@@ -79,7 +79,7 @@ The `misc/` vendor catches everything else: arcade controllers, niche racing ped
 
 | Field | Type | Meaning |
 |-------|------|---------|
-| `id` | string | Unique slug, e.g. `"xbox-360-wired"`. Used by `HMContext.GetProfile`. Must match the filename. |
+| `id` | string | Unique slug, e.g. `"xbox-360-wired"`. Used by `HMContext.GetProfile`, case-insensitively. The filename need not match: most vendor folders prefix the id with the vendor slug, so `profiles/logitech/g29.json` carries `"id": "logitech-g29"`. |
 | `name` | string | Human-readable display name shown in UIs. |
 | `vendor` | string | Manufacturer name. Doesn't need to be a slug. |
 | `vid` | string | USB Vendor ID as a 4-digit hex string with `0x` prefix. |
@@ -225,7 +225,7 @@ The profile fields determine which of three architecture groups the runtime inst
 
 Profiles where `driverMode` is **not** `"xinputhid"` and `vid` is **not** Microsoft (`0x045E`).
 
-Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 231-profile catalog (~204 profiles).
+Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 231-profile catalog (208 profiles).
 
 ```
 ROOT\VID_054C&PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
@@ -238,7 +238,7 @@ Lightest stack. One `DIF_REMOVE` on the ROOT parent tears down the entire tree. 
 
 Xbox-VID profiles (`vid == 0x045E`) where `driverMode` is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running `HMXInput.dll`. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.
 
-Includes Xbox 360 Wired (`xbox-360-wired`), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, Xbox Adaptive (with caveats: this is a 6-profile group).
+Includes Xbox 360 Wired (`xbox-360-wired`), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, and the SideWinder Force Feedback 2: an 11-profile group. Xbox Adaptive is not in it; it sets `driverMode: xinputhid` and belongs to the group below.
 
 ```
 ROOT\VID_045E&PID_028E&IG_00\NNNN    ← UMDF2 driver (main HID device)
@@ -262,7 +262,7 @@ Medium stack, fast on both sides post-v1.3.2. Two device trees to tear down. The
 
 Profiles with `driverMode: "xinputhid"`. These match `xinputhid.inf [GIP_Hid]` by hardware ID (`HID\VID_045E&PID_0B13&IG_00`), which binds Microsoft's `xinputhid.sys` as an upper filter on the HID child. xinputhid provides XInput delivery and 16-button HID descriptor synthesis natively: no XUSB companion needed, single Device Manager entry.
 
-Includes Xbox Series BT (`xbox-series-xs-bt`), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT: the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.
+Includes the whole Xbox One / Series / Elite family, wired and Bluetooth: `xbox-series-xs`, `xbox-series-xs-bt`, `xbox-one-s`, `xbox-one-s-bt`, `xbox-one-s-bt-full`, `xbox-one-original`, `xbox-one-rev1`, `xbox-elite-v1`, `xbox-elite-v2`, `xbox-elite-v2-bt`, `xbox-elite-v2-bt-v2` and `xbox-adaptive`. Twelve profiles using Microsoft's GIP-over-HID protocol.
 
 ```
 SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\<sid>_NNNN
@@ -302,7 +302,7 @@ Both sides fast post-v1.3.2. xinputhid is a Microsoft inbox kernel filter driver
 8. **UpperFilter writes** for non-xinputhid Xbox profiles. INF carries it on the companion; SDK writes per-instance on the main HID device.
 9. **Friendly-name application.** Best-effort; finalize via `HMContext.FinalizeNames` after all controllers are created.
 
-The full per-archetype sequence lives in `DeviceOrchestrator.cs`'s `SetupController` (~600 lines). See [Lifecycle and Teardown](../reference/lifecycle-and-teardown.md) for the disposal counterpart.
+The full per-archetype sequence lives in `DeviceOrchestrator.cs`'s `SetupController` (~390 lines). See [Lifecycle and Teardown](../reference/lifecycle-and-teardown.md) for the disposal counterpart.
 
 ---
 
@@ -315,7 +315,7 @@ ctx.LoadDefaultProfiles();
 // Custom directory of JSON profiles
 ctx.LoadProfilesFromDirectory(@"C:\my-profiles");
 
-// Mix both: embedded first, then custom (custom IDs win on collision)
+// Mix both: custom first, then embedded (the first load of an ID wins)
 ctx.LoadDefaultProfiles();
 ctx.LoadProfilesFromDirectory(@"C:\my-overrides");
 
@@ -387,20 +387,20 @@ The modded profile isn't registered in the catalog: it's used directly for one `
 
 ## Catalog statistics
 
-As of v1.3.4:
+As of v1.8.1:
 
 | Metric | Count |
 |--------|-------|
 | Total profiles | 231 |
 | Vendor folders | 32 |
-| Plain HID profiles | ~204 |
-| Non-xinputhid Xbox profiles | ~6 |
-| xinputhid Xbox profiles | ~4 |
-| With FFB descriptors | ~30 (Logitech G-series, Thrustmaster wheels, Fanatec wheels, MOZA, SimuCUBE) |
-| Bluetooth profiles | ~50 |
-| Wireless-adapter profiles | ~10 |
+| Plain HID profiles | 208 |
+| Non-xinputhid Xbox profiles | 11 |
+| xinputhid Xbox profiles | 12 |
+| With FFB descriptors | 14 (SideWinder Force Feedback 2, the Xbox One / Series / Elite family, Amazon Luna BLE) |
+| Bluetooth profiles | 18 |
+| Wireless-adapter profiles | 4 |
 
-The largest single-vendor folders are Thrustmaster (19), Logitech (24), Microsoft (22), and Sony (13).
+The largest vendor folders are misc (32, the catch-all), Logitech (24), Microsoft (23), Thrustmaster (20), Sony (16), and Fanatec (14).
 
 ---
 

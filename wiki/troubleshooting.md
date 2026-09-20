@@ -27,7 +27,7 @@ That sweeps every HIDMaestro PnP entry, removes the driver packages, and deletes
 **Fix**: check the consumer's stdout for the specific step that failed. Common causes:
 
 - **Antivirus holding files.** Real-time scanning of `%TEMP%\HIDMaestro\<hash>\` causes `signtool` or `Inf2Cat` to fail with sharing violations. Whitelist `%TEMP%\HIDMaestro\` in your AV.
-- **Network failure during timestamp step.** `signtool /tr http://timestamp.digicert.com` requires HTTP egress. Air-gapped or proxied environments may need a different timestamp URL via `HIDMAESTRO_TIMESTAMP_URL`.
+- **No network step exists.** Driver signing runs offline: `signtool sign /a /sm /s My /n <cert> /fd SHA256`, with no timestamp server, so an air-gapped or proxied environment changes nothing here.
 - **Corrupt embedded payload.** Reinstall the SDK (download a fresh release ZIP).
 
 ### `pnputil` returns "Needed repairing"
@@ -117,7 +117,8 @@ Common causes:
 
 ```cmd
 HIDMaestroTest.exe info xbox-360-wired
-:: should show "driverMode: null" and the SWD-enumerated companion path
+:: should show "Driver Mode:    (default)". For the companion devnode:
+:: Get-PnpDevice -InstanceId 'SWD\HIDMAESTRO\*'
 ```
 
 If you're on the latest build and still see slot-1-skip, the per-controller ContainerID may have been reset to null-sentinel by a hardware ID list change. File an issue with `Get-PnpDevice ... | Format-List *` output.
@@ -307,7 +308,7 @@ findstr /i "ProcessSharingDisabled" driver\hidmaestro.inf driver\hidmaestro_xusb
 Both INFs should show the line. If missing, fix the INF and rebuild. Verify per-instance hosts at runtime:
 
 ```powershell
-Get-Process WUDFHost | Measure-Object -Property Count
+(Get-Process WUDFHost -ErrorAction SilentlyContinue).Count
 # Expected: N main HID instances + M XUSB companion instances (matches your controller count)
 # Regression: 1-2 hosts regardless of controller count
 ```
@@ -386,7 +387,6 @@ Reboot is the strongest reset for kernel-state issues (xinputhid stuck, DriverSt
 | `HIDMAESTRO_DIAG=1` | Writes `%TEMP%\HIDMaestro\teardown_diag.log` with per-call timing for every TeardownController and SwdDeviceFactory.Remove |
 | `HIDMAESTRO_TIMEOUT_SCALE=2` | Doubles every PnP wait budget. Use on slow hardware (Atom Z8350) |
 | `HIDMAESTRO_QUIET=1` | Suppresses redundant ProcessExit RemoveAllVirtualControllers call. Used by the regression harness |
-| `HIDMAESTRO_TIMESTAMP_URL` | Override the RFC 3161 timestamp server for signtool. Default `http://timestamp.digicert.com` |
 
 Logs to inspect:
 
@@ -394,7 +394,6 @@ Logs to inspect:
 |------|---------|
 | `%TEMP%\HIDMaestro\teardown_diag.log` | Per-call SDK orchestration trace (with `HIDMAESTRO_DIAG=1`) |
 | `%TEMP%\HIDMaestro\hmswd_self.log` | Every `SwDeviceCreate` / `SwDeviceClose` call's hresult |
-| `%TEMP%\HIDMaestro\<hash>\install.log` | Inf2Cat / signtool / pnputil output during install |
 
 ---
 
@@ -402,7 +401,7 @@ Logs to inspect:
 
 Include:
 
-1. **HIDMaestro version** (`HIDMaestroTest.exe info` shows it).
+1. **HIDMaestro version** (the release ZIP name, or the `HIDMaestro.Core.dll` file version under Properties, Details).
 2. **Windows version** (`winver` or Settings &rarr; About).
 3. **The full consumer stdout** during the failing operation.
 4. **`%TEMP%\HIDMaestro\teardown_diag.log`** if the issue is create/dispose-related.

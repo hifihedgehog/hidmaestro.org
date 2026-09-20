@@ -2241,7 +2241,7 @@
 
 <h1 id="umdf2-driver-internals">UMDF2 Driver Internals<a class="headerlink" href="#umdf2-driver-internals" title="Permanent link">&para;</a></h1>
 <p><code>HIDMaestro.dll</code> is a UMDF2 lower filter driver under <code>mshidumdf.sys</code>. This page documents the driver's responsibilities, the IOCTL dispatch table, the device context, the worker thread, the seqno-gated <code>READ_REPORT</code> path, and the empirical reasons each design choice exists. UMDF2 framework reference: search Microsoft Learn for "User-Mode Driver Framework version 2".</p>
-<p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.c"><code>driver/driver.c</code></a> (1,574 lines), <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.h"><code>driver/driver.h</code></a> (414 lines).</p>
+<p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.c"><code>driver/driver.c</code></a> (2,782 lines), <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.h"><code>driver/driver.h</code></a> (526 lines).</p>
 <p>For the XUSB companion driver, see <a href="../xusb-companion/">XUSB Companion</a>. For the SDK side that talks to this driver, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../shared-memory-protocol/">Shared Memory Protocol</a>.</p>
 <hr />
 <h2 id="driver-position-in-the-hid-stack">Driver position in the HID stack<a class="headerlink" href="#driver-position-in-the-hid-stack" title="Permanent link">&para;</a></h2>
@@ -2326,20 +2326,19 @@
 <a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="w">    </span><span class="cm">/* Shared memory: output ring */</span>
 <a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">OutputMemHandle</span><span class="p">;</span>
 <a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">OutputMemPtr</span><span class="p">;</span>
-<a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">OutputSeqNoLocal</span><span class="p">;</span><span class="w">      </span><span class="c1">// last value we wrote (always increment)</span>
-<a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">OutputWriteCount</span><span class="p">;</span><span class="w">      </span><span class="c1">// re-open every 500 writes (#2)</span>
-<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a>
-<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a><span class="w">    </span><span class="cm">/* Shared memory: PID FFB state */</span>
-<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">PidStateMemHandle</span><span class="p">;</span>
-<a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">PidStateMemPtr</span><span class="p">;</span>
-<a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">PidStateMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a>
-<a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a><span class="w">    </span><span class="cm">/* Per-instance identity */</span>
-<a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ControllerIndex</span><span class="p">;</span>
-<a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">ConfigRegPath</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">     </span><span class="c1">// SOFTWARE\HIDMaestro\Controller&lt;N&gt;</span>
-<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">SharedMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroInput&lt;N&gt;</span>
-<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">OutputMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroOutput&lt;N&gt;</span>
-<a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a><span class="p">}</span><span class="w"> </span><span class="n">DEVICE_CONTEXT</span><span class="p">;</span>
+<a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">OutputWriteCount</span><span class="p">;</span><span class="w">      </span><span class="c1">// re-open every 500 writes (#2)</span>
+<a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a>
+<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a><span class="w">    </span><span class="cm">/* Shared memory: PID FFB state */</span>
+<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">PidStateMemHandle</span><span class="p">;</span>
+<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">PidStateMemPtr</span><span class="p">;</span>
+<a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">PidStateMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a>
+<a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a><span class="w">    </span><span class="cm">/* Per-instance identity */</span>
+<a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ControllerIndex</span><span class="p">;</span>
+<a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">ConfigRegPath</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">     </span><span class="c1">// SOFTWARE\HIDMaestro\Controller&lt;N&gt;</span>
+<a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">SharedMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroInput&lt;N&gt;</span>
+<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">OutputMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroOutput&lt;N&gt;</span>
+<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a><span class="p">}</span><span class="w"> </span><span class="n">DEVICE_CONTEXT</span><span class="p">;</span>
 </code></pre></div>
 <p>The full struct is in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.h#L74"><code>driver/driver.h</code></a>.</p>
 <hr />
@@ -2480,7 +2479,7 @@
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">LastDeliveredInputSeqNo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">SharedMemSeqNo</span><span class="p">;</span>
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="p">}</span>
 </code></pre></div>
-<p>Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on <code>WaitForMultipleObjects(StopEvent, InputDataEvent, 50ms)</code>: the 50 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers <code>SetEvent(InputDataEvent)</code> which wakes the worker immediately.</p>
+<p>Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on <code>WaitForMultipleObjects(StopEvent, InputDataEvent, 500ms)</code>: the 500 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers <code>SetEvent(InputDataEvent)</code> which wakes the worker immediately.</p>
 <hr />
 <h2 id="worker-thread">Worker thread<a class="headerlink" href="#worker-thread" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">DWORD</span><span class="w"> </span><span class="n">WINAPI</span><span class="w"> </span><span class="n">WorkerThread</span><span class="p">(</span><span class="n">LPVOID</span><span class="w"> </span><span class="n">lpParam</span><span class="p">)</span>
@@ -2488,22 +2487,31 @@
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="n">PDEVICE_CONTEXT</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PDEVICE_CONTEXT</span><span class="p">)</span><span class="n">lpParam</span><span class="p">;</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w"> </span><span class="n">waits</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">StopEvent</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">InputDataEvent</span><span class="w"> </span><span class="p">};</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">TRUE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="n">DWORD</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WaitForMultipleObjects</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">waits</span><span class="p">,</span><span class="w"> </span><span class="n">FALSE</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">);</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">WAIT_OBJECT_0</span><span class="p">)</span><span class="w"> </span><span class="k">break</span><span class="p">;</span><span class="w">             </span><span class="c1">// StopEvent</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">WAIT_OBJECT_0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">WAIT_TIMEOUT</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">            </span><span class="n">ProcessSharedInput</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="p">}</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(;;)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="n">DWORD</span><span class="w"> </span><span class="n">rc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WaitForMultipleObjects</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">waits</span><span class="p">,</span><span class="w"> </span><span class="n">FALSE</span><span class="p">,</span><span class="w"> </span><span class="mi">500</span><span class="p">);</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="cm">/* issue #38: the flag is the exit condition, not the signal. */</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">TearingDown</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rc</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">WAIT_OBJECT_0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">          </span><span class="cm">/* foreign signal: absorb, recycle */</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">            </span><span class="n">ResetEvent</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">StopEvent</span><span class="p">);</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">TearingDown</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rc</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">WAIT_OBJECT_0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">ProcessSharedInput</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rc</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">WAIT_TIMEOUT</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">++</span><span class="n">idleTimeouts</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">        </span><span class="k">break</span><span class="p">;</span><span class="w">                              </span><span class="cm">/* recycle handles */</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="p">}</span>
 </code></pre></div>
 <ul>
-<li><strong>WAIT_OBJECT_0</strong>: StopEvent fired; exit.</li>
+<li><strong>TearingDown flag</strong>: checked on every wake, including timeouts. It is the only exit condition. The <code>StopEvent</code> signal cannot be trusted in either direction, because a foreign sweep signals without teardown and a same-index sibling's device-start <code>ResetEvent</code> can eat our own cleanup's <code>SetEvent</code> on the shared named object. Worst-case exit latency is one 500 ms wait, inside cleanup's 2 s join.</li>
+<li><strong>WAIT_OBJECT_0</strong>: a foreign StopEvent signal. Absorbed with <code>ResetEvent</code>, then the handles recycle.</li>
 <li><strong>WAIT_OBJECT_0 + 1</strong>: InputDataEvent fired; new frame; process and complete pended requests.</li>
-<li><strong>WAIT_TIMEOUT</strong>: 50 ms safety tick; process opportunistically.</li>
+<li><strong>WAIT_TIMEOUT</strong>: 500 ms safety tick. A single timeout is the normal idle state, and handles recycle only after 8 consecutive ones.</li>
 </ul>
-<p>Created in <code>EvtDeviceAdd</code> and joined on stop. Cancellation via <code>SetEvent(StopEvent)</code> then <code>WaitForSingleObject(WorkerThread, 5000)</code>.</p>
+<p>Created in <code>EvtDeviceAdd</code> and joined on stop. Cancellation via <code>SetEvent(StopEvent)</code> plus the <code>TearingDown</code> flag, then <code>WaitForSingleObject(WorkerThread, 2000)</code>.</p>
 <hr />
 <h2 id="sony-feature-reports-and-why-calibration-cannot-be-zeros">Sony feature reports and why calibration cannot be zeros<a class="headerlink" href="#sony-feature-reports-and-why-calibration-cannot-be-zeros" title="Permanent link">&para;</a></h2>
 <p><code>driver.c</code> answers the Sony arm-handshake feature reads (<code>0x05</code>, <code>0x09</code>,
@@ -2724,7 +2732,7 @@ is never asked for it.</p>
 <p>When the device is removed (via <code>DIF_REMOVE</code> from the SDK or PnP), <code>EvtDeviceContextCleanup</code> runs:</p>
 <ol>
 <li><code>SetEvent(StopEvent)</code> to wake the worker.</li>
-<li><code>WaitForSingleObject(WorkerThread, 5000)</code>. Join.</li>
+<li><code>WaitForSingleObject(WorkerThread, 2000)</code>. Join.</li>
 <li><code>CloseHandle(WorkerThread)</code>.</li>
 <li>Unmap and close all three shared sections.</li>
 <li>Close the named events.</li>
@@ -2823,7 +2831,7 @@ is never asked for it.</p>
 </tr>
 </tbody>
 </table>
-<p>Total: 1,574 lines (driver.c) + 414 lines (driver.h) + 745 lines (companion.c) + 286 lines (hmswd.c).</p>
+<p>Total: 2,782 lines (driver.c) + 526 lines (driver.h) + 957 lines (companion.c) + 299 lines (hmswd.c).</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>

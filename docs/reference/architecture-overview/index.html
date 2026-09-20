@@ -1994,7 +1994,7 @@
 <a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    end
 <a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>
 <a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    subgraph &quot;Pagefile-backed shared memory&quot;
-<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>        SHIN[Global\HIDMaestroInput&lt;N&gt;&lt;br/&gt;278 bytes]
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>        SHIN[Global\HIDMaestroInput&lt;N&gt;&lt;br/&gt;362 bytes]
 <a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>        SHOUT[Global\HIDMaestroOutput&lt;N&gt;&lt;br/&gt;~16.5 KB ring]
 <a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>        SHPID[Global\HIDMaestroPidState&lt;N&gt;&lt;br/&gt;HID PID 1.0 mirror]
 <a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>    end
@@ -2059,9 +2059,9 @@
 <li>Manage <code>joy.cpl</code> OEM-name overrides with crash-safe restore.</li>
 <li>Embed and load the 231-profile catalog.</li>
 </ul>
-<p>Lines of code: ~4,500 in public surface (<code>HMContext</code> / <code>HMController</code> / <code>HidDescriptorBuilder</code> / <code>HMProfileBuilder</code> / <code>HMDeviceExtractor</code> / <code>HMOemNameOverride</code> / value types) plus ~9,000 in <code>Internal/</code> (<code>DeviceOrchestrator</code>, <code>DeviceManager</code>, <code>SwdDeviceFactory</code>, <code>DriverBuilder</code>, <code>HidDescriptorReconstructor</code>, <code>HidReportBuilder</code>, <code>SharedMemoryIO</code>, <code>OemNameOverrideStore</code>, <code>PnputilHelper</code>, etc.).</p>
+<p>Lines of code: ~5,300 in public surface (<code>HMContext</code> / <code>HMController</code> / <code>HidDescriptorBuilder</code> / <code>HMProfileBuilder</code> / <code>HMDeviceExtractor</code> / <code>HMOemNameOverride</code> / value types) plus ~16,600 in <code>Internal/</code> (<code>DeviceOrchestrator</code>, <code>DeviceManager</code>, <code>SwdDeviceFactory</code>, <code>DriverBuilder</code>, <code>HidDescriptorReconstructor</code>, <code>HidReportBuilder</code>, <code>SharedMemoryIO</code>, <code>OemNameOverrideStore</code>, <code>PnputilHelper</code>, etc.).</p>
 <h3 id="2-hidmaestrodll-the-umdf2-driver">2. <code>HIDMaestro.dll</code>: the UMDF2 driver<a class="headerlink" href="#2-hidmaestrodll-the-umdf2-driver" title="Permanent link">&para;</a></h3>
-<p>Lives in a per-controller <code>WUDFHost.exe</code> instance. Compiled from <code>driver/driver.c</code> (1,574 lines). Acts as a UMDF2 lower filter under <code>mshidumdf.sys</code>: the standard pattern from Microsoft's <a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2"><code>vhidmini2</code> sample</a>. The HID class stack sees a real HID device; HIDMaestro is the user-mode component that:</p>
+<p>Lives in a per-controller <code>WUDFHost.exe</code> instance. Compiled from <code>driver/driver.c</code> (2,782 lines). Acts as a UMDF2 lower filter under <code>mshidumdf.sys</code>: the standard pattern from Microsoft's <a href="https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2"><code>vhidmini2</code> sample</a>. The HID class stack sees a real HID device; HIDMaestro is the user-mode component that:</p>
 <ul>
 <li>Synthesizes the descriptor from the per-controller registry key written by the SDK at create time.</li>
 <li>Owns a worker thread (<code>WorkerThread</code>) that opens the per-controller shared input section and signals on <code>Global\HIDMaestroInputEvent&lt;N&gt;</code> to wake on each new frame.</li>
@@ -2084,12 +2084,12 @@
 <p>INF: <code>hidmaestro_xusb.inf</code>. Class GUID: <code>{4D36E97D-...}</code> (System). Created via <code>SwDeviceCreate</code> with explicit per-controller ContainerID (shared with the main HID device).</p>
 <p>Detail: <a href="../xusb-companion/">XUSB Companion</a>.</p>
 <h3 id="4-hmswdexe-the-swdevice-helper">4. <code>hmswd.exe</code>: the SwDevice helper<a class="headerlink" href="#4-hmswdexe-the-swdevice-helper" title="Permanent link">&para;</a></h3>
-<p>Standalone native executable (~286 lines C). Created <strong>only because</strong> <code>.NET 10</code>'s P/Invoke to <code>cfgmgr32!SwDeviceCreate</code> returns <code>0x8007007E ERROR_MOD_NOT_FOUND</code> on Win11 26200, while the identical C call succeeds. Neither <code>CoInitializeEx</code>, preloaded DLLs, <code>UnmanagedCallersOnly</code> function pointers, nor explicit function-ptr marshaling fix it. Rather than ship a broken managed migration path, the SDK invokes this small helper via <code>Process.Start</code>.</p>
+<p>Standalone native executable (~299 lines C). Created <strong>only because</strong> <code>.NET 10</code>'s P/Invoke to <code>cfgmgr32!SwDeviceCreate</code> returns <code>0x8007007E ERROR_MOD_NOT_FOUND</code> on Win11 26200, while the identical C call succeeds. Neither <code>CoInitializeEx</code>, preloaded DLLs, <code>UnmanagedCallersOnly</code> function pointers, nor explicit function-ptr marshaling fix it. Rather than ship a broken managed migration path, the SDK invokes this small helper via <code>Process.Start</code>.</p>
 <p>Args: <code>create | remove &lt;enumerator&gt; &lt;suffix&gt; &lt;container-guid&gt; &lt;hw-ids&gt; &lt;compat-ids&gt; &lt;description&gt;</code>. Returns the resulting instance ID on stdout for the SDK to record.</p>
 <p>Lifetime: <code>SWDeviceLifetimeParentPresent</code> so the device persists past process exit. <code>remove</code> reconnects to the previously-created device by re-<code>SwDeviceCreate</code>-ing with identical args (the docs guarantee this returns a fresh handle to the existing device), downgrades lifetime to <code>Handle</code>, then <code>SwDeviceClose</code>.</p>
 <p>Detail: <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
 <h3 id="5-the-231-profile-catalog">5. The 231-profile catalog<a class="headerlink" href="#5-the-231-profile-catalog" title="Permanent link">&para;</a></h3>
-<p>Embedded as a JSON resource inside <code>HIDMaestro.Core.dll</code>. 32 vendor folders, ~4-25 profiles each. See <a href="../../profiles/profile-system/">Profile System</a> for the schema and runtime classification.</p>
+<p>Embedded as a JSON resource inside <code>HIDMaestro.Core.dll</code>. 46 vendors across 32 folders, 1 to 32 profiles each. See <a href="../../profiles/profile-system/">Profile System</a> for the schema and runtime classification.</p>
 <hr />
 <h2 id="process-privilege-model">Process / privilege model<a class="headerlink" href="#process-privilege-model" title="Permanent link">&para;</a></h2>
 <table>
@@ -2181,7 +2181,7 @@
 <tbody>
 <tr>
 <td><strong>Plain HID</strong></td>
-<td>DualSense, Logitech wheels, Thrustmaster HOTAS, ~204 profiles</td>
+<td>DualSense, Logitech wheels, Thrustmaster HOTAS, and everything outside the Xbox families</td>
 <td><code>ROOT\HIDClass\&lt;token&gt;</code></td>
 <td>Lightest stack. No companion.</td>
 </tr>
@@ -2205,12 +2205,12 @@
 <h2 id="file-source-layout">File / source layout<a class="headerlink" href="#file-source-layout" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>HIDMaestro/
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>├── driver/                        ; native UMDF2 sources
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>│   ├── driver.c                   ; main HID driver (1,574 lines)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>│   ├── driver.c                   ; main HID driver (2,782 lines)
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>│   ├── driver.h                   ; device context, IOCTL constants, shared-section types
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>│   ├── companion.c                ; XUSB companion (745 lines)
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>│   ├── companion.c                ; XUSB companion (957 lines)
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>│   ├── hidmaestro.inf             ; main HID INF
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>│   ├── hidmaestro_xusb.inf        ; XUSB companion INF
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>│   └── hmswd/hmswd.c              ; SwDevice helper (286 lines)
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>│   └── hmswd/hmswd.c              ; SwDevice helper (299 lines)
 <a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>│
 <a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>├── sdk/HIDMaestro.Core/           ; the C# SDK
 <a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>│   ├── HMContext.cs               ; entry point, profile catalog, controller alloc
@@ -2225,20 +2225,20 @@
 <a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>│   ├── HMPidState.cs              ; PID FFB enums + structs
 <a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>│   ├── HMHidDeviceInfo.cs         ; HID device info from extractor
 <a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>│   ├── Internal/
-<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>│   │   ├── DeviceOrchestrator.cs  ; SetupController / TeardownController (2,363 lines)
-<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>│   │   ├── DeviceManager.cs       ; PnP device tree management (1,024 lines)
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>│   │   ├── DeviceOrchestrator.cs  ; SetupController / TeardownController (2,700 lines)
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>│   │   ├── DeviceManager.cs       ; PnP device tree management (1,093 lines)
 <a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>│   │   ├── SwdDeviceFactory.cs    ; hmswd.exe wrapping (397 lines)
-<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>│   │   ├── DriverBuilder.cs       ; embedded payload extract + sign (509 lines)
-<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>│   │   ├── HidReportBuilder.cs    ; HID descriptor parse + report encode (600 lines)
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>│   │   ├── DriverBuilder.cs       ; embedded payload extract + sign (521 lines)
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>│   │   ├── HidReportBuilder.cs    ; HID descriptor parse + report encode (1,050 lines)
 <a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>│   │   ├── HidDescriptorReconstructor.cs  ; preparsed → descriptor (1,002 lines)
-<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>│   │   ├── SharedMemoryIO.cs      ; shared section wire format (669 lines)
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>│   │   ├── SharedMemoryIO.cs      ; shared section wire format (927 lines)
 <a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>│   │   ├── OemNameOverrideStore.cs ; crash-safe OEM name registry writes (325 lines)
-<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>│   │   ├── PnputilHelper.cs       ; pnputil + devcon shell-out helpers (275 lines)
-<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>│   │   ├── ControllerProfile.cs   ; internal profile model (321 lines)
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>│   │   ├── PnputilHelper.cs       ; pnputil + devcon shell-out helpers (280 lines)
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>│   │   ├── ControllerProfile.cs   ; internal profile model (719 lines)
 <a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>│   │   ├── HidDeviceEnumerator.cs ; SetupDi enumerate connected HIDs (233 lines)
 <a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>│   │   ├── HidPreparsedData.cs    ; HidD_GetPreparsedData wrapper (150 lines)
-<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>│   │   ├── DeviceProperties.cs    ; DEVPKEY_* read/write (292 lines)
-<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>│   │   ├── DeviceNodeCreator.cs   ; SetupDiCreateDeviceInfoW path (335 lines)
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>│   │   ├── DeviceProperties.cs    ; DEVPKEY_* read/write (298 lines)
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>│   │   ├── DeviceNodeCreator.cs   ; SetupDiCreateDeviceInfoW path (440 lines)
 <a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>│   │   ├── EmbeddedManifest.cs    ; SHA-256 of embedded payload
 <a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>│   │   └── TimeoutScale.cs        ; HIDMAESTRO_TIMEOUT_SCALE env var
 <a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a>│   └── Resources/                 ; embedded driver payload

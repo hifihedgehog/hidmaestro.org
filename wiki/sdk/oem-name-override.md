@@ -41,7 +41,7 @@ public sealed class HMOemNameOverrideEntry
 }
 ```
 
-All methods require admin (HKLM write access). Throw `UnauthorizedAccessException` if the calling process isn't elevated.
+`Set`, `Clear` and `RecoverOrphans` require admin (HKLM write access) and throw `UnauthorizedAccessException` if the calling process isn't elevated. `ListActive` is a read-only HKLM read and works unelevated.
 
 ### `Set(vid, pid, label)`
 
@@ -169,7 +169,7 @@ Both DirectInput and `joy.cpl` cache OEM names per-process on first enumeration.
 
 ### Admin requirement
 
-All four methods require admin (HKLM write access). Read-only diagnostics like `ListActive` could in principle work without elevation but the API is admin-only for consistency: if you can't write, you also can't recover orphans, so denying the read closes a confusing failure mode where listing reports overrides the consumer can't actually clear.
+`Set`, `Clear` and `RecoverOrphans` require admin, because all three write HKLM. `ListActive` reads the pending hive read-only and works without elevation, so a non-elevated diagnostic can list overrides it would need elevation to clear.
 
 ---
 

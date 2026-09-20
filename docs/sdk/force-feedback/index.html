@@ -2101,9 +2101,6 @@
 <li>Set Effect / Set Constant Force / Effect Operation Start round-trip the consumer's <code>HMController.OutputReceived</code> handler with the decoded magnitude bytes.</li>
 </ol>
 <p>HIDMaestro is the only user-mode virtual-controller library on Windows that does all four. vJoy supports declaring the descriptor but doesn't surface output bytes through a clean SDK; ViGEmBus's PID FFB story stops at XInput rumble.</p>
-<blockquote>
-<p><strong>A note on banned phrases.</strong> This page is engineered to operate <strong>as designed</strong> in PadForge's <code>FfbTest</code> SharpDX integration test (regression scenario S26). The "decisive" / "matches every symptom" claims that the global feedback rules forbid don't apply: the verification is in <code>swap_regression.ps1</code> and reproducible.</p>
-</blockquote>
 <hr />
 <h2 id="descriptor-authoring">Descriptor authoring<a class="headerlink" href="#descriptor-authoring" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kt">var</span><span class="w"> </span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HidDescriptorBuilder</span><span class="p">()</span>

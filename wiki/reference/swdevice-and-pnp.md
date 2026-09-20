@@ -194,7 +194,7 @@ The last row is the one hazard: a `SWD` instance key that exists before the soft
 6. **`UnmanagedCallersOnly` with `CallConvCdecl` / `CallConvStdcall` variations.** No effect.
 7. **Wrapping the call in `CallerMustBeAdmin` checks just in case.** No effect.
 
-Nothing managed worked. Rather than ship a broken managed migration path, we wrote a small native executable (`driver/hmswd/hmswd.c`, 286 lines) that does the call from C and prints the result to stdout. The SDK's `SwdDeviceFactory` invokes `hmswd.exe` via `Process.Start` and parses the stdout.
+Nothing managed worked. Rather than ship a broken managed migration path, we wrote a small native executable (`driver/hmswd/hmswd.c`, 299 lines) that does the call from C and prints the result to stdout. The SDK's `SwdDeviceFactory` invokes `hmswd.exe` via `Process.Start` and parses the stdout.
 
 ```
 hmswd.exe create <enumerator> <instance-id-suffix> <container-guid>
@@ -266,21 +266,20 @@ For xinputhid Xbox profiles there's only one device (no companion), but the same
 
 ---
 
-## How the suffix mapping works at scale
+## How the identity token maps at scale
 
 For 6 controllers running in one process:
 
 ```
-SWD\HIDMAESTRO\A7B40001_0000   ← controller 0 (Xbox 360 Wired companion), seq=1
-SWD\HIDMAESTRO\A7B40002_0001   ← controller 1 (Xbox Series BT main HID), seq=2
-SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\A7B40002_0001    ← (xinputhid path uses different enumerator)
-SWD\HIDMAESTRO\A7B40003_0002   ← controller 2 (DualSense), if it had a companion (it doesn't)
+SWD\HIDMAESTRO\HM_0000   ← controller 0 (Xbox 360 Wired companion)
+SWD\HIDMAESTRO\HM_0001   ← controller 1's companion, if it has one
+SWD\HIDMAESTRO_VID_045E_PID_0B13&IG_00\HM_0001   ← xinputhid path, different enumerator
 ...
 ```
 
-PID hex is `A7B4`; per-call sequence increments globally per process; controller index varies per call.
+The token is `HM_` plus the four-digit index for the default key, or `HM_` plus sixteen hex digits derived from a consumer identity key. It is the same on every life of that controller, which is the whole point of it. The per-call session-unique suffix that v1.1.30 through v1.7.3 used is gone as of v1.8.0.
 
-`FindExistingCompanion` walks `HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\` and matches devices whose `Device Parameters\ControllerIndex` value matches the controller we're operating on. The suffix isn't load-bearing for matching: it's there to make the kernel `(enumerator + suffix + ContainerId)` tuple unique.
+`FindExistingCompanion` walks `HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\` and matches devices whose `Device Parameters\ControllerIndex` value matches the controller we're operating on, so cleanup and teardown reach instances created by any session.
 
 For across-process matching (e.g. `RemoveAllVirtualControllers` from a fresh process sweeping orphans from a prior crashed session), the `HIDMAESTRO` enumerator name is the stable identifier. The sweep walks every `SWD\HIDMAESTRO*\*` entry regardless of token.
 

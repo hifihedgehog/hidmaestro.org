@@ -283,7 +283,7 @@ Lands in architecture group 2 (non-xinputhid Xbox + XUSB companion). XInput, WGI
 
 ### Custom xinputhid-bound profile
 
-This requires hardware IDs that match `xinputhid.inf [GIP_Hid]`. Not portable to arbitrary VID:PIDs: xinputhid binds by hardware ID, and adding new IDs to `xinputhid.inf` requires modifying a Microsoft inbox driver (which we can't ship). Custom xinputhid profiles aren't supported in v1.3.4.
+This requires hardware IDs that match `xinputhid.inf [GIP_Hid]`. Not portable to arbitrary VID:PIDs: xinputhid binds by hardware ID, and adding new IDs to `xinputhid.inf` requires modifying a Microsoft inbox driver (which we can't ship). Custom xinputhid profiles aren't supported as of v1.8.1.
 
 If you need 16-button + native XInput + WGI vibration over Bluetooth, use one of the catalog Xbox Series / One / Elite v2 BT profiles directly.
 

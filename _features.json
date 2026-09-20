@@ -36,8 +36,8 @@
         "d":  "The input number is real propagation, measured over 10,000 single-press iterations and reproducible with one command. The methodology is published in the repository at docs/testing/latency.md."
     },
     {
-        "t":  "Event-driven output at 0.15 ms",
-        "d":  "Rumble, force feedback, and LED packets are signaled to the consumer per captured packet at ~0.15 ms median, over 60x faster than the previous 8 ms polled path, with idle controllers costing zero measurable CPU."
+        "t":  "Event-driven output at 0.18 ms",
+        "d":  "Rumble, force feedback, and LED packets are signaled to the consumer per captured packet at ~0.18 ms median, roughly 50x faster than the 9.4 ms poll-quantized path it replaced, with idle controllers costing zero measurable CPU."
     },
     {
         "t":  "No socket, no batching cap",
@@ -81,11 +81,11 @@
     },
     {
         "t":  "One DLL",
-        "d":  "HIDMaestro.Core.dll contains the 231-profile catalog, x64 and ARM64 driver/helper payloads, signing tools, and both signed USB/IP packages. Source builds select native drivers by OS architecture. The OpenVR plugin remains x64 for its SteamVR host."
+        "d":  "HIDMaestro.Core.dll contains the 231-profile catalog, the x64 driver and helper payloads, the signing tools, and the signed USB/IP package. The OpenVR plugin is x64 for its SteamVR host."
     },
     {
         "t":  "Regression coverage",
-        "d":  "The battery has 58 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, and native architecture selection. A USB/IP correction passed 22 targeted kernel checks in x64 VMs. Production signing and the full HIDMaestro integration gate remain pending. ARM64 hardware execution is unverified."
+        "d":  "The battery has 60 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, and device identity across nine lives per family. The last full run was 60/60 on a 16-core Ryzen 9 Windows 11 desktop. Production signing and the full HIDMaestro integration gate remain pending."
     },
     {
         "t":  "Judged by the real consumers",
@@ -93,7 +93,7 @@
     },
     {
         "t":  "The composite exception, stated",
-        "d":  "Composite Sony and Valve profiles use the bundled usbip-win2 0.9.8.0 kernel transport. Both signed architecture packages are verified and embedded. The SDK adds them through Windows PnP without invoking the vendor uninstaller. Older SDK consumers must be updated before changing a shared host because the attach ABI changed."
+        "d":  "Composite Sony and Valve profiles use the bundled usbip-win2 0.9.7.7 kernel transport, redistributed unmodified and verified against the upstream SHA256 at build and again before execution. The SDK adds them through Windows PnP without invoking the vendor uninstaller. Older SDK consumers must be updated before changing a shared host because the attach ABI changed."
     },
     {
         "t":  "MIT licensed",
@@ -101,7 +101,7 @@
     },
     {
         "t":  "Windows 10 and 11",
-        "d":  "The source tree targets Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. One AnyCPU SDK embeds both native payloads. ARM64 applications cross-compile, but hardware execution remains untested. Published v1.7.3 downloads predate ARM64 support."
+        "d":  "The source tree targets Windows 10/11 on x64, with .NET 10 and a 64-bit consumer. ARM64 support is in development on a branch and is not in a published release. Published v1.8.1 downloads are x64-only."
     },
     {
         "t":  "A UI instead of code",

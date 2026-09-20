@@ -2,7 +2,7 @@
 
 Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.
 
-The ARM64 and usbip-win2 0.9.8.0 changes remain under validation. The transport upgrade failed driver-lifecycle tests and is not ready for deployment. Published v1.8.1 downloads predate those additions. See [validation results](platform-support.md#validation).
+The ARM64 and usbip-win2 0.9.7.7 changes remain under validation. The transport upgrade failed driver-lifecycle tests and is not ready for deployment. Published v1.8.1 downloads predate those additions. See [validation results](platform-support.md#validation).
 
 ## Requirements
 
@@ -49,7 +49,6 @@ Dispose the controller to remove it. Dispose the context to release its controll
 
 ~~~powershell
 scripts\build_all.cmd
-scripts\build_tests.ps1 -Architecture x64
 ~~~
 
 Use -Architecture arm64 when preparing ARM64 test applications. The native build creates both payloads before compiling the SDK. One SDK build embeds the prepared files. Missing native files stop the build.

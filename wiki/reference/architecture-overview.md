@@ -32,7 +32,7 @@ graph TB
     end
 
     subgraph "Pagefile-backed shared memory"
-        SHIN[Global\HIDMaestroInput<N><br/>278 bytes]
+        SHIN[Global\HIDMaestroInput<N><br/>362 bytes]
         SHOUT[Global\HIDMaestroOutput<N><br/>~16.5 KB ring]
         SHPID[Global\HIDMaestroPidState<N><br/>HID PID 1.0 mirror]
     end
@@ -102,11 +102,11 @@ Responsibilities:
 - Manage `joy.cpl` OEM-name overrides with crash-safe restore.
 - Embed and load the 231-profile catalog.
 
-Lines of code: ~4,500 in public surface (`HMContext` / `HMController` / `HidDescriptorBuilder` / `HMProfileBuilder` / `HMDeviceExtractor` / `HMOemNameOverride` / value types) plus ~9,000 in `Internal/` (`DeviceOrchestrator`, `DeviceManager`, `SwdDeviceFactory`, `DriverBuilder`, `HidDescriptorReconstructor`, `HidReportBuilder`, `SharedMemoryIO`, `OemNameOverrideStore`, `PnputilHelper`, etc.).
+Lines of code: ~5,300 in public surface (`HMContext` / `HMController` / `HidDescriptorBuilder` / `HMProfileBuilder` / `HMDeviceExtractor` / `HMOemNameOverride` / value types) plus ~16,600 in `Internal/` (`DeviceOrchestrator`, `DeviceManager`, `SwdDeviceFactory`, `DriverBuilder`, `HidDescriptorReconstructor`, `HidReportBuilder`, `SharedMemoryIO`, `OemNameOverrideStore`, `PnputilHelper`, etc.).
 
 ### 2. `HIDMaestro.dll`: the UMDF2 driver
 
-Lives in a per-controller `WUDFHost.exe` instance. Compiled from `driver/driver.c` (1,574 lines). Acts as a UMDF2 lower filter under `mshidumdf.sys`: the standard pattern from Microsoft's [`vhidmini2` sample](https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2). The HID class stack sees a real HID device; HIDMaestro is the user-mode component that:
+Lives in a per-controller `WUDFHost.exe` instance. Compiled from `driver/driver.c` (2,782 lines). Acts as a UMDF2 lower filter under `mshidumdf.sys`: the standard pattern from Microsoft's [`vhidmini2` sample](https://github.com/microsoft/Windows-driver-samples/tree/main/hid/vhidmini2). The HID class stack sees a real HID device; HIDMaestro is the user-mode component that:
 
 - Synthesizes the descriptor from the per-controller registry key written by the SDK at create time.
 - Owns a worker thread (`WorkerThread`) that opens the per-controller shared input section and signals on `Global\HIDMaestroInputEvent<N>` to wake on each new frame.
@@ -135,7 +135,7 @@ Detail: [XUSB Companion](xusb-companion.md).
 
 ### 4. `hmswd.exe`: the SwDevice helper
 
-Standalone native executable (~286 lines C). Created **only because** `.NET 10`'s P/Invoke to `cfgmgr32!SwDeviceCreate` returns `0x8007007E ERROR_MOD_NOT_FOUND` on Win11 26200, while the identical C call succeeds. Neither `CoInitializeEx`, preloaded DLLs, `UnmanagedCallersOnly` function pointers, nor explicit function-ptr marshaling fix it. Rather than ship a broken managed migration path, the SDK invokes this small helper via `Process.Start`.
+Standalone native executable (~299 lines C). Created **only because** `.NET 10`'s P/Invoke to `cfgmgr32!SwDeviceCreate` returns `0x8007007E ERROR_MOD_NOT_FOUND` on Win11 26200, while the identical C call succeeds. Neither `CoInitializeEx`, preloaded DLLs, `UnmanagedCallersOnly` function pointers, nor explicit function-ptr marshaling fix it. Rather than ship a broken managed migration path, the SDK invokes this small helper via `Process.Start`.
 
 Args: `create | remove <enumerator> <suffix> <container-guid> <hw-ids> <compat-ids> <description>`. Returns the resulting instance ID on stdout for the SDK to record.
 
@@ -145,7 +145,7 @@ Detail: [SwDevice and PnP](swdevice-and-pnp.md).
 
 ### 5. The 231-profile catalog
 
-Embedded as a JSON resource inside `HIDMaestro.Core.dll`. 32 vendor folders, ~4-25 profiles each. See [Profile System](../profiles/profile-system.md) for the schema and runtime classification.
+Embedded as a JSON resource inside `HIDMaestro.Core.dll`. 46 vendors across 32 folders, 1 to 32 profiles each. See [Profile System](../profiles/profile-system.md) for the schema and runtime classification.
 
 ---
 
@@ -221,7 +221,7 @@ Multiple `OutputReceived` invocations per poll iteration are normal: PID FFB wri
 
 | Group | Profiles | Device tree | Notes |
 |-------|----------|-------------|-------|
-| **Plain HID** | DualSense, Logitech wheels, Thrustmaster HOTAS, ~204 profiles | `ROOT\HIDClass\<token>` | Lightest stack. No companion. |
+| **Plain HID** | DualSense, Logitech wheels, Thrustmaster HOTAS, and everything outside the Xbox families | `ROOT\HIDClass\<token>` | Lightest stack. No companion. |
 | **Non-xinputhid Xbox** | Xbox 360 Wired family (~6) | `ROOT\VID_045E&PID_*&IG_00\<token>` + `SWD\HIDMAESTRO\<token>` | Two device trees. XUSB companion. |
 | **xinputhid Xbox** | Xbox Series BT, Xbox One BT, Xbox Elite v2 BT (~4) | `SWD\HIDMAESTRO_VID_045E_PID_*&IG_00\<token>` | xinputhid kernel filter binds upstream. SwD-enumerated parent. |
 
@@ -236,12 +236,12 @@ See [Profile System](../profiles/profile-system.md) for the runtime classificati
 ```
 HIDMaestro/
 ├── driver/                        ; native UMDF2 sources
-│   ├── driver.c                   ; main HID driver (1,574 lines)
+│   ├── driver.c                   ; main HID driver (2,782 lines)
 │   ├── driver.h                   ; device context, IOCTL constants, shared-section types
-│   ├── companion.c                ; XUSB companion (745 lines)
+│   ├── companion.c                ; XUSB companion (957 lines)
 │   ├── hidmaestro.inf             ; main HID INF
 │   ├── hidmaestro_xusb.inf        ; XUSB companion INF
-│   └── hmswd/hmswd.c              ; SwDevice helper (286 lines)
+│   └── hmswd/hmswd.c              ; SwDevice helper (299 lines)
 │
 ├── sdk/HIDMaestro.Core/           ; the C# SDK
 │   ├── HMContext.cs               ; entry point, profile catalog, controller alloc
@@ -256,20 +256,20 @@ HIDMaestro/
 │   ├── HMPidState.cs              ; PID FFB enums + structs
 │   ├── HMHidDeviceInfo.cs         ; HID device info from extractor
 │   ├── Internal/
-│   │   ├── DeviceOrchestrator.cs  ; SetupController / TeardownController (2,363 lines)
-│   │   ├── DeviceManager.cs       ; PnP device tree management (1,024 lines)
+│   │   ├── DeviceOrchestrator.cs  ; SetupController / TeardownController (2,700 lines)
+│   │   ├── DeviceManager.cs       ; PnP device tree management (1,093 lines)
 │   │   ├── SwdDeviceFactory.cs    ; hmswd.exe wrapping (397 lines)
-│   │   ├── DriverBuilder.cs       ; embedded payload extract + sign (509 lines)
-│   │   ├── HidReportBuilder.cs    ; HID descriptor parse + report encode (600 lines)
+│   │   ├── DriverBuilder.cs       ; embedded payload extract + sign (521 lines)
+│   │   ├── HidReportBuilder.cs    ; HID descriptor parse + report encode (1,050 lines)
 │   │   ├── HidDescriptorReconstructor.cs  ; preparsed → descriptor (1,002 lines)
-│   │   ├── SharedMemoryIO.cs      ; shared section wire format (669 lines)
+│   │   ├── SharedMemoryIO.cs      ; shared section wire format (927 lines)
 │   │   ├── OemNameOverrideStore.cs ; crash-safe OEM name registry writes (325 lines)
-│   │   ├── PnputilHelper.cs       ; pnputil + devcon shell-out helpers (275 lines)
-│   │   ├── ControllerProfile.cs   ; internal profile model (321 lines)
+│   │   ├── PnputilHelper.cs       ; pnputil + devcon shell-out helpers (280 lines)
+│   │   ├── ControllerProfile.cs   ; internal profile model (719 lines)
 │   │   ├── HidDeviceEnumerator.cs ; SetupDi enumerate connected HIDs (233 lines)
 │   │   ├── HidPreparsedData.cs    ; HidD_GetPreparsedData wrapper (150 lines)
-│   │   ├── DeviceProperties.cs    ; DEVPKEY_* read/write (292 lines)
-│   │   ├── DeviceNodeCreator.cs   ; SetupDiCreateDeviceInfoW path (335 lines)
+│   │   ├── DeviceProperties.cs    ; DEVPKEY_* read/write (298 lines)
+│   │   ├── DeviceNodeCreator.cs   ; SetupDiCreateDeviceInfoW path (440 lines)
 │   │   ├── EmbeddedManifest.cs    ; SHA-256 of embedded payload
 │   │   └── TimeoutScale.cs        ; HIDMAESTRO_TIMEOUT_SCALE env var
 │   └── Resources/                 ; embedded driver payload

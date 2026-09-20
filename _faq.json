@@ -1,4 +1,4 @@
-[
+﻿[
     {
         "q":  "Is it really free?",
         "a":  "Yes. MIT licensed, free and open source, commercial use welcome with no restrictions. HIDMaestro will never become paid, freemium, or Patreon early-access paywalled."
@@ -9,7 +9,7 @@
     },
     {
         "q":  "Does anything kernel-mode get installed?",
-        "a":  "Composite Sony and Valve profiles install the bundled usbip-win2 0.9.8.0 transport. Standard profiles use the Windows UMDF2 stack. Update older SDK consumers before upgrading the shared USB/IP driver."
+        "a":  "Composite Sony and Valve profiles install the bundled usbip-win2 0.9.7.7 transport. Standard profiles use the Windows UMDF2 stack. Update older SDK consumers before upgrading the shared USB/IP driver."
     },
     {
         "q":  "Can I add a controller you don\u0027t ship?",
@@ -25,6 +25,6 @@
     },
     {
         "q":  "Does HIDMaestro support ARM64?",
-        "a":  "The ARM64 implementation and applications cross-compile, but hardware execution is untested. The USB/IP 0.9.8.0 integration failed driver-lifecycle tests and blocks deployment. Published v1.7.3 downloads are x64-only."
+        "a":  "Not in a published release. ARM64 builds and a USB/IP transport upgrade are in development on a branch, and the upgrade currently fails driver-lifecycle validation. Published v1.8.1 downloads are x64-only."
     }
 ]

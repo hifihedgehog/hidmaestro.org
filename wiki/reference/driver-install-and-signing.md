@@ -1,4 +1,4 @@
-# Driver installation and signing
+﻿# Driver installation and signing
 
 Standard profiles use HIDMaestro's UMDF2 DLLs and a locally trusted signing certificate. Composite profiles use bundled Microsoft-signed USB/IP kernel-driver packages.
 
@@ -36,7 +36,7 @@ Installing and creating virtual devices requires administrator privileges. Readi
 
 ## USB/IP transport
 
-The SDK contains the unmodified signed packages from [usbip-win2 0.9.8.0](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.8.0). Their Microsoft signatures are retained.
+The SDK contains the unmodified signed packages from [usbip-win2 0.9.7.7](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.7). Their Microsoft signatures are retained.
 
 The updater uses an administrator-only staging directory. It refuses an update while USB/IP imports are active, adds the new packages in place, and creates or restarts the required USB/IP host controller. It does not invoke the vendor uninstaller or delete the shared root-hub filter package.
 

@@ -19,8 +19,6 @@ A virtual that "passes FFB" answers each of those interrogations correctly:
 
 HIDMaestro is the only user-mode virtual-controller library on Windows that does all four. vJoy supports declaring the descriptor but doesn't surface output bytes through a clean SDK; ViGEmBus's PID FFB story stops at XInput rumble.
 
-> **A note on banned phrases.** This page is engineered to operate **as designed** in PadForge's `FfbTest` SharpDX integration test (regression scenario S26). The "decisive" / "matches every symptom" claims that the global feedback rules forbid don't apply: the verification is in `swap_regression.ps1` and reproducible.
-
 ---
 
 ## Descriptor authoring

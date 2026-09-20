@@ -1941,7 +1941,7 @@
 </tr>
 </tbody>
 </table>
-<p>In a profile picker these are the entries marked <strong>Full</strong>, which is how the catalog flags the most capable profile for a given device. A device never has more than one.</p>
+<p>In a profile picker these carry the <strong>Full</strong> marker, which is how the catalog flags the most capable profile for a given device. A device never has more than one. Not every Full profile is a composite: <code>xbox-one-s-bt-full</code> wears the same marker on the plain HID path.</p>
 <p>Every descriptor byte comes verbatim from a real pad's hardware dump, and the UAC volume/mute ranges are real wire values captured from live control transfers. Windows surfaces the same audio endpoints it would for the physical controller: <strong>Speakers (Wireless Controller)</strong> and <strong>Headset Microphone (Wireless Controller)</strong>.</p>
 <p>The 4-channel OUT stream matters because channels 3/4 are the DualSense's voice-coil actuators. That stream is the only path on Windows by which a game hands a controller its authored haptic waveforms. Games that render audio to the controller endpoint reach the SDK, and the consumer routes the haptic lanes to real hardware.</p>
 <p>The original DS4 v1 (054C:05C4) has no composite variant deliberately: real hardware probes show a single HID interface over USB and no audio class. USB audio arrived with the v2.</p>
@@ -1954,7 +1954,7 @@
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">GetProfile</span><span class="p">(</span><span class="s">&quot;dualsense-composite&quot;</span><span class="p">)</span><span class="o">!</span><span class="p">);</span>
 </code></pre></div>
 <p>That is the entire setup. A composite persona is created the same way as any other profile.</p>
-<p>Composite personas use the bundled <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.8.0">usbip-win2 0.9.8.0 package</a>. Both x64 and ARM64 signed driver packages are embedded in HIDMaestro.Core.dll.</p>
+<p>Composite personas use the bundled <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.7">usbip-win2 0.9.7.7 package</a>. Both x64 and ARM64 signed driver packages are embedded in HIDMaestro.Core.dll.</p>
 <p>The build checks the upstream installer hashes, extracts the signed INF/SYS/CAT files, and verifies each file before embedding it. The SDK uses an administrator-only staging directory and adds the packages through PnP. It retains the existing packages and never invokes the vendor uninstaller.</p>
 <p>An update requires detached USB/IP imports. Readiness is checked against the configured hashes, loaded driver images, and new IOCTL layout. USB devices can briefly reconnect during installation. The SDK keeps the zero-copy receive mode and preserves the profile's serial identity.</p>
 <p>The new driver rejects the old SDK's attach structure. Update every consumer's SDK before upgrading a shared host. See <a href="../../start/platform-support/">platform support</a> for source-build availability and validation limits.

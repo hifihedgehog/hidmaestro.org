@@ -1993,7 +1993,7 @@
 </tr>
 <tr>
 <td><strong>HMGamepadState</strong></td>
-<td>The abstract input frame: sticks <code>[-1..+1]</code>, triggers <code>[0..1]</code>, buttons bitmask, hat enum (or higher-resolution <code>HatDegrees</code> / <code>HatHundredths</code> / <code>HatRaw</code>). The SDK encodes into the active profile's HID descriptor.</td>
+<td>The abstract input frame: every analog input in one <code>Dictionary&lt;HMAxis, float&gt; Axes</code> keyed by HID usage, values <code>[0.0, 1.0]</code> with 0.5 centered for sticks and 0.0 released for triggers, buttons bitmask, hat enum (or higher-resolution <code>HatDegrees</code> / <code>HatHundredths</code> / <code>HatRaw</code>). The SDK encodes into the active profile's HID descriptor.</td>
 </tr>
 <tr>
 <td><strong>HMOutputPacket</strong></td>

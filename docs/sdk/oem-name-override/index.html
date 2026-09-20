@@ -2070,7 +2070,7 @@
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">bool</span><span class="w">    </span><span class="n">OriginalKeyExisted</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="p">}</span>
 </code></pre></div>
-<p>All methods require admin (HKLM write access). Throw <code>UnauthorizedAccessException</code> if the calling process isn't elevated.</p>
+<p><code>Set</code>, <code>Clear</code> and <code>RecoverOrphans</code> require admin (HKLM write access) and throw <code>UnauthorizedAccessException</code> if the calling process isn't elevated. <code>ListActive</code> is a read-only HKLM read and works unelevated.</p>
 <h3 id="setvid-pid-label"><code>Set(vid, pid, label)</code><a class="headerlink" href="#setvid-pid-label" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">Set</span><span class="p">(</span><span class="mh">0x0079</span><span class="p">,</span><span class="w"> </span><span class="mh">0x0006</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;My Custom Gamepad&quot;</span><span class="p">);</span>
 </code></pre></div>
@@ -2170,7 +2170,7 @@
 <h3 id="cache-lifetime-in-directinput-joycpl">Cache lifetime in DirectInput / <code>joy.cpl</code><a class="headerlink" href="#cache-lifetime-in-directinput-joycpl" title="Permanent link">&para;</a></h3>
 <p>Both DirectInput and <code>joy.cpl</code> cache OEM names per-process on first enumeration. A <code>joy.cpl</code> window that was already open when the override changes keeps showing the stale label until it is closed and re-opened. Games that were already running behave the same way. <strong>Set before opening <code>joy.cpl</code> or launching games.</strong></p>
 <h3 id="admin-requirement">Admin requirement<a class="headerlink" href="#admin-requirement" title="Permanent link">&para;</a></h3>
-<p>All four methods require admin (HKLM write access). Read-only diagnostics like <code>ListActive</code> could in principle work without elevation but the API is admin-only for consistency: if you can't write, you also can't recover orphans, so denying the read closes a confusing failure mode where listing reports overrides the consumer can't actually clear.</p>
+<p><code>Set</code>, <code>Clear</code> and <code>RecoverOrphans</code> require admin, because all three write HKLM. <code>ListActive</code> reads the pending hive read-only and works without elevation, so a non-elevated diagnostic can list overrides it would need elevation to clear.</p>
 <hr />
 <h2 id="why-not-just-write-hklmdirectinput">Why not just write <code>HKLM\...\DirectInput\...</code><a class="headerlink" href="#why-not-just-write-hklmdirectinput" title="Permanent link">&para;</a></h2>
 <p>The naive approach, writing <code>HKLM\...\DirectInput\VID_xxxx&amp;PID_xxxx\OEM\"OEM Name"</code> and calling it done, works for VID:PIDs Windows hasn't preloaded. Most clones come with a preloaded HKCU label that wins the precedence battle, and the user sees no change.</p>

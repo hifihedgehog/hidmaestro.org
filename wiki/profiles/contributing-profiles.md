@@ -107,7 +107,7 @@ Many controllers behave differently on USB vs Bluetooth. Different VID, differen
 
 Examples in the catalog:
 
-- `dualshock-4-v1.json` (USB) and `dualshock-4-v1-full.json` (BT, full extended report)
+- `dualshock-4-v2.json` (USB) and `dualshock-4-v2-bt.json` (BT, full extended report)
 - `dualsense.json` (USB) and `dualsense-bt.json` (BT) and `dualsense-bt-full.json` (BT extended)
 - `xbox-360-wired.json` and `xbox-360-wireless.json` (different PIDs, different connection)
 - `g29.json` (USB Logitech G driver mode) and `g29-ps4.json` (USB PS4 mode: different PID)

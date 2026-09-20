@@ -12,9 +12,9 @@ For controller index `<N>` (0, 1, 2, ...):
 
 | Section | Name | Size | Purpose |
 |---------|------|------|---------|
-| Input | `Global\HIDMaestroInput<N>` | 278 bytes | Consumer &rarr; driver: HID input frames + GIP buffer |
+| Input | `Global\HIDMaestroInput<N>` | 362 bytes | Consumer &rarr; driver: HID input frames + GIP buffer |
 | Output | `Global\HIDMaestroOutput<N>` | ~16.5 KB | Driver / companion &rarr; consumer: rumble / haptics / FFB capture |
-| PID State | `Global\HIDMaestroPidState<N>` | ~32 bytes | Consumer &rarr; driver: HID PID 1.0 state mirror |
+| PID State | `Global\HIDMaestroPidState<N>` | 28 bytes | Consumer &rarr; driver: HID PID 1.0 state mirror |
 
 Plus two named events for wake-up:
 
@@ -45,7 +45,7 @@ typedef struct _HIDMAESTRO_SHARED_INPUT {
     UCHAR           GipData[14];     //  14 bytes: GIP-format data for XUSB GET_STATE
 } HIDMAESTRO_SHARED_INPUT, *PHIDMAESTRO_SHARED_INPUT;
 #pragma pack(pop)
-// Total: 278 bytes
+// Total: 362 bytes
 ```
 
 Single-producer (the SDK consumer's `SubmitState` call), multi-reader (the main driver's worker thread, the XUSB companion's `IOCTL_XUSB_GET_STATE` handler).
@@ -152,10 +152,13 @@ Single-producer (the driver or companion, whichever IOCTL fires) → single-cons
 ### Source values
 
 ```c
-#define HIDMAESTRO_OUTPUT_SOURCE_HID_OUTPUT   0   // HidOutput
-#define HIDMAESTRO_OUTPUT_SOURCE_HID_FEATURE  1   // HidFeature
-#define HIDMAESTRO_OUTPUT_SOURCE_XINPUT       2   // XInput
+#define HIDMAESTRO_OUTPUT_SOURCE_HID_OUTPUT       0   // HidOutput
+#define HIDMAESTRO_OUTPUT_SOURCE_HID_FEATURE      1   // HidFeature
+#define HIDMAESTRO_OUTPUT_SOURCE_XINPUT           2   // XInput
+#define HIDMAESTRO_OUTPUT_SOURCE_HID_FEATURE_READ 3   // HidFeatureRead (v1.3.5)
 ```
+
+Source 3 signals a feature *read*, not a write. The host issued `IOCTL_HID_GET_FEATURE` for that report id, and the Sony BT `extendedReport.armOn` watcher uses it to flip vendor-blob emission on.
 
 For `Source = HidOutput` / `HidFeature`, `ReportId` is the HID Report ID byte (0 if descriptor uses none). For `Source = XInput`, `ReportId` is reserved (0); `Data` is the 5-byte XINPUT_VIBRATION-style payload from the IOCTL_XUSB_SET_STATE input buffer.
 
@@ -165,9 +168,7 @@ The driver does **not** classify rumble vs haptic vs adaptive trigger: that dist
 
 ```c
 // Writer (driver or companion)
-ULONG headNow = dst->Head;
-ULONG newSeq = max(headNow, ctx->OutputSeqNoLocal) + 1;   // never go backwards
-ctx->OutputSeqNoLocal = newSeq;
+ULONG newSeq = (ULONG)InterlockedIncrement((volatile LONG *)&dst->Head);
 ULONG slotIdx = (newSeq - 1) % 64;
 
 slot->Source = source;
@@ -180,7 +181,7 @@ MemoryBarrier();
 dst->Head = newSeq;
 ```
 
-Two writers (the main driver and the XUSB companion for an Xbox 360 Wired controller) can both write to the same output ring concurrently because each takes a per-device lock (`OutputLock`) before claiming a slot. `max(Head, OutputSeqNoLocal) + 1` ensures the writer's local seqno never goes backward relative to the global Head, preserving monotonic ordering across both writers.
+Two writers (the main driver and the XUSB companion for an Xbox 360 Wired controller) publish into the same ring from separate processes. `InterlockedIncrement` on the shared `Head` reserves a unique sequence for each, and the fenced `slot->SeqNo` store is the publish gate the reader validates. A reserved but unwritten slot is retried on the reader's next wake. The earlier `max(Head, local) + 1` form could mint the same sequence from both producers and silently overwrite a slot, which the audit of #34 replaced.
 
 ### Ring-buffer read protocol
 
@@ -345,8 +346,8 @@ Offset  Bytes                          Field
                                          [6]   = RT = 0xB3 (≈70%)
                                          [9]   = buttons low byte = 0x11 (A + LB)
                                          [10..]  = remaining DualSense state
-264     00 ...                         Data[64..255] (zero-padded)
-264     00 80 00 80 00 80 00 80 ...    GipData[0..13] (zeroed for non-Xbox-VID)
+72      00 ...                         Data[64..255] (zero-padded)
+264     00 00 00 00 00 00 00 00 ...    GipData[0..13] (zeroed for non-Xbox-VID)
 ```
 
 The driver's worker thread wakes on `Global\HIDMaestroInputEvent3`, reads the seqlock-stable view, copies `Data[0..63]` into its IOCTL_HID_READ_REPORT cache, and either completes a pended request or returns to wait.

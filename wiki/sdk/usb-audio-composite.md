@@ -1,4 +1,4 @@
-# Controller Audio (Composite USB Personas)
+﻿# Controller Audio (Composite USB Personas)
 
 A real USB DualSense presents four interfaces: USB Audio Class speaker/haptics out, microphone in, and HID. The standard `dualsense` profile presents the HID interface only, because that is the one interface UMDF2 can create. Three profiles present the full composite:
 
@@ -8,7 +8,7 @@ A real USB DualSense presents four interfaces: USB Audio Class speaker/haptics o
 | `dualsense-edge-composite` | Same 4-ch stream as the base pad, with the Edge's 1 ms USB input polling | 2 ch / 48 kHz microphone | **Yes** |
 | `dualshock-4-v2-composite` | 2 ch / 16-bit / 32 kHz headset | 1 ch / 16 kHz microphone | No (hardware has none) |
 
-In a profile picker these are the entries marked **Full**, which is how the catalog flags the most capable profile for a given device. A device never has more than one.
+In a profile picker these carry the **Full** marker, which is how the catalog flags the most capable profile for a given device. A device never has more than one. Not every Full profile is a composite: `xbox-one-s-bt-full` wears the same marker on the plain HID path.
 
 Every descriptor byte comes verbatim from a real pad's hardware dump, and the UAC volume/mute ranges are real wire values captured from live control transfers. Windows surfaces the same audio endpoints it would for the physical controller: **Speakers (Wireless Controller)** and **Headset Microphone (Wireless Controller)**.
 
@@ -30,7 +30,7 @@ using var ctrl = ctx.CreateController(ctx.GetProfile("dualsense-composite")!);
 
 That is the entire setup. A composite persona is created the same way as any other profile.
 
-Composite personas use the bundled [usbip-win2 0.9.8.0 package](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.8.0). Both x64 and ARM64 signed driver packages are embedded in HIDMaestro.Core.dll.
+Composite personas use the bundled [usbip-win2 0.9.7.7 package](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.7). Both x64 and ARM64 signed driver packages are embedded in HIDMaestro.Core.dll.
 
 The build checks the upstream installer hashes, extracts the signed INF/SYS/CAT files, and verifies each file before embedding it. The SDK uses an administrator-only staging directory and adds the packages through PnP. It retains the existing packages and never invokes the vendor uninstaller.
 

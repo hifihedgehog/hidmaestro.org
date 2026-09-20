@@ -2,9 +2,9 @@
 
 `HMXInput.dll` is a UMDF2 function driver that registers the XUSB device interface for non-xinputhid Xbox profiles. Created **only** for profiles where `vid == 0x045E` and `driverMode != "xinputhid"`: i.e. the Xbox 360 Wired family.
 
-The companion is a **separate device node** at `SWD\HIDMAESTRO\<sid>_NNNN`, paired with the main HID device (`ROOT\VID_045E&PID_028E&IG_00\NNNN`) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because `mshidumdf.sys` suppresses XUSB IOCTLs on devices it hosts.
+The companion is a **separate device node** at `SWD\HIDMAESTRO\<token>`, paired with the main HID device (`ROOT\VID_045E&PID_028E&IG_00\<token>`) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because `mshidumdf.sys` suppresses XUSB IOCTLs on devices it hosts.
 
-Source: [`driver/companion.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c) (745 lines), [`driver/hidmaestro_xusb.inf`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf).
+Source: [`driver/companion.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c) (957 lines), [`driver/hidmaestro_xusb.inf`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf).
 
 For the main HID driver, see [UMDF2 Driver Internals](umdf2-driver-internals.md). For why this exists at all (and not as a child PDO of the main HID), see [SwDevice and PnP](swdevice-and-pnp.md).
 
@@ -49,7 +49,7 @@ System class isn't on the classifier pass-list at all, so WGI doesn't auto-class
 
 Three VID-specific PIDs (Xbox 360 Wired, Xbox 360 Wireless Receiver, etc.) plus a generic `root\HIDMaestroXUSB` fallback. PnP's `DEVPKEY_Device_MatchingDeviceId` carries the right VID:PID string when the SDK writes the hardware ID list at create time. New Xbox 360 PIDs that aren't in the specific list fall through to the generic alias: still works, but loses the per-PID INF behavior.
 
-The `&XI_00` suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses `SWD\HIDMAESTRO\<sid>_NNNN`, not `root\VID_*&PID_*&XI_00\*`: the hardware IDs above just give PnP something to match against during INF binding.
+The `&XI_00` suffix is a HIDMaestro convention; it's not a Microsoft PnP identifier. The companion's actual instance path uses `SWD\HIDMAESTRO\<token>`, not `root\VID_*&PID_*&XI_00\*`: the hardware IDs above just give PnP something to match against during INF binding.
 
 ---
 
@@ -102,14 +102,29 @@ typedef struct _COMPANION_CTX {
     PVOID       SharedMemPtr;
     HANDLE      OutputMemHandle;
     PVOID       OutputMemPtr;
-    ULONG       OutputSeqNoLocal;       // last Head value we wrote
     ULONG       OutputWriteCount;       // re-open every 500 writes
     ULONG       LastGipSeqNo;           // stale-detection
     ULONG       GipStaleCount;
+    WCHAR       OutputEventName[64];    // output-ring doorbell (#34)
+    HANDLE      OutputSignalEvent;
+    WCHAR       CompanionInputEventName[64];  // input doorbell
+    HANDLE      CompanionInputEvent;
+    HANDLE      PumpStopEvent;
+    HANDLE      PumpThread;
+    UCHAR       LastGoodGip[14];        // last valid payload, for revalidation
+    BOOLEAN     HaveGoodGip;
+    BOOLEAN     GipChanged;
+    CRITICAL_SECTION GipLock;
+    BOOLEAN     GipLockInit;
+    ULONG       LastVidCheckTick;       // 500 ms throttled live-swap VID gate
+    BOOLEAN     CachedIsXbox;
+    BOOLEAN     VidCheckValid;
     WDFQUEUE    WaitForInputQueue;      // pended IOCTL_XUSB_WAIT_FOR_INPUT
-    WDFTIMER    PumpTimer;              // 8 ms periodic
+    WDFTIMER    PumpTimer;              // 8 ms backstop
 } COMPANION_CTX;
 ```
+
+The pump is doorbell-driven as well as timed. `CompanionInputEvent` wakes `PumpThread` on each new frame and the 8 ms `PumpTimer` is the backstop, so a parked `WAIT_FOR_INPUT` completes on arrival rather than waiting out the tick. `PacketCount` advances only when the decoded state actually changed, matching physical `xusb22` behavior.
 
 The companion shares the input + output sections with the main HID device (same `ControllerIndex` &rarr; same section names). It reads `GipData[14]` from `HIDMAESTRO_SHARED_INPUT` (the SDK packs that 14-byte slice on every `SubmitState` for Xbox-VID profiles) and writes XInput rumble captures to the same output ring the main driver writes to.
 
@@ -222,7 +237,7 @@ The 29-byte response format was nailed down in the same Ghidra pass:
 
 | Offset | Value | Meaning |
 |--------|-------|---------|
-| 0..1 | 0x01 0x03 | Version bytes |
+| 0..1 | `0x0103` stored as a little-endian USHORT, so the bytes read `03 01` | Version word |
 | 2 | 0x03 | RESUMED state (set on every completion) |
 | 9 | 0x00 | Magic byte that makes `XusbInputParser`'s built-in Gamepad template match. A prior 0x14 value produced an all-zero `GetCurrentReading` despite input arriving. |
 | 10 | 0x14 | Non-zero gate byte. |
@@ -255,9 +270,7 @@ Whatever bytes the host wrote (typically 5: command, size, lo motor, hi motor, r
 The companion mirrors the main driver's output ring writer, with the same `HM_OUTPUT_RING_SLOTS = 64` and `HM_OUTPUT_SLOT_DATA_CAP = 256` byte cap. The two writers (driver and companion) can target different slots concurrently because each slot uses `MemoryBarrier`-fenced SeqNo for torn-write detection.
 
 ```c
-ULONG headNow = dst->Head;
-ULONG newSeq = (headNow > ctx->OutputSeqNoLocal ? headNow : ctx->OutputSeqNoLocal) + 1;
-ctx->OutputSeqNoLocal = newSeq;
+ULONG newSeq = (ULONG)InterlockedIncrement((volatile LONG *)&dst->Head);
 ULONG slotIdx = (newSeq - 1) % HM_OUTPUT_RING_SLOTS;
 slot->Source = source;
 slot->ReportId = reportId;
@@ -269,7 +282,7 @@ MemoryBarrier();
 dst->Head = newSeq;
 ```
 
-`max(Head, OutputSeqNoLocal) + 1` prevents going backwards when both writers race: whichever increments `Head` last wins; the other's `OutputSeqNoLocal` catches up on the next write.
+`InterlockedIncrement` on the shared `Head` reserves a unique sequence for each writer, so the two producers cannot mint the same one. The fenced `slot->SeqNo` store is the publish gate the reader validates.
 
 ---
 
@@ -317,6 +330,6 @@ For 6 controllers (any mix), expect 6-12 `WUDFHost.exe` processes: one per main 
 - [`docs/investigations/wgi-silent-sink-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04): full Ghidra decomp of `Windows.Gaming.Input.dll`'s `OnPnpDeviceAdded`, `IsDeviceOrAncestorFilteredBy`, and the `IOCTL_XUSB_WAIT_FOR_INPUT` 29-byte response format that backs every reverse-engineered claim on this page.
 - [`docs/investigations/issue3-dual-xinputhid-saturation-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04): the per-instance WUDFHost CPU-saturation investigation.
 - [HIDMaestro issue #19](https://github.com/hifihedgehog/HIDMaestro/issues/19): Xbox 360 d-pad XInput regression and v1.3.3 fix that motivated the current GIP `btnHigh` packing.
-- [`driver/companion.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c): the companion source itself, all 745 lines.
+- [`driver/companion.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c): the companion source itself, all 957 lines.
 - [`driver/hidmaestro_xusb.inf`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf): the INF that registers the System-class device with the `xinputhid` UpperFilter tripwire.
 - [References](references.md): full source bibliography.

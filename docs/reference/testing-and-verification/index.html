@@ -2120,7 +2120,7 @@
 
 
 <h1 id="testing-and-verification">Testing and Verification<a class="headerlink" href="#testing-and-verification" title="Permanent link">&para;</a></h1>
-<p>The regression battery has 58 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and native architecture selection. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
+<p>The regression battery has 60 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and native architecture selection. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
 <p>For the wiki coverage of where these pipelines fit, see <a href="../build-and-release/">Build and Release</a>. For the underlying SDK mechanics they exercise, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 <hr />
 <h2 id="scriptsverifypy-cross-api-correctness"><code>scripts/verify.py</code>: cross-API correctness<a class="headerlink" href="#scriptsverifypy-cross-api-correctness" title="Permanent link">&para;</a></h2>
@@ -2259,7 +2259,7 @@
 <tr>
 <td><strong>S03_Single_LongCycle_8swaps</strong></td>
 <td>8 alternating swaps</td>
-<td>Suffix-allocator stress + repeated DIF_REMOVE+hmswd-remove path.</td>
+<td>Repeated DIF_REMOVE and hmswd-remove path under a fixed identity token.</td>
 </tr>
 <tr>
 <td><strong>S04_Single_BT_360_BT</strong></td>
@@ -2274,7 +2274,7 @@
 <tr>
 <td><strong>S06_Single_SameProfileSwap</strong></td>
 <td><code>BT → BT</code> (same id)</td>
-<td>Per-call unique suffix lets identical-profile recreation work.</td>
+<td>A fixed identity tuple recreates cleanly after teardown destroys the software device.</td>
 </tr>
 <tr>
 <td><strong>S07_Multi_CreateAll_Idle</strong></td>
@@ -2309,7 +2309,7 @@
 <tr>
 <td><strong>S13_AcrossProcess_Recreation</strong></td>
 <td><code>proc1 (BT+360) → quit → proc2 (BT+360) + swaps</code></td>
-<td>Per-process suffix prefix actually varies. Catches the kernel reuse-existing trap.</td>
+<td>The same identity token recreates across processes. Catches the kernel reuse-existing trap.</td>
 </tr>
 <tr>
 <td><strong>S14_Single_RapidSwaps_NoSettle</strong></td>
@@ -2334,7 +2334,7 @@
 <tr>
 <td><strong>S18_Single_AlternatingPattern</strong></td>
 <td><code>A → B → A → C → A → B → A</code></td>
-<td>Suffix allocator state when revisiting prior profiles.</td>
+<td>Registry and devnode state when revisiting prior profiles at one identity.</td>
 </tr>
 <tr>
 <td><strong>S19_Multi_RapidMultiSlotSwap</strong></td>
@@ -2403,7 +2403,7 @@
 </tr>
 </tbody>
 </table>
-<p>Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md">The repository's own table</a> carries every scenario.</p>
+<p>Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a> is the authoritative full list.</p>
 <hr />
 <h3 id="what-pass-means">What "PASS" means<a class="headerlink" href="#what-pass-means" title="Permanent link">&para;</a></h3>
 <p>Per scenario:</p>
@@ -2418,7 +2418,7 @@
 <h3 id="diagnosing-a-fail">Diagnosing a FAIL<a class="headerlink" href="#diagnosing-a-fail" title="Permanent link">&para;</a></h3>
 <p>The script prints leftover instance IDs when a scenario fails:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>[FAIL] S08_Multi_SwapOneSlot 47832ms
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>       Leftover: SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\&lt;suffix&gt;_0001
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>       Leftover: SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\HM_0001
 </code></pre></div>
 <p>For deeper inspection, every test process runs with <code>HIDMAESTRO_DIAG=1</code> in its environment, so <code>%TEMP%\HIDMaestro\teardown_diag.log</code> records every <code>TeardownController</code> call (entry/exit/timing) and every <code>SwdDeviceFactory.Remove</code> outcome (<code>hr</code> plus <code>present</code>-after-remove).</p>
 <p>On a FAIL, grep that log for the leftover instance ID to see exactly what the SDK did.</p>
@@ -2436,9 +2436,9 @@
 <p>These five fixes interact; missing any one makes the harness hang on Win11. Preserved as the canonical recipe.</p>
 <hr />
 <h3 id="slow-hardware-fixture">Slow-hardware fixture<a class="headerlink" href="#slow-hardware-fixture" title="Permanent link">&para;</a></h3>
-<p>The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Same 28/28 PASS at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>. Validated on each release.</p>
+<p>The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Same 60/60 PASS at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>. Validated on each release.</p>
 <p>The slow-hardware result is the reason the harness is <strong>pure ACK-driven</strong> instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.</p>
-<p>The Atom fixture runs the same <code>swap_regression.ps1</code> script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH <code>scp</code>), run the battery there. ~75 minutes wall time for the full 28 scenarios.</p>
+<p>The Atom fixture runs the same <code>swap_regression.ps1</code> script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH <code>scp</code>), run the battery there. ~75 minutes wall time for the full 60 scenarios.</p>
 <hr />
 <h2 id="testprobes-one-off-investigation-tools"><code>test/probes/</code>: one-off investigation tools<a class="headerlink" href="#testprobes-one-off-investigation-tools" title="Permanent link">&para;</a></h2>
 <p>The <code>test/probes/</code> directory holds investigation tools used during HIDMaestro development. These are not part of the regression battery and are not built by <code>build_all.cmd</code>. They are situational and often unfinished:</p>

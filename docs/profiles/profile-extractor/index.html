@@ -1998,7 +1998,7 @@
 </ol>
 <p>Step 5 is the interesting one. Windows doesn't expose the original device descriptor bytes through any user-mode API: only the preparsed blob. The <a href="https://github.com/libusb/hidapi/blob/master/windows/hidapi_descriptor_reconstruct.c">HIDAPI algorithm</a> (originally contributed by the Chromium WebHID team) walks the blob's <code>LinkCollection</code>, <code>ButtonCaps</code>, <code>ValueCaps</code>, and Usage tables and emits a HID descriptor byte stream that, when re-parsed by <code>HidP_GetCaps</code>, produces the same preparsed blob (within the bounds of legal HID descriptor variations).</p>
 <p>The output is <strong>logically equivalent</strong> to the device's real descriptor: same report IDs, field layouts, logical ranges, usage pages, sizes. It's not byte-for-byte identical: the original descriptor might have used a 2-byte Logical Maximum where the reconstruction emits a 4-byte form, or the order of unrelated items might differ. For HIDMaestro's purpose (creating a virtual that behaves the same as the physical), logical equivalence is the correct fidelity bar; filter drivers can mutate the descriptor before it reaches user mode anyway.</p>
-<p>The reconstruction code is ~1000 lines of <code>HidDescriptorReconstructor.cs</code>: the longest single source file in the SDK after <code>DeviceOrchestrator.cs</code> and <code>DeviceManager.cs</code>.</p>
+<p>The reconstruction code is ~1000 lines of <code>HidDescriptorReconstructor.cs</code>: the fifth-longest source file in the SDK after <code>DeviceOrchestrator.cs</code>, <code>HMController.cs</code>, <code>DeviceManager.cs</code> and <code>HidReportBuilder.cs</code>.</p>
 <hr />
 <h2 id="devices-the-tool-cant-extract">Devices the tool can't extract<a class="headerlink" href="#devices-the-tool-cant-extract" title="Permanent link">&para;</a></h2>
 <p>Some devices return preparsed data that the HIDAPI algorithm can't reconstruct. The tool reports:</p>
@@ -2022,12 +2022,12 @@
 <h2 id="cli-alternative">CLI alternative<a class="headerlink" href="#cli-alternative" title="Permanent link">&para;</a></h2>
 <p><code>HIDMaestroTest.exe extract-profile</code> does the same thing as the GUI:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>:: List all extractable HID devices
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>HIDMaestroTest.exe list-hid
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>HIDMaestroTest.exe extract-profile
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>:: Extract by VID:PID and write to a file
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>HIDMaestroTest.exe extract-profile --vid 046D --pid C216 --out logitech-dual-action.json
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>HIDMaestroTest.exe extract-profile 046D C216 &gt; logitech-dual-action.json
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>:: Extract by full device path (use list-hid output)
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>:: Extract by full device path (use extract-profile output)
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>HIDMaestroTest.exe extract-profile --path &quot;\\?\HID#VID_046D&amp;PID_C216#...&quot; --out my-profile.json
 </code></pre></div>
 <p>The CLI is non-elevated: same as the GUI. Useful for scripted contribution workflows.</p>

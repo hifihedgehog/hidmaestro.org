@@ -1755,7 +1755,7 @@
 
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
 <p>Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.</p>
-<p>The ARM64 and usbip-win2 0.9.8.0 changes remain under validation. The transport upgrade failed driver-lifecycle tests and is not ready for deployment. Published v1.8.1 downloads predate those additions. See <a href="../platform-support/#validation">validation results</a>.</p>
+<p>The ARM64 and usbip-win2 0.9.7.7 changes remain under validation. The transport upgrade failed driver-lifecycle tests and is not ready for deployment. Published v1.8.1 downloads predate those additions. See <a href="../platform-support/#validation">validation results</a>.</p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1808,7 +1808,6 @@
 <p>Dispose the controller to remove it. Dispose the context to release its controllers. See <a href="../quickstart/">Quickstart</a> for output capture and additional inputs.</p>
 <h2 id="build-from-source">Build from source<a class="headerlink" href="#build-from-source" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">scripts</span><span class="p">\</span><span class="n">build_all</span><span class="p">.</span><span class="n">cmd</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">scripts</span><span class="p">\</span><span class="n">build_tests</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-Architecture</span> <span class="n">x64</span>
 </code></pre></div>
 <p>Use -Architecture arm64 when preparing ARM64 test applications. The native build creates both payloads before compiling the SDK. One SDK build embeds the prepared files. Missing native files stop the build.</p>
 <p>For one ARM64 application:</p>

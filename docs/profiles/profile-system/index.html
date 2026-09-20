@@ -2126,19 +2126,19 @@
 <h2 id="on-disk-layout">On-disk layout<a class="headerlink" href="#on-disk-layout" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>profiles/
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  schema.json                       # JSON Schema document for all profiles
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  scraped_descriptors.json          # 50+ raw descriptors recovered from real devices
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  scraped_descriptors.json          # 22 raw descriptors recovered from real devices
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  linux-kernel-fixed-descriptors.json  # patched descriptors from the Linux kernel
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  microsoft/
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    xbox-360-wired.json
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    xbox-series-xs-bt.json
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    xbox-elite-v2.json
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    ...22 Microsoft profiles
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    ...23 Microsoft profiles
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  sony/
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    dualsense.json
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    dualsense-edge.json
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    dualshock-4-v1.json
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    dualshock-3.json
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    ...13 Sony profiles
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    ...16 Sony profiles
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  nintendo/
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    switch-pro.json
 <a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    switch2-pro.json
@@ -2152,11 +2152,11 @@
 <a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    t300rs.json
 <a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    t-flight-hotas-4.json
 <a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    t16000m.json
-<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    ...19 Thrustmaster profiles
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    ...20 Thrustmaster profiles
 <a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>  ...28 more vendor folders
 </code></pre></div>
 <p>Vendor folder names are slugs of the manufacturer (<code>thrustmaster</code>, <code>8bitdo</code>, <code>vkbsim</code>). File names are slugs of the model (<code>xbox-360-wired</code>, <code>t-flight-hotas-x</code>, <code>dualsense-edge-bt</code>).</p>
-<p>The full vendor list at v1.3.4: 8bitdo, amazon, asetek, cammus, ch-products, fanatec, flydigi, google, heusinkveld, honeycomb, hori, logitech, microsoft, misc, moza, nacon, nintendo, pxn, razer, sega, simagic, simucube, snk, sony, steelseries, taito, thrustmaster, turtle-beach, valve, virpil, vkbsim, winwing.</p>
+<p>The full vendor list at v1.8.1: 8bitdo, amazon, asetek, cammus, ch-products, fanatec, flydigi, google, heusinkveld, honeycomb, hori, logitech, microsoft, misc, moza, nacon, nintendo, pxn, razer, sega, simagic, simucube, snk, sony, steelseries, taito, thrustmaster, turtle-beach, valve, virpil, vkbsim, winwing.</p>
 <p>The <code>misc/</code> vendor catches everything else: arcade controllers, niche racing pedals, devices the contributor couldn't slot into a clean vendor namespace.</p>
 <hr />
 <h2 id="schema">Schema<a class="headerlink" href="#schema" title="Permanent link">&para;</a></h2>
@@ -2195,7 +2195,7 @@
 <tr>
 <td><code>id</code></td>
 <td>string</td>
-<td>Unique slug, e.g. <code>"xbox-360-wired"</code>. Used by <code>HMContext.GetProfile</code>. Must match the filename.</td>
+<td>Unique slug, e.g. <code>"xbox-360-wired"</code>. Used by <code>HMContext.GetProfile</code>, case-insensitively. The filename need not match: most vendor folders prefix the id with the vendor slug, so <code>profiles/logitech/g29.json</code> carries <code>"id": "logitech-g29"</code>.</td>
 </tr>
 <tr>
 <td><code>name</code></td>
@@ -2471,14 +2471,14 @@
 <p>The profile fields determine which of three architecture groups the runtime instance lands in. Disposal speed, device-tree shape, and downstream API mechanics all vary by group. See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the per-group teardown latency table.</p>
 <h3 id="1-plain-hid-200-ms-create-80-ms-dispose">1. Plain HID (~200 ms create, ~80 ms dispose)<a class="headerlink" href="#1-plain-hid-200-ms-create-80-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Profiles where <code>driverMode</code> is <strong>not</strong> <code>"xinputhid"</code> and <code>vid</code> is <strong>not</strong> Microsoft (<code>0x045E</code>).</p>
-<p>Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 231-profile catalog (~204 profiles).</p>
+<p>Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 231-profile catalog (208 profiles).</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ROOT\VID_054C&amp;PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  └─ HID\VID_054C&amp;PID_0CE6\...       ← raw HID PDO, no upper filter
 </code></pre></div>
 <p>Lightest stack. One <code>DIF_REMOVE</code> on the ROOT parent tears down the entire tree. No XUSB companion device, no Microsoft upper filter.</p>
 <h3 id="2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose">2. Non-xinputhid Xbox (~200-700 ms create, ~135 ms dispose)<a class="headerlink" href="#2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Xbox-VID profiles (<code>vid == 0x045E</code>) where <code>driverMode</code> is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running <code>HMXInput.dll</code>. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.</p>
-<p>Includes Xbox 360 Wired (<code>xbox-360-wired</code>), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, Xbox Adaptive (with caveats: this is a 6-profile group).</p>
+<p>Includes Xbox 360 Wired (<code>xbox-360-wired</code>), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, and the SideWinder Force Feedback 2: an 11-profile group. Xbox Adaptive is not in it; it sets <code>driverMode: xinputhid</code> and belongs to the group below.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ROOT\VID_045E&amp;PID_028E&amp;IG_00\NNNN    ← UMDF2 driver (main HID device)
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  │                                    UpperFilters += &quot;xinputhid&quot; per-instance
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  │                                    (SDK-written; blocks WGI from synthesizing
@@ -2496,7 +2496,7 @@
 <p>Medium stack, fast on both sides post-v1.3.2. Two device trees to tear down. The XUSB companion runs its own WUDFHost instance hosting <code>HMXInput.dll</code>, which needs its own PnP release cycle.</p>
 <h3 id="3-xinputhid-xbox-150-600-ms-create-500-ms-dispose">3. xinputhid Xbox (~150-600 ms create, ~500 ms dispose)<a class="headerlink" href="#3-xinputhid-xbox-150-600-ms-create-500-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Profiles with <code>driverMode: "xinputhid"</code>. These match <code>xinputhid.inf [GIP_Hid]</code> by hardware ID (<code>HID\VID_045E&amp;PID_0B13&amp;IG_00</code>), which binds Microsoft's <code>xinputhid.sys</code> as an upper filter on the HID child. xinputhid provides XInput delivery and 16-button HID descriptor synthesis natively: no XUSB companion needed, single Device Manager entry.</p>
-<p>Includes Xbox Series BT (<code>xbox-series-xs-bt</code>), Xbox One S BT, Xbox One Original (BT), Xbox Elite v2 BT: the 4-profile group that uses Microsoft's GIP-over-HID protocol over Bluetooth.</p>
+<p>Includes the whole Xbox One / Series / Elite family, wired and Bluetooth: <code>xbox-series-xs</code>, <code>xbox-series-xs-bt</code>, <code>xbox-one-s</code>, <code>xbox-one-s-bt</code>, <code>xbox-one-s-bt-full</code>, <code>xbox-one-original</code>, <code>xbox-one-rev1</code>, <code>xbox-elite-v1</code>, <code>xbox-elite-v2</code>, <code>xbox-elite-v2-bt</code>, <code>xbox-elite-v2-bt-v2</code> and <code>xbox-adaptive</code>. Twelve profiles using Microsoft's GIP-over-HID protocol.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\&lt;sid&gt;_NNNN
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  │                                  ← UMDF2 driver via SwDeviceCreate
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  │                                    (mshidumdf host). Explicit non-sentinel
@@ -2532,7 +2532,7 @@
 <li><strong>UpperFilter writes</strong> for non-xinputhid Xbox profiles. INF carries it on the companion; SDK writes per-instance on the main HID device.</li>
 <li><strong>Friendly-name application.</strong> Best-effort; finalize via <code>HMContext.FinalizeNames</code> after all controllers are created.</li>
 </ol>
-<p>The full per-archetype sequence lives in <code>DeviceOrchestrator.cs</code>'s <code>SetupController</code> (~600 lines). See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the disposal counterpart.</p>
+<p>The full per-archetype sequence lives in <code>DeviceOrchestrator.cs</code>'s <code>SetupController</code> (~390 lines). See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the disposal counterpart.</p>
 <hr />
 <h2 id="loading-the-catalog">Loading the catalog<a class="headerlink" href="#loading-the-catalog" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">// Embedded catalog (231 profiles)</span>
@@ -2541,7 +2541,7 @@
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1">// Custom directory of JSON profiles</span>
 <a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-profiles&quot;</span><span class="p">);</span>
 <a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1">// Mix both: embedded first, then custom (custom IDs win on collision)</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1">// Mix both: custom first, then embedded (the first load of an ID wins)</span>
 <a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
 <a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadProfilesFromDirectory</span><span class="p">(</span><span class="s">@&quot;C:\my-overrides&quot;</span><span class="p">);</span>
 <a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
@@ -2593,7 +2593,7 @@
 <p><strong><code>buttonMap</code></strong> is <strong>not present</strong>: identity Xbox layout (<code>HMButton.A</code> &rarr; descriptor button 0, etc.).</p>
 <hr />
 <h2 id="catalog-statistics">Catalog statistics<a class="headerlink" href="#catalog-statistics" title="Permanent link">&para;</a></h2>
-<p>As of v1.3.4:</p>
+<p>As of v1.8.1:</p>
 <table>
 <thead>
 <tr>
@@ -2612,31 +2612,31 @@
 </tr>
 <tr>
 <td>Plain HID profiles</td>
-<td>~204</td>
+<td>208</td>
 </tr>
 <tr>
 <td>Non-xinputhid Xbox profiles</td>
-<td>~6</td>
+<td>11</td>
 </tr>
 <tr>
 <td>xinputhid Xbox profiles</td>
-<td>~4</td>
+<td>12</td>
 </tr>
 <tr>
 <td>With FFB descriptors</td>
-<td>~30 (Logitech G-series, Thrustmaster wheels, Fanatec wheels, MOZA, SimuCUBE)</td>
+<td>14 (SideWinder Force Feedback 2, the Xbox One / Series / Elite family, Amazon Luna BLE)</td>
 </tr>
 <tr>
 <td>Bluetooth profiles</td>
-<td>~50</td>
+<td>18</td>
 </tr>
 <tr>
 <td>Wireless-adapter profiles</td>
-<td>~10</td>
+<td>4</td>
 </tr>
 </tbody>
 </table>
-<p>The largest single-vendor folders are Thrustmaster (19), Logitech (24), Microsoft (22), and Sony (13).</p>
+<p>The largest vendor folders are misc (32, the catch-all), Logitech (24), Microsoft (23), Thrustmaster (20), Sony (16), and Fanatec (14).</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>

@@ -2,7 +2,7 @@
 
 `HIDMaestro.dll` is a UMDF2 lower filter driver under `mshidumdf.sys`. This page documents the driver's responsibilities, the IOCTL dispatch table, the device context, the worker thread, the seqno-gated `READ_REPORT` path, and the empirical reasons each design choice exists. UMDF2 framework reference: search Microsoft Learn for "User-Mode Driver Framework version 2".
 
-Source: [`driver/driver.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.c) (1,574 lines), [`driver/driver.h`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.h) (414 lines).
+Source: [`driver/driver.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.c) (2,782 lines), [`driver/driver.h`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.h) (526 lines).
 
 For the XUSB companion driver, see [XUSB Companion](xusb-companion.md). For the SDK side that talks to this driver, see [SDK Reference](../sdk/sdk-reference.md) and [Shared Memory Protocol](shared-memory-protocol.md).
 
@@ -99,7 +99,6 @@ typedef struct _DEVICE_CONTEXT {
     /* Shared memory: output ring */
     HANDLE      OutputMemHandle;
     PVOID       OutputMemPtr;
-    ULONG       OutputSeqNoLocal;      // last value we wrote (always increment)
     ULONG       OutputWriteCount;      // re-open every 500 writes (#2)
 
     /* Shared memory: PID FFB state */
@@ -244,7 +243,7 @@ VOID ProcessSharedInput(PDEVICE_CONTEXT ctx)
 }
 ```
 
-Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on `WaitForMultipleObjects(StopEvent, InputDataEvent, 50ms)`: the 50 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers `SetEvent(InputDataEvent)` which wakes the worker immediately.
+Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on `WaitForMultipleObjects(StopEvent, InputDataEvent, 500ms)`: the 500 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers `SetEvent(InputDataEvent)` which wakes the worker immediately.
 
 ---
 
@@ -256,22 +255,31 @@ DWORD WINAPI WorkerThread(LPVOID lpParam)
     PDEVICE_CONTEXT ctx = (PDEVICE_CONTEXT)lpParam;
     HANDLE waits[2] = { ctx->StopEvent, ctx->InputDataEvent };
 
-    while (TRUE) {
-        DWORD r = WaitForMultipleObjects(2, waits, FALSE, 50);
-        if (r == WAIT_OBJECT_0) break;             // StopEvent
-        if (r == WAIT_OBJECT_0 + 1 || r == WAIT_TIMEOUT) {
-            ProcessSharedInput(ctx);
+    for (;;) {
+        DWORD rc = WaitForMultipleObjects(2, waits, FALSE, 500);
+
+        /* issue #38: the flag is the exit condition, not the signal. */
+        if (ctx->TearingDown) return 0;
+
+        if (rc == WAIT_OBJECT_0) {          /* foreign signal: absorb, recycle */
+            ResetEvent(ctx->StopEvent);
+            if (ctx->TearingDown) return 0;
+            break;
         }
+        if (rc == WAIT_OBJECT_0 + 1) { ProcessSharedInput(ctx); continue; }
+        if (rc == WAIT_TIMEOUT && ++idleTimeouts < 8) continue;
+        break;                              /* recycle handles */
     }
     return 0;
 }
 ```
 
-- **WAIT_OBJECT_0**: StopEvent fired; exit.
+- **TearingDown flag**: checked on every wake, including timeouts. It is the only exit condition. The `StopEvent` signal cannot be trusted in either direction, because a foreign sweep signals without teardown and a same-index sibling's device-start `ResetEvent` can eat our own cleanup's `SetEvent` on the shared named object. Worst-case exit latency is one 500 ms wait, inside cleanup's 2 s join.
+- **WAIT_OBJECT_0**: a foreign StopEvent signal. Absorbed with `ResetEvent`, then the handles recycle.
 - **WAIT_OBJECT_0 + 1**: InputDataEvent fired; new frame; process and complete pended requests.
-- **WAIT_TIMEOUT**: 50 ms safety tick; process opportunistically.
+- **WAIT_TIMEOUT**: 500 ms safety tick. A single timeout is the normal idle state, and handles recycle only after 8 consecutive ones.
 
-Created in `EvtDeviceAdd` and joined on stop. Cancellation via `SetEvent(StopEvent)` then `WaitForSingleObject(WorkerThread, 5000)`.
+Created in `EvtDeviceAdd` and joined on stop. Cancellation via `SetEvent(StopEvent)` plus the `TearingDown` flag, then `WaitForSingleObject(WorkerThread, 2000)`.
 
 ---
 
@@ -552,7 +560,7 @@ The SDK creates the shared sections with the SDDL `D:P(A;;GA;;;SY)(A;;GA;;;BA)(A
 When the device is removed (via `DIF_REMOVE` from the SDK or PnP), `EvtDeviceContextCleanup` runs:
 
 1. `SetEvent(StopEvent)` to wake the worker.
-2. `WaitForSingleObject(WorkerThread, 5000)`. Join.
+2. `WaitForSingleObject(WorkerThread, 2000)`. Join.
 3. `CloseHandle(WorkerThread)`.
 4. Unmap and close all three shared sections.
 5. Close the named events.
@@ -613,7 +621,7 @@ The driver doesn't link against MSVCRT. `swprintf` / `wsprintf` aren't available
 | `WorkerThread` + `ProcessSharedInput` | 80 | Event-driven shared-mem read, manual queue drain |
 | `EnsureOutputMapping` / `EnsurePidStateMapping` / etc. | 100 | Lazy mapping helpers |
 
-Total: 1,574 lines (driver.c) + 414 lines (driver.h) + 745 lines (companion.c) + 286 lines (hmswd.c).
+Total: 2,782 lines (driver.c) + 526 lines (driver.h) + 957 lines (companion.c) + 299 lines (hmswd.c).
 
 ---
 

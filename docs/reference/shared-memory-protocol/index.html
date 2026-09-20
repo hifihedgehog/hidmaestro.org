@@ -2138,7 +2138,7 @@
 <tr>
 <td>Input</td>
 <td><code>Global\HIDMaestroInput&lt;N&gt;</code></td>
-<td>278 bytes</td>
+<td>362 bytes</td>
 <td>Consumer &rarr; driver: HID input frames + GIP buffer</td>
 </tr>
 <tr>
@@ -2150,7 +2150,7 @@
 <tr>
 <td>PID State</td>
 <td><code>Global\HIDMaestroPidState&lt;N&gt;</code></td>
-<td>~32 bytes</td>
+<td>28 bytes</td>
 <td>Consumer &rarr; driver: HID PID 1.0 state mirror</td>
 </tr>
 </tbody>
@@ -2193,7 +2193,7 @@
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">           </span><span class="n">GipData</span><span class="p">[</span><span class="mi">14</span><span class="p">];</span><span class="w">     </span><span class="c1">//  14 bytes: GIP-format data for XUSB GET_STATE</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span><span class="w"> </span><span class="n">HIDMAESTRO_SHARED_INPUT</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">PHIDMAESTRO_SHARED_INPUT</span><span class="p">;</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="cp">#pragma pack(pop)</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1">// Total: 278 bytes</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1">// Total: 362 bytes</span>
 </code></pre></div>
 <p>Single-producer (the SDK consumer's <code>SubmitState</code> call), multi-reader (the main driver's worker thread, the XUSB companion's <code>IOCTL_XUSB_GET_STATE</code> handler).</p>
 <h3 id="why-256-bytes-for-data">Why 256 bytes for <code>Data</code>?<a class="headerlink" href="#why-256-bytes-for-data" title="Permanent link">&para;</a></h3>
@@ -2314,29 +2314,29 @@
 </code></pre></div>
 <p>Single-producer (the driver or companion, whichever IOCTL fires) → single-consumer (the SDK's per-controller <code>HMOutputReader</code> thread).</p>
 <h3 id="source-values">Source values<a class="headerlink" href="#source-values" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">#define HIDMAESTRO_OUTPUT_SOURCE_HID_OUTPUT   0   </span><span class="c1">// HidOutput</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="cp">#define HIDMAESTRO_OUTPUT_SOURCE_HID_FEATURE  1   </span><span class="c1">// HidFeature</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="cp">#define HIDMAESTRO_OUTPUT_SOURCE_XINPUT       2   </span><span class="c1">// XInput</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">#define HIDMAESTRO_OUTPUT_SOURCE_HID_OUTPUT       0   </span><span class="c1">// HidOutput</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="cp">#define HIDMAESTRO_OUTPUT_SOURCE_HID_FEATURE      1   </span><span class="c1">// HidFeature</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="cp">#define HIDMAESTRO_OUTPUT_SOURCE_XINPUT           2   </span><span class="c1">// XInput</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="cp">#define HIDMAESTRO_OUTPUT_SOURCE_HID_FEATURE_READ 3   </span><span class="c1">// HidFeatureRead (v1.3.5)</span>
 </code></pre></div>
+<p>Source 3 signals a feature <em>read</em>, not a write. The host issued <code>IOCTL_HID_GET_FEATURE</code> for that report id, and the Sony BT <code>extendedReport.armOn</code> watcher uses it to flip vendor-blob emission on.</p>
 <p>For <code>Source = HidOutput</code> / <code>HidFeature</code>, <code>ReportId</code> is the HID Report ID byte (0 if descriptor uses none). For <code>Source = XInput</code>, <code>ReportId</code> is reserved (0); <code>Data</code> is the 5-byte XINPUT_VIBRATION-style payload from the IOCTL_XUSB_SET_STATE input buffer.</p>
 <p>The driver does <strong>not</strong> classify rumble vs haptic vs adaptive trigger: that distinction is semantic and lives in the consumer. See <a href="../../sdk/output-passthrough/">Output Passthrough</a>.</p>
 <h3 id="ring-buffer-write-protocol">Ring-buffer write protocol<a class="headerlink" href="#ring-buffer-write-protocol" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Writer (driver or companion)</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">ULONG</span><span class="w"> </span><span class="n">headNow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dst</span><span class="o">-&gt;</span><span class="n">Head</span><span class="p">;</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">ULONG</span><span class="w"> </span><span class="n">newSeq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="n">headNow</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">OutputSeqNoLocal</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">   </span><span class="c1">// never go backwards</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">OutputSeqNoLocal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newSeq</span><span class="p">;</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">ULONG</span><span class="w"> </span><span class="n">slotIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">newSeq</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">64</span><span class="p">;</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">slot</span><span class="o">-&gt;</span><span class="n">Source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">source</span><span class="p">;</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">slot</span><span class="o">-&gt;</span><span class="n">ReportId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reportId</span><span class="p">;</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">slot</span><span class="o">-&gt;</span><span class="n">DataSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">USHORT</span><span class="p">)</span><span class="n">dataSize</span><span class="p">;</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="n">memcpy</span><span class="p">(</span><span class="n">slot</span><span class="o">-&gt;</span><span class="n">Data</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">dataSize</span><span class="p">);</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">ULONG</span><span class="w"> </span><span class="n">newSeq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ULONG</span><span class="p">)</span><span class="n">InterlockedIncrement</span><span class="p">((</span><span class="k">volatile</span><span class="w"> </span><span class="n">LONG</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">dst</span><span class="o">-&gt;</span><span class="n">Head</span><span class="p">);</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">ULONG</span><span class="w"> </span><span class="n">slotIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">newSeq</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">64</span><span class="p">;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">slot</span><span class="o">-&gt;</span><span class="n">Source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">source</span><span class="p">;</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">slot</span><span class="o">-&gt;</span><span class="n">ReportId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reportId</span><span class="p">;</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">slot</span><span class="o">-&gt;</span><span class="n">DataSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">USHORT</span><span class="p">)</span><span class="n">dataSize</span><span class="p">;</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">memcpy</span><span class="p">(</span><span class="n">slot</span><span class="o">-&gt;</span><span class="n">Data</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">dataSize</span><span class="p">);</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">MemoryBarrier</span><span class="p">();</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="n">slot</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newSeq</span><span class="p">;</span>
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="n">MemoryBarrier</span><span class="p">();</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="n">slot</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newSeq</span><span class="p">;</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="n">MemoryBarrier</span><span class="p">();</span>
-<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="n">dst</span><span class="o">-&gt;</span><span class="n">Head</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newSeq</span><span class="p">;</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="n">dst</span><span class="o">-&gt;</span><span class="n">Head</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newSeq</span><span class="p">;</span>
 </code></pre></div>
-<p>Two writers (the main driver and the XUSB companion for an Xbox 360 Wired controller) can both write to the same output ring concurrently because each takes a per-device lock (<code>OutputLock</code>) before claiming a slot. <code>max(Head, OutputSeqNoLocal) + 1</code> ensures the writer's local seqno never goes backward relative to the global Head, preserving monotonic ordering across both writers.</p>
+<p>Two writers (the main driver and the XUSB companion for an Xbox 360 Wired controller) publish into the same ring from separate processes. <code>InterlockedIncrement</code> on the shared <code>Head</code> reserves a unique sequence for each, and the fenced <code>slot-&gt;SeqNo</code> store is the publish gate the reader validates. A reserved but unwritten slot is retried on the reader's next wake. The earlier <code>max(Head, local) + 1</code> form could mint the same sequence from both producers and silently overwrite a slot, which the audit of #34 replaced.</p>
 <h3 id="ring-buffer-read-protocol">Ring-buffer read protocol<a class="headerlink" href="#ring-buffer-read-protocol" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// Consumer (SDK reader thread)</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kt">uint</span><span class="w"> </span><span class="n">lastSeen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span><span class="w">     </span><span class="c1">// initialized to current Head on first poll</span>
@@ -2462,8 +2462,8 @@
 <a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>                                         [6]   = RT = 0xB3 (≈70%)
 <a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>                                         [9]   = buttons low byte = 0x11 (A + LB)
 <a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>                                         [10..]  = remaining DualSense state
-<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>264     00 ...                         Data[64..255] (zero-padded)
-<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>264     00 80 00 80 00 80 00 80 ...    GipData[0..13] (zeroed for non-Xbox-VID)
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>72      00 ...                         Data[64..255] (zero-padded)
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>264     00 00 00 00 00 00 00 00 ...    GipData[0..13] (zeroed for non-Xbox-VID)
 </code></pre></div>
 <p>The driver's worker thread wakes on <code>Global\HIDMaestroInputEvent3</code>, reads the seqlock-stable view, copies <code>Data[0..63]</code> into its IOCTL_HID_READ_REPORT cache, and either completes a pended request or returns to wait.</p>
 <p>DirectInput, SDL3 / HIDAPI, browser RawInput-fallback, and WGI all see the new bytes within ~2 ms.</p>

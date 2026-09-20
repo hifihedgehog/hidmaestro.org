@@ -1505,10 +1505,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-the-suffix-mapping-works-at-scale" class="md-nav__link">
+  <a href="#how-the-identity-token-maps-at-scale" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How the suffix mapping works at scale
+        How the identity token maps at scale
       
     </span>
   </a>
@@ -1948,10 +1948,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-the-suffix-mapping-works-at-scale" class="md-nav__link">
+  <a href="#how-the-identity-token-maps-at-scale" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How the suffix mapping works at scale
+        How the identity token maps at scale
       
     </span>
   </a>
@@ -2286,7 +2286,7 @@
 <li><strong><code>UnmanagedCallersOnly</code> with <code>CallConvCdecl</code> / <code>CallConvStdcall</code> variations.</strong> No effect.</li>
 <li><strong>Wrapping the call in <code>CallerMustBeAdmin</code> checks just in case.</strong> No effect.</li>
 </ol>
-<p>Nothing managed worked. Rather than ship a broken managed migration path, we wrote a small native executable (<code>driver/hmswd/hmswd.c</code>, 286 lines) that does the call from C and prints the result to stdout. The SDK's <code>SwdDeviceFactory</code> invokes <code>hmswd.exe</code> via <code>Process.Start</code> and parses the stdout.</p>
+<p>Nothing managed worked. Rather than ship a broken managed migration path, we wrote a small native executable (<code>driver/hmswd/hmswd.c</code>, 299 lines) that does the call from C and prints the result to stdout. The SDK's <code>SwdDeviceFactory</code> invokes <code>hmswd.exe</code> via <code>Process.Start</code> and parses the stdout.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>hmswd.exe create &lt;enumerator&gt; &lt;instance-id-suffix&gt; &lt;container-guid&gt;
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>                 &lt;hw-ids-csv&gt; &lt;compat-ids-csv&gt; &lt;description&gt;
 </code></pre></div>
@@ -2336,16 +2336,15 @@
 <p>The main HID gets ContainerID via <code>SetupDiSetDeviceProperty(DEVPKEY_Device_ContainerId)</code>. The XUSB companion gets the same value via <code>SwDeviceCreate</code>'s <code>pContainerId</code> parameter. Both writes happen in the SDK's <code>SetupController</code> orchestration before the devices fully start.</p>
 <p>For xinputhid Xbox profiles there's only one device (no companion), but the same per-controller ContainerID <code>{48494430-4D41-4553-5452-4F00...&lt;idx&gt;}</code> is still used so the bit-2 path stays closed.</p>
 <hr />
-<h2 id="how-the-suffix-mapping-works-at-scale">How the suffix mapping works at scale<a class="headerlink" href="#how-the-suffix-mapping-works-at-scale" title="Permanent link">&para;</a></h2>
+<h2 id="how-the-identity-token-maps-at-scale">How the identity token maps at scale<a class="headerlink" href="#how-the-identity-token-maps-at-scale" title="Permanent link">&para;</a></h2>
 <p>For 6 controllers running in one process:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>SWD\HIDMAESTRO\A7B40001_0000   ← controller 0 (Xbox 360 Wired companion), seq=1
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>SWD\HIDMAESTRO\A7B40002_0001   ← controller 1 (Xbox Series BT main HID), seq=2
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\A7B40002_0001    ← (xinputhid path uses different enumerator)
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>SWD\HIDMAESTRO\A7B40003_0002   ← controller 2 (DualSense), if it had a companion (it doesn&#39;t)
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>SWD\HIDMAESTRO\HM_0000   ← controller 0 (Xbox 360 Wired companion)
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>SWD\HIDMAESTRO\HM_0001   ← controller 1&#39;s companion, if it has one
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>SWD\HIDMAESTRO_VID_045E_PID_0B13&amp;IG_00\HM_0001   ← xinputhid path, different enumerator
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>...
 </code></pre></div>
-<p>PID hex is <code>A7B4</code>; per-call sequence increments globally per process; controller index varies per call.</p>
-<p><code>FindExistingCompanion</code> walks <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\</code> and matches devices whose <code>Device Parameters\ControllerIndex</code> value matches the controller we're operating on. The suffix isn't load-bearing for matching: it's there to make the kernel <code>(enumerator + suffix + ContainerId)</code> tuple unique.</p>
+<p>The token is <code>HM_</code> plus the four-digit index for the default key, or <code>HM_</code> plus sixteen hex digits derived from a consumer identity key. It is the same on every life of that controller, which is the whole point of it. The per-call session-unique suffix that v1.1.30 through v1.7.3 used is gone as of v1.8.0.</p>
+<p><code>FindExistingCompanion</code> walks <code>HKLM\SYSTEM\CurrentControlSet\Enum\SWD\HIDMAESTRO\</code> and matches devices whose <code>Device Parameters\ControllerIndex</code> value matches the controller we're operating on, so cleanup and teardown reach instances created by any session.</p>
 <p>For across-process matching (e.g. <code>RemoveAllVirtualControllers</code> from a fresh process sweeping orphans from a prior crashed session), the <code>HIDMAESTRO</code> enumerator name is the stable identifier. The sweep walks every <code>SWD\HIDMAESTRO*\*</code> entry regardless of token.</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>

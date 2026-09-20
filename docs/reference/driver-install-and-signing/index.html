@@ -1783,7 +1783,7 @@
 <p>The staging directory is cached across launches. It is not deleted after each install. The installed-manifest check avoids repeating deployment when matching driver packages are already available.</p>
 <p>Installing and creating virtual devices requires administrator privileges. Reading the profile catalog does not.</p>
 <h2 id="usbip-transport">USB/IP transport<a class="headerlink" href="#usbip-transport" title="Permanent link">&para;</a></h2>
-<p>The SDK contains the unmodified signed packages from <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.8.0">usbip-win2 0.9.8.0</a>. Their Microsoft signatures are retained.</p>
+<p>The SDK contains the unmodified signed packages from <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.7">usbip-win2 0.9.7.7</a>. Their Microsoft signatures are retained.</p>
 <p>The updater uses an administrator-only staging directory. It refuses an update while USB/IP imports are active, adds the new packages in place, and creates or restarts the required USB/IP host controller. It does not invoke the vendor uninstaller or delete the shared root-hub filter package.</p>
 <p>Readiness requires matching configured binary hashes, loaded driver paths, and IOCTL layout. On Windows 11 24H2 and later, the loaded-image query needs SeDebugPrivilege. The query uses a temporary impersonation token and restores the caller's context.</p>
 <p>A staged package is not necessarily active. The updater checks activation before reporting success. See <a href="../../start/platform-support/">platform support</a> for compatibility and validation limits.</p>

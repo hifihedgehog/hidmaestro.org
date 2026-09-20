@@ -1773,7 +1773,7 @@
 </tr>
 </tbody>
 </table>
-<p>Drivers, helpers, and signing tools are embedded for x64 and ARM64. Inf2Cat is the shared x86 tool. Catalog generation uses 10_X64 for x64 and 10_ARM64 for ARM64.</p>
+<p>Drivers, helpers, and signing tools are embedded for x64 and ARM64. Inf2Cat is the shared x86 tool. Catalog generation uses 10_X64 for x64 and 10_CO_ARM64 for ARM64.</p>
 <h2 id="local-certificate">Local certificate<a class="headerlink" href="#local-certificate" title="Permanent link">&para;</a></h2>
 <p>The installer creates CN=HIDMaestroTestCert if it is absent from the machine certificate store. It uses RSA-2048, SHA-256, PKCS#1 signing, and the Code Signing EKU. The certificate expires ten years after creation.</p>
 <p>The private key is persisted in LocalMachine\My. The certificate is also installed in LocalMachine\Root and LocalMachine\TrustedPublisher.</p>
@@ -1783,9 +1783,10 @@
 <p>The staging directory is cached across launches. It is not deleted after each install. The installed-manifest check avoids repeating deployment when matching driver packages are already available.</p>
 <p>Installing and creating virtual devices requires administrator privileges. Reading the profile catalog does not.</p>
 <h2 id="usbip-transport">USB/IP transport<a class="headerlink" href="#usbip-transport" title="Permanent link">&para;</a></h2>
-<p>The SDK contains the unmodified installers from <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.5">usbip-win2 0.9.7.5</a>, one for x64 and one for ARM64. Their Microsoft signatures are retained. Each is verified against the upstream release's SHA-256 at build time, and the extracted copy is verified again before it runs. A copy that fails the hash is replaced from the embedded bytes and never executed.</p>
-<p>Deployment has three cases. If a usbip-win2 host controller answers, the SDK uses it as it is, whatever its version. If usbip-win2 is in the driver store and its host controller is not answering, the SDK restarts that device through CfgMgr and does not reinstall, because reinstalling would first remove the filter bound to every USB root hub. Only when no usbip-win2 exists does the SDK run the installer for the machine's architecture, silently, and wait for the host controller to appear. It never runs the vendor uninstaller.</p>
-<p>See <a href="../../start/platform-support/">platform support</a> for the version choice and validation limits.</p>
+<p>The SDK contains the unmodified signed packages from <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.7">usbip-win2 0.9.7.7</a>. Their Microsoft signatures are retained.</p>
+<p>The updater uses an administrator-only staging directory. It refuses an update while USB/IP imports are active, adds the new packages in place, and creates or restarts the required USB/IP host controller. It does not invoke the vendor uninstaller or delete the shared root-hub filter package.</p>
+<p>Readiness requires matching configured binary hashes, loaded driver paths, and IOCTL layout. On Windows 11 24H2 and later, the loaded-image query needs SeDebugPrivilege. The query uses a temporary impersonation token and restores the caller's context.</p>
+<p>A staged package is not necessarily active. The updater checks activation before reporting success. See <a href="../../start/platform-support/">platform support</a> for compatibility and validation limits.</p>
 
 
 

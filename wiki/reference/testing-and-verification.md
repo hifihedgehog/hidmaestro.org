@@ -1,6 +1,6 @@
 ﻿# Testing and Verification
 
-The regression battery has 60 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and device identity. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
+The regression battery has 60 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and native architecture selection. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
 
 For the wiki coverage of where these pipelines fit, see [Build and Release](build-and-release.md). For the underlying SDK mechanics they exercise, see [SDK Reference](../sdk/sdk-reference.md) and [Lifecycle and Teardown](lifecycle-and-teardown.md).
 
@@ -313,4 +313,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-See [platform support](../start/platform-support.md#validation) for the v1.9.0 gate result and the usbip-win2 0.9.7.5 deployment measured on x64. ARM64 hardware has not run the battery, and the Atom fixture was unavailable for this release.
+See [platform support](../start/platform-support.md#validation) for cross-compilation and x64 Sandbox installation/upgrade evidence. ARM64 hardware execution has not been tested, and the Atom fixture was unavailable for this update.

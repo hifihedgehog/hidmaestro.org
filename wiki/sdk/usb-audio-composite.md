@@ -30,11 +30,13 @@ using var ctrl = ctx.CreateController(ctx.GetProfile("dualsense-composite")!);
 
 That is the entire setup. A composite persona is created the same way as any other profile.
 
-Composite personas use the bundled [usbip-win2 0.9.7.5 release](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.5). The x64 and ARM64 installers are both embedded in HIDMaestro.Core.dll, unmodified and Microsoft-signed.
+Composite personas use the bundled [usbip-win2 0.9.7.7 package](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.7). Both x64 and ARM64 signed driver packages are embedded in HIDMaestro.Core.dll.
 
-The build checks each installer against the upstream release hash before embedding it, and the SDK checks the extracted copy again before running it. The SDK installs the transport only on a machine that has no usbip-win2. A machine that already has a working one, including 0.9.7.7 from an earlier HIDMaestro release, keeps it: the interface is the same and nothing is reinstalled. USB devices blink once during a first-time install.
+The build checks the upstream installer hashes, extracts the signed INF/SYS/CAT files, and verifies each file before embedding it. The SDK uses an administrator-only staging directory and adds the packages through PnP. It retains the existing packages and never invokes the vendor uninstaller.
 
-See [platform support](../start/platform-support.md) for the version choice and validation limits.
+An update requires detached USB/IP imports. Readiness is checked against the configured hashes, loaded driver images, and new IOCTL layout. USB devices can briefly reconnect during installation. The SDK keeps the zero-copy receive mode and preserves the profile's serial identity.
+
+The new driver rejects the old SDK's attach structure. Update every consumer's SDK before upgrading a shared host. See [platform support](../start/platform-support.md) for source-build availability and validation limits.
 Two optional APIs exist for consumers that want control over *when* the one-time install happens:
 
 ```csharp

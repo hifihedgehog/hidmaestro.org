@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIDMaestro: Virtual controllers with real identity</title>
-    <meta name="description" content="User-mode virtual game controllers for Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type, at ~35 µs measured latency.">
-    <meta name="keywords" content="HIDMaestro, virtual controller, UMDF2, DirectInput, XInput, SDL3, gamepad emulation, HID descriptor, controller emulation, ViGEmBus alternative, vJoy alternative, VIIPER alternative">
+    <meta name="description" content="User-mode virtual game controllers for x64 and ARM64 Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type, at ~35 µs measured latency.">
+    <meta name="keywords" content="HIDMaestro, virtual controller, UMDF2, DirectInput, XInput, SDL3, gamepad emulation, HID descriptor, controller emulation, ARM64, Windows on Arm, ViGEmBus alternative, vJoy alternative, VIIPER alternative">
     <meta property="og:title" content="HIDMaestro: Virtual controllers with real identity">
-    <meta property="og:description" content="User-mode virtual game controllers for Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type.">
+    <meta property="og:description" content="User-mode virtual game controllers for x64 and ARM64 Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type.">
     <meta property="og:image" content="https://hidmaestro.org/assets/logo.png">
     <meta property="og:url" content="https://hidmaestro.org">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="HIDMaestro: Virtual controllers with real identity">
-    <meta name="twitter:description" content="User-mode virtual game controllers for Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware.">
+    <meta name="twitter:description" content="User-mode virtual game controllers for x64 and ARM64 Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware.">
     <meta name="twitter:image" content="https://hidmaestro.org/assets/logo.png">
     <link rel="icon" type="image/png" href="assets/icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
     <script>document.documentElement.classList.add('js');</script>
 <style id="cap">
 .hero{min-height:auto !important; padding-top:11rem !important; padding-bottom:5rem !important;}
@@ -50,14 +50,18 @@
 <!-- ═══════════════ HERO ═══════════════ -->
 <header class="hero" id="top">
     <div class="hero-inner">
-        <h1 class="display-xl hero-title reveal">Virtual controllers.<br>Real <em>identity</em>.</h1>
-        <p class="lede lede-center hero-lede reveal" data-d="1">
+        <p class="kicker reveal" style="text-align:center">The engine inside PadForge</p>
+        <h1 class="display-xl hero-title reveal" data-d="1">Virtual controllers.<br>Real <em>identity</em>.</h1>
+        <p class="lede lede-center hero-lede reveal" data-d="2">
             Pick a controller profile. Every gaming API sees the
             exact identity of real hardware, down to the bus type.
         </p>
-        <div class="hero-cta reveal" data-d="2">
+        <div class="hero-cta reveal" data-d="3">
             <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary" target="_blank" rel="noopener">Download latest release</a>
             <a href="/docs/" class="btn btn-ghost">Read the docs</a>
+        </div>
+        <div class="hero-new-row reveal" data-d="4">
+            <a class="hero-new" href="docs/start/platform-support/"><b>New in v1.9.0</b><span>ARM64 Windows support</span></a>
         </div>
     </div>
 
@@ -93,14 +97,15 @@
                     A C# SDK and a matching user-mode driver. Your code picks a
                     profile, and the game on the other side sees the real thing.
                 </p>
-                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 27 capabilities</a>
+                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 28 capabilities</a>
             </div>
 
             <div class="manifest reveal" data-d="1">
                 <div class="mf" style="--mf: var(--ember)"><b>Exact hardware identity</b><span>VID/PID, strings, descriptors, layout, and the bus type itself</span></div>
-                <div class="mf" style="--mf: var(--brand-ps)"><b>231 device profiles</b><span>32 vendors, Xbox 360 to HOTAS, every one a JSON file</span></div>
+                <div class="mf" style="--mf: var(--brand-ps)"><b>231 device profiles</b><span>Xbox 360 to HOTAS, every one a JSON file</span></div>
                 <div class="mf" style="--mf: var(--brand-xbox)"><b>~35 &micro;s measured latency</b><span>10,000 iterations, reproducible with one command</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Every gaming API at once</b><span>DirectInput, XInput, SDL3, browser, WGI, RawInput</span></div>
+                <div class="mf" style="--mf: var(--brand-ps)"><b>Native on ARM64 Windows</b><span>One DLL holds both driver sets and installs the matching one</span></div>
                 <div class="mf" style="--mf: var(--brand-steam)"><b>Valve personas Steam recognizes</b><span>The Steam Deck and both Steam Controllers, filed as Valve hardware</span></div>
                 <div class="mf" style="--mf: var(--brand-nin)"><b>A Switch Pro that answers back</b><span>The Nintendo handshake, answered over real Bluetooth</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Controller audio and haptics</b><span>The pad's speaker, microphone, and voice-coil endpoints</span></div>
@@ -109,7 +114,7 @@
                 <div class="mf" style="--mf: var(--brand-ps)"><b>Self-bootstrapping install</b><span>No EV certificate, no test-signing mode, no reboot</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Hot-plug in ~200 ms</b><span>Create, live-swap, and remove, with no leftover devices</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Six-plus controllers at once</b><span>Correct per-controller order on every API</span></div>
-                <div class="mf" style="--mf: var(--brand-nin)"><b>A 58-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
+                <div class="mf" style="--mf: var(--brand-nin)"><b>A 60-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
             </div>
         </div>
     </div>
@@ -136,7 +141,7 @@
                 <div class="details reveal" data-d="3">
                     <details class="detail">
                         <summary>Xbox to HOTAS, out of the box</summary>
-                        <div class="detail-body">Embedded profiles across 32 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code.</div>
+                        <div class="detail-body">Embedded profiles across 46 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code.</div>
                     </details>
                     <details class="detail">
                         <summary>Steam sees a Steam Deck</summary>
@@ -172,10 +177,39 @@
     <div class="container">
         <div class="stat-grid">
             <div class="stat reveal"><div class="stat-n">231</div><div class="stat-l">Device profiles</div></div>
-            <div class="stat reveal" data-d="1"><div class="stat-n">32</div><div class="stat-l">Vendors covered</div></div>
             <div class="stat reveal" data-d="2"><div class="stat-n">~35<em>&micro;s</em></div><div class="stat-l">Median single-press</div></div>
-            <div class="stat reveal" data-d="3"><div class="stat-n">58</div><div class="stat-l">Battery scenarios</div></div>
-            <div class="stat reveal" data-d="4"><div class="stat-n">0</div><div class="stat-l">Kernel drivers installed</div></div>
+            <div class="stat reveal" data-d="3"><div class="stat-n">60</div><div class="stat-l">Battery scenarios</div></div>
+            <div class="stat reveal" data-d="4"><div class="stat-n">0</div><div class="stat-l">Kernel drivers for standard profiles</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ ADOPTION ═══════════════ -->
+<div class="chapter chapter-ember" id="adopted">
+    <h2>ADOPTED</h2>
+    <p>PadForge drives the whole surface. Other projects build on the parts they need.</p>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="mf-layout">
+            <div class="mf-copy">
+                <h2 class="reveal">Other people ship it.</h2>
+                <p class="reveal" data-d="1"><a href="https://padforge.org/" target="_blank" rel="noopener"><b>PadForge</b></a> uses HIDMaestro for virtual controller output. It is built on this SDK end to end and drives more of the surface than any other consumer: every profile family, live profile swapping, multi-controller slots, force feedback, controller audio and haptics, the Valve personas, and the virtual VR controllers. Its Softpedia listing is an Editor's Pick at 5.0 out of 5.</p>
+                <p class="reveal" data-d="2">LizardByte's <a href="https://github.com/LizardByte/libvirtualhid" target="_blank" rel="noopener">libvirtualhid</a>, from the organization behind Sunshine, reuses this project's force-feedback descriptor byte for byte and says so in its own source: <em>"HIDMaestro's MIT-licensed MinimumViablePidFfbBlock, byte-for-byte."</em> Their header calls the layout the subset of the PID descriptor proven by HIDMaestro, and their alternatives table lists it beside ViGEmBus, inputtino and WinUHid.</p>
+                <a href="https://padforge.org/" target="_blank" rel="noopener" class="btn btn-ghost reveal" data-d="2" style="margin-top:1.5rem">See it running in PadForge</a>
+            </div>
+
+            <div class="manifest reveal" data-d="1">
+                <div class="mf" style="--mf: var(--ember)"><b><a href="https://padforge.org/" target="_blank" rel="noopener">PadForge</a></b><span>The flagship. Every capability this SDK ships, in one app</span></div>
+                <div class="mf" style="--mf: var(--brand-ps)"><b><a href="https://github.com/AlkaidLab/foundation-sunshine" target="_blank" rel="noopener">foundation-sunshine</a></b><span>A Sunshine fork whose DualSense support is built on HIDMaestro</span></div>
+                
+                <div class="mf" style="--mf: var(--brand-xbox)"><b><a href="https://github.com/muchimi/JoystickGremlinEx" target="_blank" rel="noopener">JoystickGremlinEx</a></b><span>A flight-sim remapper driving the SDK from Python over pythonnet</span></div>
+                <div class="mf" style="--mf: var(--telemetry)"><b><a href="https://github.com/TheRealFame/Nearcade" target="_blank" rel="noopener">Nearcade</a></b><span>Pins the SDK as a submodule for its remote-play bridge</span></div>
+                <div class="mf" style="--mf: var(--brand-steam)"><b><a href="https://github.com/shiftedx/dualsense-command" target="_blank" rel="noopener">dualsense-command</a></b><span>Bundles the runtime in its bridge installers</span></div>
+                <div class="mf" style="--mf: var(--brand-nin)"><b><a href="https://github.com/x-iso/FlexInput" target="_blank" rel="noopener">FlexInput</a></b><span>Uses HIDMaestro as its default virtual-device backend</span></div>
+                <div class="mf" style="--mf: var(--ember)"><b><a href="https://github.com/dumbie/DirectXInput" target="_blank" rel="noopener">DirectXInput</a></b><span>Ships the runtime with its controller tooling</span></div>
+            </div>
         </div>
     </div>
 </section>
@@ -264,8 +298,8 @@
 
         <div class="details reveal" data-d="2" style="max-width:760px; margin-inline:auto">
             <details class="detail">
-                <summary>58 regression scenarios</summary>
-                <div class="detail-body">A 58-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, and WGI. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
+                <summary>60 regression scenarios</summary>
+                <div class="detail-body">A 60-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, WGI, the battery reply a pad gives XInput, and the device identity of every family across nine lives. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
             </details>
             <details class="detail">
                 <summary>Six pads, every API, correct order</summary>
@@ -302,7 +336,7 @@
                 <div class="details reveal" data-d="3">
                     <details class="detail">
                         <summary>Reference the SDK</summary>
-                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 231-profile catalog, the driver binaries, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
+                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 231-profile catalog, the driver binaries for x64 and ARM64, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
                     </details>
                     <details class="detail">
                         <summary>Install the driver</summary>
@@ -398,14 +432,14 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary" target="_blank" rel="noopener">Download latest release</a>
             <a href="https://github.com/hifihedgehog/HIDMaestro" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
         </div>
-        <p class="reveal" data-d="3">Published v1.7.3 downloads are x64-only. ARM64 work remains under validation. The USB/IP 0.9.8.0 upgrade is blocked by driver-lifecycle failures. <a href="docs/start/platform-support/">Read the validation results</a>.</p>
+        <p class="dl-arch reveal" data-d="3">v1.9.0 adds <b>ARM64 Windows</b>. Each release has an x64 ZIP and an ARM64 ZIP, and HIDMaestro.Core.dll is the same file in both. <a href="docs/start/platform-support/">Read what was measured on each</a>.</p>
         <div class="dl-meta reveal" data-d="3">
-            <span>One DLL</span><span>x64 / ARM64 source builds</span><span>MIT</span>
+            <span>One DLL</span><span>x64 and ARM64</span><span>MIT</span>
         </div>
         <div class="details reveal" data-d="3" style="max-width:720px; margin:2.6rem auto 0; text-align:left">
             <details class="detail">
                 <summary>Prerequisites</summary>
-                <div class="detail-body">Windows 10/11 on x64 or Windows 11 on ARM64, .NET 10, and administrator privileges for virtual device creation. Source builds need Visual Studio C++ tools for both architectures and Windows SDK/WDK 10.0.26100.0. ARM64 hardware execution remains unverified. <a href="docs/start/platform-support/">Platform support and validation</a>.</div>
+                <div class="detail-body">Windows 10/11 on x64 or Windows 11 on ARM64, .NET 10, and administrator privileges for virtual device creation. Source builds need Visual Studio C++ tools for x64 and ARM64 and Windows SDK/WDK 10.0.26100.0. <a href="docs/start/platform-support/">Platform support and validation</a>.</div>
             </details>
             <details class="detail">
                 <summary>Not a developer?</summary>
@@ -447,13 +481,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
     <div class="container">
         <div class="footer-grid">
             <a class="footer-brand" href="#top"><img src="assets/logo-light.png" alt="" width="26" height="26">HIDMaestro</a>
-            <div class="footer-links">
-                <a href="specs.html">Specifications</a>
-                <a href="/docs/">Docs</a>
-                <a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a>
-                <a href="https://github.com/hifihedgehog/HIDMaestro/issues" target="_blank" rel="noopener">Issues</a>
-                <a href="https://github.com/hifihedgehog/HIDMaestro/discussions" target="_blank" rel="noopener">Discussions</a>
-            </div>
+            <div class="footer-links"><a href="/">Home</a><a href="/press/">Press</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a><a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/hifihedgehog/HIDMaestro/issues" target="_blank" rel="noopener">Issues</a></div>
         </div>
         <div class="footer-note">
             <span>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color:var(--text-muted)">MIT License</a></span>

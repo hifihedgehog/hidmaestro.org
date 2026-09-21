@@ -70,12 +70,9 @@ set for x64 and one for ARM64 and installs the one matching the machine. See
 
 ## Who ships it
 
-Twenty-plus independent open-source projects have adopted HIDMaestro, across
-six languages, for a combined installed base of about 574,000 downloads as of September 2026.
-Roughly 27,700 of those builds ship or fetch the runtime directly.
-
-[PadForge](https://padforge.org/) is the flagship. It is built on this SDK end
-to end and drives more of the surface than any other consumer: every profile
+[PadForge](https://padforge.org/) uses HIDMaestro for virtual controller
+output. It is built on this SDK end to end and drives more of the surface
+than any other consumer: every profile
 family, live profile swapping, multi-controller slots, force feedback,
 controller audio and haptics, the Valve personas, and the virtual VR
 controllers. Its Softpedia listing is an Editor's Pick at 5.0 out of 5. To

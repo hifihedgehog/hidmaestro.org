@@ -225,3 +225,17 @@
   font-size: 0.68rem;
   color: var(--md-default-fg-color--light);
 }
+
+.product-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 1.5rem;
+  padding: 1.2rem .6rem;
+  color: var(--md-footer-fg-color);
+  font-size: .72rem;
+}
+.product-footer-nav a:hover { color: var(--md-accent-fg-color); }
+.product-footer-nav a:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 5px;
+}

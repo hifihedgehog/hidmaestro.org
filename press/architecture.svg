@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="960" viewBox="0 0 1600 960" role="img" aria-labelledby="title description">
+<title id="title">HIDMaestro architecture overview</title>
+<desc id="description">An application's input passes through the HIDMaestro SDK and drivers to virtual controllers in Windows. JSON profiles configure device identity. Output events return to the application. Input API support depends on the selected profile. Composite USB profiles also use the usbip-win2 transport.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto-start-reverse"><path d="M0 0 8 4 0 8" fill="none" stroke="#6fc3d6" stroke-width="1.4"/></marker></defs>
+<rect width="1600" height="960" rx="12" fill="#0d1117"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<text x="90" y="95" fill="#6fc3d6" font-size="15" letter-spacing="4">HIDMAESTRO</text>
+<text x="90" y="162" fill="#f7f9fc" font-size="46" font-weight="600" letter-spacing="-1.5">Virtual controller architecture</text>
+<text x="90" y="206" fill="#929fb0" font-size="21">Input moves toward the game. Output returns to the application.</text>
+<g fill="#12171f" stroke="#212a36" stroke-width="2"><rect x="90" y="340" width="330" height="240" rx="8"/><rect x="635" y="340" width="330" height="240" rx="8"/><rect x="1180" y="340" width="330" height="240" rx="8"/></g>
+<rect x="635" y="338" width="330" height="3" fill="#f2652a"/>
+<g fill="#f7f9fc" font-size="28" font-weight="600"><text x="125" y="397">Your application</text><text x="670" y="397">HIDMaestro</text><text x="1215" y="397">Windows</text></g>
+<g fill="#929fb0" font-size="21"><text x="125" y="447">Input state</text><text x="125" y="483">Output events</text><text x="670" y="447">C# SDK</text><text x="670" y="483">Virtual-device drivers</text><text x="1215" y="447">Virtual controllers</text><text x="1215" y="483">Game input APIs</text></g>
+<g fill="#6fc3d6" font-size="15" font-family="Consolas, monospace"><text x="125" y="543">SubmitState</text><text x="670" y="543">HID / XUSB / USB</text><text x="1215" y="543">Identity + reports</text></g>
+<g stroke="#6fc3d6" stroke-width="2" fill="none" marker-end="url(#arrow)"><path d="M420 440H622"/><path d="M965 440H1167"/></g>
+<g fill="#929fb0" font-size="15" text-anchor="middle"><text x="527" y="416">Input</text><text x="1072" y="416">Device reports</text></g>
+<path d="M1345 580V682H255V593" stroke="#6fc3d6" stroke-width="2" fill="none" stroke-dasharray="6 7" marker-end="url(#arrow)"/>
+<rect x="577" y="659" width="448" height="45" rx="6" fill="#0d1117"/>
+<text x="800" y="688" text-anchor="middle" fill="#929fb0" font-size="18">Output events through the SDK</text>
+<path d="M800 293V325" stroke="#929fb0" stroke-width="2" fill="none"/>
+<rect x="688" y="254" width="224" height="43" rx="22" fill="#171d27" stroke="#212a36"/>
+<text x="800" y="282" text-anchor="middle" fill="#d4dae3" font-size="17">JSON device profile</text>
+<path d="M90 778H1510" stroke="#212a36"/>
+<text x="90" y="822" fill="#d4dae3" font-size="18">DirectInput / XInput / Windows.Gaming.Input / SDL3 / Browser Gamepad</text>
+<text x="90" y="859" fill="#929fb0" font-size="17">API support depends on the selected profile. Composite USB profiles also use usbip-win2.</text>
+<text x="90" y="913" fill="#929fb0" font-size="15">hidmaestro.org</text>
+</g></svg>

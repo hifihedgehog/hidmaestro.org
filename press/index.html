@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Press &amp; media | HIDMaestro</title>
+    <meta name="description" content="Official HIDMaestro brand assets, architecture artwork, and product information. Download the press kit for the Windows virtual-controller SDK.">
+    <link rel="canonical" href="https://hidmaestro.org/press/">
+    <meta property="og:title" content="Press &amp; media | HIDMaestro">
+    <meta property="og:description" content="Brand assets, architecture artwork, and product information for HIDMaestro.">
+    <meta property="og:image" content="https://hidmaestro.org/assets/logo.png">
+    <meta property="og:url" content="https://hidmaestro.org/press/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/png" href="../assets/logo-light.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&amp;family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css?v=10">
+    <link rel="stylesheet" href="press.css?v=20260921c">
+    <script src="press.js?v=20260921c" defer></script>
+</head>
+<body class="press-page">
+<a class="press-skip" href="#main">Skip to content</a>
+<nav class="nav stuck" aria-label="Main navigation">
+    <div class="container-wide nav-in">
+        <a class="nav-brand" href="/"><img src="../assets/logo-light.png" alt="" width="27" height="27">HIDMaestro<span class="nav-context">Press</span></a>
+        <div class="nav-links"><a href="#resources">Resources</a><a href="#brand">Brand assets</a><a href="#about">About</a><a href="/docs/">Docs</a></div>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/hifihedgehog/HIDMaestro/releases/latest">Get SDK</a>
+    </div>
+</nav>
+<main id="main">
+<header class="press-hero press-width">
+    <div class="hero-copy"><p class="eyebrow">HIDMaestro</p><h1>Press<br><span>&amp; media.</span></h1><p class="hero-description">Brand assets and product information for stories about HIDMaestro.</p><a class="btn btn-primary kit-button" href="HIDMaestro-v1.9.0-press-kit.zip" download><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v13m-5-5 5 5 5-5M5 20h14"/></svg>Download press kit</a><p class="kit-detail">Architecture, logos &amp; fact sheet<span>ZIP &middot; 1.6 MB</span></p></div>
+    <figure class="sdk-stage stage">
+        <div class="sdk-panel"><div class="sdk-bar"><span>HIDMaestro.Core</span><span>C#</span></div><pre aria-label="C# SDK excerpt"><code><span class="code-keyword">using var</span> ctx = <span class="code-keyword">new</span> <span class="code-type">HMContext</span>();
+ctx.LoadDefaultProfiles();
+ctx.InstallDriver();
+
+<span class="code-keyword">using var</span> ctrl = ctx.CreateController(
+    ctx.GetProfile(<span class="code-string">"xbox-360-wired"</span>)!);
+
+ctrl.SubmitState(<span class="code-keyword">new</span> <span class="code-type">HMGamepadState</span> {
+    Buttons = <span class="code-type">HMButton</span>.A
+});</code></pre></div>
+        <figcaption><span>SDK excerpt</span><a href="/docs/start/quickstart/">Read the quickstart <span aria-hidden="true">&#8599;</span></a></figcaption>
+    </figure>
+</header>
+<div class="release-strip press-width"><p><span class="release-marker" aria-hidden="true"></span><strong>HIDMaestro 1.9.0</strong><span>September 20, 2026</span></p><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v1.9.0">Release notes <span aria-hidden="true">&#8599;</span></a></div>
+<section class="resources-section press-width" id="resources" aria-labelledby="resources-title">
+    <div class="section-heading"><div><p class="eyebrow">The technology</p><h2 id="resources-title">Product graphic</h2></div><a class="text-link" href="/docs/reference/architecture-overview/">Architecture documentation <span aria-hidden="true">&#8599;</span></a></div>
+    <figure class="architecture-asset"><a class="architecture-preview" href="architecture.svg" data-preview data-title="HIDMaestro architecture" data-filename="architecture.svg" aria-label="Enlarge architecture overview"><img src="architecture.svg" alt="HIDMaestro architecture: application input reaches virtual Windows controllers through the SDK and drivers. Output events return to the application." width="1600" height="960" loading="lazy"></a><figcaption class="asset-caption"><div><h3>Architecture overview</h3><p>1600 &times; 960 <span>SVG</span></p></div><a class="text-link" href="architecture.svg" download="HIDMaestro-architecture.svg">Download SVG <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v13m-5-5 5 5 5-5M5 20h14"/></svg></a></figcaption></figure>
+</section>
+<section class="brand-section" id="brand" aria-labelledby="brand-title"><div class="press-width brand-layout">
+    <div class="brand-copy"><p class="eyebrow">Identity</p><h2 id="brand-title">Brand assets</h2><p>The HIDMaestro conductor mark,<br> for light and dark backgrounds.</p><a class="text-link" href="https://github.com/hifihedgehog/HIDMaestro/blob/v1.9.0/LICENSE">MIT license <span aria-hidden="true">&#8599;</span></a></div>
+    <div class="brand-assets">
+        <figure class="brand-asset"><a class="brand-preview brand-logo" href="../assets/logo.png" data-preview data-title="HIDMaestro dark mark" data-filename="dark-mark.png" aria-label="Enlarge dark mark"><img src="../assets/logo.png" alt="Dark HIDMaestro conductor mark" width="1024" height="1024" loading="lazy"></a><figcaption class="asset-caption"><div><h3>Dark mark</h3><p>1024 &times; 1024 <span>PNG</span></p></div><a class="asset-download" href="../assets/logo.png" download="HIDMaestro-dark-mark.png" aria-label="Download dark mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v13m-5-5 5 5 5-5M5 20h14"/></svg></a></figcaption></figure>
+        <figure class="brand-asset"><a class="brand-preview brand-icon" href="../assets/logo-light.png" data-preview data-title="HIDMaestro light mark" data-filename="light-mark.png" data-background="dark" aria-label="Enlarge light mark"><img src="../assets/logo-light.png" alt="Light HIDMaestro conductor mark" width="1024" height="1024" loading="lazy"></a><figcaption class="asset-caption"><div><h3>Light mark</h3><p>1024 &times; 1024 <span>PNG</span></p></div><a class="asset-download" href="../assets/logo-light.png" download="HIDMaestro-light-mark.png" aria-label="Download light mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v13m-5-5 5 5 5-5M5 20h14"/></svg></a></figcaption></figure>
+    </div>
+</div></section>
+<section class="about-section press-width" id="about" aria-labelledby="about-title">
+    <div class="about-copy"><p class="eyebrow">The project</p><h2 id="about-title">About HIDMaestro</h2><p id="product-description">HIDMaestro is a free, open-source SDK for creating virtual game controllers on Windows. Applications use its C# API and JSON device profiles to define controller identity, submit input, and receive output such as rumble and force feedback. PadForge uses HIDMaestro for virtual controller output. HIDMaestro is available under the MIT license, including for commercial use.</p><div class="about-actions"><button class="text-link copy-button" type="button" hidden>Copy description <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 4H6a2 2 0 0 0-2 2v10"/></svg></button><a class="text-link" href="fact-sheet.txt" download="HIDMaestro-fact-sheet.txt">Download fact sheet <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v13m-5-5 5 5 5-5M5 20h14"/></svg></a></div><p class="copy-status" role="status" aria-live="polite"></p><p class="credits">Built on the UMDF2 approach pioneered by <a href="https://github.com/nefarius/DsHidMini">Nefarius in DsHidMini</a>. Composite USB profiles use <a href="https://github.com/vadimgrn/usbip-win2">usbip-win2 by Vadym Hrynchyshyn</a>. <a href="https://github.com/hifihedgehog/HIDMaestro/blob/v1.9.0/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt">Third-party notices</a>.</p></div>
+    <aside class="project-details" aria-label="Product details"><dl><div><dt>Platform</dt><dd>Windows 10 / 11<span>x64 &middot; Windows 11 ARM64</span></dd></div><div><dt>SDK</dt><dd>C# / .NET 10<span>JSON device profiles</span></dd></div><div><dt>License</dt><dd>Free &amp; open source<span>MIT &middot; Commercial use permitted</span></dd></div></dl><div class="reference-links"><a href="/specs.html">Specifications <span aria-hidden="true">&#8599;</span></a><a href="/docs/start/installation/">Installation guide <span aria-hidden="true">&#8599;</span></a><a href="https://github.com/hifihedgehog/HIDMaestro">Source repository <span aria-hidden="true">&#8599;</span></a></div></aside>
+</section>
+</main>
+<footer class="footer"><div class="press-width"><div class="footer-grid"><a class="footer-brand" href="/"><img src="../assets/logo-light.png" alt="" width="26" height="26">HIDMaestro</a><div class="footer-links"><a href="/">Home</a><a href="/press/">Press</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a><a href="https://github.com/hifihedgehog/HIDMaestro">GitHub</a></div></div><div class="footer-note"><span>Licensed under MIT</span><a href="https://padforge.org/">The engine inside PadForge</a></div></div></footer>
+<dialog class="media-viewer" aria-labelledby="viewer-title"><div class="viewer-toolbar"><h2 id="viewer-title"></h2><div><a class="viewer-download" download><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v13m-5-5 5 5 5-5M5 20h14"/></svg><span>Download</span></a><button class="viewer-close" type="button" aria-label="Close image"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></div><div class="viewer-image"><img alt=""></div></dialog>
+</body></html>

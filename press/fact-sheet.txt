@@ -1,0 +1,49 @@
+HIDMaestro
+Product information | September 21, 2026
+
+HIDMaestro is a free, open-source SDK for creating virtual game controllers on Windows. Applications use its C# API and JSON device profiles to define controller identity, submit input, and receive output such as rumble and force feedback. PadForge uses HIDMaestro for virtual controller output. HIDMaestro is available under the MIT license, including for commercial use.
+
+Website: https://hidmaestro.org/
+Press resources: https://hidmaestro.org/press/
+Current release: v1.9.0, September 20, 2026
+Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v1.9.0
+Platforms: Windows 10 and 11 on x64. Windows 11 on ARM64.
+SDK: C# / .NET 10. The driver and device profiles are embedded in HIDMaestro.Core.dll.
+Price: Free.
+License: MIT. Commercial use is permitted subject to the license terms.
+License text: https://github.com/hifihedgehog/HIDMaestro/blob/v1.9.0/LICENSE
+
+Architecture
+Applications submit input through the C# SDK. JSON profiles describe controller
+identity and reports. The core HID/XUSB paths use Windows UMDF2. Composite USB
+profiles use a signed usbip-win2 transport for USB HID and audio interfaces.
+Output events return to the application, which handles physical-device routing.
+Input API support depends on the selected profile.
+
+Setup and validation
+Device creation and driver installation require administrator rights.
+The v1.9.0 release was tested on Windows 11 x64. ARM64 binaries were built and
+signed, but the regression battery has not been run on ARM64 hardware.
+Installation: https://hidmaestro.org/docs/start/installation/
+Platform support: https://hidmaestro.org/docs/start/platform-support/
+Quickstart: https://hidmaestro.org/docs/start/quickstart/
+Testing: https://hidmaestro.org/docs/reference/testing-and-verification/
+
+References
+Specifications: https://hidmaestro.org/specs.html
+Architecture: https://hidmaestro.org/docs/reference/architecture-overview/
+Input APIs: https://hidmaestro.org/docs/reference/cross-api-coverage/
+Profiles: https://hidmaestro.org/docs/profiles/profile-system/
+Source: https://github.com/hifihedgehog/HIDMaestro
+
+Press assets
+architecture.svg: Architecture overview, 1600 x 960 SVG.
+hidmaestro-dark-mark.png: Dark conductor mark for light backgrounds, 1024 x 1024 PNG.
+hidmaestro-light-mark.png: Light conductor mark for dark backgrounds, 1024 x 1024 PNG.
+
+Credits
+Nefarius pioneered the UMDF2 controller-driver approach in DsHidMini:
+https://github.com/nefarius/DsHidMini
+Composite USB profiles use usbip-win2 by Vadym Hrynchyshyn:
+https://github.com/vadimgrn/usbip-win2
+Third-party notices: https://github.com/hifihedgehog/HIDMaestro/blob/v1.9.0/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt

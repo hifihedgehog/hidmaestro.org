@@ -313,4 +313,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-See [platform support](../start/platform-support.md#validation) for the v1.9.1 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.7.5 deployment measured on x64. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.
+See [platform support](../start/platform-support.md#validation) for the v1.9.2 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.

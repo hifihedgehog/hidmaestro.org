@@ -40,7 +40,7 @@ Directory.Build.props controls managed and native VERSIONINFO versions. Builds u
 
 The INF stamping script decorates the model sections for the target, NTamd64 or NTARM64, updates the date, and stamps the fourth DriverVer component with the build minute. It refuses to write an INF that ends up with neither. Native version resources come from gen_version.ps1.
 
-The first three DriverVer components move only when driver code changes. The build stamps the fourth with the build minute and the date with the build day, so every native build is a new package to Windows. `InstallDriver()` skips its work only when the embedded driver files, INFs included, hash the same as the installed ones, so the first run of a release with a new native build reinstalls the driver once. v1.9.1 changes no driver code and stays at 1.8.1, stamped 1.8.1.2017.
+The first three DriverVer components move only when driver code changes. The build stamps the fourth with the build minute and the date with the build day, so every native build is a new package to Windows. `InstallDriver()` skips its work only when the embedded driver files, INFs included, hash the same as the installed ones, so the first run of a release with a new native build reinstalls the driver once. v1.9.2 changes no driver code and stays at 1.8.1, stamped 1.8.1.2248.
 
 ## Validation and release order
 
@@ -70,8 +70,8 @@ A failed or unavailable test must not be described as passed. Update the website
 
 ## USB/IP package preparation
 
-The build downloads the pinned usbip-win2 0.9.7.5 installers, x64 and ARM64, and checks each against the SHA-256 the upstream release publishes. A mismatch fails the build. Both are embedded unmodified, and the license notice embedded beside them names both files and both hashes.
+The build downloads the pinned usbip-win2 0.9.8.1 installers, the x64 one from the release and the ARM64 one from the project's signing service, and checks each against its pinned SHA-256. A mismatch fails the build. Both are embedded unmodified, and the license notice embedded beside them names both files and both hashes.
 
-The build also unpacks the host controller's INF, SYS and CAT from those installers with a pinned unpacker, checks each file against UsbipPackage.json, and embeds them per architecture. That is what lets the SDK move a machine from 0.9.7.7 to 0.9.7.5 through PnP.
+The build also unpacks the host controller's INF, SYS and CAT from those installers with a pinned unpacker, checks each file against UsbipPackage.json, and embeds them per architecture. That is what lets the SDK move a machine from an older transport to 0.9.8.1 through PnP.
 
 At run time the SDK verifies the extracted installer again and runs it silently, and only on a machine with no usbip-win2. It never invokes the vendor uninstaller, which removes the shared root-hub filter, and it never runs an installer over an existing install.

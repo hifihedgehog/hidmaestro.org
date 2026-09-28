@@ -2,7 +2,7 @@
 
 Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.
 
-v1.9.1 ships for x64 and ARM64. See [platform support](platform-support.md#validation) for what was measured on each.
+v1.9.2 ships for x64 and ARM64. See [platform support](platform-support.md#validation) for what was measured on each.
 
 ## Requirements
 
@@ -63,8 +63,8 @@ See [Build and release](../reference/build-and-release.md) for output directorie
 
 ## Composite profiles and upgrades
 
-Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.7.5, the first time one is created on a machine that has none. No separate download is required on the consumer's machine. The build verifies the upstream hashes, and the SDK verifies the installer again before running it.
+Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.8.1, the first time one is created on a machine that has none. No separate download is required on the consumer's machine. The build checks the pinned hashes, and the SDK checks the installer again before running it.
 
-A machine that HIDMaestro put on usbip-win2 0.9.7.7, which is what releases through v1.8.1 installed, is moved to 0.9.7.5 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. Measured on 26200, the move took 878 ms. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then 0.9.7.7 keeps working. Any other usbip-win2 version was installed by another program and is left as it is. `HIDMAESTRO_KEEP_TRANSPORT=1` turns the move off. There is nothing for a user to do when moving to v1.9.0. USB devices blink once during a first-time install on a machine with no transport, while Windows re-enumerates the root hubs.
+A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. `HIDMAESTRO_KEEP_TRANSPORT=1` turns the move off. There is nothing for a user to do when moving to v1.9.2. USB devices blink once during a first-time install on a machine with no transport, while Windows re-enumerates the root hubs.
 
 See [platform support](platform-support.md) for the architecture matrix and measured results. ARM64 hardware has not run the battery.

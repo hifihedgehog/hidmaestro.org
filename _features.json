@@ -93,7 +93,7 @@
     },
     {
         "t":  "The composite exception, stated",
-        "d":  "Composite Sony and Valve profiles use the bundled usbip-win2 0.9.7.5 kernel transport, redistributed unmodified and verified against the upstream SHA256 at build and again before execution. The SDK installs it silently on a machine that has none and never invokes the vendor uninstaller. A machine HIDMaestro put on 0.9.7.7 is moved to 0.9.7.5 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused."
+        "d":  "Composite Sony and Valve profiles use the bundled usbip-win2 0.9.8.1 kernel transport, redistributed unmodified and checked against its pinned SHA-256 at build and again before execution. The SDK installs it silently on a machine that has none and never invokes the vendor uninstaller. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused."
     },
     {
         "t":  "MIT licensed",

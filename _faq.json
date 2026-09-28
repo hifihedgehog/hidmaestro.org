@@ -25,6 +25,6 @@
     },
     {
         "q":  "Does HIDMaestro support ARM64?",
-        "a":  "Yes, from v1.9.0. One HIDMaestro.Core.dll serves x64 and ARM64 and carries a native driver payload for each, and the release has an ARM64 ZIP with an ARM64 test app and profile extractor. The ARM64 payload builds and is signed, and no ARM64 machine has run the regression battery yet."
+        "a":  "Yes. Use v1.9.1 or later. One HIDMaestro.Core.dll serves x64 and ARM64 and carries a native driver payload for each, and the release has an ARM64 ZIP with an ARM64 test app and profile extractor. The ARM64 payload builds and is signed, and the battery builds its driver catalog on every run. No ARM64 machine has run the battery yet."
     }
 ]

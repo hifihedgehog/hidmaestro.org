@@ -1773,7 +1773,7 @@
 </tr>
 </tbody>
 </table>
-<p>Drivers, helpers, and signing tools are embedded for x64 and ARM64. Inf2Cat is the shared x86 tool. Catalog generation uses 10_X64 for x64 and 10_ARM64 for ARM64.</p>
+<p>Drivers, helpers, and signing tools are embedded for x64 and ARM64. One Inf2Cat serves both architectures. It is an x64 .NET program, which Windows 11 on ARM64 runs under its x64 emulation. Catalog generation uses 10_X64 for x64 and 10_RS3_ARM64 for ARM64.</p>
 <h2 id="local-certificate">Local certificate<a class="headerlink" href="#local-certificate" title="Permanent link">&para;</a></h2>
 <p>The installer creates CN=HIDMaestroTestCert if it is absent from the machine certificate store. It uses RSA-2048, SHA-256, PKCS#1 signing, and the Code Signing EKU. The certificate expires ten years after creation.</p>
 <p>The private key is persisted in LocalMachine\My. The certificate is also installed in LocalMachine\Root and LocalMachine\TrustedPublisher.</p>

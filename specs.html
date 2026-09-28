@@ -182,11 +182,11 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>Regression coverage</dt>
-                    <dd>The battery has 60 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, and device identity across nine lives per family. The last full run was 60/60 on a 16-core Ryzen 9 Windows 11 desktop. Production signing and the full HIDMaestro integration gate remain pending.</dd>
+                    <dd>The battery has 62 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, and the driver catalogs for both architectures. The last full run was 62/62 on a 16-core Ryzen 9 Windows 11 laptop. Production signing and the full HIDMaestro integration gate remain pending.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Judged by the real consumers</dt>
-                    <dd>The battery does not only check HIDMaestro's own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. The decoders Steam Input is built on are the judges.</dd>
+                    <dd>The battery checks more than HIDMaestro's own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. Another runs Steam's own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. The decoders Steam Input is built on are the judges.</dd>
                 </div>
             </dl>
         </section>
@@ -196,11 +196,11 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>Native on ARM64 Windows</dt>
-                    <dd>From v1.9.0 the HID driver, the XInput companion and the device helper are built for ARM64 as well as x64, and the INFs carry an NTARM64 section. HIDMaestro.Core.dll holds both sets and installs the one matching the operating system. Composite personas use a Microsoft-signed ARM64 build of the USB transport. The release has an ARM64 ZIP with an ARM64 test app and profile extractor. No ARM64 machine has run the regression battery yet.</dd>
+                    <dd>The HID driver, the XInput companion and the device helper are built for ARM64 as well as x64, and the INFs carry an NTARM64 section. HIDMaestro.Core.dll holds both sets and installs the one matching the operating system. Composite personas use a Microsoft-signed ARM64 build of the USB transport. The release has an ARM64 ZIP with an ARM64 test app and profile extractor. Use v1.9.1 or later on ARM64. The battery builds the ARM64 driver catalog on every run, and no ARM64 machine has run the battery yet.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Windows 10 and 11</dt>
-                    <dd>Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. v1.9.0 publishes a ZIP for each.</dd>
+                    <dd>Windows 10/11 on x64 and Windows 11 on ARM64, with .NET 10 and a 64-bit consumer. Every release has a ZIP for each architecture.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>UMDF2 standard profiles</dt>
@@ -276,7 +276,7 @@
                 </details>
                 <details class="detail">
                     <summary>Does HIDMaestro support ARM64?</summary>
-                    <div class="detail-body">Yes, from v1.9.0. One HIDMaestro.Core.dll serves x64 and ARM64 and carries a native driver payload for each, and the release has an ARM64 ZIP with an ARM64 test app and profile extractor. The ARM64 payload builds and is signed, and no ARM64 machine has run the regression battery yet.</div>
+                    <div class="detail-body">Yes. Use v1.9.1 or later. One HIDMaestro.Core.dll serves x64 and ARM64 and carries a native driver payload for each, and the release has an ARM64 ZIP with an ARM64 test app and profile extractor. The ARM64 payload builds and is signed, and the battery builds its driver catalog on every run. No ARM64 machine has run the battery yet.</div>
                 </details>
             </div>
         </section>

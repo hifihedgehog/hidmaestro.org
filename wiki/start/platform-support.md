@@ -1,6 +1,6 @@
 ﻿# Platform support
 
-v1.9.0 runs on x64 and ARM64 Windows. One `HIDMaestro.Core.dll` serves both. It carries a native driver and helper payload for each architecture and picks the set matching the operating system, so an x64 consumer running under emulation on ARM64 Windows still gets ARM64 drivers.
+HIDMaestro runs on x64 and ARM64 Windows. Use v1.9.1 or later on ARM64. One `HIDMaestro.Core.dll` serves both. It carries a native driver and helper payload for each architecture and picks the set matching the operating system, so an x64 consumer running under emulation on ARM64 Windows still gets ARM64 drivers.
 
 | Component | x64 Windows | ARM64 Windows |
 |---|---|---|
@@ -30,6 +30,14 @@ dotnet build test\HIDMaestroTest.csproj -c Release -p:HMTargetArchitecture=arm64
 dotnet build tools\HIDMaestroProfileExtractor\HIDMaestroProfileExtractor.csproj -c Release -p:HMTargetArchitecture=arm64
 ```
 
+## The ARM64 driver catalog
+
+`InstallDriver()` builds a catalog for each driver INF with Inf2Cat before it signs the package and adds it to the driver store. Inf2Cat's ARM64 values name a Windows release, from `10_RS3_ARM64` on, and it has no bare `10_ARM64`. v1.9.0 asked for `10_ARM64`, which Inf2Cat rejects, so on ARM64 `InstallDriver()` failed before any driver reached the store. v1.9.1 asks for `10_RS3_ARM64`, version 1709, the first Windows 10 release on ARM64. x64 keeps `10_X64`.
+
+One Inf2Cat serves both architectures. It is an x64 .NET program, which Windows 11 on ARM64 runs under its x64 emulation.
+
+Battery scenario S61 extracts each architecture's payload with the embedded Inf2Cat, runs Inf2Cat with the value the SDK picks for that architecture, and requires one catalog per INF. Inf2Cat only parses the INFs and hashes the files, so the check runs on x64 for both architectures.
+
 ## USB/IP 0.9.7.5
 
 Composite personas use the bundled [usbip-win2 0.9.7.5 release](https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.7.5). It is the last release with an ARM64 build before 0.9.8.0. 0.9.7.8 has two open kernel-pool-corruption reports, and 0.9.8.0 has an attach bug that blocks driver unload. Nothing between 0.9.7.5 and 0.9.7.7 touches the interface HIDMaestro uses, which was checked against the upstream source tag by tag.
@@ -42,8 +50,10 @@ A machine that HIDMaestro put on usbip-win2 0.9.7.7, which is what releases thro
 
 ## Validation
 
-The v1.9.0 release gate ran on x64: the full 60-scenario battery passed 60/60 on the tagged binaries on Windows 11 26200. Before the gate, a genuine 0.9.7.7 host controller was bound on that machine and the SDK moved it to 0.9.7.5 on its own in 878 ms. The DualSense composite passed 26/26 in the same run, and the battery's USB/IP scenarios then passed on that driver.
+The v1.9.1 release gate ran on x64: the full 62-scenario battery passed 62/62 on the tagged binaries on Windows 11 26200, in 1,047.0 s. S61 built the driver catalogs for both architectures. S62 ran Steam's own firmware updater, which saw the 2026 Steam Controller persona at Steam's current firmware build and offered it no update. A copy of the persona answering with the old captured build was offered one in the same run.
+
+The move from 0.9.7.7 was measured before the v1.9.0 gate. A genuine 0.9.7.7 host controller was bound on that machine, and the SDK moved it to 0.9.7.5 on its own in 878 ms. The DualSense composite passed 26/26 in the same run.
 
 Both native payloads and the ARM64 applications compile, link and stamp as ARM64, and the bundled ARM64 transport driver is verified as an ARM64 binary with a valid Microsoft signature.
 
-ARM64 hardware has not run the battery. The Atom fixture was unavailable for this release.
+ARM64 hardware has not run the battery. On ARM64, the steps after the catalog, signing it and adding the package to the driver store, have not run. The Atom fixture was not reachable for this release.

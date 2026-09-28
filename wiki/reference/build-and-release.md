@@ -1,6 +1,6 @@
 ﻿# Build and release
 
-v1.9.0 builds and ships for x64 and ARM64 from one source tree. See [platform support](../start/platform-support.md).
+HIDMaestro builds and ships for x64 and ARM64 from one source tree. See [platform support](../start/platform-support.md).
 
 ## Prerequisites
 
@@ -40,7 +40,7 @@ Directory.Build.props controls managed and native VERSIONINFO versions. Builds u
 
 The INF stamping script decorates the model sections for the target, NTamd64 or NTARM64, updates the date, and stamps the fourth DriverVer component with the build minute. It refuses to write an INF that ends up with neither. Native version resources come from gen_version.ps1.
 
-The INF DriverVer moves only when driver code changes. v1.9.0 left it where v1.8.1 had it, so no machine reinstalls the driver for that release.
+The first three DriverVer components move only when driver code changes. The build stamps the fourth with the build minute and the date with the build day, so every native build is a new package to Windows. `InstallDriver()` skips its work only when the embedded driver files, INFs included, hash the same as the installed ones, so the first run of a release with a new native build reinstalls the driver once. v1.9.1 changes no driver code and stays at 1.8.1, stamped 1.8.1.2017.
 
 ## Validation and release order
 
@@ -48,7 +48,7 @@ Finish and commit the intended changes, create the local release tag, and then b
 
 Stage the devbox and Atom fixtures before starting their full batteries together. Stream each scenario result. Record each machine's actual result and any unavailable fixture.
 
-The battery has 60 scenarios. S44 checks the bundled USB/IP transport: that it is present, that its hash still matches the upstream release, and that the deploy path refuses tampered bytes. S58 and S59 cover device identity, derivation without a device and then one controller per family across nine lives. S60 covers the battery reply a pad gives XInput.
+The battery has 62 scenarios. S44 checks the bundled USB/IP transport: that it is present, that its hash still matches the upstream release, and that the deploy path refuses tampered bytes. S58 and S59 cover device identity, derivation without a device and then one controller per family across nine lives. S60 covers the battery reply a pad gives XInput. S61 builds the driver catalogs for both architectures with the embedded Inf2Cat. S62 runs Steam's own firmware updater against the 2026 Steam Controller persona, and skips on a machine without Steam.
 
 ~~~powershell
 # Run elevated after staging the matching outputs.

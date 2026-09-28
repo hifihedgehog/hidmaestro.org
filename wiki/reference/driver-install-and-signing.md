@@ -16,7 +16,7 @@ The AnyCPU SDK selects native files from the operating system architecture, incl
 | Inf2Cat.exe and dependencies | Catalog generation |
 | Profile JSON files | Controller identities and report layouts |
 
-Drivers, helpers, and signing tools are embedded for x64 and ARM64. Inf2Cat is the shared x86 tool. Catalog generation uses 10_X64 for x64 and 10_ARM64 for ARM64.
+Drivers, helpers, and signing tools are embedded for x64 and ARM64. One Inf2Cat serves both architectures. It is an x64 .NET program, which Windows 11 on ARM64 runs under its x64 emulation. Catalog generation uses 10_X64 for x64 and 10_RS3_ARM64 for ARM64.
 
 ## Local certificate
 

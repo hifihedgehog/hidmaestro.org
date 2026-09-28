@@ -61,7 +61,7 @@
             <a href="/docs/" class="btn btn-ghost">Read the docs</a>
         </div>
         <div class="hero-new-row reveal" data-d="4">
-            <a class="hero-new" href="docs/start/platform-support/"><b>New in v1.9.0</b><span>ARM64 Windows support</span></a>
+            <a class="hero-new" href="docs/start/platform-support/"><b>New in v1.9</b><span>ARM64 Windows support</span></a>
         </div>
     </div>
 
@@ -114,7 +114,7 @@
                 <div class="mf" style="--mf: var(--brand-ps)"><b>Self-bootstrapping install</b><span>No EV certificate, no test-signing mode, no reboot</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Hot-plug in ~200 ms</b><span>Create, live-swap, and remove, with no leftover devices</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Six-plus controllers at once</b><span>Correct per-controller order on every API</span></div>
-                <div class="mf" style="--mf: var(--brand-nin)"><b>A 60-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
+                <div class="mf" style="--mf: var(--brand-nin)"><b>A 62-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
             </div>
         </div>
     </div>
@@ -178,7 +178,7 @@
         <div class="stat-grid">
             <div class="stat reveal"><div class="stat-n">231</div><div class="stat-l">Device profiles</div></div>
             <div class="stat reveal" data-d="2"><div class="stat-n">~35<em>&micro;s</em></div><div class="stat-l">Median single-press</div></div>
-            <div class="stat reveal" data-d="3"><div class="stat-n">60</div><div class="stat-l">Battery scenarios</div></div>
+            <div class="stat reveal" data-d="3"><div class="stat-n">62</div><div class="stat-l">Battery scenarios</div></div>
             <div class="stat reveal" data-d="4"><div class="stat-n">0</div><div class="stat-l">Kernel drivers for standard profiles</div></div>
         </div>
     </div>
@@ -298,8 +298,8 @@
 
         <div class="details reveal" data-d="2" style="max-width:760px; margin-inline:auto">
             <details class="detail">
-                <summary>60 regression scenarios</summary>
-                <div class="detail-body">A 60-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client, the browser Gamepad API, WGI, the battery reply a pad gives XInput, and the device identity of every family across nine lives. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
+                <summary>62 regression scenarios</summary>
+                <div class="detail-body">A 62-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client and its firmware updater, the browser Gamepad API, WGI, the battery reply a pad gives XInput, the driver catalogs for both architectures, and the device identity of every family across nine lives. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
             </details>
             <details class="detail">
                 <summary>Six pads, every API, correct order</summary>
@@ -432,7 +432,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary" target="_blank" rel="noopener">Download latest release</a>
             <a href="https://github.com/hifihedgehog/HIDMaestro" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
         </div>
-        <p class="dl-arch reveal" data-d="3">v1.9.0 adds <b>ARM64 Windows</b>. Each release has an x64 ZIP and an ARM64 ZIP, and HIDMaestro.Core.dll is the same file in both. <a href="docs/start/platform-support/">Read what was measured on each</a>.</p>
+        <p class="dl-arch reveal" data-d="3">v1.9 adds <b>ARM64 Windows</b>. On ARM64, use v1.9.1 or later. Each release has an x64 ZIP and an ARM64 ZIP, and HIDMaestro.Core.dll is the same file in both. <a href="docs/start/platform-support/">Read what was measured on each</a>.</p>
         <div class="dl-meta reveal" data-d="3">
             <span>One DLL</span><span>x64 and ARM64</span><span>MIT</span>
         </div>

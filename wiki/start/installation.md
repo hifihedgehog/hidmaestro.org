@@ -2,7 +2,7 @@
 
 Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.
 
-v1.9.0 ships for x64 and ARM64. See [platform support](platform-support.md#validation) for what was measured on each.
+v1.9.1 ships for x64 and ARM64. See [platform support](platform-support.md#validation) for what was measured on each.
 
 ## Requirements
 

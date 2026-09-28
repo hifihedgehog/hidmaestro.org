@@ -1,6 +1,6 @@
 ﻿# Testing and Verification
 
-The regression battery has 60 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, and device identity. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
+The regression battery has 62 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, and the driver catalogs. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
 
 For the wiki coverage of where these pipelines fit, see [Build and Release](build-and-release.md). For the underlying SDK mechanics they exercise, see [SDK Reference](../sdk/sdk-reference.md) and [Lifecycle and Teardown](lifecycle-and-teardown.md).
 
@@ -137,7 +137,7 @@ python scripts\verify.py --controllers 6 --filter order
 
 ## `test/regression/swap_regression.ps1`: lifecycle battery
 
-The 60-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the `PRESENT` state after each one.
+The 62-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the `PRESENT` state after each one.
 
 ```powershell
 # from an ELEVATED PowerShell, repo root or anywhere
@@ -241,11 +241,11 @@ These five fixes interact; missing any one makes the harness hang on Win11. Pres
 
 ### Slow-hardware fixture
 
-The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Same 60/60 PASS at `HIDMAESTRO_TIMEOUT_SCALE=2`. Validated on each release.
+The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). It runs at `HIDMAESTRO_TIMEOUT_SCALE=2`. Its last full run, the 57-scenario v1.7.3 battery, passed 57/57. The Atom has not run a release battery since.
 
-The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom; ACK-driven scales naturally.
+The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom. ACK-driven waits scale with the machine.
 
-The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there. ~75 minutes wall time for the full 60 scenarios.
+The Atom fixture runs the same `swap_regression.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there.
 
 ---
 
@@ -293,7 +293,7 @@ The pre-tag validation pipeline (`scripts\pre-tag-validate.cmd`) is the gate:
 
 1. Clean build: no stale Resources/ snapshots.
 2. `verify.py --controllers 4`: cross-API correctness on a multi-controller deployment.
-3. `swap_regression.ps1`: full 60-scenario battery. **60/60 PASS required.**
+3. `swap_regression.ps1`: full 62-scenario battery. **62/62 PASS required.**
 4. `HIDMaestroTest cleanup`: verify no leftover devnodes after the battery.
 5. Profile extractor smoke test: the GUI tool opens, populates, extracts.
 
@@ -313,4 +313,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-See [platform support](../start/platform-support.md#validation) for the v1.9.0 gate result and the usbip-win2 0.9.7.5 deployment measured on x64. ARM64 hardware has not run the battery, and the Atom fixture was unavailable for this release.
+See [platform support](../start/platform-support.md#validation) for the v1.9.1 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.7.5 deployment measured on x64. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.

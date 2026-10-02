@@ -636,6 +636,8 @@
       
         
       
+        
+      
     
     
     
@@ -845,6 +847,34 @@
     
   
     Composite USB Personas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/dualshock-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DualShock 3 and Pressure
   
 
     
@@ -2120,7 +2150,7 @@
 
 
 <h1 id="testing-and-verification">Testing and Verification<a class="headerlink" href="#testing-and-verification" title="Permanent link">&para;</a></h1>
-<p>The regression battery has 62 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, and the driver catalogs. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
+<p>The regression battery has 64 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, and the Sony reports against the programs that read them. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
 <p>For the wiki coverage of where these pipelines fit, see <a href="../build-and-release/">Build and Release</a>. For the underlying SDK mechanics they exercise, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 <hr />
 <h2 id="scriptsverifypy-cross-api-correctness"><code>scripts/verify.py</code>: cross-API correctness<a class="headerlink" href="#scriptsverifypy-cross-api-correctness" title="Permanent link">&para;</a></h2>
@@ -2222,7 +2252,7 @@
 <p><code>--filter</code> runs only the named API check. Useful for iterating on a specific subsystem without waiting for the full pipeline.</p>
 <hr />
 <h2 id="testregressionswap_regressionps1-lifecycle-battery"><code>test/regression/swap_regression.ps1</code>: lifecycle battery<a class="headerlink" href="#testregressionswap_regressionps1-lifecycle-battery" title="Permanent link">&para;</a></h2>
-<p>The 62-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
+<p>The 64-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># from an ELEVATED PowerShell, repo root or anywhere</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">swap_regression</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2401,6 +2431,16 @@
 <td>The XUSB battery reply on xbox-360-wired</td>
 <td>The four bytes position by position, the LED reply's own version word, what <code>XInputGetBatteryInformation</code> hands a caller, and SDL's power-state mapping over those values.</td>
 </tr>
+<tr>
+<td><strong>S63_Ds4_Report</strong></td>
+<td>Every DualShock 4 map, then the Bluetooth persona live under stock SDL3 (issue #64)</td>
+<td>Report <code>0x11</code> byte 1 without SDL's 0x80 flag, so SDL dropped all input once the persona armed, and motion, battery and touch read from bytes two late. Also the calibration scale, the battery and cable bits, and a near-zero trigger read as a full pull.</td>
+</tr>
+<tr>
+<td><strong>S64_Ds3_Sixaxis</strong></td>
+<td><code>dualshock-3-full</code> offline, live, and under stock SDL3 with PCSX2's hints</td>
+<td>The native report against SDL, Linux and RPCS3, the joystick and feature reports against DsHidMini's conversions, RPCS3's 0xF2 read and its output report, and a PS3 controller with 16 axes, 11 buttons and every pressure axis in SDL.</td>
+</tr>
 </tbody>
 </table>
 <p>Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a> is the authoritative full list.</p>
@@ -2476,7 +2516,7 @@
 <ol>
 <li>Clean build: no stale Resources/ snapshots.</li>
 <li><code>verify.py --controllers 4</code>: cross-API correctness on a multi-controller deployment.</li>
-<li><code>swap_regression.ps1</code>: full 62-scenario battery. <strong>62/62 PASS required.</strong></li>
+<li><code>swap_regression.ps1</code>: full 64-scenario battery. <strong>64/64 PASS required.</strong></li>
 <li><code>HIDMaestroTest cleanup</code>: verify no leftover devnodes after the battery.</li>
 <li>Profile extractor smoke test: the GUI tool opens, populates, extracts.</li>
 </ol>
@@ -2492,7 +2532,7 @@
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md"><code>test/regression/README.md</code></a>: the in-repo battery doc.</li>
 </ul>
 <h2 id="arm64-and-usbip-validation">ARM64 and USB/IP validation<a class="headerlink" href="#arm64-and-usbip-validation" title="Permanent link">&para;</a></h2>
-<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.9.2 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
+<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.10.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
 
 
 

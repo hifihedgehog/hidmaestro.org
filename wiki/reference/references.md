@@ -93,13 +93,21 @@ For symbols below, search [learn.microsoft.com](https://learn.microsoft.com/) by
 
 - **SDL community gamepad mapping database**: [github.com/mdqinc/SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB). The community-maintained `gamecontrollerdb.txt`. Spoofed-VID/PID profiles in [Custom Profiles](../profiles/custom-profiles.md) inherit mappings from here.
 
+- **Linux HID drivers**: `drivers/hid/hid-playstation.c` (DualSense and DualShock 4: report layouts, calibration parsing, the Bluetooth feature CRC) and `drivers/hid/hid-sony.c` (DualShock 3: report offsets, battery codes, motion scale) in the kernel's [HID tree](https://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git/).
+
+- **RPCS3**: [github.com/RPCS3/rpcs3](https://github.com/RPCS3/rpcs3). `rpcs3/Input/ds3_pad_handler.cpp` and `.h` are the DualShock 3 read sequence and output report the `dualshock-3-full` persona answers. `ds4_pad_handler.cpp` and `dualsense_pad_handler.cpp` check the Bluetooth calibration CRC.
+
+- **PCSX2**: [github.com/PCSX2/pcsx2](https://github.com/PCSX2/pcsx2). `pcsx2/Input/SDLInputSource.cpp` sets SDL's sixaxis hint on Windows and binds pressure axes for a pad SDL reports as a PS3 controller with 16 axes and 11 buttons.
+
+- **DS4Windows**: [github.com/schmaldeo/DS4Windows](https://github.com/schmaldeo/DS4Windows), the maintained fork. `DS4Windows/DS4Library/DS4Sixaxis.cs` parses the DualShock 4 calibration per transport without absolute values.
+
 - **Chromium gamepad implementation**: [source.chromium.org/chromium/chromium/src/+/main:device/gamepad/](https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/). The platform-specific backends are under `device/gamepad/{windows,linux,mac}/`. The `&IG_` skip in the Raw Input backend is in `raw_input_data_fetcher_win.cc`.
 
 ---
 
 ## Reference virtual-controller projects
 
-- **DsHidMini**: [github.com/nefarius/DsHidMini](https://github.com/nefarius/DsHidMini). The architectural ancestor of HIDMaestro: UMDF2 + xinputhid for DualShock 3 emulation. Provides the proven UMDF2-as-HID-minidriver pattern.
+- **DsHidMini**: [github.com/nefarius/DsHidMini](https://github.com/nefarius/DsHidMini). The architectural ancestor of HIDMaestro: UMDF2 + xinputhid for DualShock 3 emulation. Provides the proven UMDF2-as-HID-minidriver pattern. Its SXS mode is the model for `dualshock-3-full`: the report descriptor (`driver/HID/03_SXS_Col1_Joystick.h`, BSD 3-Clause), the joystick and feature report conversions (`DsHid.c`, `HID.FeatureReport.c`), and the output command handling (`HID.Reports.c`).
 
 - **ViGEmBus**: [github.com/nefarius/ViGEmBus](https://github.com/nefarius/ViGEmBus). The retired-but-still-used kernel-mode virtual controller bus driver. Referenced as "what HIDMaestro replaces."
 
@@ -137,7 +145,7 @@ These archive Ghidra decomp output, ProcMon traces, registry dumps, and empirica
 
 - [HIDMaestro issue #19](https://github.com/hifihedgehog/HIDMaestro/issues/19): the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in [XUSB Companion](xusb-companion.md).
 
-- [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1): the 62-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
+- [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1): the 64-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
 
 ---
 

@@ -52,9 +52,9 @@ A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 
 
 ## Validation
 
-The v1.9.2 release gate ran on x64: the full 62-scenario battery passed 62/62 on the tagged binaries on Windows 11 26200, in 991.2 s. The gate machine's host controller had carried devices earlier in that Windows session, so the SDK left it on 0.9.7.5, as designed, and every composite scenario ran through the client's 0.9.7.x request format. The DualSense composite passed 26/26 end to end.
+The v1.10.0 release gate ran on x64: the full 64-scenario battery passed 64/64 on the tagged binaries on Windows 11 26200, in 926.7 s. The gate machine's host controller runs 0.9.8.1, put there by the v1.9.2 move, so every composite scenario ran through the client's 0.9.8.1 request format against the live driver. The DualSense composite passed 26/26 end to end. Its root-hub filter is still the older one the move leaves alone, so SET_INTERFACE never reaches a composite there, and audio stream state comes from the traffic instead ([USB audio composite](../sdk/usb-audio-composite.md)).
 
-The 0.9.8.0 and 0.9.8.1 request formats were checked by compiling each version's own header with MSVC for x64 and ARM64, and the client sends each format's exact sizes and offsets. They have not yet run against a live driver. The move from 0.9.7.5 to 0.9.8.1 uses the same Windows driver update that moved machines from 0.9.7.7 to 0.9.7.5 in v1.9.0, which took 878 ms on 26200.
+The 0.9.8.0 request format was checked by compiling that version's own header with MSVC for x64 and ARM64, and the client sends its exact sizes and offsets. It has not run against a live driver. The move from 0.9.7.5 to 0.9.8.1 uses the same Windows driver update that moved machines from 0.9.7.7 to 0.9.7.5 in v1.9.0, which took 878 ms on 26200.
 
 0.9.8.1 rounds a full-speed device's interrupt polling interval up where 0.9.7.5 rounded it down. Windows does not pace interrupt reads by that interval. Measured on 26200 by giving the DualShock 4 composite an interval that 0.9.7.5 converts to the same 8 ms period, the composite delivered 146 to 158 reports per second either way.
 

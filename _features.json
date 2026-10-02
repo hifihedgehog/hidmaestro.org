@@ -4,7 +4,7 @@
         "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
     },
     {
-        "t":  "231 device profiles",
+        "t":  "232 device profiles",
         "d":  "Embedded profiles across 46 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code."
     },
     {
@@ -22,6 +22,10 @@
     {
         "t":  "A Switch Pro that answers back",
         "d":  "The Switch Pro Controller is not a passive device: hosts drive a Nintendo subcommand handshake and stall without a device that answers. HIDMaestro\u0027s driver answers it over the real Bluetooth wire, with a descriptor extracted byte-exact from a live Pro\u0027s SDP cache: SPI calibration reads, input-mode switch, 60 Hz full-mode streaming with gyro and accel. SDL3 and Steam Input bind it as a real Bluetooth Pro Controller with motion and rumble."
+    },
+    {
+        "t":  "Pressure-sensitive DualShock 3",
+        "d":  "dualshock-3-full presents a DualShock 3 the way Sony\u0027s sixaxis.sys driver and DsHidMini\u0027s SXS mode do on Windows, the form PCSX2 and RPCS3 read button pressure from. Cross, circle, square, triangle, L1, R1 and each d-pad direction take a pressure from 0 to 255, and L2 and R2 take theirs from the triggers. Motion, battery, rumble and the player LEDs come through as well. Stock SDL3 configured the way PCSX2 configures it reads every pressure axis. PCSX2 and RPCS3 themselves have not been run against it."
     },
     {
         "t":  "Controller audio and haptics",
@@ -81,15 +85,15 @@
     },
     {
         "t":  "One DLL",
-        "d":  "HIDMaestro.Core.dll contains the 231-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host."
+        "d":  "HIDMaestro.Core.dll contains the 232-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host."
     },
     {
         "t":  "Regression coverage",
-        "d":  "The battery has 62 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, and the driver catalogs for both architectures. The last full run was 62/62 on a 16-core Ryzen 9 Windows 11 laptop. Production signing and the full HIDMaestro integration gate remain pending."
+        "d":  "The battery has 64 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, and the DualShock 3 and 4 reports against the programs that read them. The last full run was 64/64 on a 16-core Ryzen 9 Windows 11 laptop. Production signing and the full HIDMaestro integration gate remain pending."
     },
     {
         "t":  "Judged by the real consumers",
-        "d":  "The battery checks more than HIDMaestro\u0027s own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. Another runs Steam\u0027s own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. The decoders Steam Input is built on are the judges."
+        "d":  "The battery checks more than HIDMaestro\u0027s own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. Another runs Steam\u0027s own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. Stock SDL3 arms the Bluetooth DualShock 4 persona itself and must keep reading it, and opens the DualShock 3 persona the way PCSX2 configures it. The decoders Steam Input is built on are the judges."
     },
     {
         "t":  "The composite exception, stated",

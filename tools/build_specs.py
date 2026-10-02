@@ -18,10 +18,11 @@ pool = {f["t"]: f["d"] for f in feats}
 CATS = [
  ("identity", "Identity and fidelity", [
    "Exact hardware identity", "Valve personas Steam recognizes",
-   "A Switch Pro that answers back", "Controller audio and haptics",
+   "A Switch Pro that answers back", "Pressure-sensitive DualShock 3",
+   "Controller audio and haptics",
    "Capture a controller you own"]),
  ("catalog", "The catalog", [
-   "231 device profiles", "Devices are JSON"]),
+   "232 device profiles", "Devices are JSON"]),
  ("latency", "Latency and transport", [
    "~35 µs measured input latency", "Event-driven output at 0.15 ms",
    "No socket, no batching cap", "The comparison, honestly",

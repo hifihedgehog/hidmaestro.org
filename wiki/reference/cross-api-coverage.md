@@ -108,11 +108,24 @@ broke was titles with native PlayStation support, which read the
 calibration and rejected the device. "Works in Steam, rejected by the game"
 is the signature of this class of problem.
 
-Denominators are now 20000 with `speed_2x` at 1000, and the payload is
-order-agnostic so it reads correctly under both the USB and Bluetooth field
-orders. Report `0x09` also grew from 17 to the 20 bytes the descriptor
-declares, since `ps_get_report` requires an exact size match and rejected
-the short reply before looking at it.
+Report `0x09` also grew from 17 to the 20 bytes the descriptor declares,
+since `ps_get_report` requires an exact size match and rejected the short
+reply before looking at it.
+
+Since v1.10.0 the calibration is the identity for the pads' own units,
+8192 counts per g and 16 per degree per second: zero biases, gyro
+references of plus and minus 8000 at a speed of 500, and accelerometer
+references of plus and minus 8192. SDL and Linux read a submitted 1 g as
+1 g. The v1.4.4 payload, plus and minus 10000 throughout, made them read
+1 g as 0.82 g and rotation at 0.8 of its rate. A DualShock 4's Bluetooth
+report `0x05` lists the three plus references before the three minus
+references, unlike its USB report `0x02` and the DualSense, and the driver
+now serves each pad its own order. DS4Windows subtracts the minus
+reference from the plus one without an absolute value, so the single
+order served before made it invert the Bluetooth DualShock 4's yaw. Over
+Bluetooth, reports `0x05`, `0x09` and `0x20` end with the CRC-32 a real
+pad sends. `hid-playstation.c` checks it, and RPCS3 closes a Bluetooth
+DualShock 4 whose calibration fails the check three times.
 
 ### The &amp;IG_ enumerator trick
 

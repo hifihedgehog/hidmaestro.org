@@ -634,6 +634,8 @@
       
         
       
+        
+      
     
     
     
@@ -843,6 +845,34 @@
     
   
     Composite USB Personas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/dualshock-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DualShock 3 and Pressure
   
 
     
@@ -2024,6 +2054,18 @@
 <p><strong>SDL community gamepad mapping database</strong>: <a href="https://github.com/mdqinc/SDL_GameControllerDB">github.com/mdqinc/SDL_GameControllerDB</a>. The community-maintained <code>gamecontrollerdb.txt</code>. Spoofed-VID/PID profiles in <a href="../../profiles/custom-profiles/">Custom Profiles</a> inherit mappings from here.</p>
 </li>
 <li>
+<p><strong>Linux HID drivers</strong>: <code>drivers/hid/hid-playstation.c</code> (DualSense and DualShock 4: report layouts, calibration parsing, the Bluetooth feature CRC) and <code>drivers/hid/hid-sony.c</code> (DualShock 3: report offsets, battery codes, motion scale) in the kernel's <a href="https://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git/">HID tree</a>.</p>
+</li>
+<li>
+<p><strong>RPCS3</strong>: <a href="https://github.com/RPCS3/rpcs3">github.com/RPCS3/rpcs3</a>. <code>rpcs3/Input/ds3_pad_handler.cpp</code> and <code>.h</code> are the DualShock 3 read sequence and output report the <code>dualshock-3-full</code> persona answers. <code>ds4_pad_handler.cpp</code> and <code>dualsense_pad_handler.cpp</code> check the Bluetooth calibration CRC.</p>
+</li>
+<li>
+<p><strong>PCSX2</strong>: <a href="https://github.com/PCSX2/pcsx2">github.com/PCSX2/pcsx2</a>. <code>pcsx2/Input/SDLInputSource.cpp</code> sets SDL's sixaxis hint on Windows and binds pressure axes for a pad SDL reports as a PS3 controller with 16 axes and 11 buttons.</p>
+</li>
+<li>
+<p><strong>DS4Windows</strong>: <a href="https://github.com/schmaldeo/DS4Windows">github.com/schmaldeo/DS4Windows</a>, the maintained fork. <code>DS4Windows/DS4Library/DS4Sixaxis.cs</code> parses the DualShock 4 calibration per transport without absolute values.</p>
+</li>
+<li>
 <p><strong>Chromium gamepad implementation</strong>: <a href="https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/">source.chromium.org/chromium/chromium/src/+/main:device/gamepad/</a>. The platform-specific backends are under <code>device/gamepad/{windows,linux,mac}/</code>. The <code>&amp;IG_</code> skip in the Raw Input backend is in <code>raw_input_data_fetcher_win.cc</code>.</p>
 </li>
 </ul>
@@ -2031,7 +2073,7 @@
 <h2 id="reference-virtual-controller-projects">Reference virtual-controller projects<a class="headerlink" href="#reference-virtual-controller-projects" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>DsHidMini</strong>: <a href="https://github.com/nefarius/DsHidMini">github.com/nefarius/DsHidMini</a>. The architectural ancestor of HIDMaestro: UMDF2 + xinputhid for DualShock 3 emulation. Provides the proven UMDF2-as-HID-minidriver pattern.</p>
+<p><strong>DsHidMini</strong>: <a href="https://github.com/nefarius/DsHidMini">github.com/nefarius/DsHidMini</a>. The architectural ancestor of HIDMaestro: UMDF2 + xinputhid for DualShock 3 emulation. Provides the proven UMDF2-as-HID-minidriver pattern. Its SXS mode is the model for <code>dualshock-3-full</code>: the report descriptor (<code>driver/HID/03_SXS_Col1_Joystick.h</code>, BSD 3-Clause), the joystick and feature report conversions (<code>DsHid.c</code>, <code>HID.FeatureReport.c</code>), and the output command handling (<code>HID.Reports.c</code>).</p>
 </li>
 <li>
 <p><strong>ViGEmBus</strong>: <a href="https://github.com/nefarius/ViGEmBus">github.com/nefarius/ViGEmBus</a>. The retired-but-still-used kernel-mode virtual controller bus driver. Referenced as "what HIDMaestro replaces."</p>
@@ -2080,7 +2122,7 @@
 <p><a href="https://github.com/hifihedgehog/HIDMaestro/issues/19">HIDMaestro issue #19</a>: the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in <a href="../xusb-companion/">XUSB Companion</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a>: the 62-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> and <a href="../testing-and-verification/">Testing and Verification</a>.</p>
+<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a>: the 64-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> and <a href="../testing-and-verification/">Testing and Verification</a>.</p>
 </li>
 </ul>
 <hr />

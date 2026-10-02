@@ -1,6 +1,6 @@
 ﻿# Profile System
 
-Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 231 ship in the embedded catalog across 46 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 29 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
+Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 232 ship in the embedded catalog across 46 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 29 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
 
 This page documents the JSON schema field-by-field, the three runtime architecture groups a profile can fall into, and how the SDK resolves a profile into a deployable virtual device at `CreateController` time.
 
@@ -225,7 +225,7 @@ The profile fields determine which of three architecture groups the runtime inst
 
 Profiles where `driverMode` is **not** `"xinputhid"` and `vid` is **not** Microsoft (`0x045E`).
 
-Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 231-profile catalog (208 profiles).
+Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 232-profile catalog (209 profiles).
 
 ```
 ROOT\VID_054C&PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
@@ -309,7 +309,7 @@ The full per-archetype sequence lives in `DeviceOrchestrator.cs`'s `SetupControl
 ## Loading the catalog
 
 ```csharp
-// Embedded catalog (231 profiles)
+// Embedded catalog (232 profiles)
 ctx.LoadDefaultProfiles();
 
 // Custom directory of JSON profiles
@@ -387,13 +387,13 @@ The modded profile isn't registered in the catalog: it's used directly for one `
 
 ## Catalog statistics
 
-As of v1.8.1:
+As of v1.10.0:
 
 | Metric | Count |
 |--------|-------|
-| Total profiles | 231 |
+| Total profiles | 232 |
 | Vendor folders | 32 |
-| Plain HID profiles | 208 |
+| Plain HID profiles | 209 |
 | Non-xinputhid Xbox profiles | 11 |
 | xinputhid Xbox profiles | 12 |
 | With FFB descriptors | 14 (SideWinder Force Feedback 2, the Xbox One / Series / Elite family, Amazon Luna BLE) |

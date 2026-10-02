@@ -307,18 +307,29 @@ plus/minus pairs, so a zero blob yields a zero denominator:
   and substitutes `S16_MAX`. The canonical driver defends against exactly
   what this driver used to emit.
 
-The served payload is the neutral calibration from
-[WinUHid](https://github.com/cgutman/WinUHid), a working virtual PS4/PS5
-for Windows, with field offsets verified against `hid-playstation.c`: bias
-at `buf[1..6]`, plus/minus at `buf[7..18]`, speed at `buf[19..22]`, accel
-at `buf[23..34]`. Gyro and accel denominators come out at 20000 and
-`speed_2x` at 1000.
+Since v1.10.0 the served payload is the identity calibration for the
+pads' own units, with field offsets verified against `hid-playstation.c`:
+bias at `buf[1..6]` (zero), plus/minus at `buf[7..18]` (plus and minus
+8000), speed at `buf[19..22]` (500 each), accel at `buf[23..34]` (plus and
+minus 8192). SDL and `hid-playstation.c` turn that into exactly 16 counts
+per degree per second and 8192 per g, the units the SDK's motion fields
+carry. The v1.4.4 payload, the neutral calibration from
+[WinUHid](https://github.com/cgutman/WinUHid) at plus and minus 10000,
+scaled rotation by 0.8 and acceleration by 0.82 in both.
 
-It is deliberately order-agnostic. `hid-playstation.c` parses a DS4 over
-USB as `pitch+ pitch- yaw+ yaw- roll+ roll-` but over Bluetooth as
-`pitch+ yaw+ roll+ pitch- yaw- roll-`. Because every plus is +10000 and
-every minus is -10000, one payload reads correctly under both orderings,
-so the 37-versus-41-byte split needs no ordering branch.
+The field order follows the pad. `hid-playstation.c` and DS4Windows parse
+a DS4 over USB (report `0x02`) as `pitch+ pitch- yaw+ yaw- roll+ roll-`
+but over Bluetooth (report `0x05`) as `pitch+ yaw+ roll+ pitch- yaw-
+roll-`. Readers that take absolute values, SDL's PS4 driver and
+`hid-playstation.c`, read one payload the same under both orders.
+DS4Windows subtracts the minus reference from the plus one as it stands,
+so the USB order served over Bluetooth gave it a negative yaw denominator
+and an inverted yaw. The driver serves report `0x05` in the Bluetooth
+order when the product id is a DualShock 4 (0x05C4, 0x09CC or 0x0BA0) and
+in the DualSense order otherwise. Over Bluetooth, reports `0x05`, `0x09`
+and `0x20` end with a CRC-32 seeded with `0xA3`. `hid-playstation.c`
+checks it, and RPCS3 closes a Bluetooth DualShock 4 whose calibration fails
+the check three times.
 
 Two sizing details worth keeping:
 
@@ -326,7 +337,7 @@ Two sizing details worth keeping:
   descriptor declares and what `hid-playstation.c` requests, and
   `ps_get_report` requires the transferred count to equal the requested
   size exactly. A short reply fails on size before its contents are ever
-  examined. The MAC sits at bytes 1..6 and is synthesised per controller
+  examined. The MAC sits at bytes 1..6 and is synthesized per controller
   in the locally-administered range, so it cannot collide with a real
   pad's globally-assigned address.
 - **CRC is a Bluetooth-only gate.** `ps_get_report` verifies the trailing
@@ -352,7 +363,7 @@ is why fixing `0x05` changed nothing for it.
 
 `0x20` now serves a real 64-byte blob captured from physical hardware,
 verbatim. Which field the game validates is not known, so no byte is
-synthesised. Two independent consumers agree on the layout:
+synthesized. Two independent consumers agree on the layout:
 `hid-playstation.c` reads `hw_version` at le32 `buf[24]`, `fw_version` at
 le32 `buf[28]` and `update_version` at le16 `buf[44]`, while
 dualsense-tester reads the build date at 1..11, the time at 12..19,
@@ -404,7 +415,7 @@ all-zero address, so a zero-filled reply would not have satisfied it
 either. Both take the MAC from bytes 1..6.
 
 It serves the same stable per-controller locally-administered address the
-`0x09` path synthesises. Bluetooth deliberately does not get it:
+`0x09` path synthesizes. Bluetooth deliberately does not get it:
 `hid-playstation` takes the DS4's BT address from HIDP's `hdev->uniq`, and
 a real `dualshock-4-v2-bt` descriptor does not declare `0x12`.
 

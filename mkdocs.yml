@@ -85,6 +85,7 @@ nav:
       - Force Feedback: sdk/force-feedback.md
       - Output Passthrough: sdk/output-passthrough.md
       - Composite USB Personas: sdk/usb-audio-composite.md
+      - DualShock 3 and Pressure: sdk/dualshock-3.md
       - OEM Name Override: sdk/oem-name-override.md
   - Profiles:
       - profiles/index.md

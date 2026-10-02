@@ -16,7 +16,7 @@
         <link rel="prev" href="../output-passthrough/">
       
       
-        <link rel="next" href="../oem-name-override/">
+        <link rel="next" href="../dualshock-3/">
       
       
         
@@ -638,6 +638,8 @@
       
         
       
+        
+      
     
     
     
@@ -924,10 +926,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recognising-your-own-persona" class="md-nav__link">
+  <a href="#recognizing-your-own-persona" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recognising your own persona
+        Recognizing your own persona
       
     </span>
   </a>
@@ -1038,6 +1040,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dualshock-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DualShock 3 and Pressure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1782,10 +1812,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recognising-your-own-persona" class="md-nav__link">
+  <a href="#recognizing-your-own-persona" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recognising your own persona
+        Recognizing your own persona
       
     </span>
   </a>
@@ -1992,7 +2022,8 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
 </code></pre></div>
 <p><code>FramesReceived</code> fires on the backend's pacing thread with a few milliseconds of PCM per window, at the cadence the host renders. Handlers must be quick and thread-safe, the same contract as <code>OutputReceived</code>.</p>
 <p><code>Submit</code> returns the bytes it accepted. The microphone buffer holds roughly a quarter second, and a producer that outruns the 1 ms service interval will eventually fill it, at which point the excess is dropped rather than allowed to grow capture latency without bound. Feeding one continuous stream is what the buffer expects, so chunk sizes need not be frame-aligned and a sample may span two calls. What a short return means is that audio was lost, and a consumer that wants to know should compare it against the length submitted. Bytes are only ever dropped on a sample-frame boundary, so a full buffer costs you a click, never a permanently misaligned stream.</p>
-<h2 id="recognising-your-own-persona">Recognising your own persona<a class="headerlink" href="#recognising-your-own-persona" title="Permanent link">&para;</a></h2>
+<p><code>StreamingChanged</code> and <code>IsStreaming</code> follow the host's SET_INTERFACE. usbip-win2 0.9.8.1's host controller driver does not recognize the interface notifications of an older usbip-win2 filter driver, so on a machine where the 0.9.8.1 driver sits beside such a filter, SET_INTERFACE never arrives while the audio itself flows. There, as of v1.10.0, the stream counts as open from its first isochronous transfer, and the close is raised within about half a second of the last one. On such a machine, <code>IsStreaming</code> also reads false while a stream is paused with no transfers.</p>
+<h2 id="recognizing-your-own-persona">Recognizing your own persona<a class="headerlink" href="#recognizing-your-own-persona" title="Permanent link">&para;</a></h2>
 <p>A composite persona is byte-for-byte a real Sony pad at every level a filter can inspect. That is what the USB Audio Class driver binds against, so it cannot carry a HIDMaestro marker of its own. An application that enumerates HID devices will therefore see the persona as an ordinary controller, which for a host that created it means seeing itself: SDL, for one, will treat it as a second gamepad and drive the lightbar and player pips from its index.</p>
 <p>The token lives on the one node HIDMaestro owns, the emulated host controller the persona sits behind:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>ROOT\USB\0000   HardwareIds = ROOT\USBIP_WIN2\UDE
@@ -2037,10 +2068,11 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
 <p><code>0xAE</code> reads a string by index, and the persona declares one answer per index the real device provisions: the board serial, the unit serial, and the constant at index 3 that Steam checks. Every other index reads back <code>0xFF</code> where the index would be, which is how a real unit says a string is not provisioned, and the byte Steam's own updater tests.</p>
 <p>Its input frame is the 54-byte <code>TritonMTUFull_t</code> on report <code>0x42</code>, packed by <code>extendedReport</code> so an ordinary <code>SubmitState</code> drives it; consumers can still submit it whole through <code>SubmitRawReport</code>. Steam's haptic writes arrive on <code>OutputReceived</code> as output reports <code>0x80</code> and up.</p>
 <p>SDL binds Triton on any interface of a wired unit, so nothing here depends on interface numbering the way the 2015 controller does.</p>
+<p>All three report on their own clock, as the hardware does: every 4 ms for the Deck and the 2026 controller and every 8 ms for the 2015 one, whether or not the consumer has anything new to send. While the consumer is quiet, the persona repeats the consumer's last frame, raw bytes included. SDL's Deck driver reads once with a 16 ms timeout before it accepts a Deck, so a persona that fell silent would be passed over.</p>
 <h3 id="using-them-without-steam">Using them without Steam<a class="headerlink" href="#using-them-without-steam" title="Permanent link">&para;</a></h3>
 <p>These pads speak only Valve's vendor protocol. Nothing generic reads it: not DirectInput, not XInput, not <code>joy.cpl</code>. That is equally true of real hardware, which is what lizard mode exists to cover. What makes a real Steam Controller work with Steam closed is SDL, which implements the protocol directly and turns lizard mode off itself.</p>
 <p>The personas never emit keyboard or mouse reports at all, so they sit permanently in the gamepad state and nothing needs disabling. An SDL application reads them with Steam not running.</p>
-<p>Battery scenario S52 proves this without a client: it creates each persona, drives it through <code>SubmitState</code>, reads the frame back off the real HID stack, and decodes it with SDL's own per-device arithmetic, asserting both stick extremes and a trigger pulled and released. <code>ValveWireCheck.exe --monitor &lt;persona&gt;</code> runs the same path interactively and prints what an SDL application would read.</p>
+<p>Battery scenario S52 proves this without a client: it creates each persona, drives it through <code>SubmitState</code>, reads the frame back off the real HID stack, and decodes it with SDL's own per-device arithmetic, asserting both stick extremes and a trigger pulled and released. It also measures each persona's clock and feeds it raw frames, asserting that only the consumer's frames reach the wire. <code>ValveWireCheck.exe --monitor &lt;persona&gt;</code> runs the same path interactively and prints what an SDL application would read.</p>
 
 
 
@@ -2095,13 +2127,13 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
         
         
           
-          <a href="../oem-name-override/" class="md-footer__link md-footer__link--next" aria-label="Next: OEM Name Override">
+          <a href="../dualshock-3/" class="md-footer__link md-footer__link--next" aria-label="Next: DualShock 3 and Pressure">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                OEM Name Override
+                DualShock 3 and Pressure
               </div>
             </div>
             <div class="md-footer__button md-icon">

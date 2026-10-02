@@ -1,6 +1,6 @@
 ﻿# Testing and Verification
 
-The regression battery has 62 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, and the driver catalogs. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
+The regression battery has 64 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, and the Sony reports against the programs that read them. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
 
 For the wiki coverage of where these pipelines fit, see [Build and Release](build-and-release.md). For the underlying SDK mechanics they exercise, see [SDK Reference](../sdk/sdk-reference.md) and [Lifecycle and Teardown](lifecycle-and-teardown.md).
 
@@ -137,7 +137,7 @@ python scripts\verify.py --controllers 6 --filter order
 
 ## `test/regression/swap_regression.ps1`: lifecycle battery
 
-The 62-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the `PRESENT` state after each one.
+The 64-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the `PRESENT` state after each one.
 
 ```powershell
 # from an ELEVATED PowerShell, repo root or anywhere
@@ -190,6 +190,8 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 | **S58_Identity_Derivation** | Identity key derivation, no device | The default key reproduces the index-shaped ids, a consumer key derives deterministic collision-free ids, and persona serials derive as documented. |
 | **S59_Identity_Battery** | One controller per family across nine lives | Parent id, ParentIdPrefix, ContainerId, HID children, interface paths, DirectInput GUID, SDL3 path and USB serial stay identical across every life. Also empty shells, two pads of one VID/PID overlapping, and a profile change at one key. |
 | **S60_Xusb_Battery** | The XUSB battery reply on xbox-360-wired | The four bytes position by position, the LED reply's own version word, what `XInputGetBatteryInformation` hands a caller, and SDL's power-state mapping over those values. |
+| **S63_Ds4_Report** | Every DualShock 4 map, then the Bluetooth persona live under stock SDL3 (issue #64) | Report `0x11` byte 1 without SDL's 0x80 flag, so SDL dropped all input once the persona armed, and motion, battery and touch read from bytes two late. Also the calibration scale, the battery and cable bits, and a near-zero trigger read as a full pull. |
+| **S64_Ds3_Sixaxis** | `dualshock-3-full` offline, live, and under stock SDL3 with PCSX2's hints | The native report against SDL, Linux and RPCS3, the joystick and feature reports against DsHidMini's conversions, RPCS3's 0xF2 read and its output report, and a PS3 controller with 16 axes, 11 buttons and every pressure axis in SDL. |
 
 Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1) is the authoritative full list.
 
@@ -293,7 +295,7 @@ The pre-tag validation pipeline (`scripts\pre-tag-validate.cmd`) is the gate:
 
 1. Clean build: no stale Resources/ snapshots.
 2. `verify.py --controllers 4`: cross-API correctness on a multi-controller deployment.
-3. `swap_regression.ps1`: full 62-scenario battery. **62/62 PASS required.**
+3. `swap_regression.ps1`: full 64-scenario battery. **64/64 PASS required.**
 4. `HIDMaestroTest cleanup`: verify no leftover devnodes after the battery.
 5. Profile extractor smoke test: the GUI tool opens, populates, extracts.
 
@@ -313,4 +315,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-See [platform support](../start/platform-support.md#validation) for the v1.9.2 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.
+See [platform support](../start/platform-support.md#validation) for the v1.10.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.

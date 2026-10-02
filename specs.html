@@ -73,6 +73,10 @@
                     <dd>The Switch Pro Controller is not a passive device: hosts drive a Nintendo subcommand handshake and stall without a device that answers. HIDMaestro's driver answers it over the real Bluetooth wire, with a descriptor extracted byte-exact from a live Pro's SDP cache: SPI calibration reads, input-mode switch, 60 Hz full-mode streaming with gyro and accel. SDL3 and Steam Input bind it as a real Bluetooth Pro Controller with motion and rumble.</dd>
                 </div>
                 <div class="spec-row">
+                    <dt>Pressure-sensitive DualShock 3</dt>
+                    <dd>dualshock-3-full presents a DualShock 3 the way Sony's sixaxis.sys driver and DsHidMini's SXS mode do on Windows, the form PCSX2 and RPCS3 read button pressure from. Cross, circle, square, triangle, L1, R1 and each d-pad direction take a pressure from 0 to 255, and L2 and R2 take theirs from the triggers. Motion, battery, rumble and the player LEDs come through as well. Stock SDL3 configured the way PCSX2 configures it reads every pressure axis. PCSX2 and RPCS3 themselves have not been run against it.</dd>
+                </div>
+                <div class="spec-row">
                     <dt>Controller audio and haptics</dt>
                     <dd>A real USB DualSense is a four-interface composite, and three profiles present all four. Windows gets the pad's own Speakers and Headset Microphone endpoints, and the 4-channel stream behind them carries the speaker on channels 1 and 2 and the voice-coil actuators on 3 and 4. That stream is the only path on Windows by which a game hands a controller its authored haptic waveforms. It reaches your code as UsbAudio.Output with each channel's role named. Nothing extra to install: the USB transport ships inside the DLL and deploys itself the first time you create one.</dd>
                 </div>
@@ -87,7 +91,7 @@
             <h2 class="display-s spec-h reveal">The catalog</h2>
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
-                    <dt>231 device profiles</dt>
+                    <dt>232 device profiles</dt>
                     <dd>Embedded profiles across 46 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code.</dd>
                 </div>
                 <div class="spec-row">
@@ -164,7 +168,7 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>One DLL</dt>
-                    <dd>HIDMaestro.Core.dll contains the 231-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host.</dd>
+                    <dd>HIDMaestro.Core.dll contains the 232-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Self-bootstrapping install</dt>
@@ -182,11 +186,11 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>Regression coverage</dt>
-                    <dd>The battery has 62 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, and the driver catalogs for both architectures. The last full run was 62/62 on a 16-core Ryzen 9 Windows 11 laptop. Production signing and the full HIDMaestro integration gate remain pending.</dd>
+                    <dd>The battery has 64 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, and the DualShock 3 and 4 reports against the programs that read them. The last full run was 64/64 on a 16-core Ryzen 9 Windows 11 laptop. Production signing and the full HIDMaestro integration gate remain pending.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Judged by the real consumers</dt>
-                    <dd>The battery checks more than HIDMaestro's own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. Another runs Steam's own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. The decoders Steam Input is built on are the judges.</dd>
+                    <dd>The battery checks more than HIDMaestro's own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. Another runs Steam's own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. Stock SDL3 arms the Bluetooth DualShock 4 persona itself and must keep reading it, and opens the DualShock 3 persona the way PCSX2 configures it. The decoders Steam Input is built on are the judges.</dd>
                 </div>
             </dl>
         </section>
@@ -237,7 +241,7 @@
         <tr><td>Kernel driver required</td><td class="us">No, except the composite USB personas</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td><td>No (on VHF)</td></tr>
         <tr><td>Installs without test-signing</td><td class="us">Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
         <tr><td>Network play</td><td class="us">App layer via consumers (PadForge Remote Link)</td><td>In the driver: +1-5 ms wired, +10-50 ms Wi-Fi</td><td>No</td><td>No</td><td>No</td></tr>
-        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 231 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
+        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 232 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
         <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td><td>Write C, or raw descriptor</td></tr>
         <tr><td>Local single-press latency</td><td class="us">~35 µs measured</td><td>168 µs published</td><td>N/A</td><td>N/A</td><td>Not published</td></tr>
         <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Retired</td><td>Stale</td><td>Active</td></tr>
@@ -268,7 +272,7 @@
                 </details>
                 <details class="detail">
                     <summary>How is this different from ViGEmBus, vJoy, or VIIPER?</summary>
-                    <div class="detail-body">Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 231 of them, down to the bus type, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side.</div>
+                    <div class="detail-body">Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 232 of them, down to the bus type, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side.</div>
                 </details>
                 <details class="detail">
                     <summary>Does it work with Steam?</summary>

@@ -83,7 +83,9 @@ audio.ControlChanged += (_, e) =>
 
 `Submit` returns the bytes it accepted. The microphone buffer holds roughly a quarter second, and a producer that outruns the 1 ms service interval will eventually fill it, at which point the excess is dropped rather than allowed to grow capture latency without bound. Feeding one continuous stream is what the buffer expects, so chunk sizes need not be frame-aligned and a sample may span two calls. What a short return means is that audio was lost, and a consumer that wants to know should compare it against the length submitted. Bytes are only ever dropped on a sample-frame boundary, so a full buffer costs you a click, never a permanently misaligned stream.
 
-## Recognising your own persona
+`StreamingChanged` and `IsStreaming` follow the host's SET_INTERFACE. usbip-win2 0.9.8.1's host controller driver does not recognize the interface notifications of an older usbip-win2 filter driver, so on a machine where the 0.9.8.1 driver sits beside such a filter, SET_INTERFACE never arrives while the audio itself flows. There, as of v1.10.0, the stream counts as open from its first isochronous transfer, and the close is raised within about half a second of the last one. On such a machine, `IsStreaming` also reads false while a stream is paused with no transfers.
+
+## Recognizing your own persona
 
 A composite persona is byte-for-byte a real Sony pad at every level a filter can inspect. That is what the USB Audio Class driver binds against, so it cannot carry a HIDMaestro marker of its own. An application that enumerates HID devices will therefore see the persona as an ordinary controller, which for a host that created it means seeing itself: SDL, for one, will treat it as a second gamepad and drive the lightbar and player pips from its index.
 
@@ -165,10 +167,12 @@ Its input frame is the 54-byte `TritonMTUFull_t` on report `0x42`, packed by `ex
 
 SDL binds Triton on any interface of a wired unit, so nothing here depends on interface numbering the way the 2015 controller does.
 
+All three report on their own clock, as the hardware does: every 4 ms for the Deck and the 2026 controller and every 8 ms for the 2015 one, whether or not the consumer has anything new to send. While the consumer is quiet, the persona repeats the consumer's last frame, raw bytes included. SDL's Deck driver reads once with a 16 ms timeout before it accepts a Deck, so a persona that fell silent would be passed over.
+
 ### Using them without Steam
 
 These pads speak only Valve's vendor protocol. Nothing generic reads it: not DirectInput, not XInput, not `joy.cpl`. That is equally true of real hardware, which is what lizard mode exists to cover. What makes a real Steam Controller work with Steam closed is SDL, which implements the protocol directly and turns lizard mode off itself.
 
 The personas never emit keyboard or mouse reports at all, so they sit permanently in the gamepad state and nothing needs disabling. An SDL application reads them with Steam not running.
 
-Battery scenario S52 proves this without a client: it creates each persona, drives it through `SubmitState`, reads the frame back off the real HID stack, and decodes it with SDL's own per-device arithmetic, asserting both stick extremes and a trigger pulled and released. `ValveWireCheck.exe --monitor <persona>` runs the same path interactively and prints what an SDL application would read.
+Battery scenario S52 proves this without a client: it creates each persona, drives it through `SubmitState`, reads the frame back off the real HID stack, and decodes it with SDL's own per-device arithmetic, asserting both stick extremes and a trigger pulled and released. It also measures each persona's clock and feeds it raw frames, asserting that only the consumer's frames reach the wire. `ValveWireCheck.exe --monitor <persona>` runs the same path interactively and prints what an SDL application would read.

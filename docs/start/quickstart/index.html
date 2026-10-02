@@ -809,6 +809,8 @@
       
         
       
+        
+      
     
     
     
@@ -1018,6 +1020,34 @@
     
   
     Composite USB Personas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/dualshock-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DualShock 3 and Pressure
   
 
     
@@ -1906,7 +1936,7 @@
 <hr />
 <h2 id="step-1-context-profiles">Step 1: context + profiles<a class="headerlink" href="#step-1-context-profiles" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HMContext</span><span class="p">();</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kt">int</span><span class="w"> </span><span class="n">loaded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span><span class="w">   </span><span class="c1">// returns 231</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kt">int</span><span class="w"> </span><span class="n">loaded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span><span class="w">   </span><span class="c1">// returns 232</span>
 </code></pre></div>
 <p><code>HMContext</code> is the SDK's process-wide entry point. The constructor is cheap: it kicks off three background prewarm tasks (driver-payload extraction to <code>%TEMP%</code>, profile catalog parse, GameInput service warm-up) but doesn't block.</p>
 <p><code>LoadDefaultProfiles</code> reads the embedded JSON catalog out of <code>HIDMaestro.Core.dll</code>. Consumers don't need to ship profile files alongside their app. To load profiles from disk instead (custom directory, modded profiles), use <code>LoadProfilesFromDirectory(path)</code>.</p>
@@ -1992,7 +2022,7 @@
 </code></pre></div>
 <p><code>HMGamepadState</code> is the abstract input frame. Analog inputs live in a single <code>Dictionary&lt;HMAxis, float&gt; Axes</code> keyed by HID usage; values normalize to <code>[0..1]</code> (0.5 = centered for signed axes, 0.0 = released for unsigned). Buttons stay as a flags bitmask, hat as a cardinal/diagonal enum. The SDK encodes into the active profile's HID descriptor: you don't need to know whether the target is a DualSense, Xbox 360, or arcade stick.</p>
 <p>For the common 4-stick + 2-trigger gamepad shape, <code>HMGamepadStateHelpers.StandardAxes(profile, ...)</code> resolves the canonical <code>(LX, LY, RX, RY, LT, RT)</code> slots into the right axis keys per profile (Sony's Z=right-stick, Rx=left-trigger axis map is honored). For HOTAS / wheel / pedal devices, drive any descriptor-declared usage directly: <code>state.Axes[HMAxis.Slider] = 0.7f</code>.</p>
-<p>For features the abstract struct doesn't model (DualSense touchpad coordinates, gyro/accel, vendor extensions), use <code>SubmitRawReport</code> with bytes you assembled yourself.</p>
+<p>The struct also carries the Sony touchpad, motion, battery and DualShock 3 button pressure. For data it doesn't model, such as vendor extensions, use <code>SubmitRawReport</code> with bytes you assembled yourself.</p>
 <p>There is no SDK-managed pump thread. The consumer drives the cadence. PadForge runs at 1000 Hz; the demo runs at 125 Hz; a profile-switch utility might submit zero frames. The driver's worker thread reads from shared memory event-driven, so submit rate and idle CPU cost are independent.</p>
 <hr />
 <h2 id="step-6-cleanup">Step 6: cleanup<a class="headerlink" href="#step-6-cleanup" title="Permanent link">&para;</a></h2>

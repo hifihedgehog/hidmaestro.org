@@ -743,6 +743,8 @@
       
         
       
+        
+      
     
     
     
@@ -952,6 +954,34 @@
     
   
     Composite USB Personas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/dualshock-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DualShock 3 and Pressure
   
 
     
@@ -1755,7 +1785,7 @@
 
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
 <p>Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.</p>
-<p>v1.9.2 ships for x64 and ARM64. See <a href="../platform-support/#validation">platform support</a> for what was measured on each.</p>
+<p>v1.10.0 ships for x64 and ARM64. See <a href="../platform-support/#validation">platform support</a> for what was measured on each.</p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1816,7 +1846,7 @@
 <p>See <a href="../../reference/build-and-release/">Build and release</a> for output directories and validation.</p>
 <h2 id="composite-profiles-and-upgrades">Composite profiles and upgrades<a class="headerlink" href="#composite-profiles-and-upgrades" title="Permanent link">&para;</a></h2>
 <p>Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.8.1, the first time one is created on a machine that has none. No separate download is required on the consumer's machine. The build checks the pinned hashes, and the SDK checks the installer again before running it.</p>
-<p>A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. <code>HIDMAESTRO_KEEP_TRANSPORT=1</code> turns the move off. There is nothing for a user to do when moving to v1.9.2. USB devices blink once during a first-time install on a machine with no transport, while Windows re-enumerates the root hubs.</p>
+<p>A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. <code>HIDMAESTRO_KEEP_TRANSPORT=1</code> turns the move off. There is nothing for a user to do. USB devices blink once during a first-time install on a machine with no transport, while Windows re-enumerates the root hubs.</p>
 <p>See <a href="../platform-support/">platform support</a> for the architecture matrix and measured results. ARM64 hardware has not run the battery.</p>
 
 

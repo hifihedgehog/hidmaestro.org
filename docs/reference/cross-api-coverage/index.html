@@ -636,6 +636,8 @@
       
         
       
+        
+      
     
     
     
@@ -845,6 +847,34 @@
     
   
     Composite USB Personas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/dualshock-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DualShock 3 and Pressure
   
 
     
@@ -2644,11 +2674,23 @@ enumerating the pad because NaN gyro does not stop buttons or sticks. What
 broke was titles with native PlayStation support, which read the
 calibration and rejected the device. "Works in Steam, rejected by the game"
 is the signature of this class of problem.</p>
-<p>Denominators are now 20000 with <code>speed_2x</code> at 1000, and the payload is
-order-agnostic so it reads correctly under both the USB and Bluetooth field
-orders. Report <code>0x09</code> also grew from 17 to the 20 bytes the descriptor
-declares, since <code>ps_get_report</code> requires an exact size match and rejected
-the short reply before looking at it.</p>
+<p>Report <code>0x09</code> also grew from 17 to the 20 bytes the descriptor declares,
+since <code>ps_get_report</code> requires an exact size match and rejected the short
+reply before looking at it.</p>
+<p>Since v1.10.0 the calibration is the identity for the pads' own units,
+8192 counts per g and 16 per degree per second: zero biases, gyro
+references of plus and minus 8000 at a speed of 500, and accelerometer
+references of plus and minus 8192. SDL and Linux read a submitted 1 g as
+1 g. The v1.4.4 payload, plus and minus 10000 throughout, made them read
+1 g as 0.82 g and rotation at 0.8 of its rate. A DualShock 4's Bluetooth
+report <code>0x05</code> lists the three plus references before the three minus
+references, unlike its USB report <code>0x02</code> and the DualSense, and the driver
+now serves each pad its own order. DS4Windows subtracts the minus
+reference from the plus one without an absolute value, so the single
+order served before made it invert the Bluetooth DualShock 4's yaw. Over
+Bluetooth, reports <code>0x05</code>, <code>0x09</code> and <code>0x20</code> end with the CRC-32 a real
+pad sends. <code>hid-playstation.c</code> checks it, and RPCS3 closes a Bluetooth
+DualShock 4 whose calibration fails the check three times.</p>
 <h3 id="the-ig_-enumerator-trick">The &amp;IG_ enumerator trick<a class="headerlink" href="#the-ig_-enumerator-trick" title="Permanent link">&para;</a></h3>
 <p>By using <code>VID_*&amp;PID_*&amp;IG_00</code> as the device enumerator, the HID child's device path contains <code>&amp;IG_</code>. This has three simultaneous effects:</p>
 <ul>

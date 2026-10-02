@@ -59,7 +59,7 @@ public int LoadProfilesFromDirectory(string profilesDir);
 
 `GetProfile(id)` looks up by stable ID slug (e.g. `"xbox-360-wired"`, `"dualsense"`, `"thrustmaster-t300rs"`). Returns null if no such profile is loaded. Case-insensitive.
 
-`LoadDefaultProfiles` loads the embedded catalog (231 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
+`LoadDefaultProfiles` loads the embedded catalog (232 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
 
 `LoadProfilesFromDirectory(path)` loads `*.json` from a directory matching the [Profile System](../profiles/profile-system.md) schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (`schema.json`) are skipped. Does not auto-load the embedded catalog: call both if you want catalog + custom.
 
@@ -148,7 +148,7 @@ public void SubmitRawReport(ReadOnlySpan<byte> report);
 
 For Xbox-VID profiles (`vid == 0x045E`), the same call also packs a 14-byte GIP-format buffer for the XUSB companion to read on `IOCTL_XUSB_GET_STATE`. Non-Xbox profiles skip this packing entirely (~60-80 instructions per frame saved).
 
-`SubmitRawReport(report)` pushes a raw HID input report for features `HMGamepadState` doesn't model: DualSense touchpad coordinates, gyroscope, sensor packets, vendor extensions. Pass **data bytes only**: do NOT include a Report ID prefix. The driver prepends the Report ID automatically. For profiles with no Report ID, pass the full report as-is.
+`SubmitRawReport(report)` pushes a raw HID input report for data `HMGamepadState` doesn't model, such as vendor extensions. Pass **data bytes only**: do NOT include a Report ID prefix. The driver prepends the Report ID automatically. For profiles with no Report ID, pass the full report as-is.
 
 Throws `ArgumentException` if `report` is empty or exceeds the 256-byte shared-section payload capacity.
 
@@ -253,8 +253,8 @@ public struct HMGamepadState
     public int?    HatHundredths;             // hundredths of a degree, 0..35999
     public ushort? HatRaw;                    // raw descriptor field value (LogicalMin..LogicalMax)
 
-    // Sony-specific surface (touchpad, IMU, battery) keeps native representation.
-    // See HMGamepadState.cs for the full set of fields.
+    // Sony-specific surface (touchpad, IMU, battery, button pressure) keeps
+    // native representation. See HMGamepadState.cs for the full set of fields.
 }
 ```
 
@@ -274,7 +274,11 @@ state.Axes = new Dictionary<HMAxis, float>
 
 Null `Axes` is the hot-path-cost-free idle case: the encoder's dict walk is gated on `axes != null && Count > 0`. Allocate the dict once in your input pump and reuse.
 
-For features `HMGamepadState` does not model (Sony touchpad finger coordinates, gyro/accel for non-IMU profiles, vendor extensions), use `SubmitRawReport` with bytes you assembled per the profile's descriptor.
+The Sony surface keeps native units. `GyroPitch`, `GyroYaw` and `GyroRoll` carry 16 counts per degree per second, and `AccelX`, `AccelY` and `AccelZ` carry 8192 per g. `SensorTimestamp` counts 1/3 µs ticks, microseconds times 3, the DualSense's own unit. The DualShock 4 profiles divide it by 16 into that pad's ticks and, while it is 0, stamp the time since the controller's first report instead. `TouchpadPacketCounter` fills the DualShock 4 touch report's packet-counter byte. `BatteryLevel` runs from 0 to 10.
+
+Ten `Pressure*` fields (v1.10.0) carry how hard a DualShock 3's pressure-sensitive buttons are pressed, 0 to 255: `PressureA` (cross), `PressureB` (circle), `PressureX` (square), `PressureY` (triangle), `PressureLeftBumper`, `PressureRightBumper`, and the four `PressureDpad*` directions. A pressed button left at 0 is sent as 255. Only `dualshock-3-full` carries them. See [DualShock 3 and Pressure](dualshock-3.md).
+
+For data `HMGamepadState` does not model, such as vendor extensions, use `SubmitRawReport` with bytes you assembled per the profile's descriptor.
 
 ### `HMGamepadStateHelpers.StandardAxes`: ergonomic 6-slot shortcut
 
@@ -735,7 +739,7 @@ See [Output Passthrough](output-passthrough.md) and [Force Feedback](force-feedb
 |----------------|---------------|--------------|
 | `HMContext.InstallDriver` | Any (admin) | Blocks. Single-threaded internally. Don't call concurrently from two threads. |
 | `HMContext.CreateController` | Any (admin) | Blocks until device fully bound. Lock-protected against concurrent index allocation. |
-| `HMController.SubmitState` / `SubmitRawReport` | Any | Lock-free seqlock write. ~250 ns per call. Can be called from any thread but typically the consumer's input-poll thread. |
+| `HMController.SubmitState` / `SubmitRawReport` | Any | Seqlock write, ~250 ns per call. On a profile with an idle clock (the Valve personas), a per-controller lock serializes it with the idle repeat. Can be called from any thread but typically the consumer's input-poll thread. |
 | `HMController.OutputReceived` | SDK poll thread | NOT the consumer's thread. Marshal back if needed. Keep handlers cheap (<512 ms total). |
 | `HMController.PublishPid*` | Any | Lock-protected per-controller (so pool/state writes don't tear). Cheap. |
 | `HMOemNameOverride.Set` / `Clear` | Any (admin) | Global mutex around all three registry writes. |

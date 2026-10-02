@@ -35,7 +35,7 @@ Safe to call on every startup. Returns the number restored. See [OEM Name Overri
 
 ```csharp
 using var ctx = new HMContext();
-int loaded = ctx.LoadDefaultProfiles();   // returns 231
+int loaded = ctx.LoadDefaultProfiles();   // returns 232
 ```
 
 `HMContext` is the SDK's process-wide entry point. The constructor is cheap: it kicks off three background prewarm tasks (driver-payload extraction to `%TEMP%`, profile catalog parse, GameInput service warm-up) but doesn't block.
@@ -156,7 +156,7 @@ while (sw.Elapsed < TimeSpan.FromSeconds(5))
 
 For the common 4-stick + 2-trigger gamepad shape, `HMGamepadStateHelpers.StandardAxes(profile, ...)` resolves the canonical `(LX, LY, RX, RY, LT, RT)` slots into the right axis keys per profile (Sony's Z=right-stick, Rx=left-trigger axis map is honored). For HOTAS / wheel / pedal devices, drive any descriptor-declared usage directly: `state.Axes[HMAxis.Slider] = 0.7f`.
 
-For features the abstract struct doesn't model (DualSense touchpad coordinates, gyro/accel, vendor extensions), use `SubmitRawReport` with bytes you assembled yourself.
+The struct also carries the Sony touchpad, motion, battery and DualShock 3 button pressure. For data it doesn't model, such as vendor extensions, use `SubmitRawReport` with bytes you assembled yourself.
 
 There is no SDK-managed pump thread. The consumer drives the cadence. PadForge runs at 1000 Hz; the demo runs at 125 Hz; a profile-switch utility might submit zero frames. The driver's worker thread reads from shared memory event-driven, so submit rate and idle CPU cost are independent.
 

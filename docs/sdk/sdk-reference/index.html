@@ -638,6 +638,8 @@
       
         
       
+        
+      
     
     
     
@@ -1285,6 +1287,34 @@
     
   
     Composite USB Personas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dualshock-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DualShock 3 and Pressure
   
 
     
@@ -2461,7 +2491,7 @@
 </code></pre></div>
 <p><code>AllProfiles</code> returns every profile loaded into this context, sorted by stable ID. Empty until you call one of the <code>LoadProfiles*</code> methods.</p>
 <p><code>GetProfile(id)</code> looks up by stable ID slug (e.g. <code>"xbox-360-wired"</code>, <code>"dualsense"</code>, <code>"thrustmaster-t300rs"</code>). Returns null if no such profile is loaded. Case-insensitive.</p>
-<p><code>LoadDefaultProfiles</code> loads the embedded catalog (231 entries shipping inside <code>HIDMaestro.Core.dll</code>) and returns the count added. Skips IDs already loaded.</p>
+<p><code>LoadDefaultProfiles</code> loads the embedded catalog (232 entries shipping inside <code>HIDMaestro.Core.dll</code>) and returns the count added. Skips IDs already loaded.</p>
 <p><code>LoadProfilesFromDirectory(path)</code> loads <code>*.json</code> from a directory matching the <a href="../../profiles/profile-system/">Profile System</a> schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (<code>schema.json</code>) are skipped. Does not auto-load the embedded catalog: call both if you want catalog + custom.</p>
 <h3 id="controller-lifecycle">Controller lifecycle<a class="headerlink" href="#controller-lifecycle" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">public</span><span class="w"> </span><span class="n">HMController</span><span class="w"> </span><span class="nf">CreateController</span><span class="p">(</span><span class="n">HMProfile</span><span class="w"> </span><span class="n">profile</span><span class="p">);</span>
@@ -2519,7 +2549,7 @@
 </code></pre></div>
 <p><code>SubmitState</code> translates the abstract <code>HMGamepadState</code> into the active profile's HID report layout and writes it to shared memory. Cadence is set by the consumer: there is no internal pump thread. Typical rates: 1000 Hz for high-fidelity input passthrough (PadForge), 250 Hz for bench testing, 8 Hz for a profile that's only sending the occasional button event.</p>
 <p>For Xbox-VID profiles (<code>vid == 0x045E</code>), the same call also packs a 14-byte GIP-format buffer for the XUSB companion to read on <code>IOCTL_XUSB_GET_STATE</code>. Non-Xbox profiles skip this packing entirely (~60-80 instructions per frame saved).</p>
-<p><code>SubmitRawReport(report)</code> pushes a raw HID input report for features <code>HMGamepadState</code> doesn't model: DualSense touchpad coordinates, gyroscope, sensor packets, vendor extensions. Pass <strong>data bytes only</strong>: do NOT include a Report ID prefix. The driver prepends the Report ID automatically. For profiles with no Report ID, pass the full report as-is.</p>
+<p><code>SubmitRawReport(report)</code> pushes a raw HID input report for data <code>HMGamepadState</code> doesn't model, such as vendor extensions. Pass <strong>data bytes only</strong>: do NOT include a Report ID prefix. The driver prepends the Report ID automatically. For profiles with no Report ID, pass the full report as-is.</p>
 <p>Throws <code>ArgumentException</code> if <code>report</code> is empty or exceeds the 256-byte shared-section payload capacity.</p>
 <p>The output of either method becomes visible through every downstream API simultaneously: <code>XInputGetState</code>, <code>joy.cpl</code>, browser Gamepad, SDL3, WGI. See <a href="../../reference/cross-api-coverage/">Cross-API Coverage</a> for the per-API translation.</p>
 <h3 id="output-rumble-haptics-ffb-leds">Output (rumble / haptics / FFB / LEDs)<a class="headerlink" href="#output-rumble-haptics-ffb-leds" title="Permanent link">&para;</a></h3>
@@ -2587,8 +2617,8 @@
 <a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">int?</span><span class="w">    </span><span class="n">HatHundredths</span><span class="p">;</span><span class="w">             </span><span class="c1">// hundredths of a degree, 0..35999</span>
 <a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">ushort?</span><span class="w"> </span><span class="n">HatRaw</span><span class="p">;</span><span class="w">                    </span><span class="c1">// raw descriptor field value (LogicalMin..LogicalMax)</span>
 <a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
-<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">    </span><span class="c1">// Sony-specific surface (touchpad, IMU, battery) keeps native representation.</span>
-<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">    </span><span class="c1">// See HMGamepadState.cs for the full set of fields.</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">    </span><span class="c1">// Sony-specific surface (touchpad, IMU, battery, button pressure) keeps</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">    </span><span class="c1">// native representation. See HMGamepadState.cs for the full set of fields.</span>
 <a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="p">}</span>
 </code></pre></div>
 <p><code>Axes</code> is the single drive surface for every analog input (v1.3.9). Values are uniformly <code>[0.0, 1.0]</code>: 0.5 is centered for signed axes (sticks, twist rudders), 0.0 is released for unsigned axes (triggers, throttles, sliders, pedals). The SDK iterates each declared analog field in the active profile's descriptor, reads the dict by HID usage, and writes the report. Axes the consumer doesn't write default to centered (signed) or released (unsigned); axes the descriptor doesn't declare are silently ignored.</p>
@@ -2603,7 +2633,9 @@
 <a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="p">};</span>
 </code></pre></div>
 <p>Null <code>Axes</code> is the hot-path-cost-free idle case: the encoder's dict walk is gated on <code>axes != null &amp;&amp; Count &gt; 0</code>. Allocate the dict once in your input pump and reuse.</p>
-<p>For features <code>HMGamepadState</code> does not model (Sony touchpad finger coordinates, gyro/accel for non-IMU profiles, vendor extensions), use <code>SubmitRawReport</code> with bytes you assembled per the profile's descriptor.</p>
+<p>The Sony surface keeps native units. <code>GyroPitch</code>, <code>GyroYaw</code> and <code>GyroRoll</code> carry 16 counts per degree per second, and <code>AccelX</code>, <code>AccelY</code> and <code>AccelZ</code> carry 8192 per g. <code>SensorTimestamp</code> counts 1/3 µs ticks, microseconds times 3, the DualSense's own unit. The DualShock 4 profiles divide it by 16 into that pad's ticks and, while it is 0, stamp the time since the controller's first report instead. <code>TouchpadPacketCounter</code> fills the DualShock 4 touch report's packet-counter byte. <code>BatteryLevel</code> runs from 0 to 10.</p>
+<p>Ten <code>Pressure*</code> fields (v1.10.0) carry how hard a DualShock 3's pressure-sensitive buttons are pressed, 0 to 255: <code>PressureA</code> (cross), <code>PressureB</code> (circle), <code>PressureX</code> (square), <code>PressureY</code> (triangle), <code>PressureLeftBumper</code>, <code>PressureRightBumper</code>, and the four <code>PressureDpad*</code> directions. A pressed button left at 0 is sent as 255. Only <code>dualshock-3-full</code> carries them. See <a href="../dualshock-3/">DualShock 3 and Pressure</a>.</p>
+<p>For data <code>HMGamepadState</code> does not model, such as vendor extensions, use <code>SubmitRawReport</code> with bytes you assembled per the profile's descriptor.</p>
 <h3 id="hmgamepadstatehelpersstandardaxes-ergonomic-6-slot-shortcut"><code>HMGamepadStateHelpers.StandardAxes</code>: ergonomic 6-slot shortcut<a class="headerlink" href="#hmgamepadstatehelpersstandardaxes-ergonomic-6-slot-shortcut" title="Permanent link">&para;</a></h3>
 <p>Most consumers want the canonical <code>(LX, LY, RX, RY, LT, RT)</code> convention. The static helper resolves those into the active profile's actual axis keys (Sony's Z=right-stick, Rx=left-trigger axis map is honored automatically) and returns a fresh dict ready to assign to <code>state.Axes</code>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">SubmitState</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HMGamepadState</span>
@@ -2980,7 +3012,7 @@
 <tr>
 <td><code>HMController.SubmitState</code> / <code>SubmitRawReport</code></td>
 <td>Any</td>
-<td>Lock-free seqlock write. ~250 ns per call. Can be called from any thread but typically the consumer's input-poll thread.</td>
+<td>Seqlock write, ~250 ns per call. On a profile with an idle clock (the Valve personas), a per-controller lock serializes it with the idle repeat. Can be called from any thread but typically the consumer's input-poll thread.</td>
 </tr>
 <tr>
 <td><code>HMController.OutputReceived</code></td>

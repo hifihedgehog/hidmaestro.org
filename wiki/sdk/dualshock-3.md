@@ -10,7 +10,7 @@ Source: [`profiles/sony/dualshock-3-full.json`](https://github.com/hifihedgehog/
 
 | Profile | What a host sees | Pressure and motion |
 |---|---|---|
-| `dualshock-3` | The pad's own 148-byte USB descriptor, filled through the standard descriptor path | Neither |
+| `dualshock-3` | The pad's own 148-byte USB descriptor, filled through the standard descriptor path | Neither. Rumble and the player LEDs since v1.10.1 |
 | `dualshock-3-full` | A 12-byte joystick report, and the whole native 49-byte report as feature report 0 | Both, plus battery, rumble and the player LEDs |
 
 PS3 emulators want `dualshock-3-full`.
@@ -39,7 +39,7 @@ Motion comes from `AccelX`, `AccelY` and `AccelZ` at 8192 counts per g and `Gyro
 
 ## Output
 
-Rumble and LED writes arrive on `OutputDecoded` as report `0x01`, the native output report, whichever form the host wrote:
+On both profiles, rumble and LED writes arrive on `OutputDecoded` as report `0x01`, the native output report. `dualshock-3` decodes the report as a host writes it, since v1.10.1. `dualshock-3-full` also takes the sixaxis.sys form, described under How it works:
 
 | Field | Meaning |
 |---|---|
@@ -48,6 +48,8 @@ Rumble and LED writes arrive on `OutputDecoded` as report `0x01`, the native out
 | `leftMotorForce` | The large motor, 0 to 255 |
 | `leftMotorDuration` | How long the large motor runs, 0xFF forever |
 | `ledBitmap` | The player LEDs: LED 1 is 0x02, LED 2 0x04, LED 3 0x08, LED 4 0x10 |
+
+A host reaches `dualshock-3`'s decode by writing the report itself, through `WriteFile` or `HidD_SetOutputReport`. Stock SDL's PS3 driver does not open `dualshock-3` on Windows: it reads feature reports 0xF2 and 0xF5 first, the native descriptor declares neither, and Windows' HID class driver refuses both.
 
 ## PCSX2
 
@@ -74,6 +76,7 @@ Battery scenario S64 checks, first offline and then on a live persona:
 - RPCS3's read sequence: 0xF2 answers under its own id, and polling 0xF2 returns the same bytes as report 0.
 - Rumble and LED writes in SDL's form and in RPCS3's form, decoded on `OutputDecoded`.
 - Stock SDL with PCSX2's hints: a PS3 controller with 16 axes and 11 buttons, every pressure axis at the value submitted, the player LED SDL sets, and rumble.
+- On `dualshock-3`, the native output report through `WriteFile` and `HidD_SetOutputReport`, every field decoded on `OutputDecoded`, a stop included.
 
 Neither PCSX2 nor RPCS3 has been run against the persona.
 

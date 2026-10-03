@@ -2438,8 +2438,8 @@
 </tr>
 <tr>
 <td><strong>S64_Ds3_Sixaxis</strong></td>
-<td><code>dualshock-3-full</code> offline, live, and under stock SDL3 with PCSX2's hints</td>
-<td>The native report against SDL, Linux and RPCS3, the joystick and feature reports against DsHidMini's conversions, RPCS3's 0xF2 read and its output report, and a PS3 controller with 16 axes, 11 buttons and every pressure axis in SDL.</td>
+<td><code>dualshock-3-full</code> offline, live, and under stock SDL3 with PCSX2's hints, then <code>dualshock-3</code> live (issue #65)</td>
+<td>The native report against SDL, Linux and RPCS3, the joystick and feature reports against DsHidMini's conversions, RPCS3's 0xF2 read and its output report, and a PS3 controller with 16 axes, 11 buttons and every pressure axis in SDL. On <code>dualshock-3</code>, the native output report, which reached only <code>OutputReceived</code> before v1.10.1, decoded on <code>OutputDecoded</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -2532,7 +2532,7 @@
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md"><code>test/regression/README.md</code></a>: the in-repo battery doc.</li>
 </ul>
 <h2 id="arm64-and-usbip-validation">ARM64 and USB/IP validation<a class="headerlink" href="#arm64-and-usbip-validation" title="Permanent link">&para;</a></h2>
-<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.10.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
+<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.10.1 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
 
 
 

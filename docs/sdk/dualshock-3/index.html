@@ -1844,7 +1844,7 @@
 <tr>
 <td><code>dualshock-3</code></td>
 <td>The pad's own 148-byte USB descriptor, filled through the standard descriptor path</td>
-<td>Neither</td>
+<td>Neither. Rumble and the player LEDs since v1.10.1</td>
 </tr>
 <tr>
 <td><code>dualshock-3-full</code></td>
@@ -1871,7 +1871,7 @@
 <p>A pressed button whose pressure is left at 0 is sent as 255, so code that only knows digital state presses every button fully. A nonzero pressure is sent as given, whether or not the button is pressed.</p>
 <p>Motion comes from <code>AccelX</code>, <code>AccelY</code> and <code>AccelZ</code> at 8192 counts per g and <code>GyroYaw</code> at 16 counts per degree per second, the same units the DualShock 4 and DualSense profiles use. The persona converts them to the DualShock 3's 10-bit sensors, 113 counts per g and 123 per 90 degrees per second, the scales Linux's <code>hid-sony.c</code> and RPCS3 use. A DualShock 3 has one gyro axis, so <code>GyroPitch</code> and <code>GyroRoll</code> are not sent. <code>BatteryLevel</code> (0 to 10) maps to the pad's own 0 to 5 scale, and <code>BatteryCharging</code> and <code>BatteryFull</code> send its charging and charged codes.</p>
 <h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">&para;</a></h2>
-<p>Rumble and LED writes arrive on <code>OutputDecoded</code> as report <code>0x01</code>, the native output report, whichever form the host wrote:</p>
+<p>On both profiles, rumble and LED writes arrive on <code>OutputDecoded</code> as report <code>0x01</code>, the native output report. <code>dualshock-3</code> decodes the report as a host writes it, since v1.10.1. <code>dualshock-3-full</code> also takes the sixaxis.sys form, described under How it works:</p>
 <table>
 <thead>
 <tr>
@@ -1902,6 +1902,7 @@
 </tr>
 </tbody>
 </table>
+<p>A host reaches <code>dualshock-3</code>'s decode by writing the report itself, through <code>WriteFile</code> or <code>HidD_SetOutputReport</code>. Stock SDL's PS3 driver does not open <code>dualshock-3</code> on Windows: it reads feature reports 0xF2 and 0xF5 first, the native descriptor declares neither, and Windows' HID class driver refuses both.</p>
 <h2 id="pcsx2">PCSX2<a class="headerlink" href="#pcsx2" title="Permanent link">&para;</a></h2>
 <p>PCSX2 reads controllers through SDL. On Windows it turns on SDL's sixaxis driver (<code>SDL_HINT_JOYSTICK_HIDAPI_PS3_SIXAXIS_DRIVER</code>) and treats a pad as pressure-sensitive when SDL reports a PS3 controller with 16 axes and 11 buttons. Its automatic mapping then binds the ten pressure axes to Cross, Circle, Square, Triangle, L1, R1 and the d-pad. Stock SDL with those hints opens <code>dualshock-3-full</code> as exactly that controller.</p>
 <h2 id="rpcs3">RPCS3<a class="headerlink" href="#rpcs3" title="Permanent link">&para;</a></h2>
@@ -1918,6 +1919,7 @@
 <li>RPCS3's read sequence: 0xF2 answers under its own id, and polling 0xF2 returns the same bytes as report 0.</li>
 <li>Rumble and LED writes in SDL's form and in RPCS3's form, decoded on <code>OutputDecoded</code>.</li>
 <li>Stock SDL with PCSX2's hints: a PS3 controller with 16 axes and 11 buttons, every pressure axis at the value submitted, the player LED SDL sets, and rumble.</li>
+<li>On <code>dualshock-3</code>, the native output report through <code>WriteFile</code> and <code>HidD_SetOutputReport</code>, every field decoded on <code>OutputDecoded</code>, a stop included.</li>
 </ul>
 <p>Neither PCSX2 nor RPCS3 has been run against the persona.</p>
 <p>SDL's sixaxis driver reads the feature reply's motion words big-endian. DsHidMini and RPCS3 read them little-endian, and the persona follows DsHidMini, so SDL reports wrong accelerometer values through that driver, as it does on DsHidMini. PCSX2 uses no motion.</p>

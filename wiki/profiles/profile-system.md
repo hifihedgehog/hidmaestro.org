@@ -387,7 +387,7 @@ The modded profile isn't registered in the catalog: it's used directly for one `
 
 ## Catalog statistics
 
-As of v1.10.0:
+As of v1.10.1:
 
 | Metric | Count |
 |--------|-------|

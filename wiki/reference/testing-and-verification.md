@@ -191,7 +191,7 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 | **S59_Identity_Battery** | One controller per family across nine lives | Parent id, ParentIdPrefix, ContainerId, HID children, interface paths, DirectInput GUID, SDL3 path and USB serial stay identical across every life. Also empty shells, two pads of one VID/PID overlapping, and a profile change at one key. |
 | **S60_Xusb_Battery** | The XUSB battery reply on xbox-360-wired | The four bytes position by position, the LED reply's own version word, what `XInputGetBatteryInformation` hands a caller, and SDL's power-state mapping over those values. |
 | **S63_Ds4_Report** | Every DualShock 4 map, then the Bluetooth persona live under stock SDL3 (issue #64) | Report `0x11` byte 1 without SDL's 0x80 flag, so SDL dropped all input once the persona armed, and motion, battery and touch read from bytes two late. Also the calibration scale, the battery and cable bits, and a near-zero trigger read as a full pull. |
-| **S64_Ds3_Sixaxis** | `dualshock-3-full` offline, live, and under stock SDL3 with PCSX2's hints | The native report against SDL, Linux and RPCS3, the joystick and feature reports against DsHidMini's conversions, RPCS3's 0xF2 read and its output report, and a PS3 controller with 16 axes, 11 buttons and every pressure axis in SDL. |
+| **S64_Ds3_Sixaxis** | `dualshock-3-full` offline, live, and under stock SDL3 with PCSX2's hints, then `dualshock-3` live (issue #65) | The native report against SDL, Linux and RPCS3, the joystick and feature reports against DsHidMini's conversions, RPCS3's 0xF2 read and its output report, and a PS3 controller with 16 axes, 11 buttons and every pressure axis in SDL. On `dualshock-3`, the native output report, which reached only `OutputReceived` before v1.10.1, decoded on `OutputDecoded`. |
 
 Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1) is the authoritative full list.
 
@@ -315,4 +315,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-See [platform support](../start/platform-support.md#validation) for the v1.10.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.
+See [platform support](../start/platform-support.md#validation) for the v1.10.1 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.

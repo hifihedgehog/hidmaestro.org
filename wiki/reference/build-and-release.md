@@ -40,7 +40,7 @@ Directory.Build.props controls managed and native VERSIONINFO versions. Builds u
 
 The INF stamping script decorates the model sections for the target, NTamd64 or NTARM64, updates the date, and stamps the fourth DriverVer component with the build minute. It refuses to write an INF that ends up with neither. Native version resources come from gen_version.ps1.
 
-The first three DriverVer components move only when driver code changes. The build stamps the fourth with the build minute and the date with the build day, so every native build is a new package to Windows. `InstallDriver()` skips its work only when the embedded driver files, INFs included, hash the same as the installed ones, so the first run of a release with a new native build reinstalls the driver once. v1.10.0 changes driver code, so DriverVer moves to 1.10.0.
+The first three DriverVer components move only when driver code changes. The build stamps the fourth with the build minute and the date with the build day, so every native build is a new package to Windows. `InstallDriver()` skips its work only when the embedded driver files, INFs included, hash the same as the installed ones, so the first run of a release with a new native build reinstalls the driver once. v1.10.1 changes no driver code, so DriverVer stays at 1.10.0.
 
 ## Validation and release order
 

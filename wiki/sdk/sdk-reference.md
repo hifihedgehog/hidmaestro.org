@@ -59,7 +59,7 @@ public int LoadProfilesFromDirectory(string profilesDir);
 
 `GetProfile(id)` looks up by stable ID slug (e.g. `"xbox-360-wired"`, `"dualsense"`, `"thrustmaster-t300rs"`). Returns null if no such profile is loaded. Case-insensitive.
 
-`LoadDefaultProfiles` loads the embedded catalog (232 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
+`LoadDefaultProfiles` loads the embedded catalog (233 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
 
 `LoadProfilesFromDirectory(path)` loads `*.json` from a directory matching the [Profile System](../profiles/profile-system.md) schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (`schema.json`) are skipped. Does not auto-load the embedded catalog: call both if you want catalog + custom.
 
@@ -150,7 +150,7 @@ For Xbox-VID profiles (`vid == 0x045E`), the same call also packs a 14-byte GIP-
 
 `SubmitRawReport(report)` pushes a raw HID input report for data `HMGamepadState` doesn't model, such as vendor extensions. Pass **data bytes only**: do NOT include a Report ID prefix. The driver prepends the Report ID automatically. For profiles with no Report ID, pass the full report as-is.
 
-Throws `ArgumentException` if `report` is empty or exceeds the 256-byte shared-section payload capacity.
+Throws `ArgumentException` if `report` is empty or exceeds the 256-byte shared-section payload capacity. On `switch2-pro-controller-composite`, `SubmitRawReport` and `SubmitRawExtendedReport` throw `NotSupportedException`, because that persona builds every report on the device side. See [Switch 2 Pro with Motion](switch2-pro.md).
 
 The output of either method becomes visible through every downstream API simultaneously: `XInputGetState`, `joy.cpl`, browser Gamepad, SDL3, WGI. See [Cross-API Coverage](../reference/cross-api-coverage.md) for the per-API translation.
 
@@ -277,6 +277,8 @@ Null `Axes` is the hot-path-cost-free idle case: the encoder's dict walk is gate
 The Sony surface keeps native units. `GyroPitch`, `GyroYaw` and `GyroRoll` carry 16 counts per degree per second, and `AccelX`, `AccelY` and `AccelZ` carry 8192 per g. `SensorTimestamp` counts 1/3 µs ticks, microseconds times 3, the DualSense's own unit. The DualShock 4 profiles divide it by 16 into that pad's ticks and, while it is 0, stamp the time since the controller's first report instead. `TouchpadPacketCounter` fills the DualShock 4 touch report's packet-counter byte. `BatteryLevel` runs from 0 to 10.
 
 Ten `Pressure*` fields (v1.10.0) carry how hard a DualShock 3's pressure-sensitive buttons are pressed, 0 to 255: `PressureA` (cross), `PressureB` (circle), `PressureX` (square), `PressureY` (triangle), `PressureLeftBumper`, `PressureRightBumper`, and the four `PressureDpad*` directions. A pressed button left at 0 is sent as 255. Only `dualshock-3-full` carries them. See [DualShock 3 and Pressure](dualshock-3.md).
+
+Six calibrated motion fields carry SDL's sensor frame: `AccelGX`, `AccelGY` and `AccelGZ` in g, and `GyroDpsX`, `GyroDpsY` and `GyroDpsZ` in degrees per second. `switch-pro` and, since v1.11.0, `switch2-pro-controller-composite` read them and convert them to their pad's own counts, so a consumer that reads motion from SDL submits it as it reads it. See [Switch 2 Pro with Motion](switch2-pro.md).
 
 For data `HMGamepadState` does not model, such as vendor extensions, use `SubmitRawReport` with bytes you assembled per the profile's descriptor.
 

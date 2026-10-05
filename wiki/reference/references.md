@@ -101,6 +101,14 @@ For symbols below, search [learn.microsoft.com](https://learn.microsoft.com/) by
 
 - **DS4Windows**: [github.com/schmaldeo/DS4Windows](https://github.com/schmaldeo/DS4Windows), the maintained fork. `DS4Windows/DS4Library/DS4Sixaxis.cs` parses the DualShock 4 calibration per transport without absolute values.
 
+- **switch2_controller_research**: [github.com/ndeadly/switch2_controller_research](https://github.com/ndeadly/switch2_controller_research). The Switch 2 controllers' command protocol (`commands.md`), reports (`hid_reports.md`), descriptors and flash layout, and `captures/usb/rumble-procon-gccon.pcapng`, the link-layer capture of a console driving a Pro Controller 2 that `switch2-pro-controller-composite` reproduces.
+
+- **SDL's Switch 2 driver**: `src/joystick/hidapi/SDL_hidapi_switch2.c` in SDL3. The start sequence, report `0x05` parsing, the sensor constants and the rumble encoding the Switch 2 Pro persona answers.
+
+- **Switch 2 device emulations**: [VIIPER](https://github.com/Alia5/VIIPER)'s `device/ns2pro` over USB/IP, [switch2-controllers-windows10-gyro](https://github.com/TommyWabg/switch2-controllers-windows10-gyro)'s `src/usbip_server.py`, and [XinHeLianSheng-Pro2-Bridge](https://github.com/LeonChrome/XinHeLianSheng-Pro2-Bridge)'s `usb_switch2_vendor.c`. The last two serve the Microsoft OS 1.0 descriptors the persona serves. [switch2-controllers](https://github.com/Nadeflore/switch2-controllers)' `controller.py` gives the rumble frame's bit layout.
+
+- **libusb**: [github.com/libusb/libusb](https://github.com/libusb/libusb). `libusb/os/windows_winusb.c` reads a device's `DeviceInterfaceGUIDs` or `DeviceInterfaceGUID` to reach an interface on WinUSB.
+
 - **Chromium gamepad implementation**: [source.chromium.org/chromium/chromium/src/+/main:device/gamepad/](https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/). The platform-specific backends are under `device/gamepad/{windows,linux,mac}/`. The `&IG_` skip in the Raw Input backend is in `raw_input_data_fetcher_win.cc`.
 
 ---
@@ -145,7 +153,7 @@ These archive Ghidra decomp output, ProcMon traces, registry dumps, and empirica
 
 - [HIDMaestro issue #19](https://github.com/hifihedgehog/HIDMaestro/issues/19): the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in [XUSB Companion](xusb-companion.md).
 
-- [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1): the 64-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
+- [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1): the 65-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
 
 ---
 

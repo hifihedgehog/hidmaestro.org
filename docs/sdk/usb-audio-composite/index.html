@@ -640,6 +640,8 @@
       
         
       
+        
+      
     
     
     
@@ -1036,6 +1038,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#a-third-kind-of-persona-the-switch-2-pro-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A third kind of persona: the Switch 2 Pro Controller
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1060,6 +1073,34 @@
     
   
     DualShock 3 and Pressure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../switch2-pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Switch 2 Pro with Motion
   
 
     
@@ -1922,6 +1963,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#a-third-kind-of-persona-the-switch-2-pro-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A third kind of persona: the Switch 2 Pro Controller
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2040,6 +2092,8 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
 <li><code>"backend": "usbip"</code> selects the create path. It is a property of the device, never a mode toggle on an existing profile: a profile that presented four interfaces on some machines and one on others would name a device plus a machine state.</li>
 <li><code>"usbConfiguration"</code> carries the full USB identity: the structured interface/endpoint model the backend routes with, plus the verbatim wire blobs (<code>deviceDescriptor</code>, <code>configurationDescriptor</code>, <code>otherSpeedConfigurationDescriptor</code>), the <code>busSpeed</code>, and <code>audioControls</code> with the pad's real UAC volume ranges. The blobs are served byte-for-byte and cross-checked against the structured model at create time.</li>
 <li>An interface's alt setting may carry its own <code>"reportDescriptor"</code>, for a persona presenting more than one HID interface. The primary interface (the one whose <code>function</code> is <code>"hid"</code>) serves the profile's own <code>descriptor</code> as always; the others serve theirs from here.</li>
+<li>An interface whose <code>function</code> is <code>"vendor"</code> may declare <code>"bulk"</code> endpoints. The backend serves them for a persona with a responder behind them, the Switch 2 Pro Controller, and stalls them for any other.</li>
+<li><code>"microsoftOs"</code> carries the Microsoft OS 1.0 descriptors a device answers Windows with, as hex: <code>string</code>, the 18 bytes Windows reads at string index 0xEE, and <code>extendedCompatId</code> and <code>extendedProperties</code>, the feature descriptors a vendor request with wIndex 4 and 5 reads. With them Windows binds WinUSB to the interface they name, with no driver install. A profile without the block stalls all three.</li>
 <li><code>"featureStubs"</code> declares the answers the persona gives to <code>GET_REPORT(Feature)</code>, for a device whose claiming software interrogates it before it will use it. <code>messageByte</code> says where the message id sits in a write's payload, and a report may declare the <code>param</code> it answers for, when one message carries several. A report may also carry <code>steamFirmwareStamp</code>, an <code>offset</code> and a <code>key</code>: with Steam installed, the four bytes at that offset answer with the firmware build the key names in Steam's <code>hardwareupdater.cfg</code>, little-endian.</li>
 </ul>
 <p>See <a href="../../profiles/profile-system/">Profile System</a> for the rest of the schema.</p>
@@ -2073,6 +2127,8 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
 <p>These pads speak only Valve's vendor protocol. Nothing generic reads it: not DirectInput, not XInput, not <code>joy.cpl</code>. That is equally true of real hardware, which is what lizard mode exists to cover. What makes a real Steam Controller work with Steam closed is SDL, which implements the protocol directly and turns lizard mode off itself.</p>
 <p>The personas never emit keyboard or mouse reports at all, so they sit permanently in the gamepad state and nothing needs disabling. An SDL application reads them with Steam not running.</p>
 <p>Battery scenario S52 proves this without a client: it creates each persona, drives it through <code>SubmitState</code>, reads the frame back off the real HID stack, and decodes it with SDL's own per-device arithmetic, asserting both stick extremes and a trigger pulled and released. It also measures each persona's clock and feeds it raw frames, asserting that only the consumer's frames reach the wire. <code>ValveWireCheck.exe --monitor &lt;persona&gt;</code> runs the same path interactively and prints what an SDL application would read.</p>
+<h2 id="a-third-kind-of-persona-the-switch-2-pro-controller">A third kind of persona: the Switch 2 Pro Controller<a class="headerlink" href="#a-third-kind-of-persona-the-switch-2-pro-controller" title="Permanent link">&para;</a></h2>
+<p><code>switch2-pro-controller-composite</code> uses the backend for a third reason: the host has to talk to the pad before it sends anything. A Switch 2 Pro Controller has HID on interface 0 and a vendor bulk pair on interface 1, and Steam and SDL start it with commands on the second one. The persona answers those commands, and Windows binds WinUSB to interface 1 from the persona's own Microsoft OS 1.0 descriptors. See <a href="../switch2-pro/">Switch 2 Pro with Motion</a>.</p>
 
 
 

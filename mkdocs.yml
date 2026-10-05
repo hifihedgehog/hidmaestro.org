@@ -86,6 +86,7 @@ nav:
       - Output Passthrough: sdk/output-passthrough.md
       - Composite USB Personas: sdk/usb-audio-composite.md
       - DualShock 3 and Pressure: sdk/dualshock-3.md
+      - Switch 2 Pro with Motion: sdk/switch2-pro.md
       - OEM Name Override: sdk/oem-name-override.md
   - Profiles:
       - profiles/index.md

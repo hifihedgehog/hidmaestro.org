@@ -1,6 +1,6 @@
 ﻿# Profile System
 
-Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 232 ship in the embedded catalog across 46 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 29 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
+Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 233 ship in the embedded catalog across 46 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 29 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
 
 This page documents the JSON schema field-by-field, the three runtime architecture groups a profile can fall into, and how the SDK resolves a profile into a deployable virtual device at `CreateController` time.
 
@@ -219,13 +219,13 @@ When `extendedReport` is set, the descriptor should declare the matching report 
 
 ## Three runtime architecture groups
 
-The profile fields determine which of three architecture groups the runtime instance lands in. Disposal speed, device-tree shape, and downstream API mechanics all vary by group. See [Lifecycle and Teardown](../reference/lifecycle-and-teardown.md) for the per-group teardown latency table.
+The profile fields determine which of three architecture groups the runtime instance lands in. USB/IP composite personas (`"backend": "usbip"`) are none of the three: see [Composite USB Personas](../sdk/usb-audio-composite.md). Disposal speed, device-tree shape, and downstream API mechanics all vary by group. See [Lifecycle and Teardown](../reference/lifecycle-and-teardown.md) for the per-group teardown latency table.
 
 ### 1. Plain HID (~200 ms create, ~80 ms dispose)
 
-Profiles where `driverMode` is **not** `"xinputhid"` and `vid` is **not** Microsoft (`0x045E`).
+Profiles on HIDMaestro's UMDF2 driver that take neither Xbox path below: `driverMode` is **not** `"xinputhid"`, and the profile is not an Xbox-branded Microsoft (`0x045E`) device. The SideWinder Force Feedback 2 has Microsoft's VID and is plain HID.
 
-Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 232-profile catalog (209 profiles).
+Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 233-profile catalog (204 profiles).
 
 ```
 ROOT\VID_054C&PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
@@ -236,7 +236,7 @@ Lightest stack. One `DIF_REMOVE` on the ROOT parent tears down the entire tree. 
 
 ### 2. Non-xinputhid Xbox (~200-700 ms create, ~135 ms dispose)
 
-Xbox-VID profiles (`vid == 0x045E`) where `driverMode` is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running `HMXInput.dll`. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.
+Xbox-branded Microsoft profiles (`vid == 0x045E`) where `driverMode` is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running `HMXInput.dll`. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.
 
 Includes Xbox 360 Wired (`xbox-360-wired`), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, and the SideWinder Force Feedback 2: an 11-profile group. Xbox Adaptive is not in it; it sets `driverMode: xinputhid` and belongs to the group below.
 
@@ -387,20 +387,21 @@ The modded profile isn't registered in the catalog: it's used directly for one `
 
 ## Catalog statistics
 
-As of v1.10.1:
+As of v1.11.0:
 
 | Metric | Count |
 |--------|-------|
-| Total profiles | 232 |
+| Total profiles | 233 |
 | Vendor folders | 32 |
-| Plain HID profiles | 209 |
-| Non-xinputhid Xbox profiles | 11 |
+| Plain HID profiles | 204 |
+| Non-xinputhid Xbox profiles | 10 |
 | xinputhid Xbox profiles | 12 |
+| USB/IP composite profiles | 7 |
 | With FFB descriptors | 14 (SideWinder Force Feedback 2, the Xbox One / Series / Elite family, Amazon Luna BLE) |
 | Bluetooth profiles | 18 |
 | Wireless-adapter profiles | 4 |
 
-The largest vendor folders are misc (32, the catch-all), Logitech (24), Microsoft (23), Thrustmaster (20), Sony (16), and Fanatec (14).
+The largest vendor folders are misc (32, the catch-all), Logitech (24), Microsoft (23), Thrustmaster (20), Sony (17), and Fanatec (14).
 
 ---
 

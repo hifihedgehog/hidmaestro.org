@@ -4,7 +4,7 @@
         "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
     },
     {
-        "t":  "232 device profiles",
+        "t":  "233 device profiles",
         "d":  "Embedded profiles across 46 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code."
     },
     {
@@ -22,6 +22,10 @@
     {
         "t":  "A Switch Pro that answers back",
         "d":  "The Switch Pro Controller is not a passive device: hosts drive a Nintendo subcommand handshake and stall without a device that answers. HIDMaestro\u0027s driver answers it over the real Bluetooth wire, with a descriptor extracted byte-exact from a live Pro\u0027s SDP cache: SPI calibration reads, input-mode switch, 60 Hz full-mode streaming with gyro and accel. SDL3 and Steam Input bind it as a real Bluetooth Pro Controller with motion and rumble."
+    },
+    {
+        "t":  "A Switch 2 Pro with motion",
+        "d":  "switch2-pro-controller-composite presents a Switch 2 Pro Controller the way the pad appears over USB: HID on one interface and a vendor bulk pair on the other, with a real pad\u0027s descriptors byte for byte. Windows binds WinUSB to the second interface from the persona\u0027s own descriptors, with no driver install. Steam and SDL start it with the pad\u0027s own commands and then read its gyro and accelerometer, which the consumer submits in g and degrees per second. SDL reads 1 g and 100 degrees per second back within 1 percent on every axis. Rumble comes back decoded. DirectInput, WGI and browsers see a gamepad that never reports, as with a real pad, and switch2-pro-controller stays the profile for them."
     },
     {
         "t":  "Pressure-sensitive DualShock 3",
@@ -85,19 +89,19 @@
     },
     {
         "t":  "One DLL",
-        "d":  "HIDMaestro.Core.dll contains the 232-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host."
+        "d":  "HIDMaestro.Core.dll contains the 233-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host."
     },
     {
         "t":  "Regression coverage",
-        "d":  "The battery has 64 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, and the DualShock 3 and 4 reports against the programs that read them. The last full run was 64/64 on a 16-core Ryzen 9 Windows 11 laptop. Production signing and the full HIDMaestro integration gate remain pending."
+        "d":  "The battery has 65 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, and the Switch 2 Pro persona against a capture of a real pad. The last full run was 65/65 on a 16-core Ryzen 9 Windows 11 laptop. Production signing and the full HIDMaestro integration gate remain pending."
     },
     {
         "t":  "Judged by the real consumers",
-        "d":  "The battery checks more than HIDMaestro\u0027s own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. Another runs Steam\u0027s own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. Stock SDL3 arms the Bluetooth DualShock 4 persona itself and must keep reading it, and opens the DualShock 3 persona the way PCSX2 configures it. The decoders Steam Input is built on are the judges."
+        "d":  "The battery checks more than HIDMaestro\u0027s own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. Another runs Steam\u0027s own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. Stock SDL3 arms the Bluetooth DualShock 4 persona itself and must keep reading it, and opens the DualShock 3 persona the way PCSX2 configures it. SDL3 with libusb starts the Switch 2 Pro persona and reads its motion back on every axis, and the Steam client must add it and keep reading it. The decoders Steam Input is built on are the judges."
     },
     {
         "t":  "The composite exception, stated",
-        "d":  "Composite Sony and Valve profiles use the bundled usbip-win2 0.9.8.1 kernel transport, redistributed unmodified and checked against its pinned SHA-256 at build and again before execution. The SDK installs it silently on a machine that has none and never invokes the vendor uninstaller. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused."
+        "d":  "Composite Sony, Valve and Nintendo profiles use the bundled usbip-win2 0.9.8.1 kernel transport, redistributed unmodified and checked against its pinned SHA-256 at build and again before execution. The SDK installs it silently on a machine that has none and never invokes the vendor uninstaller. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused."
     },
     {
         "t":  "MIT licensed",

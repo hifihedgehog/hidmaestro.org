@@ -638,6 +638,8 @@
       
         
       
+        
+      
     
     
     
@@ -875,6 +877,34 @@
     
   
     DualShock 3 and Pressure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/switch2-pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Switch 2 Pro with Motion
   
 
     
@@ -2252,7 +2282,7 @@
 <p><code>--filter</code> runs only the named API check. Useful for iterating on a specific subsystem without waiting for the full pipeline.</p>
 <hr />
 <h2 id="testregressionswap_regressionps1-lifecycle-battery"><code>test/regression/swap_regression.ps1</code>: lifecycle battery<a class="headerlink" href="#testregressionswap_regressionps1-lifecycle-battery" title="Permanent link">&para;</a></h2>
-<p>The 64-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
+<p>The 65-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># from an ELEVATED PowerShell, repo root or anywhere</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">swap_regression</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2441,6 +2471,11 @@
 <td><code>dualshock-3-full</code> offline, live, and under stock SDL3 with PCSX2's hints, then <code>dualshock-3</code> live (issue #65)</td>
 <td>The native report against SDL, Linux and RPCS3, the joystick and feature reports against DsHidMini's conversions, RPCS3's 0xF2 read and its output report, and a PS3 controller with 16 axes, 11 buttons and every pressure axis in SDL. On <code>dualshock-3</code>, the native output report, which reached only <code>OutputReceived</code> before v1.10.1, decoded on <code>OutputDecoded</code>.</td>
 </tr>
+<tr>
+<td><strong>S65_Switch2_Composite</strong></td>
+<td><code>switch2-pro-controller-composite</code> against a capture of a real pad, then live through Windows, PadForge's SDL3 fork with libusb, and the Steam client (issue #66)</td>
+<td>Both descriptors, the Microsoft OS 1.0 requests, silence until the start command, the command table, the flash image, the 4 ms clock, reports <code>0x09</code> and <code>0x05</code> and the motion gate. Live: HidUsb on interface 0 and WinUSB on interface 1, motion read back within 1 percent on every axis, rumble, two personas at once, and Steam adding and reading the pad.</td>
+</tr>
 </tbody>
 </table>
 <p>Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a> is the authoritative full list.</p>
@@ -2516,7 +2551,7 @@
 <ol>
 <li>Clean build: no stale Resources/ snapshots.</li>
 <li><code>verify.py --controllers 4</code>: cross-API correctness on a multi-controller deployment.</li>
-<li><code>swap_regression.ps1</code>: full 64-scenario battery. <strong>64/64 PASS required.</strong></li>
+<li><code>swap_regression.ps1</code>: full 65-scenario battery. <strong>65/65 PASS required.</strong></li>
 <li><code>HIDMaestroTest cleanup</code>: verify no leftover devnodes after the battery.</li>
 <li>Profile extractor smoke test: the GUI tool opens, populates, extracts.</li>
 </ol>
@@ -2532,7 +2567,7 @@
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md"><code>test/regression/README.md</code></a>: the in-repo battery doc.</li>
 </ul>
 <h2 id="arm64-and-usbip-validation">ARM64 and USB/IP validation<a class="headerlink" href="#arm64-and-usbip-validation" title="Permanent link">&para;</a></h2>
-<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.10.1 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
+<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.11.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
 
 
 

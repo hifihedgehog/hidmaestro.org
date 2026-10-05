@@ -636,6 +636,8 @@
       
         
       
+        
+      
     
     
     
@@ -873,6 +875,34 @@
     
   
     DualShock 3 and Pressure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/switch2-pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Switch 2 Pro with Motion
   
 
     
@@ -2066,6 +2096,18 @@
 <p><strong>DS4Windows</strong>: <a href="https://github.com/schmaldeo/DS4Windows">github.com/schmaldeo/DS4Windows</a>, the maintained fork. <code>DS4Windows/DS4Library/DS4Sixaxis.cs</code> parses the DualShock 4 calibration per transport without absolute values.</p>
 </li>
 <li>
+<p><strong>switch2_controller_research</strong>: <a href="https://github.com/ndeadly/switch2_controller_research">github.com/ndeadly/switch2_controller_research</a>. The Switch 2 controllers' command protocol (<code>commands.md</code>), reports (<code>hid_reports.md</code>), descriptors and flash layout, and <code>captures/usb/rumble-procon-gccon.pcapng</code>, the link-layer capture of a console driving a Pro Controller 2 that <code>switch2-pro-controller-composite</code> reproduces.</p>
+</li>
+<li>
+<p><strong>SDL's Switch 2 driver</strong>: <code>src/joystick/hidapi/SDL_hidapi_switch2.c</code> in SDL3. The start sequence, report <code>0x05</code> parsing, the sensor constants and the rumble encoding the Switch 2 Pro persona answers.</p>
+</li>
+<li>
+<p><strong>Switch 2 device emulations</strong>: <a href="https://github.com/Alia5/VIIPER">VIIPER</a>'s <code>device/ns2pro</code> over USB/IP, <a href="https://github.com/TommyWabg/switch2-controllers-windows10-gyro">switch2-controllers-windows10-gyro</a>'s <code>src/usbip_server.py</code>, and <a href="https://github.com/LeonChrome/XinHeLianSheng-Pro2-Bridge">XinHeLianSheng-Pro2-Bridge</a>'s <code>usb_switch2_vendor.c</code>. The last two serve the Microsoft OS 1.0 descriptors the persona serves. <a href="https://github.com/Nadeflore/switch2-controllers">switch2-controllers</a>' <code>controller.py</code> gives the rumble frame's bit layout.</p>
+</li>
+<li>
+<p><strong>libusb</strong>: <a href="https://github.com/libusb/libusb">github.com/libusb/libusb</a>. <code>libusb/os/windows_winusb.c</code> reads a device's <code>DeviceInterfaceGUIDs</code> or <code>DeviceInterfaceGUID</code> to reach an interface on WinUSB.</p>
+</li>
+<li>
 <p><strong>Chromium gamepad implementation</strong>: <a href="https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/">source.chromium.org/chromium/chromium/src/+/main:device/gamepad/</a>. The platform-specific backends are under <code>device/gamepad/{windows,linux,mac}/</code>. The <code>&amp;IG_</code> skip in the Raw Input backend is in <code>raw_input_data_fetcher_win.cc</code>.</p>
 </li>
 </ul>
@@ -2122,7 +2164,7 @@
 <p><a href="https://github.com/hifihedgehog/HIDMaestro/issues/19">HIDMaestro issue #19</a>: the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in <a href="../xusb-companion/">XUSB Companion</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a>: the 64-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> and <a href="../testing-and-verification/">Testing and Verification</a>.</p>
+<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a>: the 65-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> and <a href="../testing-and-verification/">Testing and Verification</a>.</p>
 </li>
 </ul>
 <hr />

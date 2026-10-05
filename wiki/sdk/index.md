@@ -28,6 +28,9 @@ The public C# surface a consumer talks to, in `HIDMaestro.Core.dll`.
   ships inside the DLL and deploys itself.
 - **[DualShock 3 and Pressure](dualshock-3.md)**: the `dualshock-3-full`
   persona, the ten `Pressure*` fields, and how PCSX2 and RPCS3 read it.
+- **[Switch 2 Pro with Motion](switch2-pro.md)**: the
+  `switch2-pro-controller-composite` persona, its two USB interfaces,
+  motion for Steam and SDL, and what each host needs.
 - **[OEM Name Override](oem-name-override.md)**: make `joy.cpl` and
   DirectInput consumers show the label you want, transactionally and
   crash-safe.

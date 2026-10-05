@@ -36,7 +36,7 @@ does.</p>
   <a href="profiles/">
     <span class="pf-eyebrow">Every device</span>
     <h3>Profiles</h3>
-    <p>The JSON profile system, 232 built-in controllers, custom and cloned devices, and the extractor that captures yours.</p>
+    <p>The JSON profile system, 233 built-in controllers, custom and cloned devices, and the extractor that captures yours.</p>
   </a>
   <a href="troubleshooting/">
     <span class="pf-eyebrow">Something broke</span>
@@ -48,10 +48,10 @@ does.</p>
     <h3>Technical Reference</h3>
     <p>Architecture, driver internals, the shared memory protocol, PnP lifecycle, and how every gaming API is satisfied.</p>
   </a>
-  <a href="sdk/dualshock-3/">
-    <span class="pf-eyebrow">New in v1.10</span>
-    <h3>DualShock 3</h3>
-    <p>Pressure-sensitive buttons in the form PCSX2 and RPCS3 read, with motion, rumble and the player LEDs.</p>
+  <a href="sdk/switch2-pro/">
+    <span class="pf-eyebrow">New in v1.11</span>
+    <h3>Switch 2 Pro with motion</h3>
+    <p>The pad's two USB interfaces, so Steam and SDL start it and read its gyro and accelerometer.</p>
   </a>
 </div>
 
@@ -60,11 +60,14 @@ does.</p>
 A C# SDK and matching UMDF2 driver. Add the SDK to your app, call
 `HMContext.InstallDriver()` once, and `HMContext.CreateController(profile)`
 whenever you need a virtual gamepad. It replaces ViGEmBus and vJoy with one
-user-mode driver, 232 embedded profiles, runtime-built custom profiles,
+user-mode driver, 233 embedded profiles, runtime-built custom profiles,
 HID PID 1.0 force feedback, and live-swap teardown that does not leak PnP
 state.
 
-v1.10 adds a DualShock 3 with pressure-sensitive buttons, in the form
+v1.11 adds a Switch 2 Pro Controller with motion, for Steam and SDL. See
+[Switch 2 Pro with Motion](sdk/switch2-pro.md).
+
+v1.10 added a DualShock 3 with pressure-sensitive buttons, in the form
 PCSX2 and RPCS3 read. See [DualShock 3](sdk/dualshock-3.md).
 
 v1.9 added ARM64 Windows. The same `HIDMaestro.Core.dll` carries a driver

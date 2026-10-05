@@ -640,6 +640,8 @@
       
         
       
+        
+      
     
     
     
@@ -1315,6 +1317,34 @@
     
   
     DualShock 3 and Pressure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../switch2-pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Switch 2 Pro with Motion
   
 
     
@@ -2491,7 +2521,7 @@
 </code></pre></div>
 <p><code>AllProfiles</code> returns every profile loaded into this context, sorted by stable ID. Empty until you call one of the <code>LoadProfiles*</code> methods.</p>
 <p><code>GetProfile(id)</code> looks up by stable ID slug (e.g. <code>"xbox-360-wired"</code>, <code>"dualsense"</code>, <code>"thrustmaster-t300rs"</code>). Returns null if no such profile is loaded. Case-insensitive.</p>
-<p><code>LoadDefaultProfiles</code> loads the embedded catalog (232 entries shipping inside <code>HIDMaestro.Core.dll</code>) and returns the count added. Skips IDs already loaded.</p>
+<p><code>LoadDefaultProfiles</code> loads the embedded catalog (233 entries shipping inside <code>HIDMaestro.Core.dll</code>) and returns the count added. Skips IDs already loaded.</p>
 <p><code>LoadProfilesFromDirectory(path)</code> loads <code>*.json</code> from a directory matching the <a href="../../profiles/profile-system/">Profile System</a> schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (<code>schema.json</code>) are skipped. Does not auto-load the embedded catalog: call both if you want catalog + custom.</p>
 <h3 id="controller-lifecycle">Controller lifecycle<a class="headerlink" href="#controller-lifecycle" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">public</span><span class="w"> </span><span class="n">HMController</span><span class="w"> </span><span class="nf">CreateController</span><span class="p">(</span><span class="n">HMProfile</span><span class="w"> </span><span class="n">profile</span><span class="p">);</span>
@@ -2550,7 +2580,7 @@
 <p><code>SubmitState</code> translates the abstract <code>HMGamepadState</code> into the active profile's HID report layout and writes it to shared memory. Cadence is set by the consumer: there is no internal pump thread. Typical rates: 1000 Hz for high-fidelity input passthrough (PadForge), 250 Hz for bench testing, 8 Hz for a profile that's only sending the occasional button event.</p>
 <p>For Xbox-VID profiles (<code>vid == 0x045E</code>), the same call also packs a 14-byte GIP-format buffer for the XUSB companion to read on <code>IOCTL_XUSB_GET_STATE</code>. Non-Xbox profiles skip this packing entirely (~60-80 instructions per frame saved).</p>
 <p><code>SubmitRawReport(report)</code> pushes a raw HID input report for data <code>HMGamepadState</code> doesn't model, such as vendor extensions. Pass <strong>data bytes only</strong>: do NOT include a Report ID prefix. The driver prepends the Report ID automatically. For profiles with no Report ID, pass the full report as-is.</p>
-<p>Throws <code>ArgumentException</code> if <code>report</code> is empty or exceeds the 256-byte shared-section payload capacity.</p>
+<p>Throws <code>ArgumentException</code> if <code>report</code> is empty or exceeds the 256-byte shared-section payload capacity. On <code>switch2-pro-controller-composite</code>, <code>SubmitRawReport</code> and <code>SubmitRawExtendedReport</code> throw <code>NotSupportedException</code>, because that persona builds every report on the device side. See <a href="../switch2-pro/">Switch 2 Pro with Motion</a>.</p>
 <p>The output of either method becomes visible through every downstream API simultaneously: <code>XInputGetState</code>, <code>joy.cpl</code>, browser Gamepad, SDL3, WGI. See <a href="../../reference/cross-api-coverage/">Cross-API Coverage</a> for the per-API translation.</p>
 <h3 id="output-rumble-haptics-ffb-leds">Output (rumble / haptics / FFB / LEDs)<a class="headerlink" href="#output-rumble-haptics-ffb-leds" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">public</span><span class="w"> </span><span class="k">event</span><span class="w"> </span><span class="n">Action</span><span class="o">&lt;</span><span class="n">HMController</span><span class="p">,</span><span class="w"> </span><span class="n">HMOutputPacket</span><span class="o">&gt;?</span><span class="w"> </span><span class="n">OutputReceived</span><span class="p">;</span>
@@ -2635,6 +2665,7 @@
 <p>Null <code>Axes</code> is the hot-path-cost-free idle case: the encoder's dict walk is gated on <code>axes != null &amp;&amp; Count &gt; 0</code>. Allocate the dict once in your input pump and reuse.</p>
 <p>The Sony surface keeps native units. <code>GyroPitch</code>, <code>GyroYaw</code> and <code>GyroRoll</code> carry 16 counts per degree per second, and <code>AccelX</code>, <code>AccelY</code> and <code>AccelZ</code> carry 8192 per g. <code>SensorTimestamp</code> counts 1/3 µs ticks, microseconds times 3, the DualSense's own unit. The DualShock 4 profiles divide it by 16 into that pad's ticks and, while it is 0, stamp the time since the controller's first report instead. <code>TouchpadPacketCounter</code> fills the DualShock 4 touch report's packet-counter byte. <code>BatteryLevel</code> runs from 0 to 10.</p>
 <p>Ten <code>Pressure*</code> fields (v1.10.0) carry how hard a DualShock 3's pressure-sensitive buttons are pressed, 0 to 255: <code>PressureA</code> (cross), <code>PressureB</code> (circle), <code>PressureX</code> (square), <code>PressureY</code> (triangle), <code>PressureLeftBumper</code>, <code>PressureRightBumper</code>, and the four <code>PressureDpad*</code> directions. A pressed button left at 0 is sent as 255. Only <code>dualshock-3-full</code> carries them. See <a href="../dualshock-3/">DualShock 3 and Pressure</a>.</p>
+<p>Six calibrated motion fields carry SDL's sensor frame: <code>AccelGX</code>, <code>AccelGY</code> and <code>AccelGZ</code> in g, and <code>GyroDpsX</code>, <code>GyroDpsY</code> and <code>GyroDpsZ</code> in degrees per second. <code>switch-pro</code> and, since v1.11.0, <code>switch2-pro-controller-composite</code> read them and convert them to their pad's own counts, so a consumer that reads motion from SDL submits it as it reads it. See <a href="../switch2-pro/">Switch 2 Pro with Motion</a>.</p>
 <p>For data <code>HMGamepadState</code> does not model, such as vendor extensions, use <code>SubmitRawReport</code> with bytes you assembled per the profile's descriptor.</p>
 <h3 id="hmgamepadstatehelpersstandardaxes-ergonomic-6-slot-shortcut"><code>HMGamepadStateHelpers.StandardAxes</code>: ergonomic 6-slot shortcut<a class="headerlink" href="#hmgamepadstatehelpersstandardaxes-ergonomic-6-slot-shortcut" title="Permanent link">&para;</a></h3>
 <p>Most consumers want the canonical <code>(LX, LY, RX, RY, LT, RT)</code> convention. The static helper resolves those into the active profile's actual axis keys (Sony's Z=right-stick, Rx=left-trigger axis map is honored automatically) and returns a fresh dict ready to assign to <code>state.Axes</code>.</p>

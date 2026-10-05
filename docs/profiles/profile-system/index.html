@@ -638,6 +638,8 @@
       
         
       
+        
+      
     
     
     
@@ -875,6 +877,34 @@
     
   
     DualShock 3 and Pressure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/switch2-pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Switch 2 Pro with Motion
   
 
     
@@ -2150,7 +2180,7 @@
 
 
 <h1 id="profile-system">Profile System<a class="headerlink" href="#profile-system" title="Permanent link">&para;</a></h1>
-<p>Every controller HIDMaestro can emulate is a JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code>. 232 ship in the embedded catalog across 46 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 29 more). Runtime-built profiles authored via <code>HMProfileBuilder</code> use the identical schema and run through identical machinery.</p>
+<p>Every controller HIDMaestro can emulate is a JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code>. 233 ship in the embedded catalog across 46 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 29 more). Runtime-built profiles authored via <code>HMProfileBuilder</code> use the identical schema and run through identical machinery.</p>
 <p>This page documents the JSON schema field-by-field, the three runtime architecture groups a profile can fall into, and how the SDK resolves a profile into a deployable virtual device at <code>CreateController</code> time.</p>
 <hr />
 <h2 id="on-disk-layout">On-disk layout<a class="headerlink" href="#on-disk-layout" title="Permanent link">&para;</a></h2>
@@ -2498,16 +2528,16 @@
 <p>When <code>extendedReport</code> is set, the descriptor should declare the matching report ID first so the kernel HID stack delivers the right ID to consumers. The Sony BT profiles in v1.3.5 reorder their descriptors to put Report 0x31 (DS5 family) or Report 0x11 (DS4 family) INPUT before Report 1.</p>
 <hr />
 <h2 id="three-runtime-architecture-groups">Three runtime architecture groups<a class="headerlink" href="#three-runtime-architecture-groups" title="Permanent link">&para;</a></h2>
-<p>The profile fields determine which of three architecture groups the runtime instance lands in. Disposal speed, device-tree shape, and downstream API mechanics all vary by group. See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the per-group teardown latency table.</p>
+<p>The profile fields determine which of three architecture groups the runtime instance lands in. USB/IP composite personas (<code>"backend": "usbip"</code>) are none of the three: see <a href="../../sdk/usb-audio-composite/">Composite USB Personas</a>. Disposal speed, device-tree shape, and downstream API mechanics all vary by group. See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the per-group teardown latency table.</p>
 <h3 id="1-plain-hid-200-ms-create-80-ms-dispose">1. Plain HID (~200 ms create, ~80 ms dispose)<a class="headerlink" href="#1-plain-hid-200-ms-create-80-ms-dispose" title="Permanent link">&para;</a></h3>
-<p>Profiles where <code>driverMode</code> is <strong>not</strong> <code>"xinputhid"</code> and <code>vid</code> is <strong>not</strong> Microsoft (<code>0x045E</code>).</p>
-<p>Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 232-profile catalog (209 profiles).</p>
+<p>Profiles on HIDMaestro's UMDF2 driver that take neither Xbox path below: <code>driverMode</code> is <strong>not</strong> <code>"xinputhid"</code>, and the profile is not an Xbox-branded Microsoft (<code>0x045E</code>) device. The SideWinder Force Feedback 2 has Microsoft's VID and is plain HID.</p>
+<p>Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 233-profile catalog (204 profiles).</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ROOT\VID_054C&amp;PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  └─ HID\VID_054C&amp;PID_0CE6\...       ← raw HID PDO, no upper filter
 </code></pre></div>
 <p>Lightest stack. One <code>DIF_REMOVE</code> on the ROOT parent tears down the entire tree. No XUSB companion device, no Microsoft upper filter.</p>
 <h3 id="2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose">2. Non-xinputhid Xbox (~200-700 ms create, ~135 ms dispose)<a class="headerlink" href="#2-non-xinputhid-xbox-200-700-ms-create-135-ms-dispose" title="Permanent link">&para;</a></h3>
-<p>Xbox-VID profiles (<code>vid == 0x045E</code>) where <code>driverMode</code> is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running <code>HMXInput.dll</code>. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.</p>
+<p>Xbox-branded Microsoft profiles (<code>vid == 0x045E</code>) where <code>driverMode</code> is null. XInput is delivered via a separate SWD-enumerated XUSB companion device running <code>HMXInput.dll</code>. WGI dispatch also runs through that companion, admitted by the xinputhid UpperFilter tripwire.</p>
 <p>Includes Xbox 360 Wired (<code>xbox-360-wired</code>), Xbox 360 Type 2, Xbox 360 Wireless, Xbox 360 dance pad, Xbox 360 Arcade Stick, Xbox 360 Wheel V1/V2, Xbox 360 Guitar V1/V2, and the SideWinder Force Feedback 2: an 11-profile group. Xbox Adaptive is not in it; it sets <code>driverMode: xinputhid</code> and belongs to the group below.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ROOT\VID_045E&amp;PID_028E&amp;IG_00\NNNN    ← UMDF2 driver (main HID device)
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  │                                    UpperFilters += &quot;xinputhid&quot; per-instance
@@ -2623,7 +2653,7 @@
 <p><strong><code>buttonMap</code></strong> is <strong>not present</strong>: identity Xbox layout (<code>HMButton.A</code> &rarr; descriptor button 0, etc.).</p>
 <hr />
 <h2 id="catalog-statistics">Catalog statistics<a class="headerlink" href="#catalog-statistics" title="Permanent link">&para;</a></h2>
-<p>As of v1.10.1:</p>
+<p>As of v1.11.0:</p>
 <table>
 <thead>
 <tr>
@@ -2634,7 +2664,7 @@
 <tbody>
 <tr>
 <td>Total profiles</td>
-<td>232</td>
+<td>233</td>
 </tr>
 <tr>
 <td>Vendor folders</td>
@@ -2642,15 +2672,19 @@
 </tr>
 <tr>
 <td>Plain HID profiles</td>
-<td>209</td>
+<td>204</td>
 </tr>
 <tr>
 <td>Non-xinputhid Xbox profiles</td>
-<td>11</td>
+<td>10</td>
 </tr>
 <tr>
 <td>xinputhid Xbox profiles</td>
 <td>12</td>
+</tr>
+<tr>
+<td>USB/IP composite profiles</td>
+<td>7</td>
 </tr>
 <tr>
 <td>With FFB descriptors</td>
@@ -2666,7 +2700,7 @@
 </tr>
 </tbody>
 </table>
-<p>The largest vendor folders are misc (32, the catch-all), Logitech (24), Microsoft (23), Thrustmaster (20), Sony (16), and Fanatec (14).</p>
+<p>The largest vendor folders are misc (32, the catch-all), Logitech (24), Microsoft (23), Thrustmaster (20), Sony (17), and Fanatec (14).</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>

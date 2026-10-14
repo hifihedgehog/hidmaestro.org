@@ -59,7 +59,7 @@ public int LoadProfilesFromDirectory(string profilesDir);
 
 `GetProfile(id)` looks up by stable ID slug (e.g. `"xbox-360-wired"`, `"dualsense"`, `"thrustmaster-t300rs"`). Returns null if no such profile is loaded. Case-insensitive.
 
-`LoadDefaultProfiles` loads the embedded catalog (336 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
+`LoadDefaultProfiles` loads the embedded catalog (233 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. Skips IDs already loaded.
 
 `LoadProfilesFromDirectory(path)` loads `*.json` from a directory matching the [Profile System](../profiles/profile-system.md) schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (`schema.json`) are skipped. Does not auto-load the embedded catalog: call both if you want catalog + custom.
 
@@ -153,23 +153,6 @@ For Xbox-VID profiles (`vid == 0x045E`), the same call also packs a 14-byte GIP-
 Throws `ArgumentException` if `report` is empty or exceeds the 256-byte shared-section payload capacity. On `switch2-pro-controller-composite`, `SubmitRawReport` and `SubmitRawExtendedReport` throw `NotSupportedException`, because that persona builds every report on the device side. See [Switch 2 Pro with Motion](switch2-pro.md).
 
 The output of either method becomes visible through every downstream API simultaneously: `XInputGetState`, `joy.cpl`, browser Gamepad, SDL3, WGI. See [Cross-API Coverage](../reference/cross-api-coverage.md) for the per-API translation.
-
-### Keyboards and mice (v1.12.0)
-
-```csharp
-public void SubmitMouse(in HMMouseState state);
-public void SubmitKeyboard(HMKeyModifiers modifiers, ReadOnlySpan<HMKey> keys);
-public void SubmitConsumer(ReadOnlySpan<ushort> usages);
-
-public bool DeliversEveryReport { get; }
-public bool ReleasesOnConsumerExit { get; }
-public HMKeyboardLeds? KeyboardLeds { get; }
-public event Action<HMController, HMKeyboardLeds>? KeyboardLedsChanged;
-```
-
-Each submit method packs into the reports the profile's descriptor declares and throws `InvalidOperationException` when the descriptor has no collection of its kind. `HMMouseState` holds `Buttons` (`HMMouseButtons`, `Left` to `Button16`), `X`, `Y`, `Wheel` and `Pan`. `X` and `Y` are counts on a relative pointer and a position inside the field's range on an absolute one. `SubmitKeyboard` takes the modifiers (`HMKeyModifiers`) and every key held, by HID usage (`HMKey`). An empty span releases them, and more keys than the report holds report ErrorRollOver. `SubmitConsumer` takes Consumer-page usages, such as 0x00E9 Volume Increment.
-
-On a keyboard or mouse, `DeliversEveryReport` is true and each submit returns once the previous report has been delivered, at most one report per millisecond. `ReleasesOnConsumerExit` is true when the driver lets go of every held key and button if the process ends without disposing. `KeyboardLeds` holds the LED state Windows last sent, and `KeyboardLedsChanged` raises each change. See [Keyboards and Mice](keyboards-and-mice.md).
 
 ### Output (rumble / haptics / FFB / LEDs)
 
@@ -636,14 +619,6 @@ public sealed class HidDescriptorBuilder
     public HidDescriptorBuilder AddHat(int positions = 8);
     public HidDescriptorBuilder AddPidFfbBlock();
     public HidDescriptorBuilder AddRaw(byte[] bytes);
-
-    // Keyboard and mouse starters (v1.12.0)
-    public HidDescriptorBuilder Mouse(int buttons = 5, bool absolute = false,
-                                      bool wheel = true, bool pan = true, byte reportId = 0);
-    public HidDescriptorBuilder Keyboard(int keys = 6, bool leds = true, byte reportId = 0);
-    public HidDescriptorBuilder KeyboardNkro(bool leds = true, byte reportId = 0);
-    public HidDescriptorBuilder ConsumerControl(int slots = 1, byte reportId = 0);
-    public HidDescriptorBuilder VendorButtons(int count, byte reportId);
 
     public byte[] Build();
     public int InputReportByteSize { get; }

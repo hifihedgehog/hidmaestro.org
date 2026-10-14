@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIDMaestro: Virtual controllers with real identity</title>
-    <meta name="description" content="User-mode virtual game controllers, keyboards and mice for x64 and ARM64 Windows. Pick a device profile. Every gaming API sees the exact identity of real hardware, down to the bus type, at ~35 µs measured latency.">
-    <meta name="keywords" content="HIDMaestro, virtual controller, virtual keyboard, virtual mouse, UMDF2, DirectInput, XInput, SDL3, gamepad emulation, HID descriptor, controller emulation, ARM64, Windows on Arm, ViGEmBus alternative, vJoy alternative, VIIPER alternative">
+    <meta name="description" content="User-mode virtual game controllers for x64 and ARM64 Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type, at ~35 µs measured latency.">
+    <meta name="keywords" content="HIDMaestro, virtual controller, UMDF2, DirectInput, XInput, SDL3, gamepad emulation, HID descriptor, controller emulation, ARM64, Windows on Arm, ViGEmBus alternative, vJoy alternative, VIIPER alternative">
     <meta property="og:title" content="HIDMaestro: Virtual controllers with real identity">
-    <meta property="og:description" content="User-mode virtual game controllers, keyboards and mice for x64 and ARM64 Windows. Pick a device profile. Every gaming API sees the exact identity of real hardware, down to the bus type.">
+    <meta property="og:description" content="User-mode virtual game controllers for x64 and ARM64 Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware, down to the bus type.">
     <meta property="og:image" content="https://hidmaestro.org/assets/logo.png">
     <meta property="og:url" content="https://hidmaestro.org">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="HIDMaestro: Virtual controllers with real identity">
-    <meta name="twitter:description" content="User-mode virtual game controllers, keyboards and mice for x64 and ARM64 Windows. Pick a device profile. Every gaming API sees the exact identity of real hardware.">
+    <meta name="twitter:description" content="User-mode virtual game controllers for x64 and ARM64 Windows. Pick a controller profile. Every gaming API sees the exact identity of real hardware.">
     <meta name="twitter:image" content="https://hidmaestro.org/assets/logo.png">
     <link rel="icon" type="image/png" href="assets/icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,7 +61,7 @@
             <a href="/docs/" class="btn btn-ghost">Read the docs</a>
         </div>
         <div class="hero-new-row reveal" data-d="4">
-            <a class="hero-new" href="docs/sdk/keyboards-and-mice/"><b>New in v1.12</b><span>Keyboards and mice, copied from 103 real devices</span></a>
+            <a class="hero-new" href="docs/sdk/switch2-pro/"><b>New in v1.11</b><span>A Switch 2 Pro Controller with motion</span></a>
         </div>
     </div>
 
@@ -76,7 +76,7 @@
     <div class="container reveal" data-d="4">
         <div class="trust">
             <div class="trust-item"><span>The engine inside <a href="https://padforge.org/" target="_blank" rel="noopener"><b>PadForge</b></a></span></div>
-            <div class="trust-item"><span><b>336</b> device profiles</span></div>
+            <div class="trust-item"><span><b>233</b> device profiles</span></div>
             <div class="trust-item"><span><b>~35 &micro;s</b> measured latency</span></div>
             <div class="trust-item"><span><b>MIT licensed.</b> Commercial use welcome.</span></div>
         </div>
@@ -97,15 +97,14 @@
                     A C# SDK and a matching user-mode driver. Your code picks a
                     profile, and the game on the other side sees the real thing.
                 </p>
-                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 31 capabilities</a>
+                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 30 capabilities</a>
             </div>
 
             <div class="manifest reveal" data-d="1">
                 <div class="mf" style="--mf: var(--ember)"><b>Exact hardware identity</b><span>VID/PID, strings, descriptors, layout, and the bus type itself</span></div>
-                <div class="mf" style="--mf: var(--brand-ps)"><b>336 device profiles</b><span>Xbox 360 to HOTAS to keyboards, every one a JSON file</span></div>
+                <div class="mf" style="--mf: var(--brand-ps)"><b>233 device profiles</b><span>Xbox 360 to HOTAS, every one a JSON file</span></div>
                 <div class="mf" style="--mf: var(--brand-xbox)"><b>~35 &micro;s measured latency</b><span>10,000 iterations, reproducible with one command</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Every gaming API at once</b><span>DirectInput, XInput, SDL3, browser, WGI, RawInput</span></div>
-                <div class="mf" style="--mf: var(--ember)"><b>Keyboards and mice</b><span>51 keyboards and 52 mice, and every report arrives</span></div>
                 <div class="mf" style="--mf: var(--brand-ps)"><b>Native on ARM64 Windows</b><span>One DLL holds both driver sets and installs the matching one</span></div>
                 <div class="mf" style="--mf: var(--brand-steam)"><b>Valve personas Steam recognizes</b><span>The Steam Deck and both Steam Controllers, filed as Valve hardware</span></div>
                 <div class="mf" style="--mf: var(--brand-nin)"><b>A Switch Pro that answers back</b><span>The Nintendo handshake, answered over real Bluetooth</span></div>
@@ -117,7 +116,7 @@
                 <div class="mf" style="--mf: var(--brand-ps)"><b>Self-bootstrapping install</b><span>No EV certificate, no test-signing mode, no reboot</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Hot-plug in ~200 ms</b><span>Create, live-swap, and remove, with no leftover devices</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Six-plus controllers at once</b><span>Correct per-controller order on every API</span></div>
-                <div class="mf" style="--mf: var(--brand-nin)"><b>A 70-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
+                <div class="mf" style="--mf: var(--brand-nin)"><b>A 65-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
             </div>
         </div>
     </div>
@@ -179,9 +178,9 @@
 <section class="section-tight section-alt">
     <div class="container">
         <div class="stat-grid">
-            <div class="stat reveal"><div class="stat-n">336</div><div class="stat-l">Device profiles</div></div>
+            <div class="stat reveal"><div class="stat-n">233</div><div class="stat-l">Device profiles</div></div>
             <div class="stat reveal" data-d="2"><div class="stat-n">~35<em>&micro;s</em></div><div class="stat-l">Median single-press</div></div>
-            <div class="stat reveal" data-d="3"><div class="stat-n">70</div><div class="stat-l">Battery scenarios</div></div>
+            <div class="stat reveal" data-d="3"><div class="stat-n">65</div><div class="stat-l">Battery scenarios</div></div>
             <div class="stat reveal" data-d="4"><div class="stat-n">0</div><div class="stat-l">Kernel drivers for standard profiles</div></div>
         </div>
     </div>
@@ -301,8 +300,8 @@
 
         <div class="details reveal" data-d="2" style="max-width:760px; margin-inline:auto">
             <details class="detail">
-                <summary>70 regression scenarios</summary>
-                <div class="detail-body">A 70-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client and its firmware updater, the browser Gamepad API, WGI, Raw Input for every catalog keyboard and mouse, the battery reply a pad gives XInput, the driver catalogs for both architectures, and the device identity of every family across nine lives. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
+                <summary>65 regression scenarios</summary>
+                <div class="detail-body">A 65-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client and its firmware updater, the browser Gamepad API, WGI, the battery reply a pad gives XInput, the driver catalogs for both architectures, and the device identity of every family across nine lives. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
             </details>
             <details class="detail">
                 <summary>Six pads, every API, correct order</summary>
@@ -339,7 +338,7 @@
                 <div class="details reveal" data-d="3">
                     <details class="detail">
                         <summary>Reference the SDK</summary>
-                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 336-profile catalog, the driver binaries for x64 and ARM64, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
+                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 233-profile catalog, the driver binaries for x64 and ARM64, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
                     </details>
                     <details class="detail">
                         <summary>Install the driver</summary>
@@ -390,7 +389,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
                     </thead>
                     <tbody>
                         <tr><td>Kernel driver required</td><td class="us">No, except the composite USB personas</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td></tr>
-                        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 336 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td></tr>
+                        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 233 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td></tr>
                         <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td></tr>
                         <tr><td>Local single-press latency</td><td class="us">~35 &micro;s measured</td><td>168 &micro;s published</td><td>N/A</td><td>N/A</td></tr>
                         <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Retired</td><td>Stale</td></tr>

@@ -4,8 +4,8 @@
         "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
     },
     {
-        "t":  "336 device profiles",
-        "d":  "Embedded profiles across 73 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, keyboards, mice, and more. Every device is a JSON file. Adding support for a new one means writing JSON, not modifying code."
+        "t":  "233 device profiles",
+        "d":  "Embedded profiles across 46 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code."
     },
     {
         "t":  "Devices are JSON",
@@ -14,10 +14,6 @@
     {
         "t":  "Capture a controller you own",
         "d":  "Point HMDeviceExtractor at any controller you have plugged in and get a ready-to-deploy profile back. Clone a DualSense and ship a 16-button variant that Windows, Steam, and games still see as a DualSense. Build a flight stick, racing wheel, or arcade panel from scratch with arbitrary VID/PID, axis count, button count, and resolution."
-    },
-    {
-        "t":  "Keyboards and mice",
-        "d":  "A profile can be a keyboard or a mouse. The catalog holds 51 keyboards and 52 mice from 32 vendors, each the report descriptor of a real device's keyboard or mouse interface. Raw Input lists each one as its kind, a Scroll Lock pressed on a virtual keyboard turns Scroll Lock on, and the mouse moves the cursor. SubmitKeyboard, SubmitMouse and SubmitConsumer pack into whatever reports the profile declares. Every report arrives: the driver confirms each one Windows takes, and a burst of 600 one-count moves lost nothing. If the consumer dies with a key held, the driver lets go of it, and the next session's cleanup removes the devices it left."
     },
     {
         "t":  "Valve personas Steam recognizes",
@@ -93,11 +89,11 @@
     },
     {
         "t":  "One DLL",
-        "d":  "HIDMaestro.Core.dll contains the 336-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host."
+        "d":  "HIDMaestro.Core.dll contains the 233-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host."
     },
     {
         "t":  "Regression coverage",
-        "d":  "The battery has 70 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, and every catalog keyboard and mouse through Raw Input. On a 16-core Ryzen 9 Windows 11 laptop the v1.12.0 release build passed 68 of 70 scenarios in a run made while the machine was in use, and the build before its keyboard cleanup fix passed 70/70. Production signing and the full HIDMaestro integration gate remain pending."
+        "d":  "The battery has 65 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, and the Switch 2 Pro persona against a capture of a real pad. The last full run was 65/65 on a 16-core Ryzen 9 Windows 11 laptop. Production signing and the full HIDMaestro integration gate remain pending."
     },
     {
         "t":  "Judged by the real consumers",

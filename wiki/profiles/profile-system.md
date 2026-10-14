@@ -1,6 +1,6 @@
 ﻿# Profile System
 
-Every device HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 336 ship in the embedded catalog across 73 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, Corsair, Keychron, Cherry, and 53 more). 51 are keyboards and 52 are mice. Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
+Every controller HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 233 ship in the embedded catalog across 46 vendors (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, and 29 more). Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
 
 This page documents the JSON schema field-by-field, the three runtime architecture groups a profile can fall into, and how the SDK resolves a profile into a deployable virtual device at `CreateController` time.
 
@@ -85,7 +85,7 @@ The `misc/` vendor catches everything else: arcade controllers, niche racing ped
 | `vid` | string | USB Vendor ID as a 4-digit hex string with `0x` prefix. |
 | `pid` | string | USB Product ID, same format. |
 | `productString` | string | The string returned by `IOCTL_HID_GET_STRING (HID_STRING_ID_IPRODUCT)`. **This is what `joy.cpl` and games see.** Match the real device exactly. SDL3's controller database keys off this. See [when revisions disagree](#when-hardware-revisions-disagree). |
-| `type` | string | Device category. One of: `gamepad`, `wheel`, `joystick`, `flightstick`, `hotas`, `arcadestick`, `pedals`, `keyboard`, `mouse`, `other`. A `keyboard` or `mouse` profile takes `SubmitKeyboard`, `SubmitMouse` and `SubmitConsumer` (see [Keyboards and Mice](../sdk/keyboards-and-mice.md)). |
+| `type` | string | Controller category. One of: `gamepad`, `wheel`, `joystick`, `flightstick`, `hotas`, `arcadestick`, `pedals`, `other`. |
 | `connection` | string | Connection type the profile represents. One of: `usb`, `bluetooth`, `wireless-adapter`. |
 
 ### Optional fields
@@ -225,7 +225,7 @@ The profile fields determine which of three architecture groups the runtime inst
 
 Profiles on HIDMaestro's UMDF2 driver that take neither Xbox path below: `driverMode` is **not** `"xinputhid"`, and the profile is not an Xbox-branded Microsoft (`0x045E`) device. The SideWinder Force Feedback 2 has Microsoft's VID and is plain HID.
 
-Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, every keyboard and mouse, and most of the 336-profile catalog (307 profiles).
+Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, and most of the 233-profile catalog (204 profiles).
 
 ```
 ROOT\VID_054C&PID_0CE6\NNNN          ← UMDF2 driver (mshidumdf host)
@@ -387,22 +387,21 @@ The modded profile isn't registered in the catalog: it's used directly for one `
 
 ## Catalog statistics
 
-As of v1.12.0:
+As of v1.11.0:
 
 | Metric | Count |
 |--------|-------|
-| Total profiles | 336 |
-| Keyboards and mice | 103 (51 keyboards, 52 mice) |
-| Vendor folders | 59 |
-| Plain HID profiles | 307 |
+| Total profiles | 233 |
+| Vendor folders | 32 |
+| Plain HID profiles | 204 |
 | Non-xinputhid Xbox profiles | 10 |
 | xinputhid Xbox profiles | 12 |
 | USB/IP composite profiles | 7 |
 | With FFB descriptors | 14 (SideWinder Force Feedback 2, the Xbox One / Series / Elite family, Amazon Luna BLE) |
-| Bluetooth profiles | 26 |
+| Bluetooth profiles | 18 |
 | Wireless-adapter profiles | 4 |
 
-The largest vendor folders are Logitech (46), misc (32, the catch-all), Microsoft (31), Razer (22), Thrustmaster (20), and Sony (17).
+The largest vendor folders are misc (32, the catch-all), Logitech (24), Microsoft (23), Thrustmaster (20), Sony (17), and Fanatec (14).
 
 ---
 

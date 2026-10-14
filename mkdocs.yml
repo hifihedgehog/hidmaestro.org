@@ -87,7 +87,6 @@ nav:
       - Composite USB Personas: sdk/usb-audio-composite.md
       - DualShock 3 and Pressure: sdk/dualshock-3.md
       - Switch 2 Pro with Motion: sdk/switch2-pro.md
-      - Keyboards and Mice: sdk/keyboards-and-mice.md
       - OEM Name Override: sdk/oem-name-override.md
   - Profiles:
       - profiles/index.md

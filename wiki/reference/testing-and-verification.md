@@ -137,7 +137,7 @@ python scripts\verify.py --controllers 6 --filter order
 
 ## `test/regression/swap_regression.ps1`: lifecycle battery
 
-The 70-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, and every catalog keyboard and mouse through Raw Input. It verifies no PnP devnodes are left in the `PRESENT` state after each one.
+The 65-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the `PRESENT` state after each one.
 
 ```powershell
 # from an ELEVATED PowerShell, repo root or anywhere
@@ -193,11 +193,6 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 mi
 | **S63_Ds4_Report** | Every DualShock 4 map, then the Bluetooth persona live under stock SDL3 (issue #64) | Report `0x11` byte 1 without SDL's 0x80 flag, so SDL dropped all input once the persona armed, and motion, battery and touch read from bytes two late. Also the calibration scale, the battery and cable bits, and a near-zero trigger read as a full pull. |
 | **S64_Ds3_Sixaxis** | `dualshock-3-full` offline, live, and under stock SDL3 with PCSX2's hints, then `dualshock-3` live (issue #65) | The native report against SDL, Linux and RPCS3, the joystick and feature reports against DsHidMini's conversions, RPCS3's 0xF2 read and its output report, and a PS3 controller with 16 axes, 11 buttons and every pressure axis in SDL. On `dualshock-3`, the native output report, which reached only `OutputReceived` before v1.10.1, decoded on `OutputDecoded`. |
 | **S65_Switch2_Composite** | `switch2-pro-controller-composite` against a capture of a real pad, then live through Windows, PadForge's SDL3 fork with libusb, and the Steam client (issue #66) | Both descriptors, the Microsoft OS 1.0 requests, silence until the start command, the command table, the flash image, the 4 ms clock, reports `0x09` and `0x05` and the motion gate. Live: HidUsb on interface 0 and WinUSB on interface 1, motion read back within 1 percent on every axis, rumble, two personas at once, and Steam adding and reading the pad. |
-| **S66_Registry_Ownership** | Real devices' joy.cpl and GameInput keys under identities virtuals use, then create, dispose, cleanup and a fresh context (foundation-sunshine #1138) | Every planted key reads back as planted. A GameInput table written the way v1.11.0 wrote it is removed. `HMOemNameOverride` claimed and released in either order leaves the original `OEMName`, and a killed consumer's writes are undone by the next consumer's first create. |
-| **S67_Wgi_Mapping** | What WGI reads from a DualSense, a DualShock 4 v1 and a game pad built in code, with the XUSB Xbox 360 pad as the same-window positive control (foundation-sunshine #1056) | A DualSense stays a RawGameController with no GameInput key, as a real one does. A DualShock 4 v1 reads correctly through the mapping Windows ships for it. Only the one shape the table fits gets a table, dropped on dispose. |
-| **S68_Vr_Driver_Conflict** | A foreign OpenVR driver registered under `hidmaestro`, in a path registry of the probe's own | `HMVR.FindDriverNameConflicts` lists it and never HIDMaestro's own folder. Needs neither SteamVR nor elevation. |
-| **S69_Kbm_Descriptors** | Keyboard and mouse descriptors and packers with no device (issue #67) | Builder recipes from before v1.12.0 build the same bytes. The new starters and their guards, the packers against bytes worked out by hand, and every catalog keyboard and mouse parsed, packed and read back. |
-| **S70_Kbm_Raw_Input** | Keyboards and mice through Raw Input (issue #67) | Four mice with one VID and PID keep four paths. A 600-report burst and four threads at 250 Hz lose no counts. Absolute and extra-button mice, keyboard LEDs and Scroll Lock, consumer usages, output split at its first byte, and every catalog keyboard and mouse live. A consumer killed with input held leaves the key and button up and the pointer where it was, and the cleanup removes all three of its devices. |
 
 Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1) is the authoritative full list.
 
@@ -301,7 +296,7 @@ The pre-tag validation pipeline (`scripts\pre-tag-validate.cmd`) is the gate:
 
 1. Clean build: no stale Resources/ snapshots.
 2. `verify.py --controllers 4`: cross-API correctness on a multi-controller deployment.
-3. `swap_regression.ps1`: full 70-scenario battery. **70/70 PASS required.**
+3. `swap_regression.ps1`: full 65-scenario battery. **65/65 PASS required.**
 4. `HIDMaestroTest cleanup`: verify no leftover devnodes after the battery.
 5. Profile extractor smoke test: the GUI tool opens, populates, extracts.
 
@@ -321,4 +316,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-See [platform support](../start/platform-support.md#validation) for the v1.12.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.
+See [platform support](../start/platform-support.md#validation) for the v1.11.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.

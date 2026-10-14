@@ -36,7 +36,7 @@ does.</p>
   <a href="profiles/">
     <span class="pf-eyebrow">Every device</span>
     <h3>Profiles</h3>
-    <p>The JSON profile system, 233 built-in controllers, custom and cloned devices, and the extractor that captures yours.</p>
+    <p>The JSON profile system, 336 built-in devices, custom and cloned devices, and the extractor that captures yours.</p>
   </a>
   <a href="troubleshooting/">
     <span class="pf-eyebrow">Something broke</span>
@@ -48,10 +48,10 @@ does.</p>
     <h3>Technical Reference</h3>
     <p>Architecture, driver internals, the shared memory protocol, PnP lifecycle, and how every gaming API is satisfied.</p>
   </a>
-  <a href="sdk/switch2-pro/">
-    <span class="pf-eyebrow">New in v1.11</span>
-    <h3>Switch 2 Pro with motion</h3>
-    <p>The pad's two USB interfaces, so Steam and SDL start it and read its gyro and accelerometer.</p>
+  <a href="sdk/keyboards-and-mice/">
+    <span class="pf-eyebrow">New in v1.12</span>
+    <h3>Keyboards and mice</h3>
+    <p>51 keyboards and 52 mice copied from real devices, every report delivered, and nothing left held when a consumer dies.</p>
   </a>
 </div>
 
@@ -59,12 +59,16 @@ does.</p>
 
 A C# SDK and matching UMDF2 driver. Add the SDK to your app, call
 `HMContext.InstallDriver()` once, and `HMContext.CreateController(profile)`
-whenever you need a virtual gamepad. It replaces ViGEmBus and vJoy with one
-user-mode driver, 233 embedded profiles, runtime-built custom profiles,
+whenever you need a virtual gamepad, keyboard or mouse. It replaces ViGEmBus and vJoy with one
+user-mode driver, 336 embedded profiles, runtime-built custom profiles,
 HID PID 1.0 force feedback, and live-swap teardown that does not leak PnP
 state.
 
-v1.11 adds a Switch 2 Pro Controller with motion, for Steam and SDL. See
+v1.12 adds keyboards and mice: 51 keyboards and 52 mice copied from real
+devices, plus starters for building your own. See
+[Keyboards and Mice](sdk/keyboards-and-mice.md).
+
+v1.11 added a Switch 2 Pro Controller with motion, for Steam and SDL. See
 [Switch 2 Pro with Motion](sdk/switch2-pro.md).
 
 v1.10 added a DualShock 3 with pressure-sensitive buttons, in the form

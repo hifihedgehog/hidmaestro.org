@@ -23,7 +23,7 @@ CATS = [
    "Controller audio and haptics",
    "Capture a controller you own"]),
  ("catalog", "The catalog", [
-   "233 device profiles", "Devices are JSON"]),
+   "336 device profiles", "Keyboards and mice", "Devices are JSON"]),
  ("latency", "Latency and transport", [
    "~35 µs measured input latency", "Event-driven output at 0.15 ms",
    "No socket, no batching cap", "The comparison, honestly",

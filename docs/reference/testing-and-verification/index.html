@@ -640,6 +640,8 @@
       
         
       
+        
+      
     
     
     
@@ -905,6 +907,34 @@
     
   
     Switch 2 Pro with Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/keyboards-and-mice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboards and Mice
   
 
     
@@ -2282,7 +2312,7 @@
 <p><code>--filter</code> runs only the named API check. Useful for iterating on a specific subsystem without waiting for the full pipeline.</p>
 <hr />
 <h2 id="testregressionswap_regressionps1-lifecycle-battery"><code>test/regression/swap_regression.ps1</code>: lifecycle battery<a class="headerlink" href="#testregressionswap_regressionps1-lifecycle-battery" title="Permanent link">&para;</a></h2>
-<p>The 65-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, and the device identity of every family across nine lives, and verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
+<p>The 70-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, and every catalog keyboard and mouse through Raw Input. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># from an ELEVATED PowerShell, repo root or anywhere</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">swap_regression</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2476,6 +2506,31 @@
 <td><code>switch2-pro-controller-composite</code> against a capture of a real pad, then live through Windows, PadForge's SDL3 fork with libusb, and the Steam client (issue #66)</td>
 <td>Both descriptors, the Microsoft OS 1.0 requests, silence until the start command, the command table, the flash image, the 4 ms clock, reports <code>0x09</code> and <code>0x05</code> and the motion gate. Live: HidUsb on interface 0 and WinUSB on interface 1, motion read back within 1 percent on every axis, rumble, two personas at once, and Steam adding and reading the pad.</td>
 </tr>
+<tr>
+<td><strong>S66_Registry_Ownership</strong></td>
+<td>Real devices' joy.cpl and GameInput keys under identities virtuals use, then create, dispose, cleanup and a fresh context (foundation-sunshine #1138)</td>
+<td>Every planted key reads back as planted. A GameInput table written the way v1.11.0 wrote it is removed. <code>HMOemNameOverride</code> claimed and released in either order leaves the original <code>OEMName</code>, and a killed consumer's writes are undone by the next consumer's first create.</td>
+</tr>
+<tr>
+<td><strong>S67_Wgi_Mapping</strong></td>
+<td>What WGI reads from a DualSense, a DualShock 4 v1 and a game pad built in code, with the XUSB Xbox 360 pad as the same-window positive control (foundation-sunshine #1056)</td>
+<td>A DualSense stays a RawGameController with no GameInput key, as a real one does. A DualShock 4 v1 reads correctly through the mapping Windows ships for it. Only the one shape the table fits gets a table, dropped on dispose.</td>
+</tr>
+<tr>
+<td><strong>S68_Vr_Driver_Conflict</strong></td>
+<td>A foreign OpenVR driver registered under <code>hidmaestro</code>, in a path registry of the probe's own</td>
+<td><code>HMVR.FindDriverNameConflicts</code> lists it and never HIDMaestro's own folder. Needs neither SteamVR nor elevation.</td>
+</tr>
+<tr>
+<td><strong>S69_Kbm_Descriptors</strong></td>
+<td>Keyboard and mouse descriptors and packers with no device (issue #67)</td>
+<td>Builder recipes from before v1.12.0 build the same bytes. The new starters and their guards, the packers against bytes worked out by hand, and every catalog keyboard and mouse parsed, packed and read back.</td>
+</tr>
+<tr>
+<td><strong>S70_Kbm_Raw_Input</strong></td>
+<td>Keyboards and mice through Raw Input (issue #67)</td>
+<td>Four mice with one VID and PID keep four paths. A 600-report burst and four threads at 250 Hz lose no counts. Absolute and extra-button mice, keyboard LEDs and Scroll Lock, consumer usages, output split at its first byte, and every catalog keyboard and mouse live. A consumer killed with input held leaves the key and button up and the pointer where it was, and the cleanup removes all three of its devices.</td>
+</tr>
 </tbody>
 </table>
 <p>Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a> is the authoritative full list.</p>
@@ -2551,7 +2606,7 @@
 <ol>
 <li>Clean build: no stale Resources/ snapshots.</li>
 <li><code>verify.py --controllers 4</code>: cross-API correctness on a multi-controller deployment.</li>
-<li><code>swap_regression.ps1</code>: full 65-scenario battery. <strong>65/65 PASS required.</strong></li>
+<li><code>swap_regression.ps1</code>: full 70-scenario battery. <strong>70/70 PASS required.</strong></li>
 <li><code>HIDMaestroTest cleanup</code>: verify no leftover devnodes after the battery.</li>
 <li>Profile extractor smoke test: the GUI tool opens, populates, extracts.</li>
 </ol>
@@ -2567,7 +2622,7 @@
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md"><code>test/regression/README.md</code></a>: the in-repo battery doc.</li>
 </ul>
 <h2 id="arm64-and-usbip-validation">ARM64 and USB/IP validation<a class="headerlink" href="#arm64-and-usbip-validation" title="Permanent link">&para;</a></h2>
-<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.11.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
+<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.12.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
 
 
 

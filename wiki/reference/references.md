@@ -45,6 +45,8 @@ For symbols below, search [learn.microsoft.com](https://learn.microsoft.com/) by
 
 - **HID class architecture (HidClass.sys)**: topic: "HID Architecture." Backs the kernel-side stack diagram in [UMDF2 Driver Internals](umdf2-driver-internals.md).
 
+- **`RAWMOUSE` structure**: topic by exact name. It carries five buttons, flags an absolute pointer with `MOUSE_MOVE_ABSOLUTE`, and defines `MOUSE_MOVE_NOCOALESCE` because Windows merges consecutive moves. Backs the second button collection and the note on merged moves in [Keyboards and Mice](../sdk/keyboards-and-mice.md).
+
 - **`xinputhid.inf [GIP_Hid]`**: the inbox INF that binds `xinputhid.sys` as a HID upper filter for Xbox Series / One / Elite v2 BT controllers. Lives at `C:\Windows\INF\xinputhid.inf` on every Win10/11 install. The `[GIP_Hid]` Match section is the documented mechanism for [Profile System](../profiles/profile-system.md)'s xinputhid Xbox group.
 
 ---
@@ -109,6 +111,10 @@ For symbols below, search [learn.microsoft.com](https://learn.microsoft.com/) by
 
 - **libusb**: [github.com/libusb/libusb](https://github.com/libusb/libusb). `libusb/os/windows_winusb.c` reads a device's `DeviceInterfaceGUIDs` or `DeviceInterfaceGUID` to reach an interface on WinUSB.
 
+- **Linux HID core and hid-tools**: `drivers/hid/hid-core.c` in the kernel's HID tree and the report descriptor parser in [hid-tools](https://gitlab.freedesktop.org/libevdev/hid-tools). The SDK's descriptor parser assigns usage pages, Delimiter alternative sets and the empty value of a key array (`hid_array_value_is_valid`) as they do.
+
+- **Keyboard and mouse descriptors**: each of the 103 keyboard and mouse profiles copies one interface's report descriptor from a public dump: usbhid-dump output posted in project issues, libinput recordings, or the Linux kernel's HID selftests (`tools/testing/selftests/hid/`).
+
 - **Chromium gamepad implementation**: [source.chromium.org/chromium/chromium/src/+/main:device/gamepad/](https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/). The platform-specific backends are under `device/gamepad/{windows,linux,mac}/`. The `&IG_` skip in the Raw Input backend is in `raw_input_data_fetcher_win.cc`.
 
 ---
@@ -117,7 +123,7 @@ For symbols below, search [learn.microsoft.com](https://learn.microsoft.com/) by
 
 - **DsHidMini**: [github.com/nefarius/DsHidMini](https://github.com/nefarius/DsHidMini). The architectural ancestor of HIDMaestro: UMDF2 + xinputhid for DualShock 3 emulation. Provides the proven UMDF2-as-HID-minidriver pattern. Its SXS mode is the model for `dualshock-3-full`: the report descriptor (`driver/HID/03_SXS_Col1_Joystick.h`, BSD 3-Clause), the joystick and feature report conversions (`DsHid.c`, `HID.FeatureReport.c`), and the output command handling (`HID.Reports.c`).
 
-- **ViGEmBus**: [github.com/nefarius/ViGEmBus](https://github.com/nefarius/ViGEmBus). The retired-but-still-used kernel-mode virtual controller bus driver. Referenced as "what HIDMaestro replaces."
+- **ViGEmBus**: [github.com/nefarius/ViGEmBus](https://github.com/nefarius/ViGEmBus). The retired-but-still-used kernel-mode virtual controller bus driver. Referenced as "what HIDMaestro replaces." Its `Bus_FileClose` in `sys/Driver.cpp` unplugs a client's devices when the client's process exits, the precedent for the owner pipe in [Keyboards and Mice](../sdk/keyboards-and-mice.md).
 
 - **vJoy**: the active-maintenance fork at [github.com/njz3/vJoy](https://github.com/njz3/vJoy) is the canonical source for `hidReportDescFfb.h` (the four-feature descriptor that traps `pid.dll`).
 
@@ -153,7 +159,7 @@ These archive Ghidra decomp output, ProcMon traces, registry dumps, and empirica
 
 - [HIDMaestro issue #19](https://github.com/hifihedgehog/HIDMaestro/issues/19): the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in [XUSB Companion](xusb-companion.md).
 
-- [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1): the 65-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
+- [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1): the 70-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
 
 ---
 

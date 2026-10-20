@@ -436,8 +436,6 @@
       
         
       
-        
-      
     
     
     
@@ -604,34 +602,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../start/migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Moving from 1.x
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -650,10 +620,6 @@
       
         
           
-        
-      
-        
-      
         
       
         
@@ -969,62 +935,6 @@
     
   
     Keyboards and Mice
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Wii U GameCube Adapter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Programs Side by Side
   
 
     
@@ -1443,10 +1353,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#custom-xbox-gamepad-gets-xusb-companion" class="md-nav__link">
+  <a href="#custom-xbox-vid-gamepad-gets-xusb-companion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Custom Xbox gamepad (gets XUSB companion)
+        Custom Xbox-VID gamepad (gets XUSB companion)
       
     </span>
   </a>
@@ -2268,10 +2178,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#custom-xbox-gamepad-gets-xusb-companion" class="md-nav__link">
+  <a href="#custom-xbox-vid-gamepad-gets-xusb-companion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Custom Xbox gamepad (gets XUSB companion)
+        Custom Xbox-VID gamepad (gets XUSB companion)
       
     </span>
   </a>
@@ -2356,7 +2266,7 @@
 
 
 <h1 id="custom-profiles">Custom Profiles<a class="headerlink" href="#custom-profiles" title="Permanent link">&para;</a></h1>
-<p>Three patterns for building controllers that aren't in the 337-profile catalog: clone-and-modify, build-from-scratch, and spoof. All three use <code>HMProfileBuilder</code> plus optionally <code>HidDescriptorBuilder</code>. Resulting profiles deploy through the same <code>HMContext.CreateController</code> path as catalog entries with no special-casing.</p>
+<p>Three patterns for building controllers that aren't in the 336-profile catalog: clone-and-modify, build-from-scratch, and spoof. All three use <code>HMProfileBuilder</code> plus optionally <code>HidDescriptorBuilder</code>. Resulting profiles deploy through the same <code>HMContext.CreateController</code> path as catalog entries with no special-casing.</p>
 <p>For the underlying APIs, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../../sdk/hid-descriptor-builder/">HID Descriptor Builder</a>. This page is the cookbook.</p>
 <hr />
 <h2 id="pattern-1-clone-and-modify">Pattern 1: Clone and modify<a class="headerlink" href="#pattern-1-clone-and-modify" title="Permanent link">&para;</a></h2>
@@ -2383,12 +2293,11 @@
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="p">.</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Left&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">).</span><span class="n">AddTrigger</span><span class="p">(</span><span class="s">&quot;Right&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="p">.</span><span class="n">AddButtons</span><span class="p">(</span><span class="mi">16</span><span class="p">).</span><span class="n">AddHat</span><span class="p">()</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="p">.</span><span class="n">Build</span><span class="p">())</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="p">.</span><span class="n">InputReportSize</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="w">                  </span><span class="c1">// whole report: no Report ID, 9 data bytes</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="p">.</span><span class="n">InputReportSize</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">custom</span><span class="p">);</span>
 </code></pre></div>
-<p><code>InputReportSize</code> is the input report's whole length on the wire, its ID byte included when the descriptor declares one. A descriptor hex string with a character that is not a hex digit, or an odd number of digits, refuses a profile file at load, and a profile built in code at create with <code>HMProfileException</code>. A profile whose real device sends its data in another input report than the SDK picks names that report with <code>dataReportId</code>. See <a href="../profile-system/#the-report-a-data-frame-fills-v200">The report a data frame fills</a>.</p>
 <p>VID/PID and product string are preserved (Windows / Steam / games still see "DualSense"), but the descriptor declares 16 buttons instead of 15. The extra bit is real wire data: submit <code>HMButton.Touchpad</code> (bit 11) or any custom bit and the consumer reads it via DirectInput / SDL3 / Browser like any other button.</p>
 <p>This pattern works for axis count, trigger resolution, hat positions, and FFB declarations. Whatever the descriptor says, that's what consumers see.</p>
 <h3 id="use-case-c-change-the-pid">Use case C: change the PID<a class="headerlink" href="#use-case-c-change-the-pid" title="Permanent link">&para;</a></h3>
@@ -2564,8 +2473,8 @@
 <a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">        </span><span class="p">.</span><span class="n">AddButtons</span><span class="p">(</span><span class="n">N</span><span class="p">).</span><span class="n">AddHat</span><span class="p">())</span>
 <a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
 </code></pre></div>
-<p>Lands in architecture group 1 (plain HID). DirectInput, SDL3 / HIDAPI, browser RawInput-fallback all see it. <strong>No XInput</strong> (no <code>xinput</code> block, and no identity default gives one). <strong>No xinputhid</strong> (no <code>driverMode</code>).</p>
-<h3 id="custom-xbox-gamepad-gets-xusb-companion">Custom Xbox gamepad (gets XUSB companion)<a class="headerlink" href="#custom-xbox-gamepad-gets-xusb-companion" title="Permanent link">&para;</a></h3>
+<p>Lands in architecture group 1 (plain HID). DirectInput, SDL3 / HIDAPI, browser RawInput-fallback all see it. <strong>No XInput</strong> (custom VID, no XUSB companion). <strong>No xinputhid</strong> (no <code>driverMode</code>).</p>
+<h3 id="custom-xbox-vid-gamepad-gets-xusb-companion">Custom Xbox-VID gamepad (gets XUSB companion)<a class="headerlink" href="#custom-xbox-vid-gamepad-gets-xusb-companion" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">new</span><span class="w"> </span><span class="nf">HMProfileBuilder</span><span class="p">()</span>
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="p">.</span><span class="n">Id</span><span class="p">(</span><span class="s">&quot;my-xbox-clone&quot;</span><span class="p">)</span>
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="p">.</span><span class="n">Vid</span><span class="p">(</span><span class="mh">0x045E</span><span class="p">).</span><span class="n">Pid</span><span class="p">(</span><span class="mh">0x0291</span><span class="p">)</span><span class="w">               </span><span class="c1">// Microsoft VID, Xbox 360 family PID</span>
@@ -2575,7 +2484,7 @@
 <a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="p">.</span><span class="n">FromDescriptorBuilder</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span>
 <a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
 </code></pre></div>
-<p>Lands in architecture group 2 (non-xinputhid Xbox + XUSB companion), through the identity default for VID 045E with "xbox" in the id, name or product string, which gives <code>xbox-360-wired</code>'s presentation. Give it an <code>xinput</code> block of its own to set the subtype, flags or battery, or <code>"xinput": {}</code> for no XInput. XInput, WGI vibration via XUSB companion, separate triggers in browser via Vx/Vy + GameInput registry mapping. Note: only specific PIDs in the <code>[Standard.NTamd64]</code> section of <code>hidmaestro_xusb.inf</code> get the dedicated PID-aliased install: new PIDs fall through to the generic <code>root\HIDMaestroXUSB</code> alias which still works but isn't bound to a specific VID:PID.</p>
+<p>Lands in architecture group 2 (non-xinputhid Xbox + XUSB companion). XInput, WGI vibration via XUSB companion, separate triggers in browser via Vx/Vy + GameInput registry mapping. Note: only specific PIDs in the <code>[Standard.NTamd64]</code> section of <code>hidmaestro_xusb.inf</code> get the dedicated PID-aliased install: new PIDs fall through to the generic <code>root\HIDMaestroXUSB</code> alias which still works but isn't bound to a specific VID:PID.</p>
 <h3 id="custom-xinputhid-bound-profile">Custom xinputhid-bound profile<a class="headerlink" href="#custom-xinputhid-bound-profile" title="Permanent link">&para;</a></h3>
 <p>This requires hardware IDs that match <code>xinputhid.inf [GIP_Hid]</code>. Not portable to arbitrary VID:PIDs: xinputhid binds by hardware ID, and adding new IDs to <code>xinputhid.inf</code> requires modifying a Microsoft inbox driver (which we can't ship). Custom xinputhid profiles aren't supported as of v1.8.1.</p>
 <p>If you need 16-button + native XInput + WGI vibration over Bluetooth, use one of the catalog Xbox Series / One / Elite v2 BT profiles directly.</p>
@@ -2627,12 +2536,12 @@
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
 <p>A custom profile fails <code>HMContext.CreateController</code> if:</p>
 <ul>
-<li><strong>No VID or PID was given.</strong> <code>HMProfileBuilder.Build()</code> throws <code>HMProfileException</code>. A copy keeps its source's, and an explicit <code>Vid(0)</code> or <code>Pid(0)</code> builds.</li>
-<li><strong><code>IsDeployable</code> is false</strong> (descriptor missing). <code>CreateController</code> throws <code>HMProfileException</code>.</li>
+<li><strong>VID is 0.</strong> <code>HMProfileBuilder.Build()</code> throws <code>InvalidOperationException</code>.</li>
+<li><strong>PID is 0.</strong> Same.</li>
+<li><strong><code>IsDeployable</code> is false</strong> (descriptor missing). <code>CreateController</code> throws <code>ArgumentException</code>.</li>
 <li><strong>Descriptor is malformed.</strong> The driver fails to bind; <code>CreateController</code> throws <code>InvalidOperationException</code> after the PnP wait times out.</li>
-<li><strong>A report block does not compile</strong> (v2.0.0). <code>CreateController</code> compiles <code>extendedReport</code>, <code>extendedOutputReport</code>, the ports, the protocol and the WinUSB block before anything machine-wide, and throws <code>HMProfileException</code> naming the profile and the JSON path, such as <code>extendedReport.fields[4] ('uint16-trigger').max is required</code>. The same check refuses a profile file at load, into <code>HMContext.ProfileLoadIssues</code>. A field written for 1.x needs <code>max</code> on <code>uint16-trigger</code> and <code>uint16-pressure</code>, <code>invert</code> on an int16 Y axis or pad, and <code>uint8-level-map</code> in place of <code>ds3-battery</code>. See <a href="../profile-system/#keys-200-requires">Keys 2.0.0 requires</a>.</li>
 </ul>
-<p>Check a profile file with <code>HIDMaestroProfileCheck</code> from the release ZIP, which prints every load problem with its JSON path (see <a href="../profile-system/#checking-a-profile-before-you-ship-it">Checking a profile</a>). Then test custom profiles against <code>scripts/verify.py</code> before shipping:</p>
+<p>Test custom profiles against <code>scripts/verify.py</code> before shipping:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>HIDMaestroTest.exe make-custom-profile C:\my-profiles
 <a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>HIDMaestroTest.exe emulate --profile-dir C:\my-profiles my-pad
 <a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>:: in another terminal:

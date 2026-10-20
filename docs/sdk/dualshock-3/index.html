@@ -436,8 +436,6 @@
       
         
       
-        
-      
     
     
     
@@ -604,34 +602,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../start/migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Moving from 1.x
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -652,10 +622,6 @@
       
         
           
-        
-      
-        
-      
         
       
         
@@ -1098,62 +1064,6 @@
     
   
     Keyboards and Mice
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gamecube-adapter/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Wii U GameCube Adapter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../programs-side-by-side/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Programs Side by Side
   
 
     
@@ -1979,7 +1889,7 @@
 
 <h1 id="dualshock-3-and-pressure-sensitive-buttons">DualShock 3 and Pressure-Sensitive Buttons<a class="headerlink" href="#dualshock-3-and-pressure-sensitive-buttons" title="Permanent link">&para;</a></h1>
 <p><code>dualshock-3-full</code>, new in v1.10.0, is a DualShock 3 in the form Sony's sixaxis.sys driver and DsHidMini's SXS mode present on Windows. That is the form PCSX2 and RPCS3 read button pressure from. It answers <a href="https://github.com/hifihedgehog/PadForge/discussions/476">PadForge discussion #476</a>.</p>
-<p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/profiles/sony/dualshock-3-full.json"><code>profiles/sony/dualshock-3-full.json</code></a>, the profile's <code>stateBlock</code>, <code>inputReports</code>, <code>liveFeatureReports</code> and <code>protocol</code>, which the SDK runs, and the probe that verifies it, <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/test/probes/ds3_sixaxis_check"><code>test/probes/ds3_sixaxis_check</code></a>.</p>
+<p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/profiles/sony/dualshock-3-full.json"><code>profiles/sony/dualshock-3-full.json</code></a>, the <code>Ds3</code> functions in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.c"><code>driver/driver.c</code></a>, and the probe that verifies it, <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/test/probes/ds3_sixaxis_check"><code>test/probes/ds3_sixaxis_check</code></a>.</p>
 <hr />
 <h2 id="which-profile-to-pick">Which profile to pick<a class="headerlink" href="#which-profile-to-pick" title="Permanent link">&para;</a></h2>
 <table>
@@ -2019,7 +1929,7 @@
 </code></pre></div>
 <p>Ten fields carry pressure from 0 to 255: <code>PressureA</code> (cross), <code>PressureB</code> (circle), <code>PressureX</code> (square), <code>PressureY</code> (triangle), <code>PressureLeftBumper</code>, <code>PressureRightBumper</code>, and <code>PressureDpadUp</code>, <code>PressureDpadRight</code>, <code>PressureDpadDown</code>, <code>PressureDpadLeft</code>. L2 and R2 take their pressure from the triggers.</p>
 <p>A pressed button whose pressure is left at 0 is sent as 255, so code that only knows digital state presses every button fully. A nonzero pressure is sent as given, whether or not the button is pressed.</p>
-<p>Motion comes from <code>AccelX</code>, <code>AccelY</code> and <code>AccelZ</code> at 8192 counts per g and <code>GyroYaw</code> at 16 counts per degree per second, the same units the DualShock 4 and DualSense profiles use. The persona converts them to the DualShock 3's 10-bit sensors, 113 counts per g and 123 per 90 degrees per second, the scales Linux's <code>hid-sony.c</code> and RPCS3 use. A DualShock 3 has one gyro axis, so <code>GyroPitch</code> and <code>GyroRoll</code> are not sent. The battery byte reads 0xEE, charging, at every level and 0xEF with <code>BatteryFull</code>, as a DualShock 3 on USB reports. Through v1.12.0 an unset state read as a dying pad.</p>
+<p>Motion comes from <code>AccelX</code>, <code>AccelY</code> and <code>AccelZ</code> at 8192 counts per g and <code>GyroYaw</code> at 16 counts per degree per second, the same units the DualShock 4 and DualSense profiles use. The persona converts them to the DualShock 3's 10-bit sensors, 113 counts per g and 123 per 90 degrees per second, the scales Linux's <code>hid-sony.c</code> and RPCS3 use. A DualShock 3 has one gyro axis, so <code>GyroPitch</code> and <code>GyroRoll</code> are not sent. <code>BatteryLevel</code> (0 to 10) maps to the pad's own 0 to 5 scale, and <code>BatteryCharging</code> and <code>BatteryFull</code> send its charging and charged codes.</p>
 <h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">&para;</a></h2>
 <p>On both profiles, rumble and LED writes arrive on <code>OutputDecoded</code> as report <code>0x01</code>, the native output report. <code>dualshock-3</code> decodes the report as a host writes it, since v1.10.1. <code>dualshock-3-full</code> also takes the sixaxis.sys form, described under How it works:</p>
 <table>
@@ -2058,9 +1968,9 @@
 <h2 id="rpcs3">RPCS3<a class="headerlink" href="#rpcs3" title="Permanent link">&para;</a></h2>
 <p>Pick the DualShock 3 handler in RPCS3's pad settings. On Windows it looks for 054C:0268, reads feature report 0xF2 with a 255-byte buffer, keeps the pad when the reply comes back under that id, and polls the same report for state: buttons, sticks, the twelve pressure bytes, the motion sensors and the battery. Its rumble and LED writes come back on <code>OutputDecoded</code>.</p>
 <h2 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
-<p>As of v2.0.0 the sixaxis form is profile data, and the driver holds no DualShock 3 code. The profile's <code>stateBlock</code> is the native report 0x01, which <code>SubmitState</code> fills every frame, and a raw submit is that state block. The SDK's protocol host derives the rest from it the way DsHidMini's SXS mode does: a layout sent on each submit builds the input report, and a live feature report builds the feature reply. The driver sends the input report and answers a GET of feature report 0 from the latest reply the SDK wrote. The 12-byte input report carries the buttons, the hat, the sticks, and four inverted pressure bytes. The feature reply sets the report's first two bytes to 0x00 and 0x3F, turns the motion words little-endian, and mirrors accelerometer X.</p>
+<p>The profile's <code>extendedReport</code> is the native report 0x01 with <code>alwaysArmed</code>, so the SDK fills it every frame and the driver keeps the latest copy. The driver derives the rest from it the way DsHidMini's SXS mode does. The 12-byte input report carries the buttons, the hat, the sticks, and four inverted pressure bytes. The feature reply sets the report's first two bytes to 0x00 and 0x3F, turns the motion words little-endian, and mirrors accelerometer X.</p>
 <p>The descriptor declares no report ids, so the HID class hands every feature read to the driver as report 0, whatever id the reader asked for, and leaves the reader's id byte in place. A read of 0xF2 therefore returns the same report, as it does on DsHidMini.</p>
-<p>Output arrives as report 0 with a sixaxis.sys command in its first byte. For command 2, which sets the motors, everything after the three-byte command header is the native output report's body. DsHidMini applies it that way, and RPCS3 lays out its Windows report to match. Command 1 sets the four player LEDs, which the profile's rules write into the native report's LED bitmap. Every command raises the body as native output report 0x01.</p>
+<p>Output arrives as report 0 with a sixaxis.sys command in its first byte. For command 2, which sets the motors, everything after the three-byte command header is the native output report's body. DsHidMini applies it that way, and RPCS3 lays out its Windows report to match. Command 1 sets the four player LEDs, which the driver writes into the native report's LED bitmap.</p>
 <h2 id="what-is-verified">What is verified<a class="headerlink" href="#what-is-verified" title="Permanent link">&para;</a></h2>
 <p>Battery scenario S64 checks, first offline and then on a live persona:</p>
 <ul>

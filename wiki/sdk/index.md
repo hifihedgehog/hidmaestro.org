@@ -6,9 +6,6 @@ title: SDK
 
 The public C# surface a consumer talks to, in `HIDMaestro.Core.dll`.
 
-Programs built on HIDMaestro 1.x must move to 2.0.0. [Moving from 1.x](../start/migration.md)
-lists every change a 1.x program meets.
-
 - **[SDK Reference](sdk-reference.md)**: `HMContext` (driver lifecycle,
   profile catalog, controller allocation), `HMController` (input submit,
   output events, PID FFB publish), `HMProfile` (immutable identity plus
@@ -31,14 +28,6 @@ lists every change a 1.x program meets.
   ships inside the DLL and deploys itself.
 - **[DualShock 3 and Pressure](dualshock-3.md)**: the `dualshock-3-full`
   persona, the ten `Pressure*` fields, and how PCSX2 and RPCS3 read it.
-- **[Programs Side by Side](programs-side-by-side.md)**: two or more
-  programs that embed HIDMaestro on one machine. Ownership claims,
-  machine-wide transport indices, identity keys, sweeps of exited programs
-  only, one driver deploy at a time that never downgrades, and the
-  machine-wide locks.
-- **[Wii U GameCube Adapter](gamecube-adapter.md)**: the
-  `gamecube-adapter` persona, `HMController.Ports`, `BindWinUsb()` for
-  Dolphin, Slippi and SDL, rumble, and the host poll interval.
 - **[Switch 2 Pro with Motion](switch2-pro.md)**: the
   `switch2-pro-controller-composite` persona, its two USB interfaces,
   motion for Steam and SDL, and what each host needs.

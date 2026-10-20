@@ -434,8 +434,6 @@
       
         
       
-        
-      
     
     
     
@@ -602,34 +600,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../start/migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Moving from 1.x
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -648,10 +618,6 @@
       
         
           
-        
-      
-        
-      
         
       
         
@@ -967,62 +933,6 @@
     
   
     Keyboards and Mice
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Wii U GameCube Adapter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Programs Side by Side
   
 
     
@@ -2191,24 +2101,6 @@
 <p><strong><code>pid.dll</code> PID FFB enumerator</strong>: the DirectInput-shipped DLL that walks HID PID descriptors and exposes effects to DI consumers. Closed-source Microsoft component. The Gamepad-TLC AV in <code>PID_EffectOperation+0x52</code> is documented in <a href="https://github.com/hifihedgehog/HIDMaestro/issues/16">HIDMaestro issue #16</a>; reproducible against the canonical four-feature vJoy descriptor on Windows 10/11.</p>
 </li>
 <li>
-<p><strong>Ownership claims and deploy locking (v2.0.0)</strong>: <a href="https://learn.microsoft.com/windows/win32/api/namedpipeapi/nf-namedpipeapi-createnamedpipew">CreateNamedPipeW</a> documents <code>FILE_FLAG_FIRST_PIPE_INSTANCE</code>, the claim every program, transport index and identity takes, and that a pipe instance is deleted when the last handle closes. <a href="https://learn.microsoft.com/windows/win32/api/namedpipeapi/nf-namedpipeapi-waitnamedpipew">WaitNamedPipeW</a> documents the liveness probe that opens no handle. <a href="https://learn.microsoft.com/windows/win32/sync/object-namespaces">Object Namespaces</a> documents the private namespace the machine-wide locks live in, <code>HIDMaestro.Admin\Deploy</code> and the rest: "The caller must be within the specified boundary for the create operation to succeed", and the boundary holds the Administrators SID. No Microsoft page documents the pipe prefix <code>ProtectedPrefix\Administrators\</code> the claims live under. James Forshaw's "Named Pipe Secure Prefixes" (2017) describes it, and the SDK's source names the smss.exe and npfs.sys builds read for it. Back <a href="../../sdk/programs-side-by-side/">Programs Side by Side</a>.</p>
-</li>
-<li>
-<p><strong>Marking a gone devnode for reinstall (v2.0.0)</strong>: <a href="https://learn.microsoft.com/windows-hardware/drivers/install/determining-whether-a-device-is-plugged-in">Determining Whether a Device is Plugged In</a> gives <code>CM_Get_DevNode_Status</code> returning <code>CR_NO_SUCH_DEVINST</code> as the test for an unplugged device's devnode, and <code>CONFIGFLAG_REINSTALL</code> as the mark that reinstalls it at its next arrival. Back the WinUSB restore in <a href="../../sdk/gamecube-adapter/#dolphin-slippi-and-sdl">Wii U GameCube Adapter</a>.</p>
-</li>
-<li>
-<p><strong>Installing on one device (v2.0.0)</strong>: <a href="https://learn.microsoft.com/windows/win32/api/newdev/nf-newdev-diinstalldevice">DiInstallDevice</a> installs the best match the driver store holds on the named device and no other. <a href="https://learn.microsoft.com/windows-hardware/drivers/install/setupapi-functions-that-simplify-driver-installation">SetupAPI functions that simplify driver installation</a> documents that <code>UpdateDriverForPlugAndPlayDevices</code> installs the package on all present devices with a matching hardware or compatible ID, which is why a create no longer uses it. Back <a href="../driver-install-and-signing/">Driver Install and Signing</a>.</p>
-</li>
-<li>
-<p><strong>PnP notifications without a managed delegate (v2.0.0)</strong>: <a href="https://learn.microsoft.com/windows/win32/api/cfgmgr32/nf-cfgmgr32-cm_unregister_notification">CM_Unregister_Notification</a> waits for pending callbacks to finish, which is why the <code>GCHandle</code> the dispatcher reads is freed after it returns.</p>
-</li>
-<li>
-<p><strong>Build layouts (v2.0.0)</strong>: <a href="https://learn.microsoft.com/windows-hardware/drivers/install-the-wdk-using-nuget">Install the WDK using NuGet</a> lists the Windows SDK as a requirement of the NuGet WDK. Microsoft's windows-drivers-rs reads <code>WDKContentRoot</code> and <code>Version_Number</code> in an EWDK prompt (<code>crates/wdk-build/src/utils.rs</code>) and points <code>WDKContentRoot</code> at the target architecture's package in CI (<code>.github/actions/install-wdk/action.yaml</code>). Back the settings in <a href="../build-and-release/">Build and Release</a>.</p>
-</li>
-<li>
-<p><strong>Inf2Cat's manifest and search order (v2.0.0)</strong>: <a href="https://learn.microsoft.com/archive/blogs/junfeng/internal-manifest-vs-external-manifest">Internal Manifest vs External Manifest</a> and <a href="https://learn.microsoft.com/windows/win32/dlls/dynamic-link-library-search-order">Dynamic-link library search order</a> back dropping <code>inf2cat.exe.manifest</code> and <code>Microsoft.Kits.Logger.dll</code>.</p>
-</li>
-<li>
 <p><strong>vJoy reference descriptor</strong>: <a href="https://github.com/njz3/vJoy">github.com/njz3/vJoy</a> maintains the descriptor headers (<code>hidReportDesc.h</code>, <code>hidReportDescSingle.h</code>, <code>hidReportDescFfb.h</code>). The four-feature descriptor that triggers the <code>pid.dll</code> AV.</p>
 </li>
 </ul>
@@ -2216,7 +2108,7 @@
 <h2 id="library-source-code">Library source code<a class="headerlink" href="#library-source-code" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>HIDAPI</strong>: <a href="https://github.com/libusb/hidapi">github.com/libusb/hidapi</a>. The Windows backend at <code>windows/hid.c</code> is where the bus type detection (USB / Bluetooth / SPI), the <code>BTHENUM</code> and <code>BTHLEDEVICE</code> compatible ID checks (back the Bluetooth identity in <a href="../cross-api-coverage/">Cross-API Coverage</a>), and the <code>&amp;IG_</code> skip logic live. The preparsed-data reconstruction algorithm <code>HMDeviceExtractor</code> ports lives in <code>windows/hidapi_descriptor_reconstruct.c</code> (originally contributed by the Chromium WebHID team).</p>
+<p><strong>HIDAPI</strong>: <a href="https://github.com/libusb/hidapi">github.com/libusb/hidapi</a>. The Windows backend at <code>windows/hid.c</code> is where the bus type detection (USB / Bluetooth / SPI), the <code>BTHLEDEVICE</code> CompatibleIDs check (backs the BT-spoof claim in <a href="../cross-api-coverage/">Cross-API Coverage</a>), and the <code>&amp;IG_</code> skip logic live. The preparsed-data reconstruction algorithm <code>HMDeviceExtractor</code> ports lives in <code>windows/hidapi_descriptor_reconstruct.c</code> (originally contributed by the Chromium WebHID team).</p>
 </li>
 <li>
 <p><strong>SDL3</strong>: <a href="https://github.com/libsdl-org/SDL">github.com/libsdl-org/SDL</a>. The XInput / RawInput / HIDAPI fallback hierarchy is in <code>src/joystick/windows/</code>. The <code>SDL_HINT_JOYSTICK_XINPUT</code> hint is documented at <a href="https://wiki.libsdl.org/">wiki.libsdl.org</a> (search the hint name).</p>
@@ -2247,18 +2139,6 @@
 </li>
 <li>
 <p><strong>libusb</strong>: <a href="https://github.com/libusb/libusb">github.com/libusb/libusb</a>. <code>libusb/os/windows_winusb.c</code> reads a device's <code>DeviceInterfaceGUIDs</code> or <code>DeviceInterfaceGUID</code> to reach an interface on WinUSB.</p>
-</li>
-<li>
-<p><strong>usbip-win2 installer (v2.0.0)</strong>: <a href="https://github.com/vadimgrn/usbip-win2">github.com/vadimgrn/usbip-win2</a> at tag <code>v.0.9.8.1</code>, <code>userspace/innosetup/setup.iss</code>. The <code>main</code> and <code>client</code> components carry <code>Flags: fixed</code>, the <code>vcredist</code> task installs the runtime <code>devnode.exe</code> needs, <code>AlwaysRestart=yes</code> makes <code>/NORESTART</code> required, and <code>PrepareToInstall</code> and <code>GetInstalledUninstallString</code> run the uninstaller of any copy whose record sits under <code>{199505b0-b93d-4521-a8c7-897818e0205a}_is1</code>. The Inno Setup 7.1 help documents <code>/COMPONENTS</code>, <code>/TASKS</code>, <code>/NOICONS</code> and <code>/NORESTART</code>. Back the install arguments in <a href="../driver-install-and-signing/">Driver Install and Signing</a>.</p>
-</li>
-<li>
-<p><strong>Wii U GameCube adapter hosts (v2.0.0)</strong>: Dolphin (<code>Source/Core/InputCommon/GCAdapter.cpp</code>), Slippi's Dolphin fork (the same file, and <code>LibusbUtils.cpp</code>), SDL (<code>src/joystick/hidapi/SDL_hidapi_gamecube.c</code>, and <code>src/hidapi/SDL_hidapi.c</code>, which opens 057E:0337 only through libusb), eden (<code>src/input_common/drivers/gc_adapter.cpp</code>), RMG (<code>Source/RMG-Input-GCA/main.cpp</code>), gcfeeder and Nintendont (<code>kernel/HID.c</code>, <code>PADReadGC.c</code>). They back the command protocol, the report <code>0x21</code> layout and the status bits in <a href="../../sdk/gamecube-adapter/">Wii U GameCube Adapter</a>. <a href="https://github.com/dolphin-emu/dolphin">github.com/dolphin-emu/dolphin</a>, <a href="https://github.com/libsdl-org/SDL">github.com/libsdl-org/SDL</a>.</p>
-</li>
-<li>
-<p><strong>Wii U GameCube adapter devices (v2.0.0)</strong>: 57 <code>lsusb</code> and <code>usb-devices</code> dumps of 057E:0337 from linux-hardware.org back the descriptors. The firmwares of loopj (usb-gamecube-controller-adapter) and pico-rectangle copy the strings, pico-rectangle and HOJA-LIB-ESP32 the report descriptor, and HOJA-LIB-RP2040 holds notes from a real adapter on its status values. joypad-os emulates the adapter with a different, 70-byte descriptor. A command survey of a real adapter (GBAtemp thread 388169, 2015) gives what <code>0x11</code> to <code>0x17</code> do, François-Xavier Carton's Linux driver series (hid-gamecube-adapter v3, 2020) gives the report layout and the 37-byte read, and Arte's guide to overclocking the adapter gives the 1.19971 ms controller read and the 833 and 1000 reports a second.</p>
-</li>
-<li>
-<p><strong>libusb Windows backend (v2.0.0)</strong>: <code>libusb/os/windows_winusb.c</code> turns on <code>ALLOW_PARTIAL_READS</code> for every endpoint, reads <code>DeviceInterfaceGUIDs</code> to open a WinUSB device, and skips a device whose install state is not 0, which is why <code>BindWinUsb</code> leaves no reinstall flag on the bound devnode. The USB device emulation behind the persona is <a href="https://learn.microsoft.com/windows-hardware/drivers/usbcon/writing-a-ude-client-driver">Write a UDE client driver</a>, and the endpoint polling periods are the tables under <a href="https://learn.microsoft.com/windows-hardware/drivers/ddi/usbspec/ns-usbspec-_usb_endpoint_descriptor">USB_ENDPOINT_DESCRIPTOR</a>.</p>
 </li>
 <li>
 <p><strong>Linux HID core and hid-tools</strong>: <code>drivers/hid/hid-core.c</code> in the kernel's HID tree and the report descriptor parser in <a href="https://gitlab.freedesktop.org/libevdev/hid-tools">hid-tools</a>. The SDK's descriptor parser assigns usage pages, Delimiter alternative sets and the empty value of a key array (<code>hid_array_value_is_valid</code>) as they do.</p>
@@ -2311,15 +2191,6 @@
 <p><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a>: the multi-controller WUDFHost CPU saturation investigation. Backs the <code>UmdfHostProcessSharing = ProcessSharingDisabled</code> claim in <a href="../architecture-overview/">Architecture Overview</a> and <a href="../multi-controller/">Multi-Controller</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/design/coexistence.md"><code>docs/design/coexistence.md</code></a>: the 2.0.0 design note for programs side by side, with every mechanism, measurement and source behind <a href="../../sdk/programs-side-by-side/">Programs Side by Side</a>, <a href="../../sdk/gamecube-adapter/">Wii U GameCube Adapter</a>, the build settings and the NativeAOT work.</p>
-</li>
-<li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/design/data-driven-devices.md"><code>docs/design/data-driven-devices.md</code></a>: the design note for devices as profile data, behind the <a href="../../profiles/profile-system/#report-field-parameters-v200">report field parameters</a> and the <a href="../../profiles/profile-system/#values-on-the-wire-v200">values on the wire</a>.</p>
-</li>
-<li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/MIGRATION.md"><code>docs/MIGRATION.md</code></a>: the repository's copy of <a href="../../start/migration/">Moving from 1.x</a>.</p>
-</li>
-<li>
 <p><a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04"><code>docs/investigations/wgi-silent-sink-2026-04/</code></a>: the WGI dispatch / <code>IsDeviceOrAncestorFilteredBy</code> / classifier pass-list / <code>IOCTL_XUSB_WAIT_FOR_INPUT</code> 29-byte format reverse engineering. Backs all of <a href="../xusb-companion/">XUSB Companion</a> and <a href="../cross-api-coverage/">Cross-API Coverage</a>'s WGI sections.</p>
 </li>
 <li>
@@ -2332,7 +2203,7 @@
 <p><a href="https://github.com/hifihedgehog/HIDMaestro/issues/19">HIDMaestro issue #19</a>: the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in <a href="../xusb-companion/">XUSB Companion</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a>: the 96-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> and <a href="../testing-and-verification/">Testing and Verification</a>.</p>
+<p><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a>: the 70-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> and <a href="../testing-and-verification/">Testing and Verification</a>.</p>
 </li>
 </ul>
 <hr />

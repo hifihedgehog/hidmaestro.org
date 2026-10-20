@@ -20,22 +20,21 @@ CATS = [
    "Exact hardware identity", "Valve personas Steam recognizes",
    "A Switch Pro that answers back", "A Switch 2 Pro with motion",
    "Pressure-sensitive DualShock 3",
-   "Controller audio and haptics", "Wii U GameCube adapter",
+   "Controller audio and haptics",
    "Capture a controller you own"]),
  ("catalog", "The catalog", [
-   "337 device profiles", "Keyboards and mice", "Devices are JSON"]),
+   "336 device profiles", "Keyboards and mice", "Devices are JSON"]),
  ("latency", "Latency and transport", [
    "~35 µs measured input latency", "Event-driven output at 0.15 ms",
    "No socket, no batching cap", "The comparison, honestly",
    "Networking at the right layer", "Fast to start, fast to recover"]),
  ("apis", "APIs and consumers", [
-   "Every gaming API at once", "Multi-controller", "Programs side by side",
-   "Hot-plug", "Force feedback answered"]),
+   "Every gaming API at once", "Multi-controller", "Hot-plug",
+   "Force feedback answered"]),
  ("vr", "VR", [
    "Virtual VR controllers"]),
  ("sdk", "The SDK", [
-   "One DLL", "NativeAOT and single-file apps", "Self-bootstrapping install",
-   "A UI instead of code"]),
+   "One DLL", "Self-bootstrapping install", "A UI instead of code"]),
  ("validation", "Validation", [
    "Regression coverage", "Judged by the real consumers"]),
  ("platform", "Platform and licensing", [

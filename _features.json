@@ -1,15 +1,15 @@
 [
     {
         "t":  "Exact hardware identity",
-        "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller carries the hardware and compatible IDs a real device of its transport carries, classic BTHENUM or LE BTHLEDevice, so it reports as Bluetooth, not as a USB device wearing its name. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
+        "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller reports as Bluetooth, not as a USB device wearing its name. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
     },
     {
-        "t":  "337 device profiles",
+        "t":  "336 device profiles",
         "d":  "Embedded profiles across 73 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, keyboards, mice, and more. Every device is a JSON file. Adding support for a new one means writing JSON, not modifying code."
     },
     {
         "t":  "Devices are JSON",
-        "d":  "Add a controller by writing a data-only JSON profile or by capturing one you already own, with no recompile. The SDK and the drivers hold no per-device code: battery scenario S88 fails on a device name, a vendor or product ID compared or switched on, or a profile field only one device sets, and the Sony feature answers, the Switch Pro\u0027s and Switch 2 Pro\u0027s protocols, the DualShock 3\u0027s sixaxis form and the XUSB companion\u0027s answers are all profile data. A report field\u0027s wire form is parameters: min and max, invert, a center for offset binary, a scale for motion counts, a battery level table, bit groups packed across frames, and a sensor clock that counts elapsed time. Profiles load strictly: a mistake refuses the file, and HMContext.ProfileLoadIssues lists it with the JSON path and the reason. A profile built in code meets the same checks at create, which throws HMProfileException before it touches the machine. A profile takes the feature answers, protocol and presentation it does not carry from a model it names with deviceModelFrom, or from identity defaults that keep a profile made outside the catalog behaving as its VID and PID did in 1.x. A device that builds its reports from its own state, as the Switch Pro, the Switch 2 Pro and the DualShock 3 do, carries a state block and report programs, compiled at build for the catalog and interpreted for your own profiles. HIDMaestroProfileCheck, in the release ZIP, checks a profile file as the SDK loads it and prints each problem with its JSON path. Adding a controller to a code-per-device emulator means writing and compiling a new device implementation. That difference is the whole point of the profile system. A device that carries several controllers in one report, and the commands it answers, are data too: the Wii U GameCube adapter\u0027s four ports and its command protocol are its profile, run by mechanisms any profile can use."
+        "d":  "Add a controller by writing a data-only JSON profile or by capturing one you already own. No per-device source code, no recompile, no hardcoded device classes. Adding a controller to a code-per-device emulator means writing and compiling a new device implementation. That difference is the whole point of the profile system."
     },
     {
         "t":  "Capture a controller you own",
@@ -17,19 +17,7 @@
     },
     {
         "t":  "Keyboards and mice",
-        "d":  "A profile can be a keyboard or a mouse. The catalog holds 51 keyboards and 52 mice from 32 vendors, each the report descriptor of a real device\u0027s keyboard or mouse interface. Raw Input lists each one as its kind, a Scroll Lock pressed on a virtual keyboard turns Scroll Lock on, and the mouse moves the cursor. SubmitKeyboard, SubmitMouse and SubmitConsumer pack into whatever reports the profile declares. Every report arrives: the driver confirms each one Windows takes, and a burst of 600 one-count moves lost nothing. If the consumer dies with a key held, the driver lets go of it, and the next session\u0027s cleanup removes the devices it left."
-    },
-    {
-        "t":  "Programs side by side",
-        "d":  "Two or more programs that embed HIDMaestro run on one machine, and none removes or writes to another\u0027s controllers, driver or files unless it calls the remove-everything cleanup. Each program claims ownership before its first machine-wide write, and each controller claims a transport index and an identity, all as named pipes that Windows deletes when the program ends. Asking for an identity another live program holds throws HMResourceInUseException. Sweeps remove only what exited programs left. Driver deploys take one machine-wide lock, never downgrade, and install the 2.0.0 driver over any older one, whatever runs on it. Device registrations and removals take another, so no program on this release registers a device while another removes one. While a program built on v1.12.0 runs, controllers take transport indices from 64, out of its way. That older program still removes every HIDMaestro device at its InstallDriver and first create, so programs built on HIDMaestro 1.x must move to 2.0.0. Everything the SDK runs elevated is staged where only Administrators and SYSTEM can write, and checked against its SHA-256 first."
-    },
-    {
-        "t":  "Wii U GameCube adapter",
-        "d":  "gamecube-adapter is Nintendo\u0027s WUP-028, the four-port adapter Melee players use, on the USB/IP transport. Its descriptors match 57 public dumps of the real adapter. Dolphin\u0027s and Slippi\u0027s own adapter code, compiled unmodified, reads all four ports, and so does SDL 3.4.18 built with libusb. The official SDL3 build for Windows has no libusb and lists no adapter, real or virtual. BindWinUsb() binds WinUSB to this one virtual adapter, so libusb hosts open it with no Zadig step. A restore never changes the driver of a devnode that is present. A real adapter that takes the instance after the virtual one is gone opens on WinUSB too, and after a kill it can open on WinUSB again at its next plug-in until a teardown, cleanup, reclaim, re-bind or follow-up finds the devnode gone and marks it to install Windows\u0027 HID driver. Each port has its own connection, input and rumble, and a controller connected to an empty port reports itself at rest. The adapter is a profile and no code: its ports, command protocol and WinUSB binding are JSON run by mechanisms any profile can use. A host poll interval can be set faster than the descriptor\u0027s 8 ms, as Melee players overclock the adapter."
-    },
-    {
-        "t":  "NativeAOT and single-file apps",
-        "d":  "HIDMaestro.Core.dll loads its catalog and runs in NativeAOT apps and in trimmed, self-contained, single-file apps, for x64 and ARM64. Profiles load through source-generated JSON and every Win32 call goes through LibraryImport. A Release build fails on any warning from the trim, single-file and AOT analyzers. At v1.12.0 both kinds of app loaded none of the 336 profiles."
+        "d":  "A profile can be a keyboard or a mouse. The catalog holds 51 keyboards and 52 mice from 32 vendors, each the report descriptor of a real device's keyboard or mouse interface. Raw Input lists each one as its kind, a Scroll Lock pressed on a virtual keyboard turns Scroll Lock on, and the mouse moves the cursor. SubmitKeyboard, SubmitMouse and SubmitConsumer pack into whatever reports the profile declares. Every report arrives: the driver confirms each one Windows takes, and a burst of 600 one-count moves lost nothing. If the consumer dies with a key held, the driver lets go of it, and the next session's cleanup removes the devices it left."
     },
     {
         "t":  "Valve personas Steam recognizes",
@@ -37,7 +25,7 @@
     },
     {
         "t":  "A Switch Pro that answers back",
-        "d":  "The Switch Pro Controller is not a passive device: hosts drive a Nintendo subcommand handshake and stall without a device that answers. HIDMaestro answers it from the profile\u0027s data over the real Bluetooth wire, with a descriptor extracted byte-exact from a live Pro\u0027s SDP cache: SPI calibration reads, input-mode switch, and full-mode reports with gyro and accel every 15 ms on the device\u0027s own clock. switch-pro-usb is the same pad on its USB descriptor. SDL3 and Steam Input bind it as a real Bluetooth Pro Controller with motion and rumble."
+        "d":  "The Switch Pro Controller is not a passive device: hosts drive a Nintendo subcommand handshake and stall without a device that answers. HIDMaestro\u0027s driver answers it over the real Bluetooth wire, with a descriptor extracted byte-exact from a live Pro\u0027s SDP cache: SPI calibration reads, input-mode switch, 60 Hz full-mode streaming with gyro and accel. SDL3 and Steam Input bind it as a real Bluetooth Pro Controller with motion and rumble."
     },
     {
         "t":  "A Switch 2 Pro with motion",
@@ -60,12 +48,8 @@
         "d":  "The input number is real propagation, measured over 10,000 single-press iterations and reproducible with one command. The methodology is published in the repository at docs/testing/latency.md."
     },
     {
-        "t":  "Faster than 1.12.0",
-        "d":  "A DualShock 4 create takes about half the time it took on 1.12.0, because a create installs the driver the store's search chose before instead of searching again. A game reads a DualShock 4 or DualSense report about 30 percent sooner after the submit. The driver and the XInput companion are built with the WDK's release optimization, and no submit, output report or USB/IP transfer allocates memory. The release notes give each path's numbers against 1.12.0."
-    },
-    {
         "t":  "Event-driven output at 0.15 ms",
-        "d":  "Rumble, force feedback, and LED packets are signaled to the consumer per captured packet at ~0.18 ms median, roughly 50x faster than the 9.4 ms poll-quantized path it replaced. A controller at rest costs no measurable CPU unless its profile repeats its last report at rest as the real device does, as 21 profiles do: a DualSense over Bluetooth every 1.25 ms, a DualShock 4 every 4 ms."
+        "d":  "Rumble, force feedback, and LED packets are signaled to the consumer per captured packet at ~0.18 ms median, roughly 50x faster than the 9.4 ms poll-quantized path it replaced, with idle controllers costing zero measurable CPU."
     },
     {
         "t":  "No socket, no batching cap",
@@ -89,11 +73,11 @@
     },
     {
         "t":  "Multi-controller",
-        "d":  "No hard limit on simultaneous virtual controllers. Tested with 6 mixed types, correct per-controller ordering across every API. XInput caps Xbox-family profiles at its own 4 slots. Non-Xbox profiles run beyond it. Controllers from several programs that embed HIDMaestro coexist on one machine, each program keeping its own."
+        "d":  "No hard limit on simultaneous virtual controllers. Tested with 6 mixed types, correct per-controller ordering across every API. XInput caps Xbox-family profiles at its own 4 slots; non-Xbox profiles run beyond it."
     },
     {
         "t":  "Hot-plug",
-        "d":  "Create and remove controllers on the fly, about 200 ms for a single controller as measured before v2.0.0. Live-swap a controller\u0027s profile mid-session. No reboots, no leftover devices."
+        "d":  "Create and remove controllers on the fly, about 200 ms for a single controller. Live-swap a controller\u0027s profile mid-session. No reboots, no leftover devices."
     },
     {
         "t":  "Force feedback answered",
@@ -105,23 +89,23 @@
     },
     {
         "t":  "Self-bootstrapping install",
-        "d":  "InstallDriver() creates a locally trusted certificate, signs the driver, and installs it. No EV certificate, no test-signing mode, no reboot. When the installed driver already matches, the call completes in ~40-60 ms. Only one program deploys at a time. An older driver is upgraded whatever runs on it, and a newer one is never downgraded."
+        "d":  "InstallDriver() creates a locally trusted certificate, signs the driver, and installs it. No EV certificate, no test-signing mode, no reboot. When the installed driver already matches, the call completes in ~40-60 ms."
     },
     {
         "t":  "One DLL",
-        "d":  "HIDMaestro.Core.dll contains the 337-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host. A source build can leave out the ARM64 payload or the USB/IP transport, and HMBuildInfo reports what a build carries."
+        "d":  "HIDMaestro.Core.dll contains the 336-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host."
     },
     {
         "t":  "Regression coverage",
-        "d":  "The battery has 96 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, every catalog keyboard and mouse through Raw Input, programs running side by side as separate processes, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, every raw value of every catalog conversion through the SDK\u0027s rounding, the Sony, Valve and Nintendo vendor-blob reports against golden bytes, profiles and device models loaded strictly, every report program three ways, the protocol engine and device clock, the version contract on the live driver, a Joy-Con built from the Switch Pro\u0027s mechanisms, and the SDK and drivers checked for device shortcuts. Production signing and the full HIDMaestro integration gate remain pending."
+        "d":  "The battery has 70 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, and every catalog keyboard and mouse through Raw Input. On a 16-core Ryzen 9 Windows 11 laptop the v1.12.0 release build passed all 70 scenarios. Production signing and the full HIDMaestro integration gate remain pending."
     },
     {
         "t":  "Judged by the real consumers",
-        "d":  "The battery checks more than HIDMaestro\u0027s own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. Another runs Steam\u0027s own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. Stock SDL3 arms the Bluetooth DualShock 4 persona itself and must keep reading it, and opens the DualShock 3 persona the way PCSX2 configures it. SDL3 with libusb starts the Switch 2 Pro persona and reads its motion back on every axis, and the Steam client must add it and keep reading it. The decoders Steam Input is built on are the judges. Dolphin\u0027s and Slippi\u0027s own adapter code, compiled unmodified, reads the GameCube adapter persona, and SDL built with libusb lists one gamepad per port."
+        "d":  "The battery checks more than HIDMaestro\u0027s own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them. Another runs Steam\u0027s own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. Stock SDL3 arms the Bluetooth DualShock 4 persona itself and must keep reading it, and opens the DualShock 3 persona the way PCSX2 configures it. SDL3 with libusb starts the Switch 2 Pro persona and reads its motion back on every axis, and the Steam client must add it and keep reading it. The decoders Steam Input is built on are the judges."
     },
     {
         "t":  "The composite exception, stated",
-        "d":  "Composite Sony, Valve and Nintendo profiles use the bundled usbip-win2 0.9.8.1 kernel transport, redistributed unmodified and checked against its pinned SHA-256 at build and again before execution. The SDK installs it silently on a machine that has none, with the smallest set of components its installer allows, and never invokes the vendor uninstaller. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused."
+        "d":  "Composite Sony, Valve and Nintendo profiles use the bundled usbip-win2 0.9.8.1 kernel transport, redistributed unmodified and checked against its pinned SHA-256 at build and again before execution. The SDK installs it silently on a machine that has none and never invokes the vendor uninstaller. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused."
     },
     {
         "t":  "MIT licensed",

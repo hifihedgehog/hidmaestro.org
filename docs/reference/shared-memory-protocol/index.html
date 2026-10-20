@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -620,6 +650,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -935,6 +969,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -1684,6 +1774,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#version-section-v200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version section (v2.0.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#section-creation-lifecycle" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2160,6 +2261,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#version-section-v200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version section (v2.0.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#section-creation-lifecycle" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2210,11 +2322,11 @@
 
 
 <h1 id="shared-memory-protocol">Shared Memory Protocol<a class="headerlink" href="#shared-memory-protocol" title="Permanent link">&para;</a></h1>
-<p>The wire format of the three pagefile-backed shared memory sections HIDMaestro uses for cross-process communication between the SDK (consumer process) and the driver (<code>HIDMaestro.dll</code> in WUDFHost) plus the XUSB companion (<code>HMXInput.dll</code> in another WUDFHost). All three are RAM-only: no disk I/O.</p>
+<p>The wire format of the five pagefile-backed shared memory sections HIDMaestro uses for cross-process communication between the SDK (consumer process) and the driver (<code>HIDMaestro.dll</code> in WUDFHost) plus the XUSB companion (<code>HMXInput.dll</code> in another WUDFHost). All five are RAM-only: no disk I/O.</p>
 <p>This page is the byte-level reference. For the SDK-facing API that wraps these sections, see <a href="../../sdk/sdk-reference/">SDK Reference</a>. For the driver-side seqlock readers, see <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>.</p>
 <hr />
 <h2 id="section-names">Section names<a class="headerlink" href="#section-names" title="Permanent link">&para;</a></h2>
-<p>For controller index <code>&lt;N&gt;</code> (0, 1, 2, ...):</p>
+<p>For transport index <code>&lt;N&gt;</code>, <code>HMController.TransportIndex</code>. A program running alone gets its slot numbers, 0, 1, 2, ..., as every release before v2.0.0 did, with two exceptions: a keyed create whose identity a dead program's device still carries lands on that device's index, and an index whose names another program took first is skipped. While a program built on v1.12.0 runs, every create starts at index 64. When several programs that embed HIDMaestro run, a controller can get another free index, so native writers read the names from <code>HMController.SectionNames</code> or compute them from <code>TransportIndex</code>, never from the slot. See <a href="../../sdk/programs-side-by-side/">Programs Side by Side</a>.</p>
 <table>
 <thead>
 <tr>
@@ -2240,12 +2352,24 @@
 <tr>
 <td>PID State</td>
 <td><code>Global\HIDMaestroPidState&lt;N&gt;</code></td>
-<td>28 bytes</td>
-<td>Consumer &rarr; driver: HID PID 1.0 state mirror</td>
+<td>40 bytes, of which the driver's struct uses 36</td>
+<td>Consumer &rarr; driver: HID PID 1.0 state mirror. The driver writes its effect-block allocation back</td>
+</tr>
+<tr>
+<td>Input acknowledgement (v1.12.0)</td>
+<td><code>Global\HIDMaestroInputAck&lt;N&gt;</code></td>
+<td>688 bytes</td>
+<td>Driver &rarr; consumer: the last delivered frame's sequence number. Consumer &rarr; driver: release frames for keyboards and mice</td>
+</tr>
+<tr>
+<td>Version (v2.0.0)</td>
+<td><code>Global\HIDMaestroVersion&lt;N&gt;</code></td>
+<td>64 bytes</td>
+<td>Both directions: the SDK's and the driver's versions and protocols, and the controller's identity tag. See <a href="#version-section-v200">Version section</a></td>
 </tr>
 </tbody>
 </table>
-<p>Plus two named events for wake-up:</p>
+<p>Plus named events for wake-up, and the owner pipe:</p>
 <table>
 <thead>
 <tr>
@@ -2261,17 +2385,50 @@
 <td>Auto-reset; signaled by the SDK after every input frame. Driver worker thread waits on this.</td>
 </tr>
 <tr>
+<td>Companion input</td>
+<td><code>Global\HIDMaestroCompanionInputEvent&lt;N&gt;</code></td>
+<td>Auto-reset. Signaled with the input event, for frames that carry GIP data, so the XUSB companion completes a parked read at frame arrival.</td>
+</tr>
+<tr>
+<td>Input acknowledgement</td>
+<td><code>Global\HIDMaestroInputAckEvent&lt;N&gt;</code></td>
+<td>Auto-reset. Signaled by the driver when it acknowledges a delivered frame (v1.12.0).</td>
+</tr>
+<tr>
+<td>Remove</td>
+<td><code>Global\HIDMaestroRemoveEvent&lt;N&gt;</code></td>
+<td>Created by the SDK with the input section. A <code>Dispose</code> of a ROOT device signals it when a program refuses its removal query, and the driver fails its device so Windows removes it by surprise removal (v2.0.0, driver protocol 5).</td>
+</tr>
+<tr>
+<td>Removed</td>
+<td><code>Global\HIDMaestroRemovedEvent&lt;N&gt;</code></td>
+<td>Created by the SDK with the input section. Signaled by the driver once it has failed its device. The SDK waits up to 2 s for it (v2.0.0, driver protocol 5).</td>
+</tr>
+<tr>
+<td>Output</td>
+<td><code>Global\HIDMaestroOutputEvent&lt;N&gt;</code></td>
+<td>Signaled per published output packet. The driver and the XUSB companion create or open it, and the SDK creates it for a USB/IP persona.</td>
+</tr>
+<tr>
 <td>Stop</td>
 <td><code>Global\HIDMaestroStopEvent&lt;N&gt;</code></td>
-<td>Manual-reset; signaled by the driver to stop its worker thread on device unload.</td>
+<td>Manual-reset. Created and signaled by the driver to stop its worker thread on device unload.</td>
+</tr>
+<tr>
+<td>Owner pipe</td>
+<td><code>\\.\pipe\HIDMaestroOwner&lt;N&gt;</code></td>
+<td>Held by the SDK for the controller's life. The driver sends the release frames when it closes (v1.12.0).</td>
 </tr>
 </tbody>
 </table>
-<p>The SDK creates all three sections and both events with <code>SDDL = D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)</code>: SYSTEM, BUILTIN\Administrators, and Everyone get <code>GENERIC_ALL</code>.</p>
+<p><code>HMController.SectionNames</code> lists the names the SDK creates or opens for one controller, from <code>Global\HIDMaestroInput&lt;N&gt;</code> to the owner pipe. The stop event is the driver's own.</p>
+<p>The SDK creates the sections and its events with <code>SDDL = O:BAD:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)(A;;GR;;;WD)</code>. Administrators own them. SYSTEM, BUILTIN\Administrators and LocalService get <code>GENERIC_ALL</code>, and Everyone gets <code>GENERIC_READ</code>. The owner pipe carries <code>O:BAD:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)</code>. The owner is set to Administrators so it does not depend on the machine's default-owner policy, under which an elevated program's objects can be owned by the user.</p>
+<p>The driver creates the stop and output events, and the XUSB companion the output event, with <code>D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)</code>, so a program that is not elevated can neither signal a controller's stop event nor take its output doorbell. The companion's stop event is unnamed. Any program can create a <code>Global\</code> event first, so the driver uses an existing one only when it has a DACL and SYSTEM, Administrators or LocalService owns it. An existing NULL-DACL output event that a driver before v2.0.0 made is taken over and given the descriptor above. Otherwise the stop event is unnamed, which still stops the worker at teardown, and the output event is not used while the name stays unusable. The driver tries again each time it maps the input section, on each idle timeout and every 256 frames, and the SDK's reader falls back to its poll meanwhile.</p>
+<p>Before it takes a transport index, the SDK opens each of the index's named sections and events. An index where one exists as another kind of object, refuses to be opened, or has an owner other than SYSTEM or Administrators, or an owner that cannot be read, is skipped. So is an index whose v1.12.0 owner pipe is held. LocalService passes as an owner only for the stop and output events, which the driver host creates as LocalService.</p>
 <p>The permissive DACL is required because:
 - The SDK consumer (admin) writes input frames.
 - WUDFHost runs as LocalService and <strong>lacks</strong> <code>SeCreateGlobalPrivilege</code>. The driver can <code>OpenFileMapping</code> but cannot <code>CreateFileMapping</code> in the <code>Global\</code> namespace: only the elevated SDK can.
-- Unelevated WGI / GameInput consumers may need to read indirectly via shared section paths.</p>
+- Everyone's read access is for diagnostic tools that are not elevated.</p>
 <p>The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared-section permissions.</p>
 <hr />
 <h2 id="input-section-hidmaestro_shared_input">Input section: <code>HIDMAESTRO_SHARED_INPUT</code><a class="headerlink" href="#input-section-hidmaestro_shared_input" title="Permanent link">&para;</a></h2>
@@ -2290,7 +2447,7 @@
 <p>Covers every HID input report size in the profile database without truncation. DualSense BT report 0x31 is <strong>78 bytes</strong>; Switch Pro standard input reports can run to ~64; gyro / accelerometer passthrough on these pads writes motion values <strong>late</strong> in the report, so the prior 64-byte pipe (pre-2026-04-23) clipped exactly the motion fields consumers (Dolphin, Cemu, yuzu/Citron, RetroArch) needed.</p>
 <p>256 matches the mirror in <code>SHARED_OUTPUT</code>'s slot data cap and gives headroom for custom profile descriptors.</p>
 <h3 id="why-14-bytes-for-gipdata">Why 14 bytes for <code>GipData</code>?<a class="headerlink" href="#why-14-bytes-for-gipdata" title="Permanent link">&para;</a></h3>
-<p>The XUSB companion reads ONLY this slice on <code>IOCTL_XUSB_GET_STATE</code>. The SDK packs LX/LY/RX/RY/LT/RT/buttons into the 14 bytes for Xbox-VID profiles regardless of the descriptor declared in <code>Data</code>: so the same controller can serve DirectInput (descriptor-formatted bytes in <code>Data</code>) and XInput (GIP-formatted bytes in <code>GipData</code>) from one shared write.</p>
+<p>The XUSB companion reads ONLY this slice on <code>IOCTL_XUSB_GET_STATE</code>. The SDK packs LX/LY/RX/RY/LT/RT/buttons into the 14 bytes for profiles with an XUSB companion regardless of the descriptor declared in <code>Data</code>: so the same controller can serve DirectInput (descriptor-formatted bytes in <code>Data</code>) and XInput (GIP-formatted bytes in <code>GipData</code>) from one shared write.</p>
 <p>Layout:</p>
 <table>
 <thead>
@@ -2343,7 +2500,7 @@
 </tr>
 </tbody>
 </table>
-<p>For non-Xbox-VID profiles, the GIP buffer is left zeroed (no XUSB companion is bound; the bytes are unused). The SDK's <code>_packsGipBuffer</code> flag short-circuits the packing entirely: ~60-80 instructions saved per frame on DualSense / Switch Pro / generic gamepad paths.</p>
+<p>For every other profile, the GIP buffer is left zeroed (no XUSB companion is bound, so the bytes are unused). The SDK's <code>_packsGipBuffer</code> flag short-circuits the packing entirely: ~60-80 instructions saved per frame on DualSense / Switch Pro / generic gamepad paths.</p>
 <h3 id="seqlock-write-protocol-writer">Seqlock write protocol (writer)<a class="headerlink" href="#seqlock-write-protocol-writer" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// SDK side, in WriteInputFrame</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">// Increment SeqNo to odd → readers know &quot;writer is mid-update&quot;</span>
@@ -2486,9 +2643,14 @@
 <a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="w">    </span><span class="cm">/* Driver-side EBI free-list */</span>
 <a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">EbiAllocBitmap</span><span class="p">;</span><span class="w">          </span><span class="c1">//  4 bytes: bit N = EBI N+1 allocated</span>
 <a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="n">ULONG</span><span class="w">  </span><span class="n">EbiAllocatedCount</span><span class="p">;</span><span class="w">       </span><span class="c1">//  4 bytes: count</span>
-<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="p">}</span><span class="w"> </span><span class="n">HIDMAESTRO_SHARED_PID_STATE</span><span class="p">;</span>
-<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="cp">#pragma pack(pop)</span>
-<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="c1">// Total: 28 bytes</span>
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="w">    </span><span class="cm">/* Report ID overrides from the profile&#39;s descriptor, 0 = canonical (v1.3.7) */</span>
+<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w"> </span><span class="n">PoolReportId</span><span class="p">,</span><span class="w"> </span><span class="n">StateReportId</span><span class="p">,</span><span class="w"> </span><span class="n">BlockLoadReportId</span><span class="p">;</span>
+<a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w"> </span><span class="n">CreateNewEffectReportId</span><span class="p">,</span><span class="w"> </span><span class="n">BlockFreeReportId</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceControlReportId</span><span class="p">;</span>
+<a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w"> </span><span class="n">_pad2</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a><span class="p">}</span><span class="w"> </span><span class="n">HIDMAESTRO_SHARED_PID_STATE</span><span class="p">;</span>
+<a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a><span class="cp">#pragma pack(pop)</span>
+<a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a><span class="c1">// Total: 36 bytes. The SDK creates the section at 40 bytes.</span>
 </code></pre></div>
 <p>Both producer and consumer in this case: the SDK consumer writes Pool / State, the driver writes Block Load and EBI bitmap. <strong>Different field groups</strong>, partitioned to avoid contention.</p>
 <h3 id="pidenabled-the-ffb-gate"><code>PidEnabled</code>: the FFB gate<a class="headerlink" href="#pidenabled-the-ffb-gate" title="Permanent link">&para;</a></h3>
@@ -2523,19 +2685,97 @@
 <p>The consumer reads the assigned EBI via <code>HMController.GetCurrentPidBlockLoad()</code>. See <a href="../../sdk/force-feedback/">Force Feedback</a> for the consumer-side pattern.</p>
 <p><code>PID Block Free</code> (Output 0x1B) writes are captured to the output ring as <code>HidOutput</code> so the consumer's handler can clear the bit if it wants to track. The driver does <strong>not</strong> auto-clear: deliberate; the consumer is responsible for that bookkeeping.</p>
 <hr />
+<h2 id="version-section-v200">Version section (v2.0.0)<a class="headerlink" href="#version-section-v200" title="Permanent link">&para;</a></h2>
+<p><code>Global\HIDMaestroVersion&lt;N&gt;</code>, 64 bytes, <code>HIDMAESTRO_VERSION_INFO</code> in <code>driver/driver.h</code>. The SDK creates it beside the input section before the devnode exists and writes its half, the identity tag included. It also writes the controller's index under <code>HKLM\SOFTWARE\HIDMaestro\Identity\&lt;token&gt;</code> before any PnP work. No existing layout changed.</p>
+<table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Field</th>
+<th>Written by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Layout version, 1</td>
+<td>SDK</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Oldest driver protocol the SDK runs on, 4</td>
+<td>SDK</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Protocol the SDK speaks, 4</td>
+<td>SDK</td>
+</tr>
+<tr>
+<td>12</td>
+<td>SDK version: major, minor, patch, 0, four 16-bit fields</td>
+<td>SDK</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Driver protocol, 4, and 0 until written</td>
+<td>driver</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Driver version: major, minor, patch, 0, four 16-bit fields</td>
+<td>driver</td>
+</tr>
+<tr>
+<td>32</td>
+<td>Driver capabilities: 0x3, the input acknowledgement's delivered bit (0x1) and release bit (0x2)</td>
+<td>driver</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Oldest SDK protocol the driver serves, 4</td>
+<td>driver</td>
+</tr>
+<tr>
+<td>40, 44</td>
+<td>The XUSB companion's protocol and the oldest SDK protocol it serves</td>
+<td>companion</td>
+</tr>
+<tr>
+<td>48</td>
+<td>Identity tag: the 64-bit FNV-1a hash of the controller's identity token in UTF-16LE, no terminator (<code>HM_0000</code> gives 0x1FD048916B8D461F)</td>
+<td>SDK</td>
+</tr>
+<tr>
+<td>56</td>
+<td>The value the driver could not read before it failed the start</td>
+<td>driver</td>
+</tr>
+<tr>
+<td>60</td>
+<td>The same for the companion</td>
+<td>companion</td>
+</tr>
+</tbody>
+</table>
+<p>The driver reads its device instance ID before <code>WdfDeviceCreate</code>, takes the identity token from its last segment and reads the index from the identity key. It reads the controller's 2.0.0 values, <code>FeatureAnswers</code> and the cached input report IDs, only when the section exists, its range holds protocol 4 and its tag equals the tag of the devnode's own token. Every other devnode, a 1.x program's or one a killed program's key still names, is read as a 1.x controller: the values every version writes and nothing of 2.0.0, so it gets no feature answers. A devnode whose index's section carries another token's tag fails its start with STATUS_DEVICE_CONFIGURATION_ERROR. The driver writes its version, capabilities and oldest served protocol first and its protocol last, with a barrier between, at add and each time it opens the input section.</p>
+<p>Protocol 1 is the layout set through v1.11.0: the input and output sections, the events and the PID state. Protocol 2 adds the input acknowledgement and the owner pipe (v1.12.0). Protocol 3 added this section in a build that never shipped, and protocol 4 is the 2.0.0 contract. The 2.0.0 HID driver serves protocols 4 to 5 and the XUSB companion 4: driver protocol 5 adds the remove and removed events above, which the SDK uses only when the driver's half says 5, and the contract the SDK checks at create stays protocol 4. A create reads the section once its device has started. A driver whose range does not hold 4 fails the create, which removes its devnode and throws <code>HMDriverVersionException</code> with <code>Problem</code> <code>ProtocolNotServed</code>, and a set error word throws it with <code>ValueNotRead</code>. <code>HMController.DriverVersion</code> reads the driver's half. It is null until the driver has started the device, on a driver older than v2.0.0, which never writes it, and on a USB/IP persona, which has no driver.</p>
+<hr />
 <h2 id="section-creation-lifecycle">Section creation lifecycle<a class="headerlink" href="#section-creation-lifecycle" title="Permanent link">&para;</a></h2>
-<p>The SDK consumer creates all three sections + both events in <code>SetupController</code> before binding the driver:</p>
+<p>The SDK consumer creates the sections and its events in <code>SetupController</code> before binding the driver, under the transport index its lease claimed:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">// In DeviceOrchestrator.SetupController</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">SharedMemoryIO</span><span class="p">.</span><span class="n">EnsureInputMapping</span><span class="p">(</span><span class="n">controllerIndex</span><span class="p">);</span><span class="w">    </span><span class="c1">// creates Global\HIDMaestroInput&lt;N&gt; + Event</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">SharedMemoryIO</span><span class="p">.</span><span class="n">EnsureOutputMapping</span><span class="p">(</span><span class="n">controllerIndex</span><span class="p">);</span><span class="w">   </span><span class="c1">// creates Global\HIDMaestroOutput&lt;N&gt;</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">SharedMemoryIO</span><span class="p">.</span><span class="n">EnsureInputMapping</span><span class="p">(</span><span class="n">transportIndex</span><span class="p">);</span><span class="w">    </span><span class="c1">// Input, InputAck, Version, their events, the owner pipe</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">SharedMemoryIO</span><span class="p">.</span><span class="n">EnsureOutputMapping</span><span class="p">(</span><span class="n">transportIndex</span><span class="p">);</span><span class="w">   </span><span class="c1">// creates Global\HIDMaestroOutput&lt;N&gt;</span>
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1">// PID state section is lazy: only created on first HMController.PublishPidPool call</span>
 </code></pre></div>
+<p>The owner pipe's first instance is created with <code>FILE_FLAG_FIRST_PIPE_INSTANCE</code>. If a program built on v1.12.0 took the same index in the meantime, the create stops with <code>HMResourceInUseException</code> rather than share its sections.</p>
 <p>The driver and companion both <code>OpenFileMapping</code> (not <code>Create</code>): LocalService doesn't have permission to create.</p>
+<p>Beside the sections, the SDK writes each index's configuration under <code>HKLM\SOFTWARE\HIDMaestro\Controller&lt;N&gt;</code>. As of v2.0.0 that configuration gains <code>InputReportId</code> (REG_BINARY): the input report a data-only frame fills, its length as a 32-bit little-endian value, then the descriptor. The driver ignores a value whose length is not the <code>InputReportByteLength</code> beside it or whose descriptor is not the one in use, and then scans the descriptor as before. A 2.0.0 controller's configuration also holds <code>FeatureAnswers</code>, its compiled feature answer table. The driver reads both only under the version contract (see <a href="#version-section-v200">Version section</a>), so a native writer that wants feature answers writes the section and the identity entry as the SDK does. The configuration no longer holds <code>DeviceInstanceId</code>, which no driver read, and a create writes <code>VendorId</code> and <code>ProductId</code> first. See <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>.</p>
 <p>The SDK closes (<code>CloseHandle</code>) all sections in <code>HMController.Dispose</code> after the device removal IOCTL completes. The kernel reclaims the <code>Global\</code> namespace entry once the last handle drops. If the SDK process crashes without closing, the kernel reclaims when the process exits.</p>
 <p>The driver's stale-handle recovery loop (close + re-open every 500 reads / writes) handles the cross-session case where the SDK creates a fresh section after a previous one was closed.</p>
 <hr />
 <h2 id="concrete-example-input-frame">Concrete example: input frame<a class="headerlink" href="#concrete-example-input-frame" title="Permanent link">&para;</a></h2>
-<p>For a DualSense controller (controller index 3) submitting a state with the left stick X slightly right of center and the right trigger pressed (<code>HMGamepadStateHelpers.StandardAxes(profile, leftStickX: 0.75f, rightTrigger: 0.7f)</code>) plus <code>Buttons = HMButton.A | HMButton.LeftBumper</code>:</p>
+<p>For a DualSense controller (transport index 3) submitting a state with the left stick X slightly right of center and the right trigger pressed (<code>HMGamepadStateHelpers.StandardAxes(profile, leftStickX: 0.75f, rightTrigger: 0.7f)</code>) plus <code>Buttons = HMButton.A | HMButton.LeftBumper</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Global\HIDMaestroInput3 view (after SDK write):
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Offset  Bytes                          Field
@@ -2553,7 +2793,7 @@
 <a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>                                         [9]   = buttons low byte = 0x11 (A + LB)
 <a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>                                         [10..]  = remaining DualSense state
 <a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>72      00 ...                         Data[64..255] (zero-padded)
-<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>264     00 00 00 00 00 00 00 00 ...    GipData[0..13] (zeroed for non-Xbox-VID)
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>264     00 00 00 00 00 00 00 00 ...    GipData[0..13] (zeroed without a companion)
 </code></pre></div>
 <p>The driver's worker thread wakes on <code>Global\HIDMaestroInputEvent3</code>, reads the seqlock-stable view, copies <code>Data[0..63]</code> into its IOCTL_HID_READ_REPORT cache, and either completes a pended request or returns to wait.</p>
 <p>DirectInput, SDL3 / HIDAPI, browser RawInput-fallback, and WGI all see the new bytes within ~2 ms.</p>

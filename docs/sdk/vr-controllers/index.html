@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -622,6 +652,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -1075,6 +1109,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -1914,7 +2004,7 @@
 <p>Source: <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/driver/openvr"><code>driver/openvr/</code></a> (the native OpenVR driver), <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/sdk/HIDMaestro.Core/HMVRController.cs"><code>HMVRController.cs</code></a>, <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/sdk/HIDMaestro.Core/HMVR.cs"><code>HMVR.cs</code></a>.</p>
 <hr />
 <h2 id="why-this-is-not-an-hmcontroller">Why this is not an HMController<a class="headerlink" href="#why-this-is-not-an-hmcontroller" title="Permanent link">&para;</a></h2>
-<p>A VR controller is not an OS device. It exists only inside a VR runtime's session: games never enumerate it, they ask the runtime "where is the left hand, and what is its trigger doing." So HIDMaestro's VR support is an <strong>OpenVR driver DLL that SteamVR's vrserver loads</strong>, embedded in <code>HIDMaestro.Core.dll</code> and registered with <code>vrpathreg</code> on first use. Nothing UMDF2, nothing PnP, no descriptor.</p>
+<p>A VR controller is not an OS device. It exists only inside a VR runtime's session: games never enumerate it, they ask the runtime "where is the left hand, and what is its trigger doing." So HIDMaestro's VR support is an <strong>OpenVR driver DLL that SteamVR's vrserver loads</strong>, embedded in <code>HIDMaestro.Core.dll</code> and registered in SteamVR's OpenVR path registry on first use. Nothing UMDF2, nothing PnP, no descriptor.</p>
 <p>OpenVR's driver API is the one public door on Windows. It is not in competition with OpenXR: OpenXR standardizes the game-to-runtime boundary, deliberately left the runtime-to-device boundary to each vendor (the planned device plugin layer never shipped after 1.0), and SteamVR is itself an OpenXR runtime. One OpenVR driver therefore serves native OpenVR games AND OpenXR games running on SteamVR, which is the default PCVR configuration. Out of reach: Oculus-native titles and OpenXR sessions pinned to Meta's runtime, both closed to third-party devices.</p>
 <h2 id="the-dependency-stated-plainly">The dependency, stated plainly<a class="headerlink" href="#the-dependency-stated-plainly" title="Permanent link">&para;</a></h2>
 <p>SteamVR is required, free, and almost always already present on a machine that plays PCVR (for lighthouse headsets it IS the headset driver). HIDMaestro never installs it, never launches a user's copy, and machines without it are untouched: <code>HMVR.IsSteamVRInstalled</code> reports false and everything else works as before.</p>
@@ -1946,7 +2036,9 @@
 </code></pre></div>
 <p><code>HMVRState</code> carries per hand: an <code>HMVRButton</code> mask (System, A, B with touch variants, trigger/grip/stick clicks), trigger and grip <code>[0..1]</code>, stick X/Y <code>[-1..+1]</code>, and an optional pose override (meters + unit quaternion, SteamVR standing universe). With no override the driver anchors the hands ahead of the headset, so pointing works by looking. With an override the consumer owns hand placement, which is how stick-driven or gyro-driven virtual hands are built.</p>
 <p><code>GetHmdPose</code> is the reverse direction: the driver publishes the real headset pose every server frame, so a consumer can map head lean onto any flat-game input (the PadForge #49 request) without FreePIE-class tooling.</p>
-<p><code>EnsureDriverRegistered</code> extracts the embedded driver to <code>%ProgramData%\HIDMaestro\openvr\hidmaestro</code> (a stable path, because vrpathreg stores absolute paths), registers it, and is content-hash idempotent. Registration hot-plugs into a running SteamVR. Controllers appear only while a consumer holds the channel: no consumer, no phantom devices, and a dead consumer flips them to disconnected within seconds.</p>
+<p><code>EnsureDriverRegistered</code> extracts the embedded driver to <code>%ProgramData%\HIDMaestro\openvr\hidmaestro</code> (a stable path, because the path registry stores absolute paths), registers it, and is content-hash idempotent. As of v2.0.0 the SDK writes the registry file itself, the one <code>VR_PATHREG_OVERRIDE</code> names when it is set and <code>%LOCALAPPDATA%\openvr\openvrpaths.vrpath</code> otherwise, the way <code>vrpathreg adddriver</code> and <code>removedriver</code> edit it, and runs nothing from the SteamVR folder. Through v1.12.0 it ran <code>vrpathreg.exe</code> elevated from that folder, which Steam lets users write. The registry written is the one in the profile of the account the process runs as: the signed-in user for a program elevated through UAC, the administrator's own account when an administrator's credentials were typed at a standard user's prompt, and SYSTEM's profile for a service. From the elevated half of a split token the write runs with the user's own rights. SteamVR reads the registry of the user it runs as when it starts, so a driver registered while SteamVR runs loads at its next start, and SteamVR shows no new-driver warning for it. A registration is refused when the account has no local application data folder.</p>
+<p><code>EnsureDriverRegistered</code> and <code>UnregisterDriver</code> throw <code>InvalidOperationException</code> when the registry cannot be updated, such as while SteamVR holds the file open for reading. A failure that came from another exception carries it as the inner exception. The refusal for a missing local application data folder carries none. A <code>UnregisterDriver</code> that throws keeps the idempotence gate set and the entry in place. Controllers appear only while a consumer holds the channel: no consumer, no phantom devices, and a dead consumer flips them to disconnected within seconds.</p>
+<p>The driver stays under <code>%ProgramData%\HIDMaestro\openvr\hidmaestro</code> because SteamVR loads the driver name <code>hidmaestro</code> from one registered path, and a v1.12.0 program registers that path again. <code>%ProgramData%\HIDMaestro</code> and the OpenVR folders are written so only Administrators and SYSTEM can change them, with read and execute for Users, since SteamVR reads them as the user. Each is reset in place when SYSTEM or Administrators own it and nobody else may change or delete it. Any other is moved aside, and refused when it cannot be moved. One case remains: a program that is not elevated and creates one of those folders first, then holds a file under it, or any program that holds one of the folders open while the extraction renames a file into it, makes <code>EnsureDriverRegistered</code> throw <code>InvalidOperationException</code> naming the folder. None of this can make the staging under <code>%ProgramFiles%</code> refuse.</p>
 <h2 id="hand-roles">Hand roles<a class="headerlink" href="#hand-roles" title="Permanent link">&para;</a></h2>
 <p>SteamVR distinguishes a <em>device</em> from a <em>hand</em>. Haptics and the "Waiting" window address devices. <code>/user/hand/left</code>, <code>/user/hand/right</code>, and SteamVR's own Test Controller page address roles, and the runtime decides which device holds each role. <code>Prop_ControllerRoleHint_Int32</code> only hints. The property that actually influences the decision is <code>Prop_ControllerHandSelectionPriority_Int32</code>, which the driver sets on both hands at activation (HIDMaestro issue #51).</p>
 <p>The default is <code>1000</code>, matching VRCHOTAS's mapped-controller value. Left unset the property reads back <code>0</code>, the same value SteamVR's own Index profile ends up with, which leaves the winner to an unstated runtime tiebreak on a machine that has both. A positive value states the answer.</p>

@@ -438,6 +438,8 @@
       
         
       
+        
+      
     
     
     
@@ -601,10 +603,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-arm64-driver-catalog" class="md-nav__link">
+  <a href="#nativeaot-trimmed-and-single-file-apps" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The ARM64 driver catalog
+        NativeAOT, trimmed and single-file apps
       
     </span>
   </a>
@@ -698,6 +700,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -716,6 +746,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -1031,6 +1065,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -1772,10 +1862,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-arm64-driver-catalog" class="md-nav__link">
+  <a href="#nativeaot-trimmed-and-single-file-apps" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The ARM64 driver catalog
+        NativeAOT, trimmed and single-file apps
       
     </span>
   </a>
@@ -1862,6 +1952,11 @@
 <td>x64 SteamVR plugin</td>
 <td>Same x64 plugin for an x64 SteamVR host</td>
 </tr>
+<tr>
+<td>NativeAOT and trimmed single-file apps (v2.0.0)</td>
+<td><code>win-x64</code></td>
+<td><code>win-arm64</code></td>
+</tr>
 </tbody>
 </table>
 <p>Virtual device creation requires a 64-bit process and administrator privileges. The x64 target supports Windows 10 and 11. The ARM64 target is Windows 11. The OpenVR plugin follows the SteamVR host's architecture, independently of the SDK process.</p>
@@ -1869,12 +1964,14 @@
 <p>Install the .NET 10 SDK, Windows SDK/WDK 10.0.26100.0, and Visual Studio C++ build tools for both x64 and ARM64. The ARM64 compiler and C runtime libraries are a separate Visual Studio component.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">scripts</span><span class="p">\</span><span class="n">build_all</span><span class="p">.</span><span class="n">cmd</span>
 </code></pre></div>
-<p><code>build_all.cmd</code> builds both native payloads and the x64 OpenVR plugin, then the SDK. Native x64 files are under <code>build/</code>, and ARM64 files are under <code>build/arm64/</code>. A missing native payload fails the SDK build with a message naming the script.</p>
+<p><code>build_all.cmd</code> builds both native payloads and the x64 OpenVR plugin, then the SDK. The native scripts compile the driver, the companion and the OpenVR driver at <code>/W4</code>, and hmswd at <code>/W3</code>. The UMDF headers and Valve's <code>openvr_driver.h</code> are passed with <code>/external:I</code> and <code>/external:W0</code>, which turn warnings off in those headers and the headers they include, while every warning in HIDMaestro's own sources still prints. No <code>/WX</code> is set, so a new warning prints and does not stop the build. A full <code>build_all.cmd</code> printed 70 compiler warnings at commit c5c0f05 and none at a6fbbe8, development measurements. Native x64 files are under <code>build/</code>, and ARM64 files are under <code>build/arm64/</code>. A missing native payload fails the SDK build with a message naming the script.</p>
+<p>A source build can leave the ARM64 payload out with <code>HMSkipArm64=true</code>, the USB/IP transport out with <code>HMSkipUsbip=true</code>, and can take its Windows SDK and WDK from an installed kit, the NuGet WDK or an EWDK prompt. See <a href="../../reference/build-and-release/#build-settings-v200">Build and Release</a>. <code>HMBuildInfo.DriverArchitectures</code> and <code>UsbipArchitectures</code> report what a built <code>HIDMaestro.Core.dll</code> carries.</p>
 <p>To build a single application for ARM64:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dotnet</span> <span class="n">build</span> <span class="n">test</span><span class="p">\</span><span class="n">HIDMaestroTest</span><span class="p">.</span><span class="n">csproj</span> <span class="n">-c</span> <span class="n">Release</span> <span class="n">-p</span><span class="p">:</span><span class="n">HMTargetArchitecture</span><span class="p">=</span><span class="n">arm64</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">dotnet</span> <span class="n">build</span> <span class="n">tools</span><span class="p">\</span><span class="n">HIDMaestroProfileExtractor</span><span class="p">\</span><span class="n">HIDMaestroProfileExtractor</span><span class="p">.</span><span class="n">csproj</span> <span class="n">-c</span> <span class="n">Release</span> <span class="n">-p</span><span class="p">:</span><span class="n">HMTargetArchitecture</span><span class="p">=</span><span class="n">arm64</span>
 </code></pre></div>
-<h2 id="the-arm64-driver-catalog">The ARM64 driver catalog<a class="headerlink" href="#the-arm64-driver-catalog" title="Permanent link">&para;</a></h2>
+<h2 id="nativeaot-trimmed-and-single-file-apps">NativeAOT, trimmed and single-file apps<a class="headerlink" href="#nativeaot-trimmed-and-single-file-apps" title="Permanent link">&para;</a></h2>
+<p>As of v2.0.0 <code>HIDMaestro.Core.dll</code> works in NativeAOT apps and in trimmed, self-contained, single-file apps, for x64 and ARM64. Profiles load through source-generated JSON, every Win32 call goes through <code>LibraryImport</code>, and <code>hmswd.exe</code> always comes from the embedded resource, since <code>Assembly.Location</code> is empty in a single-file app. At v1.12.0 both kinds of app loaded 0 of the 336 catalog profiles, because reflection-based JSON is switched off in them. The <code>aot_smoke</code> probe publishes one source four ways, NativeAOT and trimmed single-file for each architecture. Each app loads the catalog, installs the driver, creates a <code>dualshock-4-v2</code> on the UMDF2 driver and a <code>dualsense-composite</code> on USB/IP, submits input, reads it back, writes an output report, waits for <code>OutputReceived</code> and disposes. Battery scenarios S74 and S75 run the two apps for the machine's architecture, so the ARM64 apps are built and published and have not run on ARM64 hardware. See <a href="../../reference/build-and-release/#nativeaot-trimming-and-single-file">Build and Release</a>.</p>
 <p><code>InstallDriver()</code> builds a catalog for each driver INF with Inf2Cat before it signs the package and adds it to the driver store. Inf2Cat's ARM64 values name a Windows release, from <code>10_RS3_ARM64</code> on, and it has no bare <code>10_ARM64</code>. v1.9.0 asked for <code>10_ARM64</code>, which Inf2Cat rejects, so on ARM64 <code>InstallDriver()</code> failed before any driver reached the store. v1.9.1 asks for <code>10_RS3_ARM64</code>, version 1709, the first Windows 10 release on ARM64. x64 keeps <code>10_X64</code>.</p>
 <p>One Inf2Cat serves both architectures. It is an x64 .NET program, which Windows 11 on ARM64 runs under its x64 emulation.</p>
 <p>Battery scenario S61 extracts each architecture's payload with the embedded Inf2Cat, runs Inf2Cat with the value the SDK picks for that architecture, and requires one catalog per INF. Inf2Cat only parses the INFs and hashes the files, so the check runs on x64 for both architectures.</p>
@@ -1882,9 +1979,10 @@
 <p>Composite personas use the bundled usbip-win2 0.9.8.1. It is the first release with the fix for the attach work item that blocked driver unload in 0.9.8.0 (<a href="https://github.com/vadimgrn/usbip-win2/pull/188">usbip-win2#188</a>). The <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.8.1">release page</a> carries the x64 installer only. The ARM64 installer is the same tag's build that the project's signing service posted in <a href="https://github.com/vadimgrn/usbip-win2/issues/13">usbip-win2#13</a>. Both installers ship the 0.9.8.1 tag's own headers, and neither carries the development branch's later changes.</p>
 <p>Both installers are inside the SDK DLL. The build checks each against its pinned SHA-256, and the SDK checks the extracted copy again before running it. Both drivers are signed by Microsoft: the x64 one after hardware certification testing, the ARM64 one by attestation.</p>
 <p>The driver's request layout changed in 0.9.8.0 and again in 0.9.8.1. The SDK speaks 0.9.7.x, 0.9.8.0 and 0.9.8.1 and asks the driver which one it has.</p>
-<p>Where no usbip-win2 exists, the SDK runs the bundled installer silently, with no window and no prompt. Windows re-enumerates the USB root hubs once during that install, so USB devices blink for a moment. If usbip-win2 is installed and its host controller is not answering, the SDK restarts that device and does not reinstall.</p>
+<p>Where no usbip-win2 exists, the SDK runs the bundled installer silently, with no window and no prompt. As of v2.0.0 it passes <code>/COMPONENTS=main,client /TASKS=vcredist /NOICONS</code>, so the installer leaves out the GUI, the SDK headers, the debug symbols, the desktop icon and the Start menu folder. A machine that holds the installer's uninstall record and its uninstaller file, without its driver package, gets a refusal, because the installer would run that record's uninstaller first. See <a href="../../reference/driver-install-and-signing/#usbip-transport">Driver Install and Signing</a>. Windows re-enumerates the USB root hubs once during that install, so USB devices blink for a moment. If usbip-win2 is installed and its host controller is not answering, the SDK restarts that device and does not reinstall.</p>
 <p>A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. <code>HIDMAESTRO_KEEP_TRANSPORT=1</code> turns the move off.</p>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
+<p>[D3-PLACEHOLDER: v2.0.0 battery result]</p>
 <p>The v1.12.0 release gate ran on x64: the full 70-scenario battery passed all 70 scenarios on the release binaries on Windows 11 26200. The gate machine's host controller runs 0.9.8.1, put there by the v1.9.2 move, so every composite scenario ran through the client's 0.9.8.1 request format against the live driver. The DualSense composite passed 26/26 end to end, and the Switch 2 Pro composite 255/255, with Windows binding WinUSB to its vendor interface from the persona's own descriptors. Its root-hub filter is still the older one the move leaves alone, so SET_INTERFACE never reaches a composite there, and audio stream state comes from the traffic instead (<a href="../../sdk/usb-audio-composite/">USB audio composite</a>).</p>
 <p>The 0.9.8.0 request format was checked by compiling that version's own header with MSVC for x64 and ARM64, and the client sends its exact sizes and offsets. It has not run against a live driver. The move from 0.9.7.5 to 0.9.8.1 uses the same Windows driver update that moved machines from 0.9.7.7 to 0.9.7.5 in v1.9.0, which took 878 ms on 26200.</p>
 <p>0.9.8.1 rounds a full-speed device's interrupt polling interval up where 0.9.7.5 rounded it down. Windows does not pace interrupt reads by that interval. Measured on 26200 by giving the DualShock 4 composite an interval that 0.9.7.5 converts to the same 8 ms period, the composite delivered 146 to 158 reports per second either way.</p>

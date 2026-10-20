@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -620,6 +650,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -935,6 +969,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -2277,7 +2367,7 @@
 <tr>
 <td>xinputhid Xbox</td>
 <td><code>SWD\HIDMAESTRO_VID_045E_PID_*&amp;IG_00\&lt;token&gt;</code></td>
-<td>Fixed SwDevice tuple. <code>SwDeviceCreate</code> starts the driver inside the call, so the child has already enumerated by the time the SDK can write anything. The identity's prefix is reconciled into the key afterwards, and the restart the creation path already performs re-keys the child under it.</td>
+<td>Fixed SwDevice tuple. <code>SwDeviceCreate</code> starts the driver inside the call, so the child has already enumerated by the time the SDK can write anything after it. As of v2.0.0 the create rewrites the retained record's prefix to the identity's first, so the child starts under it.</td>
 </tr>
 <tr>
 <td>USB/IP composite personas</td>
@@ -2413,8 +2503,9 @@
 <li>For any <code>SWD\</code> parent, <strong>close the SwDevice handle FIRST</strong> via <code>SwdDeviceFactory.Remove</code>.</li>
 <li>Block on <code>CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED</code> (a value of the <code>CM_NOTIFY_ACTION</code> enum on Microsoft Learn) for the parent: so callers know the kernel has actually propagated removal, not just that the handle closed.</li>
 <li>Mop up any HID children that survived the cascade. Usually none, because the SwD parent's release fires its children's removal in one cascade.</li>
-<li>Net cost: ~135 ms for Xbox 360 Wired, ~500 ms for Xbox Series BT.</li>
+<li>Net cost, measured at v1.3.1: ~135 ms for Xbox 360 Wired, ~500 ms for Xbox Series BT.</li>
 </ol>
+<p>Since v2.0.0 that wait is the removal test, which also requires the devnode out of the tree and, for an uninstall, its record gone, and each removal holds the machine-wide PnP lock through it. Removals therefore run one at a time. See <a href="../../sdk/programs-side-by-side/#registrations-and-removals">Registrations and removals</a>.</p>
 <p>A second optimization in the same change: when a HIDMAESTRO sweep walks registry entries that exist only as <code>PHANTOM</code> (registry residue from prior sessions, no live devnode), skip the <code>hmswd.exe</code> <code>SwDeviceCreate</code>-reconnect roundtrip entirely. Saves ~50-75 ms per stale entry and prevents creep across same-process recreation cycles.</p>
 <hr />
 <h2 id="containerid-sharing">ContainerID sharing<a class="headerlink" href="#containerid-sharing" title="Permanent link">&para;</a></h2>

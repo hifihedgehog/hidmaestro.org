@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -620,6 +650,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -935,6 +969,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -2027,7 +2117,7 @@
 <li><strong>Click Extract.</strong> The Profile JSON, a parsed-layout summary, and the descriptor in hex appear in three tabs.</li>
 <li><strong>Save or copy.</strong> Save the JSON to disk, or copy it to clipboard.</li>
 </ol>
-<p>The output is the exact JSON format the shipped catalog uses. Save under <code>profiles/&lt;vendor-slug&gt;/&lt;model-slug&gt;.json</code> and <code>LoadProfilesFromDirectory</code> will pick it up.</p>
+<p>The output is the exact JSON format the shipped catalog uses. As of v2.0.0 it names the <code>deviceModelFrom</code> the device's identity gives, so a DualSense capture takes the Sony feature answers its model holds. Save under <code>profiles/&lt;vendor-slug&gt;/&lt;model-slug&gt;.json</code> and <code>LoadProfilesFromDirectory</code> will pick it up. Give it an id the catalog does not use: a repeated id refuses the later file. <code>HIDMaestroProfileCheck</code>, beside the extractor in the ZIP, checks the saved file as the SDK loads it (see <a href="../profile-system/#checking-a-profile-before-you-ship-it">Checking a profile</a>).</p>
 <hr />
 <h2 id="the-three-preview-tabs">The three preview tabs<a class="headerlink" href="#the-three-preview-tabs" title="Permanent link">&para;</a></h2>
 <p>After extraction, the tool shows three views of the same data:</p>
@@ -2083,7 +2173,7 @@
 <li><strong>Query strings</strong> via <code>HidD_GetProductString</code>, <code>HidD_GetManufacturerString</code>, <code>HidD_GetSerialNumberString</code>.</li>
 <li><strong>Query preparsed data</strong> via <code>HidD_GetPreparsedData</code> &rarr; opaque blob with Microsoft's compressed representation of the descriptor.</li>
 <li><strong>Reconstruct the descriptor</strong> via the libusb/hidapi C# port (Chromium WebHID team's reverse engineering of the preparsed-data layout).</li>
-<li><strong>Build the profile</strong> with inferred <code>type</code>, <code>connection</code>, slug-from-product-string ID, timestamped notes.</li>
+<li><strong>Build the profile</strong> with inferred <code>type</code>, <code>connection</code>, slug-from-product-string ID, timestamped notes. As of v2.0.0 <code>connection</code> comes from the parent devnode's compatible IDs, as hidapi and SDL read the bus: the first that holds <code>USB</code>, <code>BTHENUM</code> or <code>BTHLEDEVICE</code> decides, Bluetooth LE for the last, and anything else reads as USB. A Bluetooth device, a HIDMaestro Bluetooth controller included, extracts as <code>bluetooth</code> with its <code>bluetoothTransport</code>, and with <code>bluetoothVendorIdSource</code> when the parent's hardware IDs carry the Bluetooth SIG's vendor ID source. Through v1.12.0 the bus came from the device path, and a HIDMaestro Bluetooth controller, whose HID child is <code>HID\HIDCLASS\...</code>, extracted as USB.</li>
 <li><strong>Return</strong> as <code>HMProfile</code>.</li>
 </ol>
 <p>Step 5 is the interesting one. Windows doesn't expose the original device descriptor bytes through any user-mode API: only the preparsed blob. The <a href="https://github.com/libusb/hidapi/blob/master/windows/hidapi_descriptor_reconstruct.c">HIDAPI algorithm</a> (originally contributed by the Chromium WebHID team) walks the blob's <code>LinkCollection</code>, <code>ButtonCaps</code>, <code>ValueCaps</code>, and Usage tables and emits a HID descriptor byte stream that, when re-parsed by <code>HidP_GetCaps</code>, produces the same preparsed blob (within the bounds of legal HID descriptor variations).</p>

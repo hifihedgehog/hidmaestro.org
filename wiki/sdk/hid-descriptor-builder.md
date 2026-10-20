@@ -240,6 +240,8 @@ Signature is `AddRaw(byte[] bytes)`, not `params byte[]`, so callers pass an exp
 
 The builder doesn't track what `AddRaw` adds for purposes of `TotalInputBits`: if you append input items via raw bytes, `InputReportByteSize` and `FromDescriptorBuilder`'s wire-size derivation may be off. Use either fully-fluent or fully-raw construction; mixing requires manual `InputReportSize`.
 
+It does follow the Usage Page through `AddRaw` bytes, Push and Pop included (v2.0.0). A stick added after raw bytes that push, change the page and pop lands on the Generic Desktop page. Through v1.12.0 it landed on the Button page.
+
 ---
 
 ## `Build()`, `TotalInputBits`, `InputReportByteSize`, `DescriptorContainsReportId`

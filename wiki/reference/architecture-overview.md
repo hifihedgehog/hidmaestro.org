@@ -93,14 +93,16 @@ Lives in the consumer process. Exposes `HMContext`, `HMController`, `HMProfile`,
 
 Responsibilities:
 
-- Embed and extract the driver payload (driver DLLs, INFs, signing toolchain, `hmswd.exe`) on first install.
-- Generate a self-signed certificate, sign the binaries, run `pnputil /add-driver`.
-- Allocate per-controller indices and orchestrate `SetupController` (registry write &rarr; `SwDeviceCreate` or `SetupDiCreateDeviceInfoW` &rarr; PnP wait &rarr; XInput slot-claim wait).
+- Embed the driver payload (driver DLLs, INFs, signing toolchain, `hmswd.exe`) and stage it, as of v2.0.0, under `%ProgramFiles%\HIDMaestro\Staging` in directories only Administrators and SYSTEM can write, checking each file's SHA-256 before it runs.
+- Generate a self-signed certificate, sign the binaries, run `pnputil /add-driver`. Deploys take the machine-wide deploy lock, `HIDMaestro.Admin\Deploy`, a mutex in a namespace only elevated programs can open. They never downgrade an installed driver. They install the 2.0.0 driver over any older one, a full deploy with nothing on it or this build's packages added beside it when another program's devices hold it.
+- Claim ownership machine-wide (v2.0.0): the process, each controller's transport index and each identity are named pipes created with `FILE_FLAG_FIRST_PIPE_INSTANCE` under the pipe prefix `ProtectedPrefix\Administrators\`, where only an elevated program can create one, and a record under `HKLM\SOFTWARE\HIDMaestroOwners` names the process and its controllers. Sweeps remove only what exited programs left.
+- Allocate per-context slots and machine-wide transport indices, and orchestrate `SetupController` (registry write &rarr; `SwDeviceCreate` or `SetupDiCreateDeviceInfoW` &rarr; PnP wait &rarr; XInput slot-claim wait).
+- Compile a profile's device model at create (v2.0.0): ports, the USB/IP device protocol and the WinUSB binding are JSON, and the SDK refuses a profile that declares them wrongly before it takes anything machine-wide.
 - Provide the abstract `HMGamepadState` &rarr; HID descriptor encoding.
 - Run the per-controller output-reader background thread that drains the shared output ring at ~125 Hz.
 - Manage HID PID 1.0 force-feedback shared state.
 - Manage `joy.cpl` OEM-name overrides with crash-safe restore.
-- Embed and load the 336-profile catalog.
+- Embed and load the 337-profile catalog, through source-generated JSON, so the SDK also runs in NativeAOT and trimmed single-file apps (v2.0.0).
 
 Lines of code: ~5,300 in public surface (`HMContext` / `HMController` / `HidDescriptorBuilder` / `HMProfileBuilder` / `HMDeviceExtractor` / `HMOemNameOverride` / value types) plus ~16,600 in `Internal/` (`DeviceOrchestrator`, `DeviceManager`, `SwdDeviceFactory`, `DriverBuilder`, `HidDescriptorReconstructor`, `HidReportBuilder`, `SharedMemoryIO`, `OemNameOverrideStore`, `PnputilHelper`, etc.).
 
@@ -113,6 +115,7 @@ Lives in a per-controller `WUDFHost.exe` instance. Compiled from `driver/driver.
 - Handles `IOCTL_HID_READ_REPORT` synchronously when there's new data (seqno gate); otherwise pends in `ManualQueue` and completes from the worker thread.
 - Handles `IOCTL_UMDF_HID_GET_FEATURE` / `_SET_FEATURE` / `_SET_OUTPUT_REPORT` for HID PID 1.0 and for vendor output reports. Output IOCTLs publish into the shared output ring with `OutputLock` serialization.
 - Handles HID string queries (`HID_STRING_ID_IPRODUCT` / `IMANUFACTURER` / `ISERIALNUMBER`) from per-instance fields.
+- Writes its half of `Global\HIDMaestroVersion<N>` each time it opens the input section (v2.0.0), so the SDK can read the driver's version and protocol.
 
 INF: `hidmaestro.inf`. Class GUID: `{745a17a0-74d3-11d0-b6fe-00a0c90f57da}` (HIDClass). `LowerFilters = WUDFRd`. `UmdfHostProcessSharing = ProcessSharingDisabled` so each instance gets its own host process.
 
@@ -143,9 +146,11 @@ Lifetime: `SWDeviceLifetimeParentPresent` so the device persists past process ex
 
 Detail: [SwDevice and PnP](swdevice-and-pnp.md).
 
-### 5. The 336-profile catalog
+### 5. The 337-profile catalog
 
 Embedded as a JSON resource inside `HIDMaestro.Core.dll`. 73 vendors across 59 folders, 1 to 46 profiles each, 103 of the profiles keyboards and mice. See [Profile System](../profiles/profile-system.md) for the schema and runtime classification.
+
+A profile can describe more than a report. As of v2.0.0 `extendedReport.ports` describes a report that carries several controllers, the top-level `protocol` describes the commands a USB/IP device answers and when it sends input, `stateBlock` and `inputReports` describe a device that builds its reports from its own state, and `usbConfiguration.winUsb` names the interface GUID a WinUSB binding registers. The SDK checks them when a file loads and compiles them once at create. The Wii U GameCube adapter and the Switch 2 Pro composite use them, and no SDK code names either device. A profile takes the feature answers, protocol and presentation it does not carry itself from a model it names with `deviceModelFrom`, or from the identity defaults. See [Device models](../profiles/profile-system.md#device-models-v200). See [Wii U GameCube Adapter](../sdk/gamecube-adapter.md) and [Profile System](../profiles/profile-system.md#devices-with-ports-and-protocols-v200).
 
 ---
 
@@ -153,7 +158,7 @@ Embedded as a JSON resource inside `HIDMaestro.Core.dll`. 73 vendors across 59 f
 
 | Process | Privilege | Purpose |
 |---------|-----------|---------|
-| Consumer process | Admin (or non-admin for read-only operations) | Hosts `HIDMaestro.Core.dll`. Drives `SubmitState` from any thread. |
+| Consumer process | Admin (or non-admin for read-only operations) | Hosts `HIDMaestro.Core.dll`. Drives `SubmitState` from any thread. Several consumer processes can run on one machine (v2.0.0). |
 | `WUDFHost.exe` (main HID, per-controller) | LocalService | Hosts `HIDMaestro.dll`. Spawned by `WUDFRd.sys` per device instance. |
 | `WUDFHost.exe` (XUSB companion, per-controller) | LocalService | Hosts `HMXInput.dll`. Only spawned for non-xinputhid Xbox profiles. |
 | `hmswd.exe` (helper, transient) | Inherits caller's privilege (admin) | Calls `SwDeviceCreate`, returns instance ID, exits. Lifetime <1 s per invocation. |
@@ -161,6 +166,12 @@ Embedded as a JSON resource inside `HIDMaestro.Core.dll`. 73 vendors across 59 f
 `UmdfHostProcessSharing = ProcessSharingDisabled` in both INFs ensures per-controller hosts. With 6 controllers running you'll see 6-12 `WUDFHost.exe` instances depending on which profiles are active. ~8 MB RSS, ~10 threads each.
 
 This was a deliberate fix. Default (`ProcessSharingEnabled`, the WDF directive defined in INF `[...NT.Wdf]` sections) funnels every instance into one shared `WUDFHost`; at 6 controllers that host accumulates 9+ minutes of CPU time vs ~2 seconds per per-instance host. The contention is between writer threads and concurrent `XInputGetState` reader threads when 2+ virtuals coexist with a real xinputhid device in the same host. See [`docs/investigations/issue3-dual-xinputhid-saturation-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04) for the full investigation.
+
+---
+
+## Several programs on one machine
+
+Windows sees devices, so two programs that embed HIDMaestro share one driver, one XInput slot table and one set of machine-wide object names. As of v2.0.0 each program keeps its own part of that: an owner claim, a transport index and an identity per controller, and a record naming them. A sweep removes a device only when its program's claim is gone. The driver is deployed by one program at a time, never downgraded, and installed over any older driver whatever runs on it. A program built on v1.12.0 is judged live by its owner pipe. While such a program runs, transport indices start at 64, out of its way. It still removes every HIDMaestro device on the machine at its `InstallDriver` and its first create, so programs built on HIDMaestro 1.x must move to 2.0.0. See [Programs Side by Side](../sdk/programs-side-by-side.md).
 
 ---
 
@@ -186,7 +197,7 @@ HidClass.sys delivers to:
   └─ WGI (Windows.Gaming.Input.dll)
         └─ Browser Gamepad
 
-For Xbox-VID profiles, in parallel:
+For profiles with an XUSB companion, in parallel:
 GIP buffer is read by the XUSB companion on IOCTL_XUSB_GET_STATE
   ↓ companion translates 14-byte GIP → XINPUT_GAMEPAD wire format
 XInput consumers (xinput1_4.dll → XInputGetState)
@@ -285,7 +296,7 @@ HIDMaestro/
 ├── tools/HIDMaestroProfileExtractor/  ; standalone WPF extractor GUI
 ├── example/SdkDemo/                ; minimal SDK consumer
 ├── test/                           ; HIDMaestroTest CLI + regression battery + probes
-├── profiles/                       ; 336 profile JSONs
+├── profiles/                       ; 337 profile JSONs
 ├── scripts/                        ; build, signing, verification, multi-pad-check
 ├── build/                          ; build outputs (driver DLLs, hmswd.exe, stamped INFs)
 └── docs/                           ; README screenshots, investigation notes
@@ -317,6 +328,7 @@ For symmetry with PadForge's wiki, here's what's deliberately out of scope:
 | **The shared-memory wire format** | [Shared Memory Protocol](shared-memory-protocol.md) |
 | **How each downstream API sees the device** | [Cross-API Coverage](cross-api-coverage.md) |
 | **Multi-controller** | [Multi-Controller](multi-controller.md) |
+| **Several programs on one machine** | [Programs Side by Side](../sdk/programs-side-by-side.md) |
 | **Create / dispose** | [Lifecycle and Teardown](lifecycle-and-teardown.md) |
 | **Driver install + signing** | [Driver Install and Signing](driver-install-and-signing.md) |
 | **Build + release** | [Build and Release](build-and-release.md) |

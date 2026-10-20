@@ -17,11 +17,23 @@
     },
     {
         "q":  "How is this different from ViGEmBus, vJoy, or VIIPER?",
-        "a":  "Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 336 of them, down to the bus type, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side."
+        "a":  "Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 337 of them, down to the bus type, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side."
     },
     {
         "q":  "Does it work with Steam?",
         "a":  "Yes. Steam recognizes the virtual controllers as the hardware their profiles declare, and the Valve personas go further: Steam files them under its own hardware, with the regression battery starting the actual Steam client to prove it claims and classifies all three."
+    },
+    {
+        "q":  "Can two programs that embed HIDMaestro run on one machine?",
+        "a":  "Yes, as of v2.0.0. Each program keeps its own controllers, identities and sections, and a sweep removes only what exited programs left. The one exception is the remove-everything cleanup, RemoveAllVirtualControllers(HMCleanupScope.Everything, ...), which an uninstaller or a support tool calls. The driver is deployed by one program at a time and never downgraded, and the 2.0.0 driver is installed over any older one, whatever runs on it. A running program built on v1.12.0 or older still removes every HIDMaestro device on the machine at its InstallDriver and at its first create, and while one runs, a v2.0.0 program\u0027s controllers take transport indices from 64. Programs built on HIDMaestro 1.x must move to 2.0.0."
+    },
+    {
+        "q":  "Does it work in NativeAOT and single-file apps?",
+        "a":  "Yes, as of v2.0.0, for NativeAOT and for trimmed, self-contained, single-file apps, on x64 and ARM64. The battery runs the two apps for the machine\u0027s architecture, so the ARM64 apps are built and published and have not run on ARM64 hardware."
+    },
+    {
+        "q":  "Does the GameCube adapter work with Dolphin and Slippi?",
+        "a":  "Yes. The gamecube-adapter profile is Nintendo\u0027s WUP-028 on the USB/IP transport, and BindWinUsb() binds WinUSB to the virtual adapter so Dolphin and Slippi open it through libusb with no Zadig step. Their own adapter code, compiled unmodified, reads all four ports. The official SDL3 build for Windows has no libusb and lists no adapter, real or virtual."
     },
     {
         "q":  "Does HIDMaestro support ARM64?",

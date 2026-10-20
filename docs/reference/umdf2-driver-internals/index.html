@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -620,6 +650,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -935,6 +969,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -1428,10 +1518,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#default-hid-descriptor-used-when-no-registry-override" class="md-nav__link">
+  <a href="#a-devnode-with-no-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Default HID descriptor (used when no registry override)
+        A devnode with no configuration
       
     </span>
   </a>
@@ -1561,10 +1651,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#switch-pro-protocol-responder" class="md-nav__link">
+  <a href="#switch-pro-protocol" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Switch Pro protocol responder
+        Switch Pro protocol
       
     </span>
   </a>
@@ -1627,6 +1717,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#version-announcement-v200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version announcement (v2.0.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#self-cleanup-at-unload" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1634,6 +1735,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Self-cleanup at unload">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#failing-the-device-on-request-v200-protocol-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failing the device on request (v2.0.0, protocol 5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2048,10 +2166,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#default-hid-descriptor-used-when-no-registry-override" class="md-nav__link">
+  <a href="#a-devnode-with-no-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Default HID descriptor (used when no registry override)
+        A devnode with no configuration
       
     </span>
   </a>
@@ -2181,10 +2299,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#switch-pro-protocol-responder" class="md-nav__link">
+  <a href="#switch-pro-protocol" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Switch Pro protocol responder
+        Switch Pro protocol
       
     </span>
   </a>
@@ -2247,6 +2365,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#version-announcement-v200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version announcement (v2.0.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#self-cleanup-at-unload" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2254,6 +2383,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Self-cleanup at unload">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#failing-the-device-on-request-v200-protocol-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failing the device on request (v2.0.0, protocol 5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2381,54 +2527,57 @@
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="n">HID_DESCRIPTOR</span><span class="w">          </span><span class="n">HidDescriptor</span><span class="p">;</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="n">HID_DEVICE_ATTRIBUTES</span><span class="w">   </span><span class="n">HidDeviceAttributes</span><span class="p">;</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">InputReportByteLength</span><span class="p">;</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">       </span><span class="n">FirstInputReportId</span><span class="p">;</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="cm">/* Latest input report cache (for READ_REPORT) */</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">       </span><span class="n">InputReport</span><span class="p">[</span><span class="n">HIDMAESTRO_MAX_REPORT_SIZE</span><span class="p">];</span><span class="w">   </span><span class="c1">// 1 KB</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">InputReportSize</span><span class="p">;</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="n">BOOLEAN</span><span class="w">     </span><span class="n">InputReportReady</span><span class="p">;</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">LastDeliveredInputSeqNo</span><span class="p">;</span><span class="w">   </span><span class="c1">// seqno gate</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="cm">/* Strings */</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">ProductString</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ProductStringBytes</span><span class="p">;</span>
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">SerialString</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">          </span><span class="c1">// &quot;HM-CTL-NNNN&quot; for SDL3 disambiguation</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">SerialStringBytes</span><span class="p">;</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">    </span><span class="cm">/* Queues */</span>
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">DefaultQueue</span><span class="p">;</span><span class="w">     </span><span class="c1">// parallel: HID IOCTLs</span>
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">ManualQueue</span><span class="p">;</span><span class="w">      </span><span class="c1">// manual: pended READ_REPORT requests</span>
-<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>
-<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">    </span><span class="cm">/* Locks */</span>
-<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">    </span><span class="n">WDFWAITLOCK</span><span class="w"> </span><span class="n">InputLock</span><span class="p">;</span>
-<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">    </span><span class="n">WDFWAITLOCK</span><span class="w"> </span><span class="n">OutputLock</span><span class="p">;</span>
-<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>
-<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">    </span><span class="cm">/* Shared memory: input */</span>
-<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">SharedMemHandle</span><span class="p">;</span>
-<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">SharedMemPtr</span><span class="p">;</span><span class="w">          </span><span class="c1">// HIDMAESTRO_SHARED_INPUT view</span>
-<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">SharedMemSeqNo</span><span class="p">;</span>
-<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">InputDataEvent</span><span class="p">;</span><span class="w">        </span><span class="c1">// OpenEvent on Global\HIDMaestroInputEvent&lt;N&gt;</span>
-<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">StopEvent</span><span class="p">;</span><span class="w">             </span><span class="c1">// Global\HIDMaestroStopEvent&lt;N&gt;</span>
-<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">WorkerThread</span><span class="p">;</span>
-<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">InputEventName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">StopEventName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>
-<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="w">    </span><span class="cm">/* Shared memory: output ring */</span>
-<a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">OutputMemHandle</span><span class="p">;</span>
-<a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">OutputMemPtr</span><span class="p">;</span>
-<a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">OutputWriteCount</span><span class="p">;</span><span class="w">      </span><span class="c1">// re-open every 500 writes (#2)</span>
-<a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a>
-<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a><span class="w">    </span><span class="cm">/* Shared memory: PID FFB state */</span>
-<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">PidStateMemHandle</span><span class="p">;</span>
-<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">PidStateMemPtr</span><span class="p">;</span>
-<a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">PidStateMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a>
-<a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a><span class="w">    </span><span class="cm">/* Per-instance identity */</span>
-<a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ControllerIndex</span><span class="p">;</span>
-<a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">ConfigRegPath</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">     </span><span class="c1">// SOFTWARE\HIDMaestro\Controller&lt;N&gt;</span>
-<a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">SharedMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroInput&lt;N&gt;</span>
-<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">OutputMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroOutput&lt;N&gt;</span>
-<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a><span class="p">}</span><span class="w"> </span><span class="n">DEVICE_CONTEXT</span><span class="p">;</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">       </span><span class="n">FirstInputReportId</span><span class="p">;</span><span class="w">        </span><span class="c1">// the report a data-only frame goes out as</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="n">BOOLEAN</span><span class="w">     </span><span class="n">InputReportIdConfigured</span><span class="p">;</span><span class="w">   </span><span class="c1">// v2.0.0: taken from the SDK&#39;s InputReportId</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="cm">/* Latest input report cache (for READ_REPORT) */</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="n">UCHAR</span><span class="w">       </span><span class="n">InputReport</span><span class="p">[</span><span class="n">HIDMAESTRO_MAX_REPORT_SIZE</span><span class="p">];</span><span class="w">   </span><span class="c1">// 1 KB</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">InputReportSize</span><span class="p">;</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="n">BOOLEAN</span><span class="w">     </span><span class="n">InputReportReady</span><span class="p">;</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">LastDeliveredInputSeqNo</span><span class="p">;</span><span class="w">   </span><span class="c1">// seqno gate</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="cm">/* Strings */</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">ProductString</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ProductStringBytes</span><span class="p">;</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">SerialString</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">          </span><span class="c1">// &quot;HM-CTL-NNNN&quot; for SDL3 disambiguation</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">SerialStringBytes</span><span class="p">;</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span><span class="cm">/* Queues */</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">DefaultQueue</span><span class="p">;</span><span class="w">     </span><span class="c1">// parallel: HID IOCTLs</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">    </span><span class="n">WDFQUEUE</span><span class="w">    </span><span class="n">ManualQueue</span><span class="p">;</span><span class="w">      </span><span class="c1">// manual: pended READ_REPORT requests</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">    </span><span class="cm">/* Locks */</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">    </span><span class="n">WDFWAITLOCK</span><span class="w"> </span><span class="n">InputLock</span><span class="p">;</span>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">    </span><span class="n">WDFWAITLOCK</span><span class="w"> </span><span class="n">OutputLock</span><span class="p">;</span>
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">    </span><span class="cm">/* Shared memory: input */</span>
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">SharedMemHandle</span><span class="p">;</span>
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">SharedMemPtr</span><span class="p">;</span><span class="w">          </span><span class="c1">// HIDMAESTRO_SHARED_INPUT view</span>
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">SharedMemSeqNo</span><span class="p">;</span>
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">InputDataEvent</span><span class="p">;</span><span class="w">        </span><span class="c1">// OpenEvent on Global\HIDMaestroInputEvent&lt;N&gt;</span>
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">StopEvent</span><span class="p">;</span><span class="w">             </span><span class="c1">// Global\HIDMaestroStopEvent&lt;N&gt;</span>
+<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">WorkerThread</span><span class="p">;</span>
+<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">InputEventName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">StopEventName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>
+<a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a><span class="w">    </span><span class="cm">/* Shared memory: output ring */</span>
+<a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">OutputMemHandle</span><span class="p">;</span>
+<a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">OutputMemPtr</span><span class="p">;</span>
+<a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">OutputWriteCount</span><span class="p">;</span><span class="w">      </span><span class="c1">// re-open every 500 writes (#2)</span>
+<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a>
+<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a><span class="w">    </span><span class="cm">/* Shared memory: PID FFB state */</span>
+<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a><span class="w">    </span><span class="n">HANDLE</span><span class="w">      </span><span class="n">PidStateMemHandle</span><span class="p">;</span>
+<a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a><span class="w">    </span><span class="n">PVOID</span><span class="w">       </span><span class="n">PidStateMemPtr</span><span class="p">;</span>
+<a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">PidStateMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a>
+<a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a><span class="w">    </span><span class="cm">/* Per-instance identity */</span>
+<a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a><span class="w">    </span><span class="n">ULONG</span><span class="w">       </span><span class="n">ControllerIndex</span><span class="p">;</span>
+<a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">ConfigRegPath</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">     </span><span class="c1">// SOFTWARE\HIDMaestro\Controller&lt;N&gt;</span>
+<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">SharedMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroInput&lt;N&gt;</span>
+<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">OutputMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroOutput&lt;N&gt;</span>
+<a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a><span class="w">    </span><span class="cm">/* ...the owner pipe fields, then (v2.0.0): */</span>
+<a id="__codelineno-1-59" name="__codelineno-1-59" href="#__codelineno-1-59"></a><span class="w">    </span><span class="n">WCHAR</span><span class="w">       </span><span class="n">VersionMappingName</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"> </span><span class="c1">// Global\HIDMaestroVersion&lt;N&gt;</span>
+<a id="__codelineno-1-60" name="__codelineno-1-60" href="#__codelineno-1-60"></a><span class="p">}</span><span class="w"> </span><span class="n">DEVICE_CONTEXT</span><span class="p">;</span>
 </code></pre></div>
 <p>The full struct is in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/driver.h#L74"><code>driver/driver.h</code></a>.</p>
 <hr />
@@ -2436,34 +2585,37 @@
 <p>Called by the framework when PnP binds the driver to a device. Sequence:</p>
 <ol>
 <li><strong>Create the WDF device.</strong></li>
-<li><strong>Initialize per-instance paths</strong> from <code>ControllerIndex</code> (read from the device HW key written by the SDK's <code>SetupController</code>). Builds:</li>
+<li><strong>Initialize per-instance paths</strong> from <code>ControllerIndex</code>. As of v2.0.0 the driver reads its device instance ID before <code>WdfDeviceCreate</code>, takes the identity token from its last segment and reads the index from <code>HKLM\SOFTWARE\HIDMaestro\Identity\&lt;token&gt;</code>, which the SDK writes before any PnP work. Since v2.0.0 that is the controller's machine-wide transport index, which can differ from the SDK slot. The driver neither knows nor needs the difference. Builds:</li>
 <li><code>ConfigRegPath = "SOFTWARE\HIDMaestro\Controller&lt;N&gt;"</code></li>
 <li><code>SharedMappingName = "Global\HIDMaestroInput&lt;N&gt;"</code></li>
 <li><code>OutputMappingName = "Global\HIDMaestroOutput&lt;N&gt;"</code></li>
 <li><code>PidStateMappingName = "Global\HIDMaestroPidState&lt;N&gt;"</code></li>
 <li><code>InputEventName = "Global\HIDMaestroInputEvent&lt;N&gt;"</code></li>
 <li><code>StopEventName = "Global\HIDMaestroStopEvent&lt;N&gt;"</code></li>
+<li><code>VersionMappingName = "Global\HIDMaestroVersion&lt;N&gt;"</code> (v2.0.0)</li>
 <li><code>SerialString = "HM-CTL-&lt;index-zero-padded-to-4-digits&gt;"</code></li>
 <li><strong>Read configuration</strong> from <code>HKLM\SOFTWARE\HIDMaestro\Controller&lt;N&gt;</code>:</li>
 <li><code>ReportDescriptor</code> (REG_BINARY) &rarr; <code>ctx-&gt;ReportDescriptor</code></li>
 <li><code>VendorId</code> / <code>ProductId</code> / <code>VersionNumber</code> (REG_DWORD) &rarr; <code>ctx-&gt;HidDeviceAttributes</code></li>
-<li><code>HidAttrPid</code> (REG_DWORD, optional) &rarr; overrides <code>ProductID</code> in HID attributes only (companion still reads <code>ProductId</code> for XUSB identity). PID 0x0001 is used for xinputhid profiles to prevent GameInput / HIDAPI from claiming the device, so SDL3 falls through to its XInput backend with the correct identity.</li>
+<li><code>LiveFeatureReport</code> (REG_DWORD, v2.0.0): one plus the ID of a feature report whose answer is the latest one the SDK wrote, as <code>dualshock-3-full</code>'s report 0 is.</li>
+<li><code>CachedInputReportIds</code> (REG_BINARY, v2.0.0, read only under the version contract): the profile's input report IDs.
+   As of v2.0.0 <code>HidAttrPid</code> is no longer read. A profile's <code>driverPid</code> goes into the parent's hardware IDs, where xinputhid's INF matches it.</li>
 <li><code>ProductString</code> (REG_SZ)</li>
 <li><code>InputReportByteLength</code> (REG_DWORD) for buffer sizing.</li>
+<li><code>FeatureAnswers</code> (REG_BINARY, v2.0.0): the controller's compiled feature answer table, read only under the version contract (see <a href="#version-announcement-v200">Version announcement</a>). Without it the driver serves no feature answers.</li>
+<li><code>InputReportId</code> (REG_BINARY, v2.0.0, read only under the version contract): the input report a data-only frame fills, in byte 0, its length as a 32-bit little-endian value in bytes 1-4, then the report descriptor the SDK read both from. The driver takes the ID only when that length equals the <code>InputReportByteLength</code> it has just read and the descriptor is the one in use, so a value a killed program left never pairs its ID with the length a v1.12.0 program writes for the same index. Without a value that passes, <code>EvtDeviceAdd</code> takes the first Report ID item of the descriptor's first Application Collection, as every earlier driver did.</li>
 <li><strong>Set HID device attributes</strong> from the values just read.</li>
 <li><strong>Create the parallel default queue</strong> with <code>EvtIoDeviceControl</code> for HID IOCTLs.</li>
 <li><strong>Create the manual queue</strong> for pended <code>READ_REPORT</code> requests.</li>
 <li><strong>Create the input lock and output lock.</strong></li>
-<li><strong>Create the named events</strong> (<code>InputDataEvent</code>, <code>StopEvent</code>).</li>
+<li><strong>Open the input event and create the stop event</strong> (<code>InputDataEvent</code>, which the SDK creates, and <code>StopEvent</code>). As of v2.0.0 the driver creates <code>StopEvent</code> and the output event with <code>D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)</code>, so a program that is not elevated cannot open them. A <code>StopEvent</code> name another program made first is not used, and the worker gets an unnamed stop event. See <a href="../shared-memory-protocol/#section-names">Shared Memory Protocol</a>.</li>
 <li><strong>Open the shared input mapping</strong> if it exists, <strong>open the output mapping</strong>, <strong>open the PID state mapping</strong> lazily.</li>
 <li><strong>Spawn the worker thread.</strong></li>
 </ol>
 <p>If any of the optional steps fails (e.g. the SDK hasn't created the shared sections yet because we're racing PnP binding against <code>SetupController</code>'s registry-then-create-mapping sequence), the driver continues. Subsequent <code>IOCTL_HID_READ_REPORT</code> calls retry the open, so PnP order races resolve themselves on the next call.</p>
 <hr />
-<h2 id="default-hid-descriptor-used-when-no-registry-override">Default HID descriptor (used when no registry override)<a class="headerlink" href="#default-hid-descriptor-used-when-no-registry-override" title="Permanent link">&para;</a></h2>
-<p>If <code>HKLM\SOFTWARE\HIDMaestro\Controller&lt;N&gt;\ReportDescriptor</code> is missing or empty, the driver falls back to a built-in Xbox 360-shaped descriptor: 6 axes (16-bit), 10 buttons, 1 hat, plus a Vendor-Defined Feature report (Report ID 2) for legacy data-channel use. ~120 bytes.</p>
-<p>The fallback exists to make <code>EvtDeviceAdd</code> succeed even when the SDK is mid-<code>SetupController</code> and hasn't written the registry yet. The driver re-reads the registry on every PnP wake; once the SDK has written the real descriptor, subsequent <code>IOCTL_HID_GET_REPORT_DESCRIPTOR</code> returns the right bytes.</p>
-<p>In normal operation the fallback is never delivered to a consumer because the SDK orchestrates the registry write before binding the driver. It's a safety net for the corner case of a PnP race or a corrupt registry.</p>
+<h2 id="a-devnode-with-no-configuration">A devnode with no configuration<a class="headerlink" href="#a-devnode-with-no-configuration" title="Permanent link">&para;</a></h2>
+<p>As of v2.0.0 the drivers keep no default device. A devnode with no index, neither an identity entry nor a <code>ControllerIndex</code>, or with no <code>Controller&lt;index&gt;</code> key holding a descriptor, fails its start with STATUS_DEVICE_CONFIGURATION_ERROR. Through v1.12.0 both drivers started such a devnode as an Xbox 360 pad on <code>Controller0</code>, from a built-in descriptor.</p>
 <hr />
 <h2 id="evtiodevicecontrol-the-dispatch-table">EvtIoDeviceControl: the dispatch table<a class="headerlink" href="#evtiodevicecontrol-the-dispatch-table" title="Permanent link">&para;</a></h2>
 <p>Every HID class request marshals through here as one of the <code>IOCTL_UMDF_HID_*</code> codes from <code>&lt;hidport.h&gt;</code>:</p>
@@ -2604,11 +2756,14 @@
 <p>Created in <code>EvtDeviceAdd</code> and joined on stop. Cancellation via <code>SetEvent(StopEvent)</code> plus the <code>TearingDown</code> flag, then <code>WaitForSingleObject(WorkerThread, 2000)</code>.</p>
 <hr />
 <h2 id="sony-feature-reports-and-why-calibration-cannot-be-zeros">Sony feature reports and why calibration cannot be zeros<a class="headerlink" href="#sony-feature-reports-and-why-calibration-cannot-be-zeros" title="Permanent link">&para;</a></h2>
-<p><code>driver.c</code> answers the Sony arm-handshake feature reads (<code>0x05</code>, <code>0x09</code>,
-<code>0x20</code>, <code>0x02</code>, <code>0xA3</code>), gated on VID <code>0x054C</code> so the IDs cannot collide
-with an unrelated profile's own feature reports. Report <code>0x02</code> is also the
-Feature Report ID the default Xbox 360 descriptor declares, which is
-exactly the collision that gate prevents.</p>
+<p>The driver answers the Sony arm-handshake feature reads (<code>0x05</code>, <code>0x09</code>,
+<code>0x20</code>, <code>0x02</code>, <code>0xA3</code>) from the controller's <code>FeatureAnswers</code> table. As
+of v2.0.0 the answers are profile data: six models under
+<code>profiles/models</code> hold each pad's table, the Sony profiles name theirs with
+<code>deviceModelFrom</code>, and the driver holds no Sony code and checks no VID. It
+serves the table only for a 2.0.0 SDK's controller (see
+<a href="#version-announcement-v200">Version announcement</a>). Through v1.12.0 the
+answers were code in <code>driver.c</code>, gated on VID <code>0x054C</code>.</p>
 <p>Those payloads were zero-filled until v1.4.4 (issue #43), and for the
 calibration reports that was a defect rather than a shortcut. <strong>Calibration
 is a divisor, not decoration.</strong> Every parser builds a sensitivity from the
@@ -2745,16 +2900,14 @@ reads it only on its third-party detection path, and both its PS4 and PS5
 drivers return early for a genuine Sony VID/PID, so a pad carrying Sony IDs
 is never asked for it.</p>
 <hr />
-<h2 id="switch-pro-protocol-responder">Switch Pro protocol responder<a class="headerlink" href="#switch-pro-protocol-responder" title="Permanent link">&para;</a></h2>
-<p>Most profiles are passive: the SDK submits state, the worker completes read requests. The Nintendo Switch Pro Controller (issue #33) is not. Hosts (SDL's <code>HIDAPI_DriverSwitch</code>, Steam, BetterJoy) drive a Nintendo init-and-subcommand protocol and stall without a device that answers, so the generic report-builder cannot express it. <code>driver.c</code> carries a hardcoded responder keyed on <code>VID 0x057E &amp;&amp; PID 0x2009</code> (<code>ctx-&gt;SwitchProtocol</code>), with protocol in code and layout in JSON, the same split as the Sony vendor-blob work.</p>
-<p>Three pieces:</p>
+<h2 id="switch-pro-protocol">Switch Pro protocol<a class="headerlink" href="#switch-pro-protocol" title="Permanent link">&para;</a></h2>
+<p>Most profiles are passive: the SDK submits state, the worker completes read requests. The Nintendo Switch Pro Controller (issue #33) is not. Hosts (SDL's <code>HIDAPI_DriverSwitch</code>, Steam, BetterJoy) drive a Nintendo init-and-subcommand protocol and stall without a device that answers. As of v2.0.0 that protocol is data in <code>profiles/nintendo/switch-pro.json</code>, and the SDK's protocol host (<code>Internal/ProtocolHost.cs</code>) runs it. The driver keeps no Switch Pro code. It sends each frame the SDK writes and publishes each output report as written. The SDK's output reader hands the report to the protocol before it raises <code>OutputReceived</code>, and a reply goes out ahead of the next report once the driver has delivered the frame before it.</p>
 <ul>
-<li><strong>USB init.</strong> Commands <code>80 01</code> / <code>80 02</code> / <code>80 03</code> get their <code>81 xx</code> replies, reporting device type Pro and a stable fabricated MAC.</li>
+<li><strong>USB init.</strong> <code>switch-pro-usb</code> carries the pad's 203-byte USB descriptor and its USB protocol: commands <code>80 01</code> / <code>80 02</code> / <code>80 03</code> get their <code>81 xx</code> replies, reporting device type Pro and a stable fabricated MAC, and its replies and reports are 64 bytes. <code>switch-pro</code> carries the Bluetooth descriptor, which declares no <code>0x80</code>/<code>0x81</code> family.</li>
 <li><strong>Subcommands.</strong> Output report <code>0x01</code> gets input-report <code>0x21</code> replies per the nxbt responder table, including SPI-flash reads served from a fabricated image: factory stick calibration (center <code>0x800</code>, range <code>0x600</code>) and IMU coefficients (<code>0x4000</code> accel, <code>0x343B</code> gyro) chosen so SDL's <code>LoadIMUCalibration</code> / <code>LoadStickCalibration</code> math reduces exactly to its own default scales. Unknown subcommands get a generic ACK rather than nxbt's silent ignore, because SDL retries an unanswered subcommand for ~500 ms where the Switch console does not.</li>
-<li><strong>0x30 streaming.</strong> A dedicated <code>SwitchStreamProc</code> thread serves input report <code>0x30</code> at the wire's ~60 Hz cadence (15 ms), reading the latest consumer-submitted body via <code>SwitchFillLatestState</code> and stamping live timer and battery bytes over it. Subcommand replies preempt the stream via <code>SwitchQueueReply</code>.</li>
+<li><strong>Reports on the device clock.</strong> Full-mode <code>0x30</code> goes out every 15 ms on the device clock's grid, its timer byte counted per message. Genuine 12-byte <code>0x3F</code> simple-mode frames go out when the state changes, before the handshake and after a host selects simple mode, as a real pad sends them. Through v1.12.0 a driver thread slept 15 ms between frames, about 15.6 ms at the default timer resolution, streamed <code>0x3F</code> every 15 ms before the handshake, and sent nothing in mode <code>0x3F</code>.</li>
 </ul>
-<p><code>SwitchStreamProc</code> and the worker thread both touch <code>ctx-&gt;SharedMemPtr</code>. The worker's stale-handle recycle skips the shared-view unmap for <code>SwitchProtocol</code> devices (the view is unmapped only at cleanup, after both threads join) so it can never unmap the mapping out from under the streaming thread mid-read.</p>
-<p>SDK side, <code>SwitchProPacker</code> converts a normal <code>SubmitState</code> into the 48-byte <code>0x30</code> body: layout-mapped buttons, 12-bit nibble-packed sticks, and the calibrated IMU channel. <code>HMGamepadState.AccelG*</code> / <code>GyroDps*</code> are defined in the SDL-standard sensor frame. The packer owns the SDL-to-Switch wire-frame permutation, so a consumer that reads motion from SDL submits it verbatim and the client-side SDL reconstructs the identical vector. HD rumble comes back decoded to coarse <code>leftMotor</code> / <code>rightMotor</code> amplitudes on <code>OutputDecoded</code>, the same lane Sony rumble rides. The <code>test/probes/switch_pro_check</code> probe replays SDL's exact init sequence over raw HID as the release gate, and <code>switch_pro_sdl3_check</code> drives the pad through real SDL3 end to end.</p>
+<p>The profile's <code>stateBlock</code> turns a normal <code>SubmitState</code> into the <code>0x30</code> body: layout-mapped buttons, 12-bit nibble-packed sticks, and the calibrated IMU channel. <code>HMGamepadState.AccelG*</code> / <code>GyroDps*</code> are defined in the SDL-standard sensor frame, and the state block's fields own the SDL-to-Switch wire-frame permutation, so a consumer that reads motion from SDL submits it verbatim and the client-side SDL reconstructs the identical vector. A raw submit is that state block. HD rumble comes back decoded to coarse <code>leftMotor</code> / <code>rightMotor</code> amplitudes on <code>OutputDecoded</code> through <code>protocol.decoders.rumble</code>, the same lane Sony rumble rides. A profile made outside the catalog with the Switch Pro's VID and PID takes one of the two catalog models through its identity default, by connection. The <code>test/probes/switch_pro_check</code> probe replays SDL's exact init sequence over raw HID as the release gate, <code>switch_pro_sdl3_check</code> drives the pad through real SDL3 end to end, and <code>device_oracle_check switch-engine</code> holds the profile data to the responder the 1.x driver ran.</p>
 <hr />
 <h2 id="switch-2-pro-no-responder-needed-v150">Switch 2 Pro: no responder needed (v1.5.0)<a class="headerlink" href="#switch-2-pro-no-responder-needed-v150" title="Permanent link">&para;</a></h2>
 <p>The Switch 2 Pro Controller (<code>057E:2069</code>) is a protocol device like its predecessor, but unlike the Switch Pro it does <strong>not</strong> need a driver-side responder, and that difference is worth understanding before anyone adds one.</p>
@@ -2821,13 +2974,16 @@ is never asked for it.</p>
 <p>If <code>PidEnabled == 0</code> (consumer hasn't called <code>PublishPidPool</code> yet), the driver returns <code>STATUS_NO_SUCH_DEVICE</code> for the Pool Report (matches vJoy's "FFB not enabled" convention so DInput cleanly concludes "device exists but no FFB" without retrying) and <code>STATUS_NOT_SUPPORTED</code> for Block Load / State.</p>
 <hr />
 <h2 id="dacl-on-the-shared-sections">DACL on the shared sections<a class="headerlink" href="#dacl-on-the-shared-sections" title="Permanent link">&para;</a></h2>
-<p>The SDK creates the shared sections with the SDDL <code>D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)</code>: SYSTEM, BUILTIN\Administrators, and Everyone get <code>GENERIC_ALL</code>. This is required because:</p>
+<p>The SDK creates the shared sections with the SDDL <code>O:BAD:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)(A;;GR;;;WD)</code>. Administrators own them. SYSTEM, BUILTIN\Administrators and LocalService get <code>GENERIC_ALL</code>, and Everyone gets <code>GENERIC_READ</code>. This is required because:</p>
 <ul>
 <li>The SDK consumer process (admin) writes input frames.</li>
-<li>WUDFHost runs as LocalService (which lacks <code>SeCreateGlobalPrivilege</code>, so the driver can NOT create the section) and must <code>OpenFileMapping</code> to read.</li>
-<li>Unelevated WGI / GameInput consumers also need to read shared sections in some indirect paths.</li>
+<li>WUDFHost runs as LocalService (which lacks <code>SeCreateGlobalPrivilege</code>, so the driver can NOT create the section) and must <code>OpenFileMapping</code> to read and, for the output, PID state, version and acknowledgement sections, to write.</li>
+<li>Everyone's read access is for diagnostic tools that are not elevated.</li>
 </ul>
-<p><code>Everyone GENERIC_ALL</code> looks loose, but the section content is one virtual controller's HID state: not security-sensitive. The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared section permissions.</p>
+<p>The section content is one virtual controller's HID state: not security-sensitive. The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared section permissions.</p>
+<hr />
+<h2 id="version-announcement-v200">Version announcement (v2.0.0)<a class="headerlink" href="#version-announcement-v200" title="Permanent link">&para;</a></h2>
+<p>At add, and each time the driver opens the input section, <code>AnnounceVersion</code> opens <code>Global\HIDMaestroVersion&lt;N&gt;</code>, the 64-byte section the SDK creates beside the input section, and writes its half: its version from the build's generated version header, its capabilities (0x3, the input acknowledgement's delivered and release bits), the oldest SDK protocol it serves, <code>HIDMAESTRO_DRIVER_PROTOCOL_MIN</code>, 4, a memory barrier, and last its protocol, <code>HIDMAESTRO_DRIVER_PROTOCOL</code>, 5. A reader that sees a nonzero protocol therefore sees the version that goes with it. The driver reads a controller's 2.0.0 values, <code>FeatureAnswers</code> and the cached input report IDs, only when the section holds protocol 4 and the identity tag of the devnode's own token. A devnode whose index's section carries another token's tag fails its start with STATUS_DEVICE_CONFIGURATION_ERROR, and a value the driver cannot read fails the start and is named in the section's error word. <code>HMController.DriverVersion</code> reads the result. The layout is in <a href="../shared-memory-protocol/#version-section-v200">Shared Memory Protocol</a>.</p>
 <hr />
 <h2 id="self-cleanup-at-unload">Self-cleanup at unload<a class="headerlink" href="#self-cleanup-at-unload" title="Permanent link">&para;</a></h2>
 <p>When the device is removed (via <code>DIF_REMOVE</code> from the SDK or PnP), <code>EvtDeviceContextCleanup</code> runs:</p>
@@ -2839,6 +2995,9 @@ is never asked for it.</p>
 <li>Close the named events.</li>
 </ol>
 <p>The framework calls <code>EvtDeviceContextCleanup</code> on the final reference release. WUDFHost may exit shortly after if no other devices are left in the host (per-instance host model).</p>
+<p>As of v2.0.0 both drivers let go of their index earlier, at <code>EvtDeviceSelfManagedIoFlush</code>, which the framework calls on a surprise removal and on a removal, never on a stop for a rebalance. The flush releases the sections and their views, both events, the owner pipe, and the companion's pump thread and 8 ms timer. Through v1.12.0 they let go only in the context cleanup, which runs on <code>IRP_MN_REMOVE_DEVICE</code>. Windows sends that only once every handle to a surprise-removed device has closed, so a driver host whose device was surprise removed and never removed kept the index's output event and the companion's timer. The release clears each field it closes, so the cleanup after a flush finds nothing left. The HID driver purges its two queues first, since neither is power managed when it runs as a filter, so no I/O callback reads a view the release unmapped. A HID request to a surprise-removed device then fails in the framework with STATUS_INVALID_DEVICE_STATE instead of reaching the output ring.</p>
+<h3 id="failing-the-device-on-request-v200-protocol-5">Failing the device on request (v2.0.0, protocol 5)<a class="headerlink" href="#failing-the-device-on-request-v200-protocol-5" title="Permanent link">&para;</a></h3>
+<p>The input worker opens <code>Global\HIDMaestroRemoveEvent&lt;N&gt;</code> and <code>Global\HIDMaestroRemovedEvent&lt;N&gt;</code> with the input event and waits on the first after its other handles. The SDK signals it when a program refuses a <code>Dispose</code>'s removal query, and the worker then calls <code>WdfDeviceSetFailed(WdfDeviceFailedNoRestart)</code> and signals the second. Windows then removes the device and its HID children by surprise removal, as it removes an unplugged device, and asks no program that holds a child open. A queried removal asks every holder, and one refusal stops it. <code>IRP_MN_REMOVE_DEVICE</code> follows once the last handle closes, and the flush above releases the index before that. DsHidMini calls <code>WdfDeviceSetFailed</code> the same way, with <code>WdfDeviceFailedAttemptRestart</code> because it wants its device back. Microsoft documents both calls in "Handling an IRP_MN_SURPRISE_REMOVAL Request" and the <code>WdfDeviceSetFailed</code> reference. The SDK's side is in <a href="../lifecycle-and-teardown/#a-removal-no-program-can-refuse-v200">Lifecycle and Teardown</a>.</p>
 <hr />
 <h2 id="inf-hidmaestroinf">INF: <code>hidmaestro.inf</code><a class="headerlink" href="#inf-hidmaestroinf" title="Permanent link">&para;</a></h2>
 <p>Class <code>HIDClass</code>, ClassGuid <code>{745a17a0-...}</code>. PnP install matches <code>root\HIDMaestro</code>. The SDK creates devices via <code>SetupDiCreateDeviceInfoW</code> (plain HID profiles) or <code>SwDeviceCreate</code> (xinputhid profiles); both paths produce devnodes that match this INF.</p>
@@ -2932,7 +3091,7 @@ is never asked for it.</p>
 </tr>
 </tbody>
 </table>
-<p>Total: 2,782 lines (driver.c) + 526 lines (driver.h) + 957 lines (companion.c) + 299 lines (hmswd.c).</p>
+<p>Total: 2,954 lines (driver.c) + 620 lines (driver.h) + 129 lines (hm_contract.h, the version contract both drivers read) + 1,165 lines (companion.c) + 266 lines (hmswd.c).</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>

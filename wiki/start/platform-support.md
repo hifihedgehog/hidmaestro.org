@@ -10,6 +10,7 @@ HIDMaestro runs on x64 and ARM64 Windows. Use v1.9.1 or later on ARM64. One `HID
 | USB/IP transport | Microsoft-signed x64 package | Microsoft-signed ARM64 package |
 | Test app, example, ProfileExtractor | `win-x64` | `win-arm64` |
 | OpenVR driver | x64 SteamVR plugin | Same x64 plugin for an x64 SteamVR host |
+| NativeAOT and trimmed single-file apps (v2.0.0) | `win-x64` | `win-arm64` |
 
 Virtual device creation requires a 64-bit process and administrator privileges. The x64 target supports Windows 10 and 11. The ARM64 target is Windows 11. The OpenVR plugin follows the SteamVR host's architecture, independently of the SDK process.
 
@@ -21,7 +22,9 @@ Install the .NET 10 SDK, Windows SDK/WDK 10.0.26100.0, and Visual Studio C++ bui
 scripts\build_all.cmd
 ```
 
-`build_all.cmd` builds both native payloads and the x64 OpenVR plugin, then the SDK. Native x64 files are under `build/`, and ARM64 files are under `build/arm64/`. A missing native payload fails the SDK build with a message naming the script.
+`build_all.cmd` builds both native payloads and the x64 OpenVR plugin, then the SDK. The native scripts compile the driver, the companion and the OpenVR driver at `/W4`, and hmswd at `/W3`. The UMDF headers and Valve's `openvr_driver.h` are passed with `/external:I` and `/external:W0`, which turn warnings off in those headers and the headers they include, while every warning in HIDMaestro's own sources still prints. No `/WX` is set, so a new warning prints and does not stop the build. A full `build_all.cmd` printed 70 compiler warnings at commit c5c0f05 and none at a6fbbe8, development measurements. Native x64 files are under `build/`, and ARM64 files are under `build/arm64/`. A missing native payload fails the SDK build with a message naming the script.
+
+A source build can leave the ARM64 payload out with `HMSkipArm64=true`, the USB/IP transport out with `HMSkipUsbip=true`, and can take its Windows SDK and WDK from an installed kit, the NuGet WDK or an EWDK prompt. See [Build and Release](../reference/build-and-release.md#build-settings-v200). `HMBuildInfo.DriverArchitectures` and `UsbipArchitectures` report what a built `HIDMaestro.Core.dll` carries.
 
 To build a single application for ARM64:
 
@@ -30,7 +33,9 @@ dotnet build test\HIDMaestroTest.csproj -c Release -p:HMTargetArchitecture=arm64
 dotnet build tools\HIDMaestroProfileExtractor\HIDMaestroProfileExtractor.csproj -c Release -p:HMTargetArchitecture=arm64
 ```
 
-## The ARM64 driver catalog
+## NativeAOT, trimmed and single-file apps
+
+As of v2.0.0 `HIDMaestro.Core.dll` works in NativeAOT apps and in trimmed, self-contained, single-file apps, for x64 and ARM64. Profiles load through source-generated JSON, every Win32 call goes through `LibraryImport`, and `hmswd.exe` always comes from the embedded resource, since `Assembly.Location` is empty in a single-file app. At v1.12.0 both kinds of app loaded 0 of the 336 catalog profiles, because reflection-based JSON is switched off in them. The `aot_smoke` probe publishes one source four ways, NativeAOT and trimmed single-file for each architecture. Each app loads the catalog, installs the driver, creates a `dualshock-4-v2` on the UMDF2 driver and a `dualsense-composite` on USB/IP, submits input, reads it back, writes an output report, waits for `OutputReceived` and disposes. Battery scenarios S74 and S75 run the two apps for the machine's architecture, so the ARM64 apps are built and published and have not run on ARM64 hardware. See [Build and Release](../reference/build-and-release.md#nativeaot-trimming-and-single-file).
 
 `InstallDriver()` builds a catalog for each driver INF with Inf2Cat before it signs the package and adds it to the driver store. Inf2Cat's ARM64 values name a Windows release, from `10_RS3_ARM64` on, and it has no bare `10_ARM64`. v1.9.0 asked for `10_ARM64`, which Inf2Cat rejects, so on ARM64 `InstallDriver()` failed before any driver reached the store. v1.9.1 asks for `10_RS3_ARM64`, version 1709, the first Windows 10 release on ARM64. x64 keeps `10_X64`.
 
@@ -46,11 +51,13 @@ Both installers are inside the SDK DLL. The build checks each against its pinned
 
 The driver's request layout changed in 0.9.8.0 and again in 0.9.8.1. The SDK speaks 0.9.7.x, 0.9.8.0 and 0.9.8.1 and asks the driver which one it has.
 
-Where no usbip-win2 exists, the SDK runs the bundled installer silently, with no window and no prompt. Windows re-enumerates the USB root hubs once during that install, so USB devices blink for a moment. If usbip-win2 is installed and its host controller is not answering, the SDK restarts that device and does not reinstall.
+Where no usbip-win2 exists, the SDK runs the bundled installer silently, with no window and no prompt. As of v2.0.0 it passes `/COMPONENTS=main,client /TASKS=vcredist /NOICONS`, so the installer leaves out the GUI, the SDK headers, the debug symbols, the desktop icon and the Start menu folder. A machine that holds the installer's uninstall record and its uninstaller file, without its driver package, gets a refusal, because the installer would run that record's uninstaller first. See [Driver Install and Signing](../reference/driver-install-and-signing.md#usbip-transport). Windows re-enumerates the USB root hubs once during that install, so USB devices blink for a moment. If usbip-win2 is installed and its host controller is not answering, the SDK restarts that device and does not reinstall.
 
 A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. `HIDMAESTRO_KEEP_TRANSPORT=1` turns the move off.
 
 ## Validation
+
+[D3-PLACEHOLDER: v2.0.0 battery result]
 
 The v1.12.0 release gate ran on x64: the full 70-scenario battery passed all 70 scenarios on the release binaries on Windows 11 26200. The gate machine's host controller runs 0.9.8.1, put there by the v1.9.2 move, so every composite scenario ran through the client's 0.9.8.1 request format against the live driver. The DualSense composite passed 26/26 end to end, and the Switch 2 Pro composite 255/255, with Windows binding WinUSB to its vendor interface from the persona's own descriptors. Its root-hub filter is still the older one the move leaves alone, so SET_INTERFACE never reaches a composite there, and audio stream state comes from the traffic instead ([USB audio composite](../sdk/usb-audio-composite.md)).
 

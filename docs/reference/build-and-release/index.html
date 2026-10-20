@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -620,6 +650,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -935,6 +969,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -1641,6 +1731,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#build-settings-v200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build settings (v2.0.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-build-carries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a build carries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nativeaot-trimming-and-single-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NativeAOT, trimming and single-file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#outputs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1816,6 +1939,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#build-settings-v200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build settings (v2.0.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-build-carries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a build carries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nativeaot-trimming-and-single-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NativeAOT, trimming and single-file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#outputs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1895,9 +2051,78 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">scripts</span><span class="p">\</span><span class="n">build_all</span><span class="p">.</span><span class="n">cmd</span>
 </code></pre></div>
 <p>The native build compiles the HID driver, XInput companion, and hmswd helper for x64 and again for ARM64. It also builds the x64 OpenVR plugin. The SDK build embeds both payload sets and both signed USB/IP installers.</p>
-<p>The script runs the SDK build twice, and both passes are needed: the first stages the payloads and the second embeds them. Missing native files fail the build with a message naming the script.</p>
+<p>The native scripts compile the driver, the companion and the OpenVR driver at <code>/W4</code>, and hmswd at <code>/W3</code>. Since v2.0.0 they compile the driver and the companion with <code>/Ox /Os</code>, the release setting of the WDK's own driver projects (full optimization, favoring size). Through v1.12.0 they passed no optimization switch, so <code>cl.exe</code> compiled both unoptimized. The UMDF headers and Valve's <code>openvr_driver.h</code> are passed with <code>/external:I</code> and <code>/external:W0</code>, which turn warnings off in those headers and the headers they include, while every warning in HIDMaestro's own sources still prints. No <code>/WX</code> is set, so a new warning prints and does not stop the build. A full <code>build_all.cmd</code> printed 70 compiler warnings at commit c5c0f05 and none at a6fbbe8, development measurements.</p>
+<p>The script runs the SDK build once. The SDK project embeds exactly the files its pre-build target stages for the settings in force, each listed with the path it is staged at and the name it is embedded under (v2.0.0). Through v1.12.0 the project globbed <code>Resources\</code>, which was evaluated before anything was staged, so a fresh tree needed two builds, and a skip build in a tree that once built everything would have embedded the stale files. Missing native files fail the build with a message naming the script.</p>
 <p>The test build script builds the test app, ProfileExtractor, example, and the probe projects used by the battery. It copies a canonical SDK assembly into their outputs and verifies each copy's SHA-256 hash.</p>
 <p>The OpenVR smoke probe is x64 because it loads SteamVR's x64 client DLL. The regression script applies the same paths to its freshness checks and launches.</p>
+<h2 id="build-settings-v200">Build settings (v2.0.0)<a class="headerlink" href="#build-settings-v200" title="Permanent link">&para;</a></h2>
+<p>Each setting is an environment variable. MSBuild reads environment variables as properties, so a setting both sides read reaches the native scripts and the SDK project alike, and a setting the SDK project reads also works as <code>-p:</code> on a <code>dotnet build</code> of the SDK. The native scripts read <code>HM_WDK_ROOT_ARM64</code>, and only the SDK project reads <code>HMWdkBin</code> and <code>HMInf2catBin</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Effect</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HMSkipArm64=true</code></td>
+<td>Builds and embeds the x64 driver, companion and helper only, and leaves out every ARM64 payload: the ARM64 INFs, signtool set, usbip-win2 installer and host controller files.</td>
+<td>unset</td>
+</tr>
+<tr>
+<td><code>HMSkipUsbip=true</code></td>
+<td>Leaves out the USB/IP transport: both installers and the host controller files. Nothing is downloaded, hashed or unpacked for it.</td>
+<td>unset</td>
+</tr>
+<tr>
+<td><code>HM_SDK_ROOT</code></td>
+<td>The Windows SDK: the <code>um</code> and <code>shared</code> headers, the <code>um</code> libraries, <code>rc.exe</code>, and the signtool set the SDK embeds.</td>
+<td><code>WindowsSdkDir</code> when a Visual Studio or EWDK prompt set it, otherwise <code>%ProgramFiles(x86)%\Windows Kits\10</code></td>
+</tr>
+<tr>
+<td><code>HM_WDK_ROOT</code></td>
+<td>The WDK: the <code>km</code> headers, the UMDF 2.15 headers and stub library, and Inf2Cat.</td>
+<td><code>WDKContentRoot</code> when an EWDK prompt set it, otherwise <code>HM_SDK_ROOT</code></td>
+</tr>
+<tr>
+<td><code>HM_WDK_ROOT_ARM64</code></td>
+<td>The WDK for the ARM64 build.</td>
+<td><code>HM_WDK_ROOT</code></td>
+</tr>
+<tr>
+<td><code>HM_WDK_VERSION</code></td>
+<td>The kits' version folder.</td>
+<td><code>Version_Number</code> when an EWDK prompt set it, otherwise <code>10.0.26100.0</code></td>
+</tr>
+<tr>
+<td><code>HMWdkBin</code></td>
+<td>The folder whose <code>x64</code> and <code>arm64</code> folders hold the signtool set.</td>
+<td><code>HM_SDK_ROOT\bin\&lt;version&gt;\</code></td>
+</tr>
+<tr>
+<td><code>HMInf2catBin</code></td>
+<td>The folder whose <code>x86</code> folder holds Inf2Cat.</td>
+<td><code>HM_WDK_ROOT\bin\&lt;version&gt;\</code></td>
+</tr>
+</tbody>
+</table>
+<p>The scripts find Visual Studio through <code>VSINSTALLDIR</code> when a Visual Studio or EWDK prompt set it, and otherwise search <code>C:\Program Files\Microsoft Visual Studio</code>. Every kit root is checked for the folders the build reads from it, and a missing one stops the build with an error that names the setting. A missing Visual Studio stops it with "Visual Studio C++ build tools are required". The driver steps print where their SDK, WDK, kit version and Visual Studio came from, and the OpenVR step prints its Visual Studio path.</p>
+<p>Installed kits need no setting. With the NuGet WDK, <code>HM_WDK_ROOT</code> is the <code>c</code> folder of <code>Microsoft.Windows.WDK.x64</code> and <code>HM_WDK_ROOT_ARM64</code> the <code>c</code> folder of <code>Microsoft.Windows.WDK.ARM64</code>, because each package carries the UMDF stub library for its own architecture only. The Windows SDK then comes from the installed kit, which Visual Studio's C++ workload installs and which Microsoft lists as a requirement of the NuGet WDK (<a href="https://learn.microsoft.com/windows-hardware/drivers/install-the-wdk-using-nuget">Install the WDK using NuGet</a>). The SDK's own NuGet packages lay out libraries as <code>c\um\&lt;arch&gt;</code>, not <code>Lib\&lt;version&gt;\um\&lt;arch&gt;</code>, so <code>HM_SDK_ROOT</code> cannot point at them. A one-time comparison during development found the NuGet WDK's <code>km</code> headers, UMDF 2.15 headers and both stub libraries in 10.0.26100.6584 byte-identical to the installed WDK of the same version. <code>check_build_layouts.ps1</code> does not repeat it.</p>
+<p>In the EWDK the build runs from the prompt <code>LaunchBuildEnv.cmd</code> opens, and the defaults pick up the image's kit, version and Build Tools. The EWDK itself was not run for this release, since downloading it means accepting Microsoft's EWDK license terms. <code>scripts/check_build_layouts.ps1</code> builds the native payloads for both architectures from the pinned NuGet WDK packages, then under the variables an EWDK prompt sets, pointed at the installed kit and Visual Studio, then with roots that hold no kit.</p>
+<p>The SDK embeds six Inf2Cat files where v1.12.0 embedded eight. <code>inf2cat.exe.manifest</code> and <code>Microsoft.Kits.Logger.dll</code> are gone: no assembly in the Inf2Cat set references the logger, Inf2Cat.exe's embedded manifest takes precedence over an external one, and runs with and without both files produce the same catalogs. The NuGet WDK carries neither.</p>
+<h2 id="what-a-build-carries">What a build carries<a class="headerlink" href="#what-a-build-carries" title="Permanent link">&para;</a></h2>
+<p><code>HMBuildInfo</code> reports <code>DriverArchitectures</code>, <code>UsbipArchitectures</code>, <code>HasOpenVrDriver</code> and <code>IsComplete</code>. Each is read once from the assembly's own resource names, so it describes the bytes actually embedded, whatever the settings were. A controller that needs a payload the build lacks for the machine's architecture throws <code>HMPayloadMissingException</code>, derived from <code>InvalidOperationException</code>, before any machine-wide step: a composite persona without the USB/IP transport, and any other controller without the driver. <code>InstallDriver</code>, <code>InstallUsbipBackend</code> and <code>HMVR.EnsureDriverRegistered</code> throw it too, and <code>IsUsbipBackendAvailable</code> is false in a build without the transport. Official releases stay complete: <code>pre-tag-validate.cmd</code> clears <code>HMSkipArm64</code> and <code>HMSkipUsbip</code> before it builds, battery scenario S78 fails unless the release build reports <code>IsComplete</code>, and <code>check_build_layouts.ps1</code> builds every layout above before the battery runs.</p>
+<h2 id="nativeaot-trimming-and-single-file">NativeAOT, trimming and single-file<a class="headerlink" href="#nativeaot-trimming-and-single-file" title="Permanent link">&para;</a></h2>
+<p>The SDK project sets <code>IsAotCompatible</code>, which turns on the trim, single-file and AOT analyzers, and <code>aot-analyzers.globalconfig</code> raises the <code>Trimming</code>, <code>SingleFile</code> and <code>AOT</code> diagnostic categories to errors in Release. During development, at commit d37e32e, the same analyzers reported 40 warnings on the v1.12.0 source: 38 from the 19 reflection-based <code>JsonSerializer</code> calls, one from the <code>JsonStringEnumConverter</code>, and one from the <code>Assembly.Location</code> read. The release changes four things:</p>
+<ul>
+<li>Profiles and layouts load through <code>HMJsonContext</code>, a source-generated <code>JsonSerializerContext</code> with the options <code>HMLayoutJsonOptions.Default</code> carried: camelCase names read case-insensitively, comments and trailing commas allowed, <code>HMAxis</code> through its own converter, every other enum as a snake_case string through a generic <code>JsonStringEnumConverter&lt;TEnum&gt;</code>. The generated code assigns every init-only property in one object initializer, so a key the JSON leaves out would arrive as <code>default(T)</code>. Reflection kept the record's own initializers, and 68 of the 336 profiles depend on them, as counted during development at commit d37e32e, so the layout converter fills each such key from a freshly constructed record. Battery scenario S76 reads every embedded profile through both paths and requires the same contents.</li>
+<li>All 113 <code>DllImport</code> declarations became <code>LibraryImport</code>. Five SetupAPI declarations among them that nothing called were then removed, and the code this release adds declares 75 more, 183 in all. Strings marshal as UTF-16, and every <code>bool</code> as the 4-byte Win32 <code>BOOL</code> except the six <code>HidD_</code> results, which are the one-byte <code>BOOLEAN</code>. The per-frame calls (<code>SetEvent</code>, <code>WaitForSingleObject</code>, <code>WaitForMultipleObjects</code>) allocate nothing. <code>CM_Register_Notification</code> took a managed delegate, which <code>LibraryImport</code> does not marshal, so each wait's handler now travels as a <code>GCHandle</code> in the registration's context argument to one <code>[UnmanagedCallersOnly]</code> dispatcher. S77 counts the events the dispatcher delivers.</li>
+<li><code>hmswd.exe</code> always comes from the embedded resource and is staged and verified, never read from beside the assembly.</li>
+<li><code>aot_smoke</code> publishes one source four ways, NativeAOT and trimmed single-file for each architecture, and S74 and S75 run the two for the machine's architecture.</li>
+</ul>
+<p>Measured during development at commit d37e32e, on a 16-core Windows 11 laptop, not on the release build, 30 runs each, process start to catalog loaded: 162.0 ms at p50 (172.8 ms at p95) for a JIT app on v1.12.0, 168.4 ms (174.1 ms) for a JIT app at that commit, 17.0 ms (17.9 ms) for a NativeAOT app, and 345.6 ms (350.4 ms) for a trimmed single-file app. Every Win32 declaration and part of the profile model changed after that commit. At the same commit the first source-generated parse in a JIT process cost about 8 ms more at the median, because the generated metadata is compiled on first use. Trimming drops the framework's precompiled code, which is why the trimmed single-file app starts slowest.</p>
 <h2 id="outputs">Outputs<a class="headerlink" href="#outputs" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1941,11 +2166,11 @@
 <h2 id="versioning">Versioning<a class="headerlink" href="#versioning" title="Permanent link">&para;</a></h2>
 <p>Directory.Build.props controls managed and native VERSIONINFO versions. Builds use Release configuration. Debug builds are rejected.</p>
 <p>The INF stamping script decorates the model sections for the target, NTamd64 or NTARM64, updates the date, and stamps the fourth DriverVer component with the build minute. It refuses to write an INF that ends up with neither. Native version resources come from gen_version.ps1.</p>
-<p>The first three DriverVer components move only when driver code changes. The build stamps the fourth with the build minute and the date with the build day, so every native build is a new package to Windows. <code>InstallDriver()</code> skips its work only when the embedded driver files, INFs included, hash the same as the installed ones, so the first run of a release with a new native build reinstalls the driver once. v1.11.0 changes no driver code, so DriverVer stays at 1.10.0.</p>
+<p>The first three DriverVer components move only when driver code changes. The build stamps the fourth with the build minute and the date with the build day, so every native build is a new package to Windows. As of v2.0.0 <code>build_all.cmd</code> reads the clock once, as <code>HM_STAMP_TIME</code> (<code>yyyy-MM-ddTHH:mm</code>), and stamps every INF of both architectures with it, where a build whose steps straddled a minute used to carry two stamps. <code>build.cmd</code> and <code>build_companion.cmd</code> take the time at their start when run alone. A caller can set <code>HM_STAMP_TIME</code>, and the stamping script refuses a time later than the clock or earlier than the newest file under the INF's source folder, since a stale time would stamp a new build older than an earlier one. <code>pre-tag-validate.cmd</code> clears it before a release build, and battery scenario S78 fails a release build whose four INFs carry more than one stamp. <code>InstallDriver()</code> skips its work only when the embedded driver files, INFs included, hash the same as the installed ones, so the first run of a release with a new native build reinstalls the driver once. v2.0.0 stamps DriverVer 2.0.0, because the driver now writes its half of the version section (<a href="../shared-memory-protocol/#version-section-v200">Shared Memory Protocol</a>).</p>
 <h2 id="validation-and-release-order">Validation and release order<a class="headerlink" href="#validation-and-release-order" title="Permanent link">&para;</a></h2>
 <p>Finish and commit the intended changes, create the local release tag, and then build. The assembly's informational version includes its commit identifier. Package the outputs that were tested.</p>
-<p>Stage the devbox and Atom fixtures before starting their full batteries together. Stream each scenario result. Record each machine's actual result and any unavailable fixture.</p>
-<p>The battery has 70 scenarios. S44 checks the bundled USB/IP transport: that it is present, that its hash still matches the pinned SHA-256, and that the deploy path refuses tampered bytes. S58 and S59 cover device identity, derivation without a device and then one controller per family across nine lives. S60 covers the battery reply a pad gives XInput. S61 builds the driver catalogs for both architectures with the embedded Inf2Cat. S62 runs Steam's own firmware updater against the 2026 Steam Controller persona, and skips on a machine without Steam. S63 checks the DualShock 4 reports against SDL and Linux, and S64 the DualShock 3 persona against SDL, Linux, RPCS3 and DsHidMini. Both run stock SDL3 and skip that part without it. S65 checks the Switch 2 Pro composite persona against a capture of a real pad, then through PadForge's SDL3 fork with libusb and through the Steam client. It skips those parts without a build of that fork beside the repository or without Steam. S66 checks that a registry key a virtual shares with real devices goes back to its prior state, S67 what WGI reads from a virtual pad, and S68 that <code>HMVR.FindDriverNameConflicts</code> reports a foreign OpenVR driver under HIDMaestro's name. S69 checks the keyboard and mouse descriptors and packers with no device, and S70 every catalog keyboard and mouse through Raw Input, including a consumer killed with input held and the cleanup after it.</p>
+<p>Stage the release test machine and the Atom fixture before starting their full batteries together. Stream each scenario result. Record each machine's actual result and any unavailable fixture.</p>
+<p>The battery has 96 scenarios, S01 to S85 and S87 to S97. S44 checks the bundled USB/IP transport: that it is present, that its hash still matches the pinned SHA-256, and that the deploy path refuses tampered bytes. S58 and S59 cover device identity, derivation without a device and then one controller per family across nine lives. S60 covers the battery reply a pad gives XInput. S61 builds the driver catalogs for both architectures with the embedded Inf2Cat. S62 runs Steam's own firmware updater against the 2026 Steam Controller persona, and skips on a machine without Steam. S63 checks the DualShock 4 reports against SDL and Linux, and S64 the DualShock 3 persona against SDL, Linux, RPCS3 and DsHidMini. Both run stock SDL3 and skip that part without it. S65 checks the Switch 2 Pro composite persona against a capture of a real pad, then through PadForge's SDL3 fork with libusb and through the Steam client. It skips those parts without a build of that fork beside the repository or without Steam. S66 checks that a registry key a virtual shares with real devices goes back to its prior state, S67 what WGI reads from a virtual pad, and S68 that <code>HMVR.FindDriverNameConflicts</code> reports a foreign OpenVR driver under HIDMaestro's name. S69 checks the keyboard and mouse descriptors and packers with no device, and S70 every catalog keyboard and mouse through Raw Input, including a consumer killed with input held and the cleanup after it. S71 and S72 run programs side by side as separate processes and check the protected staging. S73 runs the usbip-win2 install in Windows Sandbox, S74 and S75 the NativeAOT and trimmed single-file apps, S76 the JSON parity, S77 the PnP notifications and S78 what a build carries. S79 to S83 cover the GameCube adapter persona: its bytes, its protocol, its WinUSB binding, Dolphin and Slippi, and SDL. S84 fails when a submit path allocates: the worst of its runs for the UMDF2 paths, the median of five runs for a USB/IP device's frame and transfer paths. S85 checks that an event handler that throws stops no other handler and none of the SDK's own handling, and that a handler can dispose its own controller. S87 checks that no <code>DllImport</code> is left and that every method the SDK's messages and XML docs name exists. See <a href="../testing-and-verification/">Testing and Verification</a>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c"># Run elevated after staging the matching outputs.</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">test</span><span class="p">\</span><span class="n">regression</span><span class="p">\</span><span class="n">swap_regression</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
@@ -1954,13 +2179,13 @@
 </code></pre></div>
 <p>Steam recognition tests must not submit input that a desktop layout could turn into keyboard or mouse actions.</p>
 <h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
-<p>Each release has two ZIPs, one for x64 and one for ARM64. Each holds the SDK, the test application, ProfileExtractor, README, and LICENSE. The SDK DLL is an AnyCPU assembly and is byte-identical in both. The test application and ProfileExtractor are built for the ZIP's architecture.</p>
+<p>Each release has two ZIPs, one for x64 and one for ARM64. Each holds the SDK, the test application, ProfileExtractor, HIDMaestroProfileCheck (v2.0.0), README, and LICENSE. The SDK DLL is an AnyCPU assembly and is byte-identical in both. The test application and ProfileExtractor are built for the ZIP's architecture.</p>
 <p>Preserve probe directory hierarchies when staging a fixture. Verify the SDK hash at each consumer location. Include ProfileExtractor in every release ZIP.</p>
 <p>A failed or unavailable test must not be described as passed. Update the website, documentation, and release notes with the actual supported configurations and results.</p>
 <h2 id="usbip-package-preparation">USB/IP package preparation<a class="headerlink" href="#usbip-package-preparation" title="Permanent link">&para;</a></h2>
 <p>The build downloads the pinned usbip-win2 0.9.8.1 installers, the x64 one from the release and the ARM64 one from the project's signing service, and checks each against its pinned SHA-256. A mismatch fails the build. Both are embedded unmodified, and the license notice embedded beside them names both files and both hashes.</p>
 <p>The build also unpacks the host controller's INF, SYS and CAT from those installers with a pinned unpacker, checks each file against UsbipPackage.json, and embeds them per architecture. That is what lets the SDK move a machine from an older transport to 0.9.8.1 through PnP.</p>
-<p>At run time the SDK verifies the extracted installer again and runs it silently, and only on a machine with no usbip-win2. It never invokes the vendor uninstaller, which removes the shared root-hub filter, and it never runs an installer over an existing install.</p>
+<p>At run time the SDK verifies the extracted installer again and runs it with <code>/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /COMPONENTS=main,client /TASKS=vcredist /NOICONS</code> (v2.0.0), and only on a machine with no usbip-win2 driver package and no installer record. See <a href="../driver-install-and-signing/#usbip-transport">Driver Install and Signing</a> for what each switch does. It never invokes the vendor uninstaller, which removes the shared root-hub filter, and it never runs an installer over an existing install.</p>
 
 
 

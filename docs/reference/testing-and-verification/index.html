@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -620,6 +650,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -935,6 +969,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -2210,7 +2300,7 @@
 
 
 <h1 id="testing-and-verification">Testing and Verification<a class="headerlink" href="#testing-and-verification" title="Permanent link">&para;</a></h1>
-<p>The regression battery has 64 scenarios covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, and the Sony reports against the programs that read them. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
+<p>The regression battery has 96 scenarios, S01 to S85 and S87 to S97, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms and the catalog's capture fidelity. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
 <p>For the wiki coverage of where these pipelines fit, see <a href="../build-and-release/">Build and Release</a>. For the underlying SDK mechanics they exercise, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 <hr />
 <h2 id="scriptsverifypy-cross-api-correctness"><code>scripts/verify.py</code>: cross-API correctness<a class="headerlink" href="#scriptsverifypy-cross-api-correctness" title="Permanent link">&para;</a></h2>
@@ -2273,7 +2363,7 @@
 <ul>
 <li>VID / PID match expected.</li>
 <li>Product string match expected.</li>
-<li><code>bus_type</code> is 1 (USB) or 2 (Bluetooth) per profile's <code>connection</code>. The BTHLEDEVICE spoof shows here.</li>
+<li><code>bus_type</code> is 1 (USB) or 2 (Bluetooth) per profile's <code>connection</code>. The Bluetooth hardware and compatible IDs (<code>BTHENUM</code> or <code>BTHLEDevice</code>) show here.</li>
 <li>Path contains <code>&amp;IG_</code> for Xbox profiles (HIDAPI skip semantic).</li>
 </ul>
 <h4 id="browser-gamepad">Browser Gamepad<a class="headerlink" href="#browser-gamepad" title="Permanent link">&para;</a></h4>
@@ -2312,7 +2402,7 @@
 <p><code>--filter</code> runs only the named API check. Useful for iterating on a specific subsystem without waiting for the full pipeline.</p>
 <hr />
 <h2 id="testregressionswap_regressionps1-lifecycle-battery"><code>test/regression/swap_regression.ps1</code>: lifecycle battery<a class="headerlink" href="#testregressionswap_regressionps1-lifecycle-battery" title="Permanent link">&para;</a></h2>
-<p>The 70-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, and every catalog keyboard and mouse through Raw Input. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
+<p>The 96-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, and the GameCube adapter persona through Dolphin, Slippi and SDL. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># from an ELEVATED PowerShell, repo root or anywhere</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">swap_regression</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2477,6 +2567,11 @@
 <td>v1.3.4 hat-input priority chain: <code>HMHat / HatRaw / HatHundredths / HatDegrees</code> produce correct descriptor field values.</td>
 </tr>
 <tr>
+<td><strong>S37_Layout_Audit_Check</strong></td>
+<td>Layout schema against descriptor, report lengths with no device, then a live read</td>
+<td>A profile's declared layout and its HID descriptor cannot disagree. Every catalog report descriptor's input, output and feature lengths match hid-tools' (<code>reference_lengths.json</code>), and so do the report and length the driver is given for each profile, the <code>InputReportId</code> value it reads them from, and <code>dataReportId</code>. Hand-made descriptors cover Push and Pop, long items and the other items a walker can get wrong. Live: genesis-nso arrives as report 0x3F and never 0x21, microsoft-designer-keyboard's raw frame as its keyboard report 0x01, beside dualshock-4-v2's unchanged 0x01, then logitech-wingman-formula-gp's 5-byte report.</td>
+</tr>
+<tr>
 <td><strong>S58_Identity_Derivation</strong></td>
 <td>Identity key derivation, no device</td>
 <td>The default key reproduces the index-shaped ids, a consumer key derives deterministic collision-free ids, and persona serials derive as documented.</td>
@@ -2519,7 +2614,7 @@
 <tr>
 <td><strong>S68_Vr_Driver_Conflict</strong></td>
 <td>A foreign OpenVR driver registered under <code>hidmaestro</code>, in a path registry of the probe's own</td>
-<td><code>HMVR.FindDriverNameConflicts</code> lists it and never HIDMaestro's own folder. Needs neither SteamVR nor elevation.</td>
+<td><code>HMVR.FindDriverNameConflicts</code> lists it and never HIDMaestro's own folder. Without elevation or SteamVR, the SDK's own writes to the OpenVR path registry match, byte for byte, what the shipped vrpathreg.exe wrote for each case. Elevated, and while SteamVR is not running, a registration with a planted vrpathreg.exe in the SteamVR folder runs nothing from it, the write has the user's rights when the process holds a split token, and <code>UnregisterDriver</code> throws and keeps its gate when the registry cannot be updated.</td>
 </tr>
 <tr>
 <td><strong>S69_Kbm_Descriptors</strong></td>
@@ -2530,6 +2625,136 @@
 <td><strong>S70_Kbm_Raw_Input</strong></td>
 <td>Keyboards and mice through Raw Input (issue #67)</td>
 <td>Four mice with one VID and PID keep four paths. A 600-report burst and four threads at 250 Hz lose no counts. Absolute and extra-button mice, keyboard LEDs and Scroll Lock, consumer usages, output split at its first byte, and every catalog keyboard and mouse live. A consumer killed with input held leaves the key and button up and the pointer where it was, and the cleanup removes all three of its devices.</td>
+</tr>
+<tr>
+<td><strong>S71_Coexistence</strong></td>
+<td>Programs that embed HIDMaestro, side by side as separate processes, with peers built on v1.12.0 and v1.11.0</td>
+<td>Keyless creates land on their own transport indices and each device carries only its own program's input. An identity a live program holds is refused with the holder named, and the holder's devices stay started and unchanged, with their HID handle open and input flowing. A second program's install and create leave the first program's devices, XInput slot, WGI and Raw Input entries alone, and the first program's frame gaps stay within its one-program p99 with a small allowance for run-to-run spread. A killed program's devices go with the next sweep and a live program's stay. Peers built on v1.12.0 and v1.11.0 run beside this release through each branch of the install policy, two programs deploy at once on a machine without the driver, and two USB/IP composites keep each other's imports. A thread acting as a program that is not elevated tries to take the deploy and ledger locks, the claims, events and pipes first. Further sections cover the driver's owner watch, the transport and WinUSB locks, a WinUSB binding that follows a dropped adapter, and pnputil run from System32. Section W runs sweeps beside running programs: a killed program's device whose claims another program holds is left, a sweep holding a dead group's claims while the restarted program creates the same identity, creates beside a running v1.12.0 program landing clear of its indices and an <code>index:N</code> below 64 created as asked, the exit handler beside a create in flight and a handler of the program's own, and v1.11.0 GameInput tables kept while their device or a v1.11.0 create in flight needs them.</td>
+</tr>
+<tr>
+<td><strong>S72_Protected_Staging</strong></td>
+<td>The staging tree under <code>%ProgramFiles%\HIDMaestro\Staging</code></td>
+<td>Every directory on the path is writable only by Administrators and SYSTEM, and <code>hmswd.exe</code> is no longer staged in <code>%TEMP%</code>. A staged tool overwritten with other bytes of the same length is restored from the embedded copy, a staging directory replaced by a link is moved aside rather than followed, and a deploy prunes the staging of versions no running program uses.</td>
+</tr>
+<tr>
+<td><strong>S73_Usbip_Clean_Install</strong></td>
+<td>The usbip-win2 install on a clean machine, in Windows Sandbox started without a window</td>
+<td>A composite create runs the bundled installer and leaves no Start menu folder, desktop shortcut, GUI, SDK or debug file, while the composite enumerates and carries input, read back from the device against a neutral control. A machine holding the installer's uninstall entry and its uninstaller file, without its driver package, gets a refusal. Two programs whose first composites arrive together install once. Without Windows Sandbox the probe exits 2 and the battery prints <code>[SKIP]</code> and counts the scenario as passed, so a machine without Sandbox has not run S73 whatever the tally says.</td>
+</tr>
+<tr>
+<td><strong>S74_NativeAot_Smoke</strong></td>
+<td><code>HIDMaestro.Core</code> in a NativeAOT app</td>
+<td>The whole catalog loads, the driver installs, a UMDF2 controller and a USB/IP composite each carry input, which the app reads back from the HID interface against a neutral control. Each raises <code>OutputReceived</code> for an output report, and both go away on dispose. The publish fails on any IL warning.</td>
+</tr>
+<tr>
+<td><strong>S75_SingleFile_Smoke</strong></td>
+<td>The same in a trimmed, self-contained, single-file app</td>
+<td>The same checks.</td>
+</tr>
+<tr>
+<td><strong>S76_Json_Parity</strong></td>
+<td>Source-generated JSON against v1.12.0's reflection-based reading, no device</td>
+<td>Every profile reads into the same objects, the lenient <code>kind</code> matching holds, and the two value-type initializers survive. During development, with the fill step disabled, it failed on the 68 profiles that depend on it. The probe has no mode that disables the step. Every enum the JSON contract reaches has a converter, and every type the profile model can read has generated metadata.</td>
+</tr>
+<tr>
+<td><strong>S77_Pnp_Notify</strong></td>
+<td>PnP notifications, the removal test and the PnP lock</td>
+<td>With no device, the removal test and the registration gate get recorded sequences and must not answer before the DEVICEINSTANCEREMOVED notification and the PHANTOM record's removal, and no locate may cancel a removal. The PnP lock keeps its bounds during the exit, and no devnode change is made outside the lock except the listed ones. While a plain HID controller is created and disposed, the SDK's own callback receives the events, the device-interface filter's counted apart from the instance filters'. Every removal of a DualShock 4, an Xbox 360 wired and an Xbox Series BT dispose ends with its devnode gone, and each devnode in the tree when its removal test started leaves on DEVICEINSTANCEREMOVED.</td>
+</tr>
+<tr>
+<td><strong>S78_Build_Info</strong></td>
+<td>What a build of the SDK carries, no device</td>
+<td>The release build carries the driver and the USB/IP transport for x64 and ARM64 and the OpenVR driver, and its four INFs carry one DriverVer stamp. A variant built with <code>HMSkipArm64</code> and <code>HMSkipUsbip</code> embeds nothing stale, refuses what it lacks before any machine-wide step, and still runs a UMDF2 controller on x64.</td>
+</tr>
+<tr>
+<td><strong>S79_GameCube_Descriptors</strong></td>
+<td>The Wii U GameCube adapter persona's bytes</td>
+<td>Every catalog profile compiles as a device model, and copies of the persona with one mistake each are refused before anything machine-wide, with a message naming the profile, the JSON path and the limit. The three 057E:0337 profiles carry the corrected descriptors and one Full. The persona's device, configuration, string and report descriptors are a real WUP-028's as served, as Windows enumerates them before any driver loads, and as libusb reads them through WinUSB after <code>BindWinUsb</code>.</td>
+</tr>
+<tr>
+<td><strong>S80_GameCube_Protocol</strong></td>
+<td>The adapter's protocol through WinUSB, as libusb hosts drive it</td>
+<td>SET_PROTOCOL, silence before <code>0x13</code>, each port's input, connection and rumble apart from the others, a controller connected to an empty port at rest or holding a state, the origins, stalls and ignored commands, SET_REPORT read as one command, GET_REPORT answered with the report ID alone, <code>0x15</code> and the port reset, and the 8 ms and 1 ms report rates. A Dispose waits for a submit in progress, and idle frames leave an empty port empty. It also runs the port and protocol model in process on exact clock ticks, a reply dropped while another waits and the low-speed poll table included.</td>
+</tr>
+<tr>
+<td><strong>S81_GameCube_WinUsb</strong></td>
+<td><code>BindWinUsb</code></td>
+<td>The package ranks below input.inf, a second adapter stays on input.inf, and the bound devnode carries no reinstall flag. A disposed adapter's devnode is marked once it has left, and after a killed program an adapter arriving before the next program's reclaim keeps WinUSB while one arriving after it gets input.inf. The binding's machine-wide locks are taken in their one order.</td>
+</tr>
+<tr>
+<td><strong>S82_GameCube_Dolphin</strong></td>
+<td>Dolphin's and Slippi's adapter code, compiled unmodified with the libusb each pins</td>
+<td>All four ports read, rumble reaches each wired port alone and none reaches a WaveBird, and a port leaves and returns. It measures submit-to-read latency and the delivered report rate at 8 ms and 1 ms.</td>
+</tr>
+<tr>
+<td><strong>S83_GameCube_Sdl</strong></td>
+<td>The official SDL3 3.4.18 build and SDL 3.4.18 built with libusb</td>
+<td>The official build lists nothing for the adapter beside a DualShock 4 it lists. The libusb build lists one joystick per connected port, refuses rumble on a WaveBird and without rumble power, and sends each port's rumble to that port.</td>
+</tr>
+<tr>
+<td><strong>S84_Perf_Budget</strong></td>
+<td>Every submit path on a live controller: thousands of calls on the DualShock 4, Xbox 360, DualShock 3 and GameCube paths, 200 per run on the keyboard, mouse, consumer and absolute-pointer paths</td>
+<td>No allocation, on the worst run for the UMDF2 paths and the median of five runs for the USB/IP paths: <code>SubmitState</code> and <code>SubmitRawReport</code> on a DualShock 4, <code>SubmitState</code> on an Xbox 360, <code>SubmitKeyboard</code>, <code>SubmitMouse</code>, a GameCube adapter port's <code>SubmitState</code> and the controller's, and a USB/IP device's frame, output and audio transfers. The census's walk of the <code>Enum</code> keys gives what the configuration manager lists, and falls back to those listings over a key it cannot read.</td>
+</tr>
+<tr>
+<td><strong>S85_Handler_Isolation</strong></td>
+<td>Event handlers that throw, and handlers that dispose their own controller</td>
+<td>A throwing handler ahead of a counting one on <code>OutputReceived</code>, <code>OutputDecoded</code> and <code>KeyboardLedsChanged</code>: the counting handler gets every event, the keyboard's LED state follows Scroll Lock, and a Bluetooth DualSense still switches to report 0x31. When Dispose gives up waiting for a handler that is still running, the output thread ends once the handler returns and touches nothing Dispose released. An <code>OutputReceived</code> handler that disposes its own controller does not wait for its own thread, alone, with two others at once, or through <code>HMContext.Dispose</code>. Offline, a <code>DisposeControllersInParallel</code> callback that throws for each of 256 controllers, or for a set of one, still has every controller disposed and comes out as one <code>AggregateException</code>.</td>
+</tr>
+<tr>
+<td><strong>S87_Interop_Decl</strong></td>
+<td>Interop declarations and the method names in the SDK's own text</td>
+<td>No <code>DllImport</code> is left, <code>SetupDiGetClassDevsW</code> takes its enumerator as a pointer, and every method a message or XML doc names exists as written. Live, an Xbox 360 persona's XInput slot count reads back and the phantom sweep runs.</td>
+</tr>
+<tr>
+<td><strong>S88_Device_Shortcut</strong></td>
+<td>No device shortcut in the SDK or the drivers, no device</td>
+<td>No declared name, file name or string carries a device or vendor word from the catalog outside the probe's allowed names, no vendor or product ID is compared, switched on or assigned in any form, no device name is searched, no profile field set by one catalog profile alone is read, and no region of the 24 device regions and the default device's five is left in a driver source. It failed by design until the last device code became profile data, and passes at 2.0.0.</td>
+</tr>
+<tr>
+<td><strong>S89_Device_Oracle</strong></td>
+<td>The device code gives the bytes it gave before the conversion</td>
+<td>Replays nine recorded cases, the submit and decode paths, the packers, the Switch 2 Pro responder, the USB/IP feature answers, the UMDF2 driver and companion compiled natively, and the physical descriptors of the reference clones, and passes a difference only when the probe's list of changes names it.</td>
+</tr>
+<tr>
+<td><strong>S90_Arith_Roundtrip</strong></td>
+<td>Every raw value comes back, no device</td>
+<td>Every raw value of every catalog conversion, normalized three ways, returns through the SDK's own code. A NaN writes the rest, an unwritten stick rests at its center, and the rounding matches <code>Math.Round</code>.</td>
+</tr>
+<tr>
+<td><strong>S91_Vendor_Blob_Golden</strong></td>
+<td>Vendor-blob reports against golden bytes, no device</td>
+<td>Every Sony, Valve and Nintendo vendor-blob report encodes and decodes to its golden SHA-256, and the codec refuses the removed <code>ds3-battery</code> type, a missing <code>max</code> or <code>invert</code>, and parameters an output field ignores.</td>
+</tr>
+<tr>
+<td><strong>S92_Profile_Model</strong></td>
+<td>Profiles and device models as data, no device</td>
+<td>The catalog and a user's directory load strictly: every defect a file can carry is refused at its JSON path and listed in <code>HMContext.ProfileLoadIssues</code>, and a create and a build meet <code>HMProfileException</code> for a bad profile. The catalog files of every earlier v1.x tag load except for the removed spellings. Answer tables, value sources and patches, model resolution by name and by identity (no catalog profile takes a group from an identity default), the SDK's half of the version contract, the 2.0.0 deploy policy, and <code>FromProfile</code>'s whole copy.</td>
+</tr>
+<tr>
+<td><strong>S93_Contract_Live</strong></td>
+<td>The version contract on the live driver, elevated</td>
+<td>A fresh-token controller's driver reads its index from the identity entry before its first start, on the ROOT path and the SWD xinputhid path. A device without report IDs answers its feature message after HID class's leading 0. Each catalog profile with a model, read back by <code>HMDeviceExtractor</code>, names the model its identity gives it, with the answers the device gave.</td>
+</tr>
+<tr>
+<td><strong>S94_Program_Equivalence</strong></td>
+<td>Every report program three ways, no device</td>
+<td>Each catalog program, decoder and layout runs through its generated code, the interpreter and a naive evaluator written from the design note, on random states and recorded inputs, plus a seeded corpus of 1,000 random programs, the negative corpus, planted defects and every validation rule with its JSON path. Under the JIT and NativeAOT, where every catalog program must bind its generated code.</td>
+</tr>
+<tr>
+<td><strong>S95_Protocol_Engine</strong></td>
+<td>The protocol engine and the device clock, no device</td>
+<td>Conditions, matches, register stores, memory, bitmap and prefix replies, bulk replies in read-sized chunks, the overflow rules, GET_REPORT of the layout that would go out, counters, no allocation per command, reply or report, the Triton's IMU register, the clock's grid under each missed-tick rule, and the idle repeat's period, condition and timestamps.</td>
+</tr>
+<tr>
+<td><strong>S96_Capture_Fidelity</strong></td>
+<td>Catalog data and driver text against their sources, no device</td>
+<td>The INF comments are ASCII, the Xbox 360 profiles carry a real pad's manufacturer string, and <code>xbox-360-flight-stick</code> and <code>ps-move</code> carry their captured descriptors, with the Move's controls, battery and motion where psmoveapi and RPCS3 read them.</td>
+</tr>
+<tr>
+<td><strong>S97_Switch_Family</strong></td>
+<td>A second device on the Switch Pro's mechanisms, no device</td>
+<td><code>joycon-l-proof</code>, a Joy-Con (L) built from <code>switch-pro</code>'s protocol, state block and report programs, loads, answers SDL's Joy-Con open with nxbt's device info, and its 0x3F stick hat follows dekuNukem's grid in all eight directions and reads centered inside its dead zone.</td>
 </tr>
 </tbody>
 </table>
@@ -2604,12 +2829,12 @@
 <h2 id="what-gets-validated-before-a-release">What gets validated before a release<a class="headerlink" href="#what-gets-validated-before-a-release" title="Permanent link">&para;</a></h2>
 <p>The pre-tag validation pipeline (<code>scripts\pre-tag-validate.cmd</code>) is the gate:</p>
 <ol>
-<li>Clean build: no stale Resources/ snapshots.</li>
-<li><code>verify.py --controllers 4</code>: cross-API correctness on a multi-controller deployment.</li>
-<li><code>swap_regression.ps1</code>: full 70-scenario battery. <strong>70/70 PASS required.</strong></li>
-<li><code>HIDMaestroTest cleanup</code>: verify no leftover devnodes after the battery.</li>
-<li>Profile extractor smoke test: the GUI tool opens, populates, extracts.</li>
+<li>Build: <code>build_all.cmd</code> with <code>HMSkipArm64</code>, <code>HMSkipUsbip</code> and <code>HM_STAMP_TIME</code> cleared, then <code>scripts\check_build_layouts.ps1</code> (v2.0.0), then the test app, the profile extractor and the probe set. <code>check_build_layouts.ps1</code> builds the native payloads from the pinned NuGet WDK packages, under the variables an EWDK prompt sets (x64 only) and with roots that hold no kit, runs SDK-project builds of each layout, and checks the <code>HM_STAMP_TIME</code> stamping.</li>
+<li>The Switch Pro protocol check, the Switch descriptor idle check and the Switch Pro SDL3 acceptance.</li>
+<li><code>swap_regression.ps1</code>: full 96-scenario battery. <strong>96/96 PASS required.</strong></li>
+<li>The script prints the result.</li>
 </ol>
+<p>The script does not run <code>verify.py</code>, <code>HIDMaestroTest cleanup</code> or a profile extractor smoke test.</p>
 <p>Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
@@ -2622,7 +2847,7 @@
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md"><code>test/regression/README.md</code></a>: the in-repo battery doc.</li>
 </ul>
 <h2 id="arm64-and-usbip-validation">ARM64 and USB/IP validation<a class="headerlink" href="#arm64-and-usbip-validation" title="Permanent link">&para;</a></h2>
-<p>See <a href="../../start/platform-support/#validation">platform support</a> for the v1.12.0 gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
+<p>[D3-PLACEHOLDER: v2.0.0 battery result] See <a href="../../start/platform-support/#validation">platform support</a> for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
 
 
 

@@ -1,10 +1,10 @@
 ﻿# XUSB Companion
 
-`HMXInput.dll` is a UMDF2 function driver that registers the XUSB device interface for non-xinputhid Xbox profiles. Created **only** for profiles where `vid == 0x045E` and `driverMode != "xinputhid"`: i.e. the Xbox 360 Wired family.
+`HMXInput.dll` is a UMDF2 function driver that registers the XUSB device interface for profiles whose `xinput` block names `"via": "xusbCompanion"`: the ten Xbox 360 profiles, and a profile made outside the catalog that takes `xbox-360-wired`'s presentation from the identity defaults (VID 045E with "xbox" in its id, name or product string).
 
 The companion is a **separate device node** at `SWD\HIDMAESTRO\<token>`, paired with the main HID device (`ROOT\VID_045E&PID_028E&IG_00\<token>`) via shared ContainerID. Real Xbox controllers have XUSB and HID on the same PDO; HIDMaestro uses two device nodes because `mshidumdf.sys` suppresses XUSB IOCTLs on devices it hosts.
 
-Source: [`driver/companion.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c) (957 lines), [`driver/hidmaestro_xusb.inf`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf).
+Source: [`driver/companion.c`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/companion.c) (1,165 lines), [`driver/hm_contract.h`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hm_contract.h), [`driver/hidmaestro_xusb.inf`](https://github.com/hifihedgehog/HIDMaestro/blob/master/driver/hidmaestro_xusb.inf).
 
 For the main HID driver, see [UMDF2 Driver Internals](umdf2-driver-internals.md). For why this exists at all (and not as a child PDO of the main HID), see [SwDevice and PnP](swdevice-and-pnp.md).
 
@@ -33,7 +33,7 @@ ClassGuid   = {4D36E97D-E325-11CE-BFC1-08002BE10318}
 
 System class isn't on the classifier pass-list at all, so WGI doesn't auto-classify the companion. We then admit the companion to WGI's XUSB dispatch path manually via the `xinputhid` UpperFilter tripwire (see below).
 
-`xinput1_4.dll`'s discovery enumerates `GUID_DEVINTERFACE_XUSB {EC87F1E3-...}` directly and does **not** filter by setup class: so HIDMAESTRO under System class is still XInput-discoverable via its `AddInterface` entry.
+`xinput1_4.dll`'s discovery enumerates `GUID_DEVINTERFACE_XUSB {EC87F1E3-...}` directly and does **not** filter by setup class: so HIDMAESTRO under System class is still XInput-discoverable through the interface its driver registers when it starts.
 
 ---
 
@@ -83,6 +83,10 @@ The same string is **also** written per-instance by the SDK to the **main HID de
 WdfDeviceCreateDeviceInterface(device, &XUSB_GUID, NULL);
 ```
 
+As of v2.0.0 the companion registers the interface only when it holds its answers (see [Answers from the profile](#answers-from-the-profile-v200)), so a 1.x program's controller on the 2.0.0 companion gets no XInput from it.
+
+The INF adds no interface, as `xusb22.inf` adds none: the driver's own call above is the only registration, as `xusb22.sys` registers its own. Through v1.12.0 the INF also had an `AddInterface` entry, and it failed the install of a companion whose instance had carried the interface in an earlier life (`DIF_INSTALLINTERFACES`, `0xE0000225`). A keyless companion's fresh install, and a keyed companion's reinstall after a full cleanup, then waited about 25 seconds for the driver to register the interface, and Windows.Gaming.Input listed no gamepad for that life.
+
 **Only** `GUID_DEVINTERFACE_XUSB`. Not `WinExInput` (`{6C53D5FD-...}`): Ghidra decomp of `Windows.Gaming.Input.dll` (Win11 26200) found zero references to that GUID; it is **not** WGI's actual `GamepadAdded` source. Pre-v1.x.x INFs registered both, and the duplicate-WGI-Gamepad hang was the consequence.
 
 ---
@@ -92,9 +96,12 @@ WdfDeviceCreateDeviceInterface(device, &XUSB_GUID, NULL);
 ```c
 typedef struct _COMPANION_CTX {
     ULONG       PacketCount;
-    USHORT      VendorId;
-    USHORT      ProductId;
     ULONG       ControllerIndex;
+    WCHAR       Token[40];              // the identity token from the instance ID
+    BOOLEAN     Contract;               // the version contract holds (v2.0.0)
+    WCHAR       VersionMappingName[64]; // Global\HIDMaestroVersion<N>
+    ULONG       AnswerCount;            // XusbAnswers entries
+    XUSB_ANSWER Answers[HM_XUSB_ANSWERS_MAX_ENTRIES];
     WCHAR       ConfigRegPath[64];      // SOFTWARE\HIDMaestro\Controller<N>
     WCHAR       SharedMappingName[64];  // Global\HIDMaestroInput<N>
     WCHAR       OutputMappingName[64];  // Global\HIDMaestroOutput<N>
@@ -116,9 +123,9 @@ typedef struct _COMPANION_CTX {
     BOOLEAN     GipChanged;
     CRITICAL_SECTION GipLock;
     BOOLEAN     GipLockInit;
-    ULONG       LastVidCheckTick;       // 500 ms throttled live-swap VID gate
-    BOOLEAN     CachedIsXbox;
-    BOOLEAN     VidCheckValid;
+    ULONGLONG   LastGateCheckTick;      // 500 ms throttled rumble gate (XusbCompanion)
+    BOOLEAN     CachedGateOpen;
+    BOOLEAN     GateCheckValid;
     WDFQUEUE    WaitForInputQueue;      // pended IOCTL_XUSB_WAIT_FOR_INPUT
     WDFTIMER    PumpTimer;              // 8 ms backstop
 } COMPANION_CTX;
@@ -126,7 +133,15 @@ typedef struct _COMPANION_CTX {
 
 The pump is doorbell-driven as well as timed. `CompanionInputEvent` wakes `PumpThread` on each new frame and the 8 ms `PumpTimer` is the backstop, so a parked `WAIT_FOR_INPUT` completes on arrival rather than waiting out the tick. `PacketCount` advances only when the decoded state actually changed, matching physical `xusb22` behavior.
 
-The companion shares the input + output sections with the main HID device (same `ControllerIndex` &rarr; same section names). It reads `GipData[14]` from `HIDMAESTRO_SHARED_INPUT` (the SDK packs that 14-byte slice on every `SubmitState` for Xbox-VID profiles) and writes XInput rumble captures to the same output ring the main driver writes to.
+The companion shares the input + output sections with the main HID device (same `ControllerIndex` &rarr; same section names). It reads `GipData[14]` from `HIDMAESTRO_SHARED_INPUT` (the SDK packs that 14-byte slice on every `SubmitState` for profiles with an XUSB companion) and writes XInput rumble captures to the same output ring the main driver writes to.
+
+---
+
+## Answers from the profile (v2.0.0)
+
+The companion's replies to `GET_INFORMATION`, `GET_INFORMATION_EX`, `GET_CAPABILITIES` and `GET_BATTERY_INFORMATION` are profile data. Their bytes are a wired gamepad's, in the model `profiles/models/xusb-companion.json` (`xusbAnswers`), and the profile's `xinput` block writes its values at the offsets the model names: `subType` (a name such as `wheel` or a number), `flags` (`ffb`, `wireless`, `voice`, `pmd`, `noNavigation`), `battery` (type and level), `information` (the IDs `GET_INFORMATION` carries) and `capabilities` (the IDs and flags of the 36-byte reply). The SDK compiles them into the controller's `XusbAnswers` value with `XusbCompanion` 1, and the companion reads them under the version contract, through the identity entry and the version section as the HID driver does (`driver/hm_contract.h`), and writes its own protocol fields at offsets 40 and 44. The rumble gate reads `XusbCompanion` at most every 500 ms.
+
+`xbox-360-wheel-v1` and `-v2` report subtype 2, the wheel, where they reported 1. `xbox-360-wireless` presents its HID child as 045E:02A1 and reports itself wireless, with PID 0 in its 36-byte capability reply.
 
 ---
 

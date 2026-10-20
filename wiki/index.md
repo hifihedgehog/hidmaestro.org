@@ -36,7 +36,7 @@ does.</p>
   <a href="profiles/">
     <span class="pf-eyebrow">Every device</span>
     <h3>Profiles</h3>
-    <p>The JSON profile system, 336 built-in devices, custom and cloned devices, and the extractor that captures yours.</p>
+    <p>The JSON profile system, 337 built-in devices, custom and cloned devices, and the extractor that captures yours.</p>
   </a>
   <a href="troubleshooting/">
     <span class="pf-eyebrow">Something broke</span>
@@ -47,6 +47,21 @@ does.</p>
     <span class="pf-eyebrow">Go deep</span>
     <h3>Technical Reference</h3>
     <p>Architecture, driver internals, the shared memory protocol, PnP lifecycle, and how every gaming API is satisfied.</p>
+  </a>
+  <a href="start/migration/">
+    <span class="pf-eyebrow">New in v2.0.0</span>
+    <h3>Moving from 1.x</h3>
+    <p>Devices are profile data now, and the 2.0.0 driver takes precedence over every older one. Programs built on 1.x must move to 2.0.0. Here is what changes.</p>
+  </a>
+  <a href="sdk/programs-side-by-side/">
+    <span class="pf-eyebrow">New in v2.0.0</span>
+    <h3>Programs side by side</h3>
+    <p>Two or more programs that embed HIDMaestro on one machine, each keeping its own controllers, and a driver deploy that never downgrades.</p>
+  </a>
+  <a href="sdk/gamecube-adapter/">
+    <span class="pf-eyebrow">New in v2.0.0</span>
+    <h3>Wii U GameCube adapter</h3>
+    <p>The four-port adapter Melee players use, for Dolphin, Slippi and SDL, described entirely by its profile.</p>
   </a>
   <a href="sdk/keyboards-and-mice/">
     <span class="pf-eyebrow">New in v1.12</span>
@@ -60,9 +75,22 @@ does.</p>
 A C# SDK and matching UMDF2 driver. Add the SDK to your app, call
 `HMContext.InstallDriver()` once, and `HMContext.CreateController(profile)`
 whenever you need a virtual gamepad, keyboard or mouse. It replaces ViGEmBus and vJoy with one
-user-mode driver, 336 embedded profiles, runtime-built custom profiles,
+user-mode driver, 337 embedded profiles, runtime-built custom profiles,
 HID PID 1.0 force feedback, and live-swap teardown that does not leak PnP
 state.
+
+v2.0.0 moves device behavior out of code and into the profiles, and its
+driver takes precedence over every older one. Programs built on
+HIDMaestro 1.x must move to 2.0.0. See
+[Moving from 1.x](start/migration.md).
+
+v2.0.0 runs two or more programs that embed HIDMaestro on one machine, and between programs on v2.0.0 or later none removes or writes to another's controllers, driver or files outside the remove-everything cleanup. See
+[Programs Side by Side](sdk/programs-side-by-side.md). The SDK also works in
+NativeAOT and trimmed single-file apps, and a build can leave out the ARM64
+payload or the USB/IP transport. See [Build and Release](reference/build-and-release.md).
+The Wii U GameCube adapter, the four-port adapter Melee players use, is a
+profile that Dolphin, Slippi and SDL read through libusb. See
+[Wii U GameCube Adapter](sdk/gamecube-adapter.md).
 
 v1.12 adds keyboards and mice: 51 keyboards and 52 mice copied from real
 devices, plus starters for building your own. See

@@ -1,6 +1,6 @@
 ﻿# Shared Memory Protocol
 
-The wire format of the three pagefile-backed shared memory sections HIDMaestro uses for cross-process communication between the SDK (consumer process) and the driver (`HIDMaestro.dll` in WUDFHost) plus the XUSB companion (`HMXInput.dll` in another WUDFHost). All three are RAM-only: no disk I/O.
+The wire format of the five pagefile-backed shared memory sections HIDMaestro uses for cross-process communication between the SDK (consumer process) and the driver (`HIDMaestro.dll` in WUDFHost) plus the XUSB companion (`HMXInput.dll` in another WUDFHost). All five are RAM-only: no disk I/O.
 
 This page is the byte-level reference. For the SDK-facing API that wraps these sections, see [SDK Reference](../sdk/sdk-reference.md). For the driver-side seqlock readers, see [UMDF2 Driver Internals](umdf2-driver-internals.md).
 
@@ -8,27 +8,41 @@ This page is the byte-level reference. For the SDK-facing API that wraps these s
 
 ## Section names
 
-For controller index `<N>` (0, 1, 2, ...):
+For transport index `<N>`, `HMController.TransportIndex`. A program running alone gets its slot numbers, 0, 1, 2, ..., as every release before v2.0.0 did, with two exceptions: a keyed create whose identity a dead program's device still carries lands on that device's index, and an index whose names another program took first is skipped. While a program built on v1.12.0 runs, every create starts at index 64. When several programs that embed HIDMaestro run, a controller can get another free index, so native writers read the names from `HMController.SectionNames` or compute them from `TransportIndex`, never from the slot. See [Programs Side by Side](../sdk/programs-side-by-side.md).
 
 | Section | Name | Size | Purpose |
 |---------|------|------|---------|
 | Input | `Global\HIDMaestroInput<N>` | 362 bytes | Consumer &rarr; driver: HID input frames + GIP buffer |
 | Output | `Global\HIDMaestroOutput<N>` | ~16.5 KB | Driver / companion &rarr; consumer: rumble / haptics / FFB capture |
-| PID State | `Global\HIDMaestroPidState<N>` | 28 bytes | Consumer &rarr; driver: HID PID 1.0 state mirror |
+| PID State | `Global\HIDMaestroPidState<N>` | 40 bytes, of which the driver's struct uses 36 | Consumer &rarr; driver: HID PID 1.0 state mirror. The driver writes its effect-block allocation back |
+| Input acknowledgement (v1.12.0) | `Global\HIDMaestroInputAck<N>` | 688 bytes | Driver &rarr; consumer: the last delivered frame's sequence number. Consumer &rarr; driver: release frames for keyboards and mice |
+| Version (v2.0.0) | `Global\HIDMaestroVersion<N>` | 64 bytes | Both directions: the SDK's and the driver's versions and protocols, and the controller's identity tag. See [Version section](#version-section-v200) |
 
-Plus two named events for wake-up:
+Plus named events for wake-up, and the owner pipe:
 
 | Event | Name | Purpose |
 |-------|------|---------|
 | Input data | `Global\HIDMaestroInputEvent<N>` | Auto-reset; signaled by the SDK after every input frame. Driver worker thread waits on this. |
-| Stop | `Global\HIDMaestroStopEvent<N>` | Manual-reset; signaled by the driver to stop its worker thread on device unload. |
+| Companion input | `Global\HIDMaestroCompanionInputEvent<N>` | Auto-reset. Signaled with the input event, for frames that carry GIP data, so the XUSB companion completes a parked read at frame arrival. |
+| Input acknowledgement | `Global\HIDMaestroInputAckEvent<N>` | Auto-reset. Signaled by the driver when it acknowledges a delivered frame (v1.12.0). |
+| Remove | `Global\HIDMaestroRemoveEvent<N>` | Created by the SDK with the input section. A `Dispose` of a ROOT device signals it when a program refuses its removal query, and the driver fails its device so Windows removes it by surprise removal (v2.0.0, driver protocol 5). |
+| Removed | `Global\HIDMaestroRemovedEvent<N>` | Created by the SDK with the input section. Signaled by the driver once it has failed its device. The SDK waits up to 2 s for it (v2.0.0, driver protocol 5). |
+| Output | `Global\HIDMaestroOutputEvent<N>` | Signaled per published output packet. The driver and the XUSB companion create or open it, and the SDK creates it for a USB/IP persona. |
+| Stop | `Global\HIDMaestroStopEvent<N>` | Manual-reset. Created and signaled by the driver to stop its worker thread on device unload. |
+| Owner pipe | `\\.\pipe\HIDMaestroOwner<N>` | Held by the SDK for the controller's life. The driver sends the release frames when it closes (v1.12.0). |
 
-The SDK creates all three sections and both events with `SDDL = D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)`: SYSTEM, BUILTIN\Administrators, and Everyone get `GENERIC_ALL`.
+`HMController.SectionNames` lists the names the SDK creates or opens for one controller, from `Global\HIDMaestroInput<N>` to the owner pipe. The stop event is the driver's own.
+
+The SDK creates the sections and its events with `SDDL = O:BAD:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)(A;;GR;;;WD)`. Administrators own them. SYSTEM, BUILTIN\Administrators and LocalService get `GENERIC_ALL`, and Everyone gets `GENERIC_READ`. The owner pipe carries `O:BAD:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)`. The owner is set to Administrators so it does not depend on the machine's default-owner policy, under which an elevated program's objects can be owned by the user.
+
+The driver creates the stop and output events, and the XUSB companion the output event, with `D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)`, so a program that is not elevated can neither signal a controller's stop event nor take its output doorbell. The companion's stop event is unnamed. Any program can create a `Global\` event first, so the driver uses an existing one only when it has a DACL and SYSTEM, Administrators or LocalService owns it. An existing NULL-DACL output event that a driver before v2.0.0 made is taken over and given the descriptor above. Otherwise the stop event is unnamed, which still stops the worker at teardown, and the output event is not used while the name stays unusable. The driver tries again each time it maps the input section, on each idle timeout and every 256 frames, and the SDK's reader falls back to its poll meanwhile.
+
+Before it takes a transport index, the SDK opens each of the index's named sections and events. An index where one exists as another kind of object, refuses to be opened, or has an owner other than SYSTEM or Administrators, or an owner that cannot be read, is skipped. So is an index whose v1.12.0 owner pipe is held. LocalService passes as an owner only for the stop and output events, which the driver host creates as LocalService.
 
 The permissive DACL is required because:
 - The SDK consumer (admin) writes input frames.
 - WUDFHost runs as LocalService and **lacks** `SeCreateGlobalPrivilege`. The driver can `OpenFileMapping` but cannot `CreateFileMapping` in the `Global\` namespace: only the elevated SDK can.
-- Unelevated WGI / GameInput consumers may need to read indirectly via shared section paths.
+- Everyone's read access is for diagnostic tools that are not elevated.
 
 The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared-section permissions.
 
@@ -58,7 +72,7 @@ Covers every HID input report size in the profile database without truncation. D
 
 ### Why 14 bytes for `GipData`?
 
-The XUSB companion reads ONLY this slice on `IOCTL_XUSB_GET_STATE`. The SDK packs LX/LY/RX/RY/LT/RT/buttons into the 14 bytes for Xbox-VID profiles regardless of the descriptor declared in `Data`: so the same controller can serve DirectInput (descriptor-formatted bytes in `Data`) and XInput (GIP-formatted bytes in `GipData`) from one shared write.
+The XUSB companion reads ONLY this slice on `IOCTL_XUSB_GET_STATE`. The SDK packs LX/LY/RX/RY/LT/RT/buttons into the 14 bytes for profiles with an XUSB companion regardless of the descriptor declared in `Data`: so the same controller can serve DirectInput (descriptor-formatted bytes in `Data`) and XInput (GIP-formatted bytes in `GipData`) from one shared write.
 
 Layout:
 
@@ -73,7 +87,7 @@ Layout:
 | 12 | 8 | btnLow (A=0x01 B=0x02 X=0x04 Y=0x08 LB=0x10 RB=0x20 LS=0x40 RS=0x80) |
 | 13 | 8 | btnHigh (Back=0x01 Start=0x02 hat<<2 [bits 2-5] Guide=0x40) |
 
-For non-Xbox-VID profiles, the GIP buffer is left zeroed (no XUSB companion is bound; the bytes are unused). The SDK's `_packsGipBuffer` flag short-circuits the packing entirely: ~60-80 instructions saved per frame on DualSense / Switch Pro / generic gamepad paths.
+For every other profile, the GIP buffer is left zeroed (no XUSB companion is bound, so the bytes are unused). The SDK's `_packsGipBuffer` flag short-circuits the packing entirely: ~60-80 instructions saved per frame on DualSense / Switch Pro / generic gamepad paths.
 
 ### Seqlock write protocol (writer)
 
@@ -254,9 +268,14 @@ typedef struct _HIDMAESTRO_SHARED_PID_STATE {
     /* Driver-side EBI free-list */
     volatile ULONG  EbiAllocBitmap;          //  4 bytes: bit N = EBI N+1 allocated
     volatile ULONG  EbiAllocatedCount;       //  4 bytes: count
+
+    /* Report ID overrides from the profile's descriptor, 0 = canonical (v1.3.7) */
+    UCHAR PoolReportId, StateReportId, BlockLoadReportId;
+    UCHAR CreateNewEffectReportId, BlockFreeReportId, DeviceControlReportId;
+    UCHAR _pad2[2];
 } HIDMAESTRO_SHARED_PID_STATE;
 #pragma pack(pop)
-// Total: 28 bytes
+// Total: 36 bytes. The SDK creates the section at 40 bytes.
 ```
 
 Both producer and consumer in this case: the SDK consumer writes Pool / State, the driver writes Block Load and EBI bitmap. **Different field groups**, partitioned to avoid contention.
@@ -306,18 +325,47 @@ The consumer reads the assigned EBI via `HMController.GetCurrentPidBlockLoad()`.
 
 ---
 
+## Version section (v2.0.0)
+
+`Global\HIDMaestroVersion<N>`, 64 bytes, `HIDMAESTRO_VERSION_INFO` in `driver/driver.h`. The SDK creates it beside the input section before the devnode exists and writes its half, the identity tag included. It also writes the controller's index under `HKLM\SOFTWARE\HIDMaestro\Identity\<token>` before any PnP work. No existing layout changed.
+
+| Offset | Field | Written by |
+|---|---|---|
+| 0 | Layout version, 1 | SDK |
+| 4 | Oldest driver protocol the SDK runs on, 4 | SDK |
+| 8 | Protocol the SDK speaks, 4 | SDK |
+| 12 | SDK version: major, minor, patch, 0, four 16-bit fields | SDK |
+| 20 | Driver protocol, 4, and 0 until written | driver |
+| 24 | Driver version: major, minor, patch, 0, four 16-bit fields | driver |
+| 32 | Driver capabilities: 0x3, the input acknowledgement's delivered bit (0x1) and release bit (0x2) | driver |
+| 36 | Oldest SDK protocol the driver serves, 4 | driver |
+| 40, 44 | The XUSB companion's protocol and the oldest SDK protocol it serves | companion |
+| 48 | Identity tag: the 64-bit FNV-1a hash of the controller's identity token in UTF-16LE, no terminator (`HM_0000` gives 0x1FD048916B8D461F) | SDK |
+| 56 | The value the driver could not read before it failed the start | driver |
+| 60 | The same for the companion | companion |
+
+The driver reads its device instance ID before `WdfDeviceCreate`, takes the identity token from its last segment and reads the index from the identity key. It reads the controller's 2.0.0 values, `FeatureAnswers` and the cached input report IDs, only when the section exists, its range holds protocol 4 and its tag equals the tag of the devnode's own token. Every other devnode, a 1.x program's or one a killed program's key still names, is read as a 1.x controller: the values every version writes and nothing of 2.0.0, so it gets no feature answers. A devnode whose index's section carries another token's tag fails its start with STATUS_DEVICE_CONFIGURATION_ERROR. The driver writes its version, capabilities and oldest served protocol first and its protocol last, with a barrier between, at add and each time it opens the input section.
+
+Protocol 1 is the layout set through v1.11.0: the input and output sections, the events and the PID state. Protocol 2 adds the input acknowledgement and the owner pipe (v1.12.0). Protocol 3 added this section in a build that never shipped, and protocol 4 is the 2.0.0 contract. The 2.0.0 HID driver serves protocols 4 to 5 and the XUSB companion 4: driver protocol 5 adds the remove and removed events above, which the SDK uses only when the driver's half says 5, and the contract the SDK checks at create stays protocol 4. A create reads the section once its device has started. A driver whose range does not hold 4 fails the create, which removes its devnode and throws `HMDriverVersionException` with `Problem` `ProtocolNotServed`, and a set error word throws it with `ValueNotRead`. `HMController.DriverVersion` reads the driver's half. It is null until the driver has started the device, on a driver older than v2.0.0, which never writes it, and on a USB/IP persona, which has no driver.
+
+---
+
 ## Section creation lifecycle
 
-The SDK consumer creates all three sections + both events in `SetupController` before binding the driver:
+The SDK consumer creates the sections and its events in `SetupController` before binding the driver, under the transport index its lease claimed:
 
 ```csharp
 // In DeviceOrchestrator.SetupController
-SharedMemoryIO.EnsureInputMapping(controllerIndex);    // creates Global\HIDMaestroInput<N> + Event
-SharedMemoryIO.EnsureOutputMapping(controllerIndex);   // creates Global\HIDMaestroOutput<N>
+SharedMemoryIO.EnsureInputMapping(transportIndex);    // Input, InputAck, Version, their events, the owner pipe
+SharedMemoryIO.EnsureOutputMapping(transportIndex);   // creates Global\HIDMaestroOutput<N>
 // PID state section is lazy: only created on first HMController.PublishPidPool call
 ```
 
+The owner pipe's first instance is created with `FILE_FLAG_FIRST_PIPE_INSTANCE`. If a program built on v1.12.0 took the same index in the meantime, the create stops with `HMResourceInUseException` rather than share its sections.
+
 The driver and companion both `OpenFileMapping` (not `Create`): LocalService doesn't have permission to create.
+
+Beside the sections, the SDK writes each index's configuration under `HKLM\SOFTWARE\HIDMaestro\Controller<N>`. As of v2.0.0 that configuration gains `InputReportId` (REG_BINARY): the input report a data-only frame fills, its length as a 32-bit little-endian value, then the descriptor. The driver ignores a value whose length is not the `InputReportByteLength` beside it or whose descriptor is not the one in use, and then scans the descriptor as before. A 2.0.0 controller's configuration also holds `FeatureAnswers`, its compiled feature answer table. The driver reads both only under the version contract (see [Version section](#version-section-v200)), so a native writer that wants feature answers writes the section and the identity entry as the SDK does. The configuration no longer holds `DeviceInstanceId`, which no driver read, and a create writes `VendorId` and `ProductId` first. See [UMDF2 Driver Internals](umdf2-driver-internals.md).
 
 The SDK closes (`CloseHandle`) all sections in `HMController.Dispose` after the device removal IOCTL completes. The kernel reclaims the `Global\` namespace entry once the last handle drops. If the SDK process crashes without closing, the kernel reclaims when the process exits.
 
@@ -327,7 +375,7 @@ The driver's stale-handle recovery loop (close + re-open every 500 reads / write
 
 ## Concrete example: input frame
 
-For a DualSense controller (controller index 3) submitting a state with the left stick X slightly right of center and the right trigger pressed (`HMGamepadStateHelpers.StandardAxes(profile, leftStickX: 0.75f, rightTrigger: 0.7f)`) plus `Buttons = HMButton.A | HMButton.LeftBumper`:
+For a DualSense controller (transport index 3) submitting a state with the left stick X slightly right of center and the right trigger pressed (`HMGamepadStateHelpers.StandardAxes(profile, leftStickX: 0.75f, rightTrigger: 0.7f)`) plus `Buttons = HMButton.A | HMButton.LeftBumper`:
 
 ```
 Global\HIDMaestroInput3 view (after SDK write):
@@ -347,7 +395,7 @@ Offset  Bytes                          Field
                                          [9]   = buttons low byte = 0x11 (A + LB)
                                          [10..]  = remaining DualSense state
 72      00 ...                         Data[64..255] (zero-padded)
-264     00 00 00 00 00 00 00 00 ...    GipData[0..13] (zeroed for non-Xbox-VID)
+264     00 00 00 00 00 00 00 00 ...    GipData[0..13] (zeroed without a companion)
 ```
 
 The driver's worker thread wakes on `Global\HIDMaestroInputEvent3`, reads the seqlock-stable view, copies `Data[0..63]` into its IOCTL_HID_READ_REPORT cache, and either completes a pended request or returns to wait.

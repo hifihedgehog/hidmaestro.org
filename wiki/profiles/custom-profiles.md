@@ -1,6 +1,6 @@
 ﻿# Custom Profiles
 
-Three patterns for building controllers that aren't in the 336-profile catalog: clone-and-modify, build-from-scratch, and spoof. All three use `HMProfileBuilder` plus optionally `HidDescriptorBuilder`. Resulting profiles deploy through the same `HMContext.CreateController` path as catalog entries with no special-casing.
+Three patterns for building controllers that aren't in the 337-profile catalog: clone-and-modify, build-from-scratch, and spoof. All three use `HMProfileBuilder` plus optionally `HidDescriptorBuilder`. Resulting profiles deploy through the same `HMContext.CreateController` path as catalog entries with no special-casing.
 
 For the underlying APIs, see [SDK Reference](../sdk/sdk-reference.md) and [HID Descriptor Builder](../sdk/hid-descriptor-builder.md). This page is the cookbook.
 
@@ -38,11 +38,13 @@ var custom = new HMProfileBuilder()
         .AddTrigger("Left", 8).AddTrigger("Right", 8)
         .AddButtons(16).AddHat()
         .Build())
-    .InputReportSize(8)
+    .InputReportSize(9)                  // whole report: no Report ID, 9 data bytes
     .Build();
 
 using var ctrl = ctx.CreateController(custom);
 ```
+
+`InputReportSize` is the input report's whole length on the wire, its ID byte included when the descriptor declares one. A descriptor hex string with a character that is not a hex digit, or an odd number of digits, refuses a profile file at load, and a profile built in code at create with `HMProfileException`. A profile whose real device sends its data in another input report than the SDK picks names that report with `dataReportId`. See [The report a data frame fills](profile-system.md#the-report-a-data-frame-fills-v200).
 
 VID/PID and product string are preserved (Windows / Steam / games still see "DualSense"), but the descriptor declares 16 buttons instead of 15. The extra bit is real wire data: submit `HMButton.Touchpad` (bit 11) or any custom bit and the consumer reads it via DirectInput / SDL3 / Browser like any other button.
 
@@ -264,9 +266,9 @@ new HMProfileBuilder()
     .Build();
 ```
 
-Lands in architecture group 1 (plain HID). DirectInput, SDL3 / HIDAPI, browser RawInput-fallback all see it. **No XInput** (custom VID, no XUSB companion). **No xinputhid** (no `driverMode`).
+Lands in architecture group 1 (plain HID). DirectInput, SDL3 / HIDAPI, browser RawInput-fallback all see it. **No XInput** (no `xinput` block, and no identity default gives one). **No xinputhid** (no `driverMode`).
 
-### Custom Xbox-VID gamepad (gets XUSB companion)
+### Custom Xbox gamepad (gets XUSB companion)
 
 ```csharp
 new HMProfileBuilder()
@@ -279,7 +281,7 @@ new HMProfileBuilder()
     .Build();
 ```
 
-Lands in architecture group 2 (non-xinputhid Xbox + XUSB companion). XInput, WGI vibration via XUSB companion, separate triggers in browser via Vx/Vy + GameInput registry mapping. Note: only specific PIDs in the `[Standard.NTamd64]` section of `hidmaestro_xusb.inf` get the dedicated PID-aliased install: new PIDs fall through to the generic `root\HIDMaestroXUSB` alias which still works but isn't bound to a specific VID:PID.
+Lands in architecture group 2 (non-xinputhid Xbox + XUSB companion), through the identity default for VID 045E with "xbox" in the id, name or product string, which gives `xbox-360-wired`'s presentation. Give it an `xinput` block of its own to set the subtype, flags or battery, or `"xinput": {}` for no XInput. XInput, WGI vibration via XUSB companion, separate triggers in browser via Vx/Vy + GameInput registry mapping. Note: only specific PIDs in the `[Standard.NTamd64]` section of `hidmaestro_xusb.inf` get the dedicated PID-aliased install: new PIDs fall through to the generic `root\HIDMaestroXUSB` alias which still works but isn't bound to a specific VID:PID.
 
 ### Custom xinputhid-bound profile
 
@@ -354,12 +356,12 @@ The encoder picks the first non-null in the priority chain `HatDegrees > HatHund
 
 A custom profile fails `HMContext.CreateController` if:
 
-- **VID is 0.** `HMProfileBuilder.Build()` throws `InvalidOperationException`.
-- **PID is 0.** Same.
-- **`IsDeployable` is false** (descriptor missing). `CreateController` throws `ArgumentException`.
+- **No VID or PID was given.** `HMProfileBuilder.Build()` throws `HMProfileException`. A copy keeps its source's, and an explicit `Vid(0)` or `Pid(0)` builds.
+- **`IsDeployable` is false** (descriptor missing). `CreateController` throws `HMProfileException`.
 - **Descriptor is malformed.** The driver fails to bind; `CreateController` throws `InvalidOperationException` after the PnP wait times out.
+- **A report block does not compile** (v2.0.0). `CreateController` compiles `extendedReport`, `extendedOutputReport`, the ports, the protocol and the WinUSB block before anything machine-wide, and throws `HMProfileException` naming the profile and the JSON path, such as `extendedReport.fields[4] ('uint16-trigger').max is required`. The same check refuses a profile file at load, into `HMContext.ProfileLoadIssues`. A field written for 1.x needs `max` on `uint16-trigger` and `uint16-pressure`, `invert` on an int16 Y axis or pad, and `uint8-level-map` in place of `ds3-battery`. See [Keys 2.0.0 requires](profile-system.md#keys-200-requires).
 
-Test custom profiles against `scripts/verify.py` before shipping:
+Check a profile file with `HIDMaestroProfileCheck` from the release ZIP, which prints every load problem with its JSON path (see [Checking a profile](profile-system.md#checking-a-profile-before-you-ship-it)). Then test custom profiles against `scripts/verify.py` before shipping:
 
 ```cmd
 HIDMaestroTest.exe make-custom-profile C:\my-profiles

@@ -16,3 +16,7 @@ Everything between an empty project and a live virtual controller.
   an Xbox 360 Wired side by side, push input, capture rumble.
 - **[Glossary](glossary.md)**: XUSB, WinExInput, SWD, ContainerID, &IG_,
   mshidumdf, GIP. The terms that show up everywhere else in these docs.
+- **[Moving from 1.x](migration.md)**: programs built on HIDMaestro 1.x
+  must move to 2.0.0. Every profile key 2.0.0 refuses, every changed
+  exception, and what changes on the wire, at create, at cleanup and on
+  the driver.

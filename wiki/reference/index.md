@@ -16,7 +16,7 @@ stack. Read the first five in order for the full picture.
   XInput without a kernel driver.
 - **[SwDevice and PnP](swdevice-and-pnp.md)**: device creation, container
   IDs, and the XInput slot-0 story.
-- **[Shared Memory Protocol](shared-memory-protocol.md)**: the three
+- **[Shared Memory Protocol](shared-memory-protocol.md)**: the five
   sections per controller, the seqlock, and the named events.
 - **[Cross-API Coverage](cross-api-coverage.md)**: how DirectInput,
   XInput, SDL3/HIDAPI, the browser Gamepad API, and WGI are each
@@ -27,9 +27,9 @@ stack. Read the first five in order for the full picture.
   removal ordering, and round-trip latencies by archetype.
 - **[Driver Install and Signing](driver-install-and-signing.md)**: the
   embedded payload, certificate generation, and the idempotent install.
-- **[Build and Release](build-and-release.md)**: the dual-architecture build and
-  the release recipe.
+- **[Build and Release](build-and-release.md)**: the dual-architecture build,
+  the build settings, NativeAOT and the release recipe.
 - **[Testing and Verification](testing-and-verification.md)**:
-  `scripts/verify.py` and the 70-scenario regression battery.
+  `scripts/verify.py` and the 96-scenario regression battery.
 - **[References](references.md)**: authoritative sources for every
   load-bearing claim in these docs.

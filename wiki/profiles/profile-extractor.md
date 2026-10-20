@@ -26,7 +26,7 @@ The tool is self-contained (.NET 10 single-file publish): one EXE, no separate D
 4. **Click Extract.** The Profile JSON, a parsed-layout summary, and the descriptor in hex appear in three tabs.
 5. **Save or copy.** Save the JSON to disk, or copy it to clipboard.
 
-The output is the exact JSON format the shipped catalog uses. Save under `profiles/<vendor-slug>/<model-slug>.json` and `LoadProfilesFromDirectory` will pick it up.
+The output is the exact JSON format the shipped catalog uses. As of v2.0.0 it names the `deviceModelFrom` the device's identity gives, so a DualSense capture takes the Sony feature answers its model holds. Save under `profiles/<vendor-slug>/<model-slug>.json` and `LoadProfilesFromDirectory` will pick it up. Give it an id the catalog does not use: a repeated id refuses the later file. `HIDMaestroProfileCheck`, beside the extractor in the ZIP, checks the saved file as the SDK loads it (see [Checking a profile](profile-system.md#checking-a-profile-before-you-ship-it)).
 
 ---
 
@@ -101,7 +101,7 @@ The tool calls `HMDeviceExtractor.Extract(device)`. Internally:
 3. **Query strings** via `HidD_GetProductString`, `HidD_GetManufacturerString`, `HidD_GetSerialNumberString`.
 4. **Query preparsed data** via `HidD_GetPreparsedData` &rarr; opaque blob with Microsoft's compressed representation of the descriptor.
 5. **Reconstruct the descriptor** via the libusb/hidapi C# port (Chromium WebHID team's reverse engineering of the preparsed-data layout).
-6. **Build the profile** with inferred `type`, `connection`, slug-from-product-string ID, timestamped notes.
+6. **Build the profile** with inferred `type`, `connection`, slug-from-product-string ID, timestamped notes. As of v2.0.0 `connection` comes from the parent devnode's compatible IDs, as hidapi and SDL read the bus: the first that holds `USB`, `BTHENUM` or `BTHLEDEVICE` decides, Bluetooth LE for the last, and anything else reads as USB. A Bluetooth device, a HIDMaestro Bluetooth controller included, extracts as `bluetooth` with its `bluetoothTransport`, and with `bluetoothVendorIdSource` when the parent's hardware IDs carry the Bluetooth SIG's vendor ID source. Through v1.12.0 the bus came from the device path, and a HIDMaestro Bluetooth controller, whose HID child is `HID\HIDCLASS\...`, extracted as USB.
 7. **Return** as `HMProfile`.
 
 Step 5 is the interesting one. Windows doesn't expose the original device descriptor bytes through any user-mode API: only the preparsed blob. The [HIDAPI algorithm](https://github.com/libusb/hidapi/blob/master/windows/hidapi_descriptor_reconstruct.c) (originally contributed by the Chromium WebHID team) walks the blob's `LinkCollection`, `ButtonCaps`, `ValueCaps`, and Usage tables and emits a HID descriptor byte stream that, when re-parsed by `HidP_GetCaps`, produces the same preparsed blob (within the bounds of legal HID descriptor variations).

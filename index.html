@@ -54,7 +54,7 @@
             <a href="/docs/" class="btn btn-ghost">Read the docs</a>
         </div>
         <div class="hero-new-row reveal" data-d="4">
-            <a class="hero-new" href="docs/sdk/keyboards-and-mice/"><b>New in v1.12</b><span>Keyboards and mice, copied from 103 real devices</span></a>
+            <a class="hero-new" href="docs/start/migration/"><b>New in v2.0.0</b><span>Every device is profile data, and two programs share one machine</span></a>
         </div>
     </div>
 
@@ -69,7 +69,7 @@
     <div class="container reveal" data-d="4">
         <div class="trust">
             <div class="trust-item"><span>The engine inside <a href="https://padforge.org/" target="_blank" rel="noopener"><b>PadForge</b></a></span></div>
-            <div class="trust-item"><span><b>336</b> device profiles</span></div>
+            <div class="trust-item"><span><b>337</b> device profiles</span></div>
             <div class="trust-item"><span><b>~35 &micro;s</b> measured latency</span></div>
             <div class="trust-item"><span><b>MIT licensed.</b> Commercial use welcome.</span></div>
         </div>
@@ -90,15 +90,19 @@
                     A C# SDK and a matching user-mode driver. Your code picks a
                     profile, and the game on the other side sees the real thing.
                 </p>
-                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 31 capabilities</a>
+                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 34 capabilities</a>
             </div>
 
             <div class="manifest reveal" data-d="1">
                 <div class="mf" style="--mf: var(--ember)"><b>Exact hardware identity</b><span>VID/PID, strings, descriptors, layout, and the bus type itself</span></div>
-                <div class="mf" style="--mf: var(--brand-ps)"><b>336 device profiles</b><span>Xbox 360 to HOTAS to keyboards, every one a JSON file</span></div>
+                <div class="mf" style="--mf: var(--brand-ps)"><b>337 device profiles</b><span>Xbox 360 to HOTAS to keyboards, every one a JSON file</span></div>
+                <div class="mf" style="--mf: var(--telemetry)"><b>Devices are JSON</b><span>No device-specific code: reports, protocols and answers are profile data</span></div>
                 <div class="mf" style="--mf: var(--brand-xbox)"><b>~35 &micro;s measured latency</b><span>10,000 iterations, reproducible with one command</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Every gaming API at once</b><span>DirectInput, XInput, SDL3, browser, WGI, RawInput</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Keyboards and mice</b><span>51 keyboards and 52 mice, and every report arrives</span></div>
+                <div class="mf" style="--mf: var(--telemetry)"><b>Programs side by side</b><span>Two apps that embed HIDMaestro, each keeping its own controllers</span></div>
+                <div class="mf" style="--mf: var(--brand-nin)"><b>A Wii U GameCube adapter</b><span>Four ports for Dolphin, Slippi and SDL, described by one profile</span></div>
+                <div class="mf" style="--mf: var(--brand-xbox)"><b>NativeAOT and single-file</b><span>The catalog loads in AOT and trimmed apps for x64 and ARM64</span></div>
                 <div class="mf" style="--mf: var(--brand-ps)"><b>Native on ARM64 Windows</b><span>One DLL holds both driver sets and installs the matching one</span></div>
                 <div class="mf" style="--mf: var(--brand-steam)"><b>Valve personas Steam recognizes</b><span>The Steam Deck and both Steam Controllers, filed as Valve hardware</span></div>
                 <div class="mf" style="--mf: var(--brand-nin)"><b>A Switch Pro that answers back</b><span>The Nintendo handshake, answered over real Bluetooth</span></div>
@@ -108,9 +112,9 @@
                 <div class="mf" style="--mf: var(--brand-steam)"><b>Virtual VR controllers</b><span>Two hands SteamVR promotes to real roles</span></div>
                 <div class="mf" style="--mf: var(--brand-xbox)"><b>Force feedback answered</b><span>HID PID for DirectInput games, rumble raised to your code</span></div>
                 <div class="mf" style="--mf: var(--brand-ps)"><b>Self-bootstrapping install</b><span>No EV certificate, no test-signing mode, no reboot</span></div>
-                <div class="mf" style="--mf: var(--telemetry)"><b>Hot-plug in ~200 ms</b><span>Create, live-swap, and remove, with no leftover devices</span></div>
+                <div class="mf" style="--mf: var(--telemetry)"><b>Hot-plug, no reboot</b><span>Create, live-swap, and remove, with no leftover devices</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Six-plus controllers at once</b><span>Correct per-controller order on every API</span></div>
-                <div class="mf" style="--mf: var(--brand-nin)"><b>A 70-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
+                <div class="mf" style="--mf: var(--brand-nin)"><b>A 96-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
             </div>
         </div>
     </div>
@@ -137,7 +141,7 @@
                 <div class="details reveal" data-d="3">
                     <details class="detail">
                         <summary>Xbox to HOTAS, out of the box</summary>
-                        <div class="detail-body">Embedded profiles across 46 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file. Adding support for a new one means writing JSON, not modifying code.</div>
+                        <div class="detail-body">Embedded profiles across 73 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, and more. Every controller is a JSON file, down to its report fields, ports and commands. Adding support for a new one means writing JSON, not modifying code.</div>
                     </details>
                     <details class="detail">
                         <summary>Steam sees a Steam Deck</summary>
@@ -145,7 +149,7 @@
                     </details>
                     <details class="detail">
                         <summary>A Switch Pro that answers back</summary>
-                        <div class="detail-body">The Switch Pro Controller is not a passive device: hosts drive a Nintendo subcommand handshake and stall without a device that answers. HIDMaestro's driver answers it over the real Bluetooth wire, with a descriptor extracted byte-exact from a live Pro's SDP cache: SPI calibration reads, input-mode switch, 60 Hz full-mode streaming with gyro and accel. SDL3 and Steam Input bind it as a real Bluetooth Pro Controller with motion and rumble.</div>
+                        <div class="detail-body">The Switch Pro Controller is not a passive device: hosts drive a Nintendo subcommand handshake and stall without a device that answers. HIDMaestro answers it from the profile's data over the real Bluetooth wire, with a descriptor extracted byte-exact from a live Pro's SDP cache: SPI calibration reads, input-mode switch, and full-mode reports with gyro and accel every 15 ms on the device's own clock. switch-pro-usb is the same pad on its USB descriptor. SDL3 and Steam Input bind it as a real Bluetooth Pro Controller with motion and rumble.</div>
                     </details>
                     <details class="detail">
                         <summary>The speaker, the mic, and the actuators</summary>
@@ -172,9 +176,9 @@
 <section class="section-tight section-alt">
     <div class="container">
         <div class="stat-grid">
-            <div class="stat reveal"><div class="stat-n">336</div><div class="stat-l">Device profiles</div></div>
+            <div class="stat reveal"><div class="stat-n">337</div><div class="stat-l">Device profiles</div></div>
             <div class="stat reveal" data-d="2"><div class="stat-n">~35<em>&micro;s</em></div><div class="stat-l">Median single-press</div></div>
-            <div class="stat reveal" data-d="3"><div class="stat-n">70</div><div class="stat-l">Battery scenarios</div></div>
+            <div class="stat reveal" data-d="3"><div class="stat-n">96</div><div class="stat-l">Battery scenarios</div></div>
             <div class="stat reveal" data-d="4"><div class="stat-n">0</div><div class="stat-l">Kernel drivers for standard profiles</div></div>
         </div>
     </div>
@@ -252,8 +256,8 @@
                         <div class="detail-body">Standard profiles keep controller traffic in shared memory. Composite profiles use local USB/IP. Applications can add network sharing above the SDK, as PadForge does with Remote Link.</div>
                     </details>
                     <details class="detail">
-                        <summary>Live in about a second</summary>
-                        <div class="detail-body">When the installed driver already matches, InstallDriver() completes in ~40-60 ms and a consumer goes from process start to a live controller in about a second. If the consuming app is force-closed mid-session, the next launch evicts the orphaned devices and has the first controller live again in ~2.3 s, measured with an Xbox Series BT profile in the mix, the deepest teardown stack.</div>
+                        <summary>Live in about half a second</summary>
+                        <div class="detail-body">When the installed driver already matches, InstallDriver() completes in ~40-60 ms and a consumer goes from process start to a live controller in about half a second: 553 ms at the median for a DualShock 4 on v2.0.0, against 725 ms on v1.12.0. If the consuming app is force-closed mid-session, the next launch evicts the orphaned devices and has the first controller live again in ~2.3 s, measured with an Xbox Series BT profile in the mix, the deepest teardown stack.</div>
                     </details>
                 </div>
             </div>
@@ -294,8 +298,8 @@
 
         <div class="details reveal" data-d="2" style="max-width:760px; margin-inline:auto">
             <details class="detail">
-                <summary>70 regression scenarios</summary>
-                <div class="detail-body">A 70-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client and its firmware updater, the browser Gamepad API, WGI, Raw Input for every catalog keyboard and mouse, the battery reply a pad gives XInput, the driver catalogs for both architectures, and the device identity of every family across nine lives. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
+                <summary>96 regression scenarios</summary>
+                <div class="detail-body">A 96-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client and its firmware updater, the browser Gamepad API, WGI, Raw Input for every catalog keyboard and mouse, programs running side by side as separate processes, NativeAOT and single-file apps, Dolphin, Slippi and SDL reading the GameCube adapter persona, the battery reply a pad gives XInput, the driver catalogs for both architectures, and the device identity of every family across nine lives. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
             </details>
             <details class="detail">
                 <summary>Six pads, every API, correct order</summary>
@@ -303,7 +307,7 @@
             </details>
             <details class="detail">
                 <summary>Create, swap, and remove live</summary>
-                <div class="detail-body">Create and remove controllers on the fly, about 200 ms for a single controller. Live-swap a controller's profile mid-session. No reboots, no leftover devices.</div>
+                <div class="detail-body">Create and remove controllers on the fly, about 200 ms for a single controller as measured before v2.0.0. Live-swap a controller's profile mid-session. No reboots, no leftover devices.</div>
             </details>
             <details class="detail">
                 <summary>FFB games get their answers</summary>
@@ -332,15 +336,15 @@
                 <div class="details reveal" data-d="3">
                     <details class="detail">
                         <summary>Reference the SDK</summary>
-                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 336-profile catalog, the driver binaries for x64 and ARM64, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
+                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 337-profile catalog, the driver binaries for x64 and ARM64, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
                     </details>
                     <details class="detail">
                         <summary>Install the driver</summary>
-                        <div class="detail-body">InstallDriver() is self-bootstrapping: it creates a locally trusted certificate, signs the driver, and installs it. No EV certificate, no test-signing mode, no reboot. When the installed driver already matches, the call completes in ~40-60 ms.</div>
+                        <div class="detail-body">InstallDriver() is self-bootstrapping: it creates a locally trusted certificate, signs the driver, and installs it. No EV certificate, no test-signing mode, no reboot. When the installed driver already matches, the call completes in ~40-60 ms. Only one program deploys at a time. An older driver is upgraded whatever runs on it, and a newer one is never downgraded.</div>
                     </details>
                     <details class="detail">
                         <summary>Create and drive</summary>
-                        <div class="detail-body">Pick a profile, call CreateController, submit input. A single controller is live in about 200 ms. Dispose it and the device disappears, with no leftover PnP state.</div>
+                        <div class="detail-body">Pick a profile, call CreateController, submit input. A single controller went live in about 200 ms when measured before v2.0.0. Dispose it and the device disappears, with no leftover PnP state.</div>
                     </details>
                 </div>
             </div>
@@ -383,7 +387,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
                     </thead>
                     <tbody>
                         <tr><td>Kernel driver required</td><td class="us">No, except the composite USB personas</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td></tr>
-                        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 336 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td></tr>
+                        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 337 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td></tr>
                         <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td></tr>
                         <tr><td>Local single-press latency</td><td class="us">~35 &micro;s measured</td><td>168 &micro;s published</td><td>N/A</td><td>N/A</td></tr>
                         <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Retired</td><td>Stale</td></tr>
@@ -428,6 +432,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
             <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary" target="_blank" rel="noopener">Download latest release</a>
             <a href="https://github.com/hifihedgehog/HIDMaestro" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
         </div>
+        <p class="dl-arch reveal" data-d="3">Programs built on HIDMaestro 1.x must move to 2.0.0. <a href="docs/start/migration/">Read what changes</a>.</p>
         <p class="dl-arch reveal" data-d="3">v1.9 adds <b>ARM64 Windows</b>. On ARM64, use v1.9.1 or later. Each release has an x64 ZIP and an ARM64 ZIP, and HIDMaestro.Core.dll is the same file in both. <a href="docs/start/platform-support/">Read what was measured on each</a>.</p>
         <div class="dl-meta reveal" data-d="3">
             <span>One DLL</span><span>x64 and ARM64</span><span>MIT</span>

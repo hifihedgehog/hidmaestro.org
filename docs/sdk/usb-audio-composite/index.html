@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -622,6 +652,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -1131,6 +1165,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -2078,7 +2168,9 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">HMContext</span><span class="p">.</span><span class="n">InstallUsbipBackend</span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">status</span><span class="p">));</span>
 </code></pre></div>
 <p>Neither is a gate. <code>CreateController</code> works either way. <code>HMProfile.RequiresUsbipBackend</code> marks which profiles are composites, useful for labeling picker entries that bring controller audio.</p>
-<p>Everything else stays in HIDMaestro's own user-mode code. The SDK runs an in-process USB/IP device server on loopback (fixed port range 18509-18524): descriptor service, HID reports through the same shared-memory contract every other profile uses, and a highest-priority pacing thread completing isochronous URBs at the endpoint's 1 ms service interval. Measured idle cost with the transport installed and no device attached: indistinguishable from baseline (0.35% vs 0.24% CPU on an Atom Z8350).</p>
+<p>Everything else stays in HIDMaestro's own user-mode code. The SDK runs an in-process USB/IP device server on loopback (fixed port range 18509-18524, then 28509-28524 when the first is full, then a port Windows assigns): descriptor service, HID reports through the same shared-memory contract every other profile uses, and a highest-priority pacing thread completing isochronous URBs at the endpoint's 1 ms service interval. Measured idle cost with the transport installed and no device attached: indistinguishable from baseline (0.35% vs 0.24% CPU on an Atom Z8350).</p>
+<p>As of v2.0.0 the server admits an import only from the host controller, whose connection the System process owns, and answers an import from any other process with an error before it looks up the device. The device list still answers anyone, so another program's cleanup can see which devices a server exports. A connection must finish its handshake within 5 s, and past 16 connections in their handshake a new one from a user-mode process is closed at once. An imported connection may then sit idle.</p>
+<p>A composite persona answers GET_REPORT(Input) with the latest bytes of the input report whose ID the host asks for, or that ID and zeros before the first report of it. An ID its descriptor does not declare stalls. The Switch 2 Pro persona answers a declared ID with the report it would send next, and report ID 0 with its selected report. A device with a command protocol answers as its profile's <code>getReport</code> says: the GameCube adapter, set to <code>"reportId"</code>, answers the requested report ID alone and stalls report ID 0. See <a href="../../profiles/profile-system/#protocol">Profile System</a>.</p>
 <p><code>HMController.SubmitState</code>, <code>SubmitRawReport</code>, <code>OutputReceived</code>, <code>OutputDecoded</code>, and the Sony feature-report behavior are identical across backends. The HID interface of each composite is byte-identical to its UMDF2 sibling.</p>
 <hr />
 <h2 id="the-audio-surfaces">The audio surfaces<a class="headerlink" href="#the-audio-surfaces" title="Permanent link">&para;</a></h2>
@@ -2103,6 +2195,7 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
 <a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">    </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;{e.Function}: {(e.IsMute ? $&quot;</span><span class="n">mute</span><span class="o">=</span><span class="p">{</span><span class="n">e</span><span class="p">.</span><span class="n">MuteValue</span><span class="p">}</span><span class="s">&quot; : $&quot;</span><span class="p">{</span><span class="n">e</span><span class="p">.</span><span class="n">VolumeDb</span><span class="p">:</span><span class="n">F1</span><span class="p">}</span><span class="w"> </span><span class="n">dB</span><span class="s">&quot;)}&quot;</span><span class="p">);</span>
 </code></pre></div>
 <p><code>FramesReceived</code> fires on the backend's pacing thread with a few milliseconds of PCM per window, at the cadence the host renders. Handlers must be quick and thread-safe, the same contract as <code>OutputReceived</code>.</p>
+<p>As of v2.0.0 <code>ControlChanged</code> and both <code>StreamingChanged</code> events fire on the device's own audio event thread, in the order the host made the changes, so a handler that takes its time delays the events after it and no transfer. While a handler blocks, a newer write to a control replaces the one of that control still waiting, so a handler gets each control's latest value. Stream opens and parks are never merged. A change the host made before the controller is disposed is still raised, after <code>Dispose</code> returns if a handler is still running then.</p>
 <p><code>Submit</code> returns the bytes it accepted. The microphone buffer holds roughly a quarter second, and a producer that outruns the 1 ms service interval will eventually fill it, at which point the excess is dropped rather than allowed to grow capture latency without bound. Feeding one continuous stream is what the buffer expects, so chunk sizes need not be frame-aligned and a sample may span two calls. What a short return means is that audio was lost, and a consumer that wants to know should compare it against the length submitted. Bytes are only ever dropped on a sample-frame boundary, so a full buffer costs you a click, never a permanently misaligned stream.</p>
 <p><code>StreamingChanged</code> and <code>IsStreaming</code> follow the host's SET_INTERFACE. usbip-win2 0.9.8.1's host controller driver does not recognize the interface notifications of an older usbip-win2 filter driver, so on a machine where the 0.9.8.1 driver sits beside such a filter, SET_INTERFACE never arrives while the audio itself flows. There, as of v1.10.0, the stream counts as open from its first isochronous transfer, and the close is raised within about half a second of the last one. On such a machine, <code>IsStreaming</code> also reads false while a stream is paused with no transfers.</p>
 <h2 id="recognizing-your-own-persona">Recognizing your own persona<a class="headerlink" href="#recognizing-your-own-persona" title="Permanent link">&para;</a></h2>
@@ -2112,7 +2205,7 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                              ROOT\HIDMAESTRO_UDE
 </code></pre></div>
 <p>It is added alongside the upstream id, never in place of it, so driver binding is unchanged. A consumer that already filters its own virtual pads by testing hardware IDs for <code>HIDMAESTRO</code> needs only to walk far enough up the device tree: from the persona's HID interface, that node is four parents away, so a depth limit of five or more finds it. Filtering on the transport's <code>usbip2_ude</code> service instead would also catch an unrelated usbip install, and would break outright if the backend is ever replaced.</p>
-<p>The same absence of a marker changes how a persona is cleaned up. The device sweep behind <code>RemoveAllVirtualControllers</code> walks the ROOT and SWD enumerators looking for exactly that <code>HIDMAESTRO</code> token, so it can never see a composite, and before v1.4.5 a consumer that created one and exited left a USB DualSense enumerated on the machine with nothing left running to feed it. The sweep now detaches every persona this SDK owns from the emulated host controller before it walks the enumerators. Personas owned by another live process are detached too, which is the point of asking for a clean machine.</p>
+<p>The same absence of a marker changes how a persona is cleaned up. The device sweep behind <code>RemoveAllVirtualControllers</code> walks the ROOT and SWD enumerators looking for exactly that <code>HIDMAESTRO</code> token, so it can never see a composite, and before v1.4.5 a consumer that created one and exited left a USB DualSense enumerated on the machine with nothing left running to feed it. The sweep now detaches personas from the emulated host controller before it walks the enumerators. As of v2.0.0 it detaches only the personas of programs that have exited, matched by the server port in each program's owner record, along with any import on the SDK's port ranges whose server no longer listens, and <code>RemoveAllVirtualControllers(HMCleanupScope.Everything, preserveInstall)</code> detaches every one. See <a href="../programs-side-by-side/">Programs Side by Side</a>.</p>
 <p>The order matters and is not an implementation detail a consumer can ignore. A persona's input pump maps the shared input section directly and reads it in a loop, taking no part in the stop-event drain the UMDF2 controllers use, so the pump has to be joined before the sweep destroys those sections. Detaching without stopping it first is not a leak, it is an access violation on a background thread that takes the process down. If you build your own teardown path over the internals rather than calling the SDK's, stop the pumps first.</p>
 <p>One fidelity note worth knowing: Windows persists per-endpoint enable/disable state by device identity. Because the composite presents the real pad's exact identity, it inherits whatever state the machine last had for the real controller's endpoints. If the real pad's speaker endpoint was ever disabled in the Sound control panel, the virtual one arrives disabled too. Re-enable it there once.</p>
 <hr />
@@ -2120,11 +2213,12 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
 <p>Composite personas add these fields to the profile JSON:</p>
 <ul>
 <li><code>"backend": "usbip"</code> selects the create path. It is a property of the device, never a mode toggle on an existing profile: a profile that presented four interfaces on some machines and one on others would name a device plus a machine state.</li>
-<li><code>"usbConfiguration"</code> carries the full USB identity: the structured interface/endpoint model the backend routes with, plus the verbatim wire blobs (<code>deviceDescriptor</code>, <code>configurationDescriptor</code>, <code>otherSpeedConfigurationDescriptor</code>), the <code>busSpeed</code>, and <code>audioControls</code> with the pad's real UAC volume ranges. The blobs are served byte-for-byte and cross-checked against the structured model at create time.</li>
+<li><code>"usbConfiguration"</code> carries the full USB identity: the structured interface/endpoint model the backend routes with, plus the verbatim wire blobs (<code>deviceDescriptor</code>, <code>configurationDescriptor</code>, <code>otherSpeedConfigurationDescriptor</code>), the <code>busSpeed</code> (<code>"low"</code>, <code>"full"</code> or <code>"high"</code>, the default), and <code>audioControls</code> with the pad's real UAC volume ranges. The blobs are served byte-for-byte and cross-checked against the structured model at create time.</li>
 <li>An interface's alt setting may carry its own <code>"reportDescriptor"</code>, for a persona presenting more than one HID interface. The primary interface (the one whose <code>function</code> is <code>"hid"</code>) serves the profile's own <code>descriptor</code> as always; the others serve theirs from here.</li>
 <li>An interface whose <code>function</code> is <code>"vendor"</code> may declare <code>"bulk"</code> endpoints. The backend serves them for a persona with a responder behind them, the Switch 2 Pro Controller, and stalls them for any other.</li>
 <li><code>"microsoftOs"</code> carries the Microsoft OS 1.0 descriptors a device answers Windows with, as hex: <code>string</code>, the 18 bytes Windows reads at string index 0xEE, and <code>extendedCompatId</code> and <code>extendedProperties</code>, the feature descriptors a vendor request with wIndex 4 and 5 reads. With them Windows binds WinUSB to the interface they name, with no driver install. A profile without the block stalls all three.</li>
-<li><code>"featureStubs"</code> declares the answers the persona gives to <code>GET_REPORT(Feature)</code>, for a device whose claiming software interrogates it before it will use it. <code>messageByte</code> says where the message id sits in a write's payload, and a report may declare the <code>param</code> it answers for, when one message carries several. A report may also carry <code>steamFirmwareStamp</code>, an <code>offset</code> and a <code>key</code>: with Steam installed, the four bytes at that offset answer with the firmware build the key names in Steam's <code>hardwareupdater.cfg</code>, little-endian.</li>
+<li><code>"winUsb"</code> and <code>"sharedSerial"</code> (v2.0.0) inside <code>usbConfiguration</code> describe a WinUSB binding on request and a serial every unit shares. A device's command protocol is <code>"protocol"</code> at the profile's top level, and <code>usbConfiguration.protocol</code> is refused at load. See <a href="../../profiles/profile-system/#devices-with-ports-and-protocols-v200">Devices with ports and protocols</a>.</li>
+<li><code>"featureStubs"</code> declares the answers the persona gives to <code>GET_REPORT(Feature)</code>, for a device whose claiming software interrogates it before it will use it. <code>messageByte</code> says where the message id sits in a write's payload, and a report may declare the <code>param</code> it answers for, when one message carries several. A report may also carry a <code>patch</code> that writes a value from one of the profile's <code>valueSources</code> into its bytes. <code>steam-controller-2</code> patches the four bytes at offset 19 with the firmware build <code>TRITON_FW_TS</code> names in Steam's <code>hardwareupdater.cfg</code>, little-endian, through a <code>keyedHexFile</code> source, and keeps the captured build without Steam. <code>steamFirmwareStamp</code>, the older spelling, is refused at load with its replacement named.</li>
 </ul>
 <p>See <a href="../../profiles/profile-system/">Profile System</a> for the rest of the schema.</p>
 <hr />
@@ -2150,7 +2244,7 @@ Two optional APIs exist for consumers that want control over <em>when</em> the o
 <p>The feature answers are grounded on two independent reads of real hardware that agree record for record: OpenPuck's <code>identity.cpp</code>, and <a href="https://github.com/CouchTurtle/sc2-research">sc2-research</a>, which logs the same five attribute tags in the same order off a live controller and matches Steam's own firmware-update JSON on two of the values. The <code>0x83</code> block is those 25 bytes: product id <code>0x1302</code>, a zero capabilities word, the bootloader and firmware build timestamps, and the board revision. Steam validates them byte for byte, so none of them is a guess.</p>
 <p>The firmware build is the one value that moves. Steam's updater, <code>bin\hardwareupdater\hardwareupdater.exe</code> in its install, offers an update to any unit whose build differs from the one it ships, so a fixed capture goes stale with Valve's next firmware release. With Steam installed, the persona answers with the build <code>TRITON_FW_TS</code> names in the updater's <code>hardwareupdater.cfg</code>, which is what a real unit reports once it takes that update. The file is read on each request, so a Steam update that ships new firmware is followed without recreating the controller. Without Steam, the captured build stands. Battery scenario S62 runs Steam's updater against the persona and requires it to find no update.</p>
 <p><code>0xAE</code> reads a string by index, and the persona declares one answer per index the real device provisions: the board serial, the unit serial, and the constant at index 3 that Steam checks. Every other index reads back <code>0xFF</code> where the index would be, which is how a real unit says a string is not provisioned, and the byte Steam's own updater tests.</p>
-<p>Its input frame is the 54-byte <code>TritonMTUFull_t</code> on report <code>0x42</code>, packed by <code>extendedReport</code> so an ordinary <code>SubmitState</code> drives it; consumers can still submit it whole through <code>SubmitRawReport</code>. Steam's haptic writes arrive on <code>OutputReceived</code> as output reports <code>0x80</code> and up.</p>
+<p>Its input frame is the 54-byte <code>TritonMTUFull_t</code> on report <code>0x42</code>, packed by <code>extendedReport</code> so an ordinary <code>SubmitState</code> drives it. Consumers can still submit it whole through <code>SubmitRawReport</code>. As of v2.0.0 the frame's timestamp counts elapsed microseconds, <code>clock: "accumulate"</code> with divisor 3 over the SDK's 1/3 microsecond ticks, and holds still while the IMU is off, as a real Triton's does: the field's <code>holdWhile</code> names the <code>imuMode</code> register the profile's <code>protocol</code> sets from the host's settings write. A port reset keeps the IMU setting, and an attach and LOAD_DEFAULT_SETTINGS clear it. Through v1.12.0 it added 4000 per report whatever the time. Steam's haptic writes arrive on <code>OutputReceived</code> as output reports <code>0x80</code> and up.</p>
 <p>SDL binds Triton on any interface of a wired unit, so nothing here depends on interface numbering the way the 2015 controller does.</p>
 <p>All three report on their own clock, as the hardware does: every 4 ms for the Deck and the 2026 controller and every 8 ms for the 2015 one, whether or not the consumer has anything new to send. While the consumer is quiet, the persona repeats the consumer's last frame, raw bytes included. SDL's Deck driver reads once with a 16 ms timeout before it accepts a Deck, so a persona that fell silent would be passed over.</p>
 <h3 id="using-them-without-steam">Using them without Steam<a class="headerlink" href="#using-them-without-steam" title="Permanent link">&para;</a></h3>

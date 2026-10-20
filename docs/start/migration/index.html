@@ -1,0 +1,2267 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="HIDMaestro creates virtual game controllers that look like real hardware to Windows. These docs cover everything from the SDK quickstart to wire protocols.">
+      
+      
+      
+        <link rel="canonical" href="https://hidmaestro.org/docs/start/migration/">
+      
+      
+        <link rel="prev" href="../glossary/">
+      
+      
+        <link rel="next" href="../../sdk/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Moving from 1.x - HIDMaestro Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#moving-from-hidmaestro-1x-to-200" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="HIDMaestro Documentation" class="md-header__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo-light.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HIDMaestro Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Moving from 1.x
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sdk/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  SDK
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../profiles/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Profiles
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Technical Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="HIDMaestro Documentation" class="md-nav__button md-logo" aria-label="HIDMaestro Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo-light.png" alt="logo">
+
+    </a>
+    HIDMaestro Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hifihedgehog/HIDMaestro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hifihedgehog/HIDMaestro
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platform-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#before-you-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before you start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profile-json" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile JSON
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bytes-on-the-wire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bytes on the wire
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup-exit-and-the-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleanup, exit and the driver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controllers-and-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controllers and events
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other APIs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#native-writers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Native writers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-1x-program-on-a-machine-with-200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A 1.x program on a machine with 2.0.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sdk/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/sdk-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/vr-controllers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VR Controllers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/hid-descriptor-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HID Descriptor Builder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/force-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Force Feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/output-passthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output Passthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/usb-audio-composite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composite USB Personas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/dualshock-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DualShock 3 and Pressure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/switch2-pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Switch 2 Pro with Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/keyboards-and-mice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/oem-name-override/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OEM Name Override
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../profiles/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiles
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Profiles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/custom-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/profile-extractor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Extractor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../profiles/contributing-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/architecture-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/umdf2-driver-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UMDF2 Driver Internals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/xusb-companion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XUSB Companion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/swdevice-and-pnp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SwDevice and PnP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/shared-memory-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared Memory Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cross-api-coverage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-API Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/multi-controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/lifecycle-and-teardown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle and Teardown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/driver-install-and-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Driver Install and Signing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/build-and-release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build and Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/testing-and-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#before-you-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before you start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profile-json" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile JSON
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bytes-on-the-wire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bytes on the wire
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup-exit-and-the-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleanup, exit and the driver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controllers-and-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controllers and events
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other APIs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#native-writers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Native writers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-1x-program-on-a-machine-with-200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A 1.x program on a machine with 2.0.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="moving-from-hidmaestro-1x-to-200">Moving from HIDMaestro 1.x to 2.0.0<a class="headerlink" href="#moving-from-hidmaestro-1x-to-200" title="Permanent link">&para;</a></h1>
+<p>Programs built on HIDMaestro 1.x must move to 2.0.0. A 2.0.0 program installs its driver over any older one, whatever runs on it, and refuses nothing because a 1.x program is in the way. A running 1.x program still removes every HIDMaestro device on the machine at its <code>InstallDriver</code> and its first create, 2.0.0 controllers included, so a machine works only once every program on it is on 2.0.0.</p>
+<p>This page lists what a program built on v1.12.0 meets when it moves. The design notes give the reasons: <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/design/coexistence.md">programs side by side</a> and <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/design/data-driven-devices.md">every device as data</a>. <a href="../../sdk/programs-side-by-side/">Programs Side by Side</a> and the <a href="../../profiles/profile-system/">Profile System</a> describe the same changes on this site.</p>
+<h2 id="before-you-start">Before you start<a class="headerlink" href="#before-you-start" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>HIDMaestroProfileCheck</code>, in the release ZIP beside the profile extractor, loads a profile file or directory as 2.0.0 does and prints every refusal with its JSON path. Run it over your own profiles first.</li>
+<li><code>HMLayoutJsonOptions.Default</code> is the source-generated context's options, so it is read-only and reads and writes the SDK's own types only. Code that changed a setting on it, to add a converter or change the naming policy, throws <code>InvalidOperationException</code>. Copy it with <code>new JsonSerializerOptions(HMLayoutJsonOptions.Default)</code> to change a copy.</li>
+<li>The SDK publishes as NativeAOT and as a trimmed single-file app. A 1.x app published that way loaded none of the 336 profiles.</li>
+<li>Creates, deploys and the machine-wide locks need an elevated process and throw <code>UnauthorizedAccessException</code> without one. Two calls return instead: <code>RemoveAllVirtualControllers()</code> and <code>RemoveAllVirtualControllers(bool)</code> do nothing, and <code>InstallDriver</code> returns <code>AlreadyCurrent</code> when its fast path finds this build's driver recorded and both packages in the store.</li>
+</ul>
+<h2 id="profile-json">Profile JSON<a class="headerlink" href="#profile-json" title="Permanent link">&para;</a></h2>
+<p>Profiles load strictly. A key the schema lacks, a key written twice, a value a check refuses, a removed spelling and an id already loaded each refuse the file, where 1.x dropped an unknown key without a word, let the second of two keys win and skipped a file that did not parse. A load never throws for a file's content: <code>HMContext.ProfileLoadIssues</code> lists every refused file, and every profile that loaded with a model problem, with the file, the JSON path and the reason. Files load in ordinal path order, and a repeated id refuses the later file and names the earlier one, where 1.x skipped it without a word, so a user's edited copy of a catalog profile needs an id of its own. Check <code>ProfileLoadIssues</code> after a load to see why a profile is missing.</p>
+<p>A profile written for 1.x that left out a key and got a behavior from code now states it, so no such profile changes its bytes unseen. Each refusal below is an <code>InvalidOperationException</code> at create, before anything machine-wide, that names the profile, the field's JSON path and the value that keeps 1.x's bytes.</p>
+<ul>
+<li>A <code>uint16-trigger</code> or <code>uint16-pressure</code> field needs <code>max</code>. 1.x wrote a full pull or press as 32767: add <code>"max": 32767</code> for that, or <code>"max": 65535</code> for the full width.</li>
+<li>An <code>int16-axis</code>, <code>int16-pad</code> or <code>int16-pad-or-stick</code> field of a Y semantic needs <code>invert</code>. 1.x negated every int16 Y: add <code>"invert": true</code> for that, or <code>"invert": false</code> for a wire that grows downward.</li>
+<li>The <code>ds3-battery</code> type is gone. Write it as <code>uint8-level-map</code> with <code>levels</code> <code>[1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5]</code>, <code>chargingValue</code> 238 and <code>fullValue</code> 239.</li>
+<li>An output field refuses <code>min</code>, <code>max</code> and <code>dpad</code>, <code>invert</code> on any type but <code>uint8-axis</code>, and <code>center</code> on <code>int16-le</code>, since its decoder ignores them.</li>
+<li>A parameter on a type that ignores it is refused: <code>min</code> and <code>max</code> on a type with no normalized value, <code>invert</code> on a type with no axis, <code>scale</code> on anything but an <code>int16-le</code> field of a calibrated source, and <code>min</code> equal to <code>max</code>.</li>
+<li>The device model is checked when a file loads and again at create: the top-level report fields, the ports, the protocol, the report programs and the WinUSB block. A profile built or changed in code is refused at create with <code>HMProfileException</code>, derived from <code>InvalidOperationException</code>, which carries <code>ProfileId</code>, <code>File</code>, <code>JsonPath</code> and <code>Reason</code>. It replaces the <code>ArgumentException</code> a profile with no descriptor threw and the <code>HMLayoutValidationException</code> a layout that did not fit its descriptor threw, which the create no longer throws. <code>HMProfileBuilder.Build</code> throws it for its own errors. A button name the SDK cannot express fails the create, where it failed the first submit. Every catalog profile compiles.</li>
+<li><code>usbConfiguration.protocol</code> moved to <code>protocol</code> at the profile's top level and is refused at its old place, with the path that says where it went. <code>steamFirmwareStamp</code> is refused, with its replacement named: a <code>patch</code> with a <code>keyedHexFile</code> value source. <code>nativeDescriptor</code>, and a <code>comment</code> inside <code>extendedReport</code>, are mapped keys now, so a copy of a catalog profile that carries them loads.</li>
+<li>A profile with no feature answers, protocol or presentation of its own takes them from the model it names with <code>deviceModelFrom</code>, or from the identity defaults, the gates 1.x kept in code turned into data: the Switch Pro (057E:2009) over USB and over Bluetooth, <code>sixaxisCompatible</code>, Sony's VID 054C by product and connection, and VID 045E with "xbox" in the id, name or product string, which keeps an XUSB companion. A profile's <code>xinput</code> block, or <code>driverMode</code> as its alias, states the presentation itself. <code>"deviceModel": "none"</code> takes no model. <code>HMProfile.HasDeviceModel</code>, <code>DeviceModelSource</code> and <code>DeviceModelProblem</code> report what a profile got, and <code>HMDeviceExtractor.Extract</code> writes the <code>deviceModelFrom</code> its identity gives.</li>
+<li>A descriptor hex string with a character that is not a hex digit, or an odd number of digits, refuses the file at load, and a profile built in code at create with <code>HMProfileException</code>. <code>HMProfile.GetDescriptorBytes</code> and <code>HMProfile</code>'s layout properties throw <code>FormatException</code> naming the profile and its descriptor field. An odd count used to load a descriptor a byte short.</li>
+<li><code>inputReportSize</code> is the input report's whole length, its ID byte included. <code>dataReportId</code> names the input report a profile's data frames fill when the SDK's choice is not the one the device sends.</li>
+<li>A custom USB/IP profile 1.x accepted can be refused for descriptor checks 1.x did not make: one transfer type per endpoint across alternate settings, an isochronous endpoint in one setting only, a structured endpoint matching within its own interface and setting, and the low-speed limits. <code>busSpeed</code> <code>"low"</code> is now a low-speed device, with Windows' low-speed poll table and packet limits, where 1.x treated it as high speed.</li>
+</ul>
+<p>New keys: <code>min</code>, <code>max</code>, <code>invert</code>, <code>center</code> on <code>int16-le</code>, <code>scale</code> with <code>negate</code> and <code>repeat</code>, <code>dpad: "resolved"</code>, <code>"#n"</code> in <code>buttons</code>, the <code>uint8-level-map</code> type, <code>clock: "accumulate"</code> with <code>divisor</code> and <code>holdWhile</code>, the <code>packed-uint</code> output type, and at the top level <code>axisCenters</code>, <code>deviceModelFrom</code>, <code>deviceModel</code>, per-entry <code>featureStubs</code> tables, <code>valueSources</code>, <code>protocol</code>, <code>stateBlock</code>, <code>inputReports</code>, <code>liveFeatureReports</code>, <code>stream</code>, <code>xinput</code>, <code>bluetoothTransport</code> and <code>bluetoothVendorIdSource</code>. The <a href="../../profiles/profile-system/#report-field-parameters-v200">Profile System</a> page describes each.</p>
+<h2 id="bytes-on-the-wire">Bytes on the wire<a class="headerlink" href="#bytes-on-the-wire" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Every normalized value goes to the wire as <code>min + RoundHalfEven(v' x (max - min))</code> in double, where 1.x truncated or multiplied in float. A value can arrive one count higher than under 1.x. An unsigned axis of 2^n - 1 counts rests one count higher (0..255 at 128, 0..65535 at 32768). XInput thumbs rest at 0 and 0, and every XInput trigger byte arrives as passed, where 252 of 256 arrived one lower.</li>
+<li>A stick the program leaves out of <code>Axes</code> rests at its center. 1.x rested a 0..255 or 0..65535 stick at its minimum, full left or up. Other axes keep their old rest.</li>
+<li>A NaN in <code>Axes</code> writes the axis's resting value on every path and never reads the key a slot falls back to. 1.x wrote whatever each encoding gave a NaN: XInput X full left and Y full up, the codec's and the Switch 2 Pro's sticks at a corner.</li>
+<li><code>amazon-luna-usb</code> centers its sticks at 0x7F and <code>amazon-luna-ble</code> at 0x7FFF, where SDL reads zero.</li>
+<li><code>steam-controller-2</code>'s report 0x42 timestamp counts elapsed microseconds, where it added 4000 per report whatever the time, and holds still while the host has its IMU off.</li>
+<li>21 catalog profiles repeat their last frame at rest at their device's period, 18 of which sent nothing at rest under 1.x: the DualSense family at 1, 1.25 or 4 ms, the DualShock 4 USB family and <code>steam-deck</code> at 4 ms, <code>openffboard</code> at 101 ms and five Thrustmaster wheels at 250 ms. A consumer that counts frames sees them.</li>
+<li><code>ps-move</code> presents the descriptor a real Move serves over USB: a Game Pad with three top-level collections, so Windows creates three HID children where it made one, and its HID child's usage hardware ID becomes <code>UP:0001_U:0005</code>. Its input report is the Move's own. Cross is <code>HMButton.A</code>, Circle <code>B</code>, Square <code>X</code>, Triangle <code>Y</code>, Select <code>Back</code>, Start <code>Start</code>, PS <code>Guide</code> and Move <code>Misc1</code>, and the T trigger is the left trigger. Motion goes in <code>AccelGX/GY/GZ</code> and <code>GyroDpsX/Y/Z</code>, and the raw <code>Accel*</code> and <code>Gyro*</code> shorts are not read. Its battery byte is 0xEE, or 0xEF with <code>BatteryFull</code>. Its manufacturer string is "Sony Computer Entertainment". Its descriptor declares no feature report 0x02, which drew a DualShock 4's calibration from the driver under 1.x.</li>
+<li><code>xbox-360-flight-stick</code> presents the 127-byte joystick descriptor its notes cite: 8-bit Z and Rz ahead of its 16-bit axes, a 12-byte report. Its HID child's usage hardware ID becomes <code>UP:0001_U:0004</code>.</li>
+<li>A program that stored the HID child path of <code>ps-move</code> or <code>xbox-360-flight-stick</code> sees a new device once.</li>
+<li>The nine Microsoft profiles that are no XInput device, the SideWinder Force Feedback 2 and eight keyboards and mice, move their parent from <code>ROOT\VID_045E&amp;PID_xxxx&amp;IG_00</code> to <code>ROOT\HIDClass</code> with <code>root\VID_045E&amp;PID_xxxx</code> and no XUSB compatible IDs, and SDL now lists them. <code>xbox-360-wireless</code> presents its HID child as 045E:02A1 and reports itself wireless in XInput, with PID 0 in its 36-byte capability reply, and its parent moves to <code>VID_045E&amp;PID_02A1&amp;IG_00</code>. A program that stored one of these ten profiles' HID child path sees a new device once.</li>
+<li><code>xbox-360-wheel-v1</code> and <code>-v2</code> report XInput subtype 2, the wheel, where they reported 1.</li>
+<li>A Bluetooth profile carries the hardware and compatible IDs of a real device of its transport, <code>BTHENUM</code> for classic and <code>BTHLEDevice</code> for LE (<code>bluetoothTransport</code>), and no USB bus type. A create stamps the bus type only on the parent it made, where 1.x stamped GUID_BUS_TYPE_USB on every HIDMaestro devnode on the machine and its first child.</li>
+<li><code>switch-pro</code> sends its 0x30 reports on a 15 ms grid on the device clock, where the driver slept 15 ms between frames, about 15.6 ms at the default timer resolution. It sends 0x3F when its bytes change, before the handshake and after a host selects simple mode, where it streamed 0x3F every 15 ms before the handshake and sent nothing in mode 0x3F. A new profile, <code>switch-pro-usb</code>, is the pad on its USB descriptor, and a profile outside the catalog of 057E:2009 over USB takes its protocol.</li>
+<li><code>dualshock-3-full</code>'s battery byte reads 0xEE, charging, at every level and 0xEF with <code>BatteryFull</code>, as a DualShock 3 on USB reports, where an unset state read as a dying pad.</li>
+<li>The nine Xbox 360 profiles whose manufacturer string was mangled read U+00A9 "Microsoft Corporation" in <code>HMProfile.ManufacturerString</code>. Nothing on the wire changes.</li>
+<li>Sixteen catalog profiles send their data-only frames as a different input report or at a different length on a UMDF2 controller: <code>logitech-wingman-formula-gp</code>, <code>gamecube-adapter-hid</code>, <code>joypad-gc-adapter</code>, <code>microsoft-designer-keyboard</code>, <code>genesis-nso</code>, <code>n64-nso</code>, <code>snes-nso</code>, <code>joycon-l</code>, <code>joycon-charging-grip</code>, <code>switch2-pro-controller</code>, <code>joypad-steam-input</code>, <code>ps3-remote</code>, <code>circuitpython-gamepad</code>, <code>pxn-vd6</code>, <code>thrustmaster-t16000m</code> and <code>vader-4-pro</code>. <code>HMProfile.InputReportSize</code> is 7 for <code>circuitpython-gamepad</code>, 63 for <code>pxn-vd6</code>, 9 for <code>thrustmaster-t16000m</code> and 9 for <code>vader-4-pro</code>. <code>ps3-remote</code>, <code>saitek-x52</code>, <code>thrustmaster-t80</code> and <code>joypad-steam-input</code> present corrected report descriptors.</li>
+<li><code>ps3-remote</code>'s corrected descriptor is 69 bytes. <code>tinyusb-generic-gamepad</code> and <code>nacon-bigben-ps4</code> carried descriptors Windows' HID parser refuses, so their devices failed to start. <code>tinyusb-generic-gamepad</code> serves TinyUSB's gamepad descriptor: input report 2 of 12 bytes with six 8-bit axes, an 8-bit hat and 32 buttons, and no output or feature report. <code>nacon-bigben-ps4</code> serves the descriptor the pad serves: a 27-byte input report with X, Y, Z and Rz, L2 and R2 as buttons 7 and 8, and 8-byte vendor output and feature reports. It is now named "BigBen Game Pad for PS3", with "Bigben Interactive" and "Bigben Game Pad" as its USB strings, since 146B:0902 is that pad. Its id is unchanged.</li>
+<li>An int16-le field with a <code>center</code> clamps its word to 0 to 65535.</li>
+<li><code>HMButton</code> bits 23 and 24 gain names, <code>LeftTriggerClick</code> and <code>RightTriggerClick</code>. A descriptor-built report maps them to buttons 24 and 25, as it mapped those bits before.</li>
+<li>An output button mask wider than one byte reports its bits 8 and up on <code>OutputDecoded</code>.</li>
+<li><code>SubmitMouse</code> on a profile whose relative field excludes zero, such as <code>corsair-k70-rgb-mk2-low-profile</code>, no longer splits a movement the field cannot carry without end.</li>
+<li><code>HidReportBuilder.InputFields</code>: an element past a field's last usage carries that last usage, not 0, and a field's page is its usage's page. A stick added after <code>HidDescriptorBuilder.AddRaw</code> bytes that push, change the page and pop is on the Generic Desktop page, where it landed on the Button page.</li>
+</ul>
+<h2 id="creates">Creates<a class="headerlink" href="#creates" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>CreateController</code> and <code>CreateControllerAt</code> throw <code>HMResourceInUseException</code>, derived from <code>InvalidOperationException</code>, when another live controller on the machine holds the identity key, where 1.x checked only its own context. The same exception refuses a create when no transport index is free, when a v1.12.0 program starts on the index during the create, when another program made one of the index's events, and when the device of a running program, or of one whose owner cannot be known, holds the same ParentIdPrefix. 1.x removed that rival device.</li>
+<li>A keyless controller can land on a transport index other than its slot when another program uses that index, so its default identity and device paths can differ between runs. Pass an identity key for stable paths. The slot of <code>CreateControllerAt(n)</code> is n, and its transport index can differ from n. <code>HMController.TransportIndex</code> and <code>SectionNames</code> give the numbers and names.</li>
+<li>While a v1.12.0 program runs, a create's transport index starts at 64. A keyless controller's paths, container id, HID serial and MAC bytes, and a keyless composite's USB serial and instance id, move with it. A keyed controller keeps its paths and container id, and its HID serial and MAC bytes move. A create with the key <code>index:N</code>, N below 64, takes index N's default identity as asked, and that program's next create on index N replaces a devnode of that name.</li>
+<li>A keyed create whose identity another program's sweep is removing waits for that sweep, up to 120 seconds, instead of failing. A keyless create waits the same way for its index's identity.</li>
+<li>A create waits while another program of this release registers or removes a devnode, and throws <code>InvalidOperationException</code> after ten minutes. It waits up to 30 seconds for Windows' pending device installs through <code>CMP_WaitNoPendingInstallEvents</code>, which Microsoft says not to call "while processing any events inside of a system-initiated callback function that is expected to return within a short amount of time", a service's <code>ServiceMain</code> or control handler among them, so a service should not create controllers there.</li>
+<li>A create throws <code>InvalidOperationException</code> when a prior life of its ROOT devnode, or that devnode's record, is still there after its removal, and when a software companion's prior life is still in the tree after its removal, where it reconnected to it. A gamepad or XUSB companion that is not made fails the create, where it succeeded without it: an xinputhid controller had no other device, and an Xbox 360 controller got no XInput. The failed create's cleanup removes what it made.</li>
+<li>A create no longer restarts a leftover <code>ROOT\XNACOMPOSITE\0000</code>.</li>
+<li>A create throws <code>HMPayloadMissingException</code>, derived from <code>InvalidOperationException</code>, when the build lacks the payload it needs, before any machine-wide step. <code>InstallDriver</code>, <code>InstallUsbipBackend</code> and <code>HMVR.EnsureDriverRegistered</code> throw it too, and <code>IsUsbipBackendAvailable</code> is false in a build without the USB/IP transport.</li>
+<li>A context dropped without <code>Dispose</code> keeps its controllers, their transport indices and their identity keys until the process exits, and a create of one of those keys in that process throws <code>HMResourceInUseException</code> until then.</li>
+</ul>
+<h2 id="cleanup-exit-and-the-driver">Cleanup, exit and the driver<a class="headerlink" href="#cleanup-exit-and-the-driver" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>RemoveAllVirtualControllers()</code> and <code>RemoveAllVirtualControllers(bool)</code> no longer remove the controllers of running programs, the caller's own included. With <code>preserveInstall: false</code> they keep the driver packages while a device is present, another program runs or the caller has a controller. They remove packages under the deploy lock and throw <code>InvalidOperationException</code> after waiting ten minutes for another program's deploy. A tool that wants every controller gone, such as an uninstaller or a test harness, calls <code>RemoveAllVirtualControllers(HMCleanupScope.Everything, preserveInstall)</code>.</li>
+<li>After <code>RemoveAllVirtualControllers(HMCleanupScope.Everything, ...)</code>, a controller the program still holds has no device. Its submits return and reach nothing, its output events stop, <code>DriverVersion</code> is null, <code>DeliversEveryReport</code> and <code>ReleasesOnConsumerExit</code> are false, and it keeps its transport index until disposed. Dispose it after the sweep.</li>
+<li>Both also remove the GameInput tables v1.11.0 left, except a table whose VID and PID a present device or any controller configuration carries, and none while an input section exists that nothing explains. They no longer remove phantom records on every call: the first of <code>InstallDriver</code>, the first create and <code>RemoveAllVirtualControllers()</code> starts the once-per-process cleanup on a background thread and returns without waiting, and a create and the <code>Everything</code> cleanup wait behind it.</li>
+<li>A program that exits normally without disposing its controllers has their devices removed as it exits, within one 10-second wait for a create in flight and the phantom cleanup. When that wait runs out, or a device does not leave, the devices stay present until the next sweep of any program, as a killed program's do. The exit keeps the program's record while a GameInput or joy.cpl hold of its own stands.</li>
+<li>A <code>Dispose</code> or cleanup a program calls from its own <code>ProcessExit</code> handler waits for another program's hold of the PnP lock within one 10-second budget the process shares. A controller it cuts short keeps its devices and its record entry, for the SDK's own exit handler when it runs after the program's, or the next sweep.</li>
+<li>A dispose of several controllers takes about the sum of their removals, since every devnode removal holds the machine-wide PnP lock, where it took about the longest one. Each removal waits for its DEVICEINSTANCEREMOVED notification, up to 2 s more when it is late, and a HID child removed with its parent counts on the parent's. <code>RemoveAllVirtualControllers(HMCleanupScope.Everything, …)</code> waits up to 2 s per removal, where it waited for none.</li>
+<li><code>InstallDriver</code> no longer removes devices of running programs before deploying and never downgrades the driver. It installs the 2.0.0 driver over any older one and returns <code>Upgraded</code>: a full deploy when nothing runs on the old driver, and this build's packages added beside the old ones when another program's devices or create hold it, which updates no present device. <code>HMDriverInstallOutcome</code> has no <code>KeptInUse</code>, and nothing is refused for a holder. <code>HMContext.LastDriverInstall</code> says what it did. It can throw <code>HMPayloadMissingException</code>, <code>InvalidOperationException</code> after waiting ten minutes for another program's deploy, and <code>InvalidOperationException</code> after waiting two minutes for another program's staging prune.</li>
+<li>A UMDF2 <code>CreateController</code> checks the installed driver set under the deploy lock and runs the install policy when either INF is missing or older than this build's, so a program whose packages another program uninstalled or replaced with older ones gets its own back at its next create, and a create can wait for another program's deploy. A create whose started driver does not serve protocol 4, or could not read a value the create wrote, removes its device and throws <code>HMDriverVersionException</code>, whose <code>Problem</code> says which (<code>ProtocolNotServed</code>, <code>ValueNotRead</code>). A start the driver fails fails the create within one poll and names the device and its problem code. While Windows has a device installation pending, a failed start waits for it, since a device Windows flagged for reinstall fails its start until the queued install restarts it, and a wait that runs out fails the create on any problem the device shows. A USB/IP composite create takes the transport lock for the usbip-win2 install instead.</li>
+<li>A plain HID or non-xinputhid create installs the driver on its own devnode only, so a newer SDK no longer moves another program's controller of the same profile onto its package.</li>
+<li><code>InstallUsbipBackend</code> and a process's first composite create throw <code>InvalidOperationException</code> after waiting ten minutes for the transport lock, when a usbip-win2 installer still runs after five minutes, and when usbip-win2's uninstall entry exists without its driver package.</li>
+<li>Staging moved from <code>%TEMP%</code> to <code>%ProgramFiles%\HIDMaestro\Staging</code>. <code>InstallDriver</code>, a UMDF2 create whose device needs the SWD helper, <code>InstallUsbipBackend</code>, a first composite create, <code>BindWinUsb</code> and the public <code>DriverBuilder</code> steps throw <code>InvalidOperationException</code> when <code>%ProgramFiles%\HIDMaestro</code> belongs to another program, when a staging directory that cannot be moved aside is hostile, when another program creates one while HIDMaestro creates it, when a staged file does not match its SHA-256 or changed between its repair and its use, and, in an elevated process, when the protected TEMP for pnputil or devcon cannot be made.</li>
+<li><code>HMContext.IsDriverInstalled</code> answers false when the driver store cannot be read, logs why, and throws only <code>ObjectDisposedException</code>. <code>DriverBuilder.IsDriverInstalled()</code> throws <code>InvalidOperationException</code> when the pnputil listing fails, where it returned false.</li>
+<li><code>%TEMP%\HIDMaestro\hmswd_&lt;enumerator&gt;_&lt;suffix&gt;.log</code> is no longer written, and hmswd.exe writes no <code>hmswd_self.log</code>. hmswd's exit code and output go into <code>teardown_diag.log</code> under <code>HIDMAESTRO_DIAG=1</code>, and the diagnostic logs are written as the user.</li>
+<li>The driver changed, so the first <code>InstallDriver()</code> after updating reinstalls it once.</li>
+</ul>
+<h2 id="controllers-and-events">Controllers and events<a class="headerlink" href="#controllers-and-events" title="Permanent link">&para;</a></h2>
+<ul>
+<li>An exception a handler throws on one of the SDK's threads no longer reaches the program. The SDK drops it and the next handler runs. A throwing audio handler no longer unplugs a composite controller, and a throwing <code>FramesReceived</code>, <code>StreamingChanged</code> or <code>HapticReceived</code> handler no longer ends the process. The <code>InstallUsbipBackend</code> progress callback is isolated the same way and runs on the calling thread with no machine-wide lock held. Set <code>HIDMAESTRO_DIAG=1</code> to see each dropped exception in the diagnostic log.</li>
+<li><code>Dispose</code> waits for a submit in progress, and a submit that races it throws <code>ObjectDisposedException</code>. <code>OnSubmitLatencyMicros</code> runs after the submit lock is released, so two submitting threads can run it at the same time.</li>
+<li>A handler can dispose its own controller, or call <code>HMContext.Dispose</code> or <code>DisposeControllersInParallel</code>, without a wait on its own thread. The reader raises the rest of that packet's events on the disposed controller.</li>
+<li><code>HMContext.DisposeControllersInParallel</code> disposes every controller of the set when <code>perControllerCallback</code> throws, runs the batch orphan sweep, and then throws one <code>AggregateException</code> holding each exception. In a set of two or more, controllers not yet started were left undisposed once a callback threw. With one controller the callback's exception came out bare.</li>
+<li>On a composite, <code>HMUsbAudio.ControlChanged</code> and both <code>StreamingChanged</code> events run on an audio event thread of their own, in the host's order, and can come after <code>Dispose</code> returns. A newer write to a control replaces one still waiting. <code>IsStreaming</code> reads the device's stream state, so it can change before <code>StreamingChanged</code> is raised. Dispose waits up to 500 ms for a running audio handler. A USB/IP Dispose no longer waits up to 500 ms for its input thread.</li>
+<li>A USB/IP persona without a protocol answers GET_REPORT(Input) with the requested report's latest bytes, or its ID and zeros before one is sent, and stalls an ID its descriptor does not declare. The Switch 2 Pro persona answers report ID 0 with its selected report, and the GameCube adapter answers the requested ID alone. 1.x answered with the last report sent whatever the ID.</li>
+<li>A device that builds its own reports (<code>HMProfile.BuildsItsOwnReports</code>: <code>switch-pro</code>, <code>switch-pro-usb</code>, <code>dualshock-3-full</code> and the Switch 2 Pro composite) takes a raw submit as its state block, verbatim and of the state block's size, and throws <code>ArgumentException</code> for another length. 1.x's driver read whatever bytes landed at fixed offsets of a Switch Pro raw submit, and the composite threw <code>NotSupportedException</code>. <code>HMDeviceProtocol.HostPollInterval</code>'s setter throws <code>InvalidOperationException</code> on such a device and on one whose protocol names no input endpoint, where it took the value and did nothing. <code>HMDeviceProtocol</code> gains <code>GetRegister</code>, <code>CounterNames</code> and <code>GetCounter</code>.</li>
+<li>The USB/IP server answers an import from anything but the host controller with <code>ST_NA</code>. A program that drove the SDK's server with its own user-mode USB/IP client, which was never supported, no longer can.</li>
+</ul>
+<h2 id="other-apis">Other APIs<a class="headerlink" href="#other-apis" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>HMVR.EnsureDriverRegistered</code> writes the OpenVR path registry itself and runs no vrpathreg, so a driver registered while SteamVR runs loads at its next start. Each failure to update the path registry is an <code>InvalidOperationException</code> with the cause inside. <code>HMVR.UnregisterDriver</code> throws <code>InvalidOperationException</code> when the registry cannot be updated, where it returned. <code>HMVR.EnsureDriverRegistered</code> throws <code>InvalidOperationException</code> naming the folder when an OpenVR folder another program owns cannot be moved aside, or when a program holds a folder or file there open while the extraction writes it, where it threw <code>IOException</code>.</li>
+<li><code>HMOemNameOverride.Set</code> needs an elevated process. <code>Clear</code> and <code>RecoverOrphans</code> need one only when a record is pending, and return without one when nothing is.</li>
+<li><code>HMController.BindWinUsb</code> throws <code>TimeoutException</code> when the registry ledger's lock, or v1.12.0's mutex beside it, stays held for 30 s, scaled, <code>InvalidOperationException</code> when the WinUSB lock stays held for two minutes, and <code>ObjectDisposedException</code> when the controller is disposed during the bind. An uninstall-grade cleanup that keeps a WinUSB package notes it in <code>HKLM\SOFTWARE\HIDMaestroPackagesLeft</code>, and a later program's sweep removes the key with the last noted package.</li>
+<li><code>DeviceManager.WaitForDeviceRemoval(id, timeout)</code>, public in <code>HIDMaestro.Internal</code>, waits for the DEVICEINSTANCEREMOVED notification of a devnode present at the call, up to 2 s past the devnode's leaving, where it returned once a locate failed. <code>DeviceManager.RemoveDevice</code> and <code>RemoveOrphanHidChildren</code> take the PnP lock, so they need an elevated process to touch a present devnode, and <code>RemoveDevice</code> can throw <code>InvalidOperationException</code> when another program holds the lock for ten minutes, with nothing removed. <code>RemoveDevice</code> can also throw the SWD helper's staging refusal before any wait, and leaves the device in place.</li>
+<li><code>DriverBuilder.SignDrivers()</code> and <code>GenerateCatalogs()</code> hold the deploy lock, up to ten minutes, then throw <code>InvalidOperationException</code>. <code>InstallDrivers()</code> runs the install policy and returns true only when it installed or upgraded, where it always returned true. <code>RemoveOldDriverPackages()</code> throws <code>InvalidOperationException</code> stating what holds the packages instead of removing them under running devices. <code>FullDeploy()</code> runs the install policy and never downgrades. <code>EnsureExtracted()</code> and <code>BuildDir</code> stage under <code>%ProgramFiles%\HIDMaestro\Staging</code>, check every staged file on each call and need an elevated process. They throw <code>HMPayloadMissingException</code> when the build lacks the driver for the machine's architecture, and <code>InvalidOperationException</code> after waiting two minutes for another program's staging prune. <code>EnsureTestCertificate()</code> creates the certificate under the deploy lock.</li>
+<li><code>HMProfile.XInput</code> and <code>HMProfileBuilder.XInput</code> read and set the <code>xinput</code> block, and the builder gains <code>BluetoothTransport</code> and <code>BluetoothVendorIdSource</code>.</li>
+<li><code>HMDeviceExtractor.Extract</code> reads the bus from the parent devnode's compatible IDs, as hidapi and SDL do, where it read the device path. A Bluetooth device, a HIDMaestro one included, extracts as <code>bluetooth</code> with its <code>bluetoothTransport</code> and, for a Bluetooth SIG vendor ID, <code>bluetoothVendorIdSource</code>, and <code>ToJson</code> writes both.</li>
+<li><code>HMProfileBuilder.FromProfile</code> copies the whole profile, its model keys and <code>deviceModelFrom</code> included, where it dropped the feature table, <code>driverPid</code>, the extended reports and the protocol. <code>Vid</code> and <code>Pid</code> on a copy of a USB/IP persona write into its USB device descriptor too. A builder given no VID or PID throws <code>HMProfileException</code>, a copy keeps its source's, and an explicit <code>Vid(0)</code> or <code>Pid(0)</code> builds. <code>DescriptorHex(null)</code> clears the descriptor and the keys it governed. The builder gains <code>ClearDeviceModel</code>, <code>DeviceModel</code>, <code>DeviceModelFrom</code>, <code>DriverPid</code> and <code>FeatureAnswers</code>.</li>
+<li>A copy whose descriptor is replaced, <code>FromProfile</code> then <code>FromDescriptorBuilder</code> or a descriptor setter with other bytes, drops <code>buttonMap</code>, <code>triggerButtons</code>, <code>axisMap</code> and <code>triggerMode</code> with the other keys the old descriptor's report format governs. A program that customizes a copy that way sets them again after the descriptor. 1.x kept them, describing fields the new descriptor may not have.</li>
+<li>A layout's <code>kind</code> is read in any case. An <code>axisMap</code> usage named twice, or a name no slot takes, is refused. <code>HMLayoutValidationException</code>'s message names camelCase keys with indexes.</li>
+<li>New in the <code>HIDMaestro</code> namespace: <code>HMController.TransportIndex</code>, <code>SectionNames</code> and <code>DriverVersion</code>, <code>HMContext.LastDriverInstall</code> and <code>ProfileLoadIssues</code>, <code>HMProfileLoadIssue</code> and <code>HMProfileLoadIssueKind</code>, <code>HMProfileException</code>, <code>HMProfile.HasDeviceModel</code>, <code>DeviceModelSource</code>, <code>DeviceModelProblem</code> and <code>BuildsItsOwnReports</code>, <code>HMDeviceExtractor.ResolveDeviceModel</code>, <code>HMCleanupScope</code> and the <code>RemoveAllVirtualControllers(HMCleanupScope, bool)</code> overload, <code>HMResourceInUseException</code>, <code>HMDriverInstallOutcome</code>, <code>HMDriverVersionException</code> with <code>Problem</code> and <code>HMDriverVersionProblem</code>, <code>HMBuildInfo</code>, <code>HMPayload</code> and <code>HMPayloadMissingException</code>, and for devices described as data <code>HMController.Ports</code>, <code>DeviceProtocol</code> and <code>BindWinUsb</code>, <code>HMPortSet</code>, <code>HMPort</code>, <code>HMPortFlags</code>, <code>HMPortOutputEventArgs</code>, <code>HMDeviceProtocol</code> and <code>HMWinUsbBinding</code>.</li>
+<li>The types in <code>HIDMaestro.Internal</code> are the profile JSON's object model and the SDK's plumbing, public so a program can read and build profiles. They follow the JSON schema, so a key the schema adds, renames or removes changes them. 2.0.0 removes <code>SteamFirmwareStampSpec</code>, <code>FeatureStubReport.SteamFirmwareStamp</code>, and <code>ControllerProfile</code>'s <code>IsXboxBranded</code>, <code>UsesXusb22</code>, <code>UsesUpperFilter</code>, <code>UpperFilterName</code>, <code>CompanionOnly</code> and <code>SixaxisCompatible</code> (the <code>companionOnly</code> key goes with them, and <code>sixaxisCompatible</code> still loads and picks the DualShock 3 model), and changes <code>FeatureStubReport.Param</code> from <code>int?</code> to <code>AnswerParamSpec</code> (a bare number still loads), <code>FeatureStubReport.Notify</code> to <code>bool?</code> and <code>FeatureStubSpec.Match</code>'s default to null. It adds the spec classes of the ports, the WinUSB block, the answer tables (<code>AnswerCrcSpec</code>, <code>AnswerMessageSpec</code>, <code>AnswerParamSpec</code>, <code>AnswerPatchSpec</code>, <code>ValueRootSpec</code>, <code>ValueSourceSpec</code>) and the protocol, state block, report programs and stream (<code>ProtocolSpec</code> and its parts, <code>StateBlockSpec</code>, <code>InputReportSpec</code>, <code>LiveFeatureReportSpec</code>, <code>StreamSpec</code>, <code>HIDMaestro.Internal.Programs</code>), <code>ScaleSpec</code>, <code>PackedPartSpec</code> and <code>PackedPieceSpec</code>, the field members <code>Min</code>, <code>Max</code>, <code>Scale</code>, <code>Negate</code>, <code>Repeat</code>, <code>Dpad</code>, <code>Levels</code>, <code>ChargingValue</code>, <code>Parts</code>, <code>Clock</code> and <code>HoldWhile</code>, <code>ControllerProfile</code>'s <code>AxisCenters</code>, <code>XInput</code>, <code>BluetoothTransport</code>, <code>BluetoothVendorIdSource</code>, <code>ValueSources</code>, <code>DeviceModel</code>, <code>DeviceModelFrom</code>, <code>NativeDescriptor</code>, <code>Protocol</code>, <code>StateBlock</code>, <code>InputReports</code>, <code>LiveFeatureReports</code>, <code>Stream</code> and <code>BuildsItsOwnReports</code>, <code>ExtendedReportSpec.Ports</code> and <code>Comment</code>, <code>UsbConfigurationSpec.SharedSerial</code> and <code>WinUsb</code>, and <code>HidReportBuilder.InputReports</code>. <code>DeviceManager.WaitForHidChild</code> gains a three-argument form and <code>WaitForDeviceInterface</code> a four-argument form beside the old ones.</li>
+</ul>
+<h2 id="native-writers">Native writers<a class="headerlink" href="#native-writers" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Each index's configuration gains <code>InputReportId</code> (REG_BINARY), which the driver checks against <code>InputReportByteLength</code> and the descriptor before it uses it, and loses <code>DeviceInstanceId</code>, which no driver read. A create writes <code>VendorId</code> and <code>ProductId</code> first.</li>
+<li>When several programs run, a native writer reads a controller's section names from <code>HMController.SectionNames</code> of the program it feeds, or computes them from <code>HMController.TransportIndex</code>, since the transport index can differ from the slot.</li>
+<li><code>Global\HIDMaestroVersion&lt;N&gt;</code> is a new 64-byte per-controller section the SDK and the driver both write, at protocol 4: the SDK's protocol range and version, the identity tag of the controller's token, and the driver's protocol range, version, capabilities and error word. The SDK also writes the controller's index under <code>HKLM\SOFTWARE\HIDMaestro\Identity\&lt;token&gt;</code> before any PnP work, and the driver reads it before its first start. No existing section's layout changed.</li>
+<li>A 2.0.0 controller's configuration gains <code>FeatureAnswers</code>, the compiled answer table, and the cached input report IDs. The driver reads them only under the version contract, so a native writer that wants feature answers writes the section and the identity entry as the SDK does.</li>
+<li>InputAck's capability word can carry bit 31, the driver's ended marker. Test bits 0 and 1 one at a time, never the whole word.</li>
+<li>The driver's <code>Global\HIDMaestroStopEvent&lt;N&gt;</code> and <code>Global\HIDMaestroOutputEvent&lt;N&gt;</code> carry a DACL that admits SYSTEM, Administrators and LocalService only, so a process that is not elevated opens neither.</li>
+<li>The driver lets go of the index's sections, events and owner pipe when its device is surprise removed, where it held them until the removal.</li>
+<li>A devnode with no index, neither an identity entry nor a <code>ControllerIndex</code>, or with no <code>Controller&lt;index&gt;</code> key holding a descriptor, fails its start with STATUS_DEVICE_CONFIGURATION_ERROR. Both drivers started such a devnode as an Xbox 360 pad on <code>Controller0</code> in 1.x. <code>HidAttrPid</code> is no longer read.</li>
+<li>A 2.0.0 XUSB companion reads its answers from <code>XusbAnswers</code> under the version contract and registers its XUSB interface only when it holds them. Its INF adds no interface, as xusb22.inf adds none, so the interface exists only once the driver has started.</li>
+</ul>
+<h2 id="a-1x-program-on-a-machine-with-200">A 1.x program on a machine with 2.0.0<a class="headerlink" href="#a-1x-program-on-a-machine-with-200" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Its create installs its own driver package with <code>UpdateDriverForPlugAndPlayDevices</code>, which Windows applies to every present device of the hardware ID. Its controllers that are running when a 2.0.0 program installs its driver keep the driver their host loaded until their device restarts.</li>
+<li>A 1.x controller that runs on the 2.0.0 driver keeps its input and output and loses the device behavior 1.x kept in its driver, which 2.0.0 serves only for a 2.0.0 SDK's controller: a Sony profile's calibration, pairing and firmware replies, and a Bluetooth DualSense or DualShock 4's extended report, which the 1.x SDK arms on the feature read, the Switch Pro's replies and stream, the DualShock 3's sixaxis form, and XInput through the XUSB companion, which registers no interface for it.</li>
+<li>
+<p>v1.8.0 and v1.8.1 must not run on a machine that runs a later release: they run no ParentIdPrefix rival scan, and a v1.8.x create of <code>index:N</code> beside a later release's <code>HM_000N</code> parent on the same enumerator makes the machine stop at every boot (bugcheck 0xCA). Programs on those releases must move.</p>
+</li>
+<li>
+<p>Its <code>InstallDriver</code> removes every HIDMaestro device on the machine, 2.0.0 controllers included, and installs its own driver whenever the payload differs. Its first create in a session runs a cleanup that removes every device too.</p>
+</li>
+<li>While it has a controller present, 2.0.0 sweeps never remove its controllers, and 2.0.0 creates take transport indices from 64, above every index it reaches with fewer than 65 controllers alive. A 2.0.0 program sees it through its owner pipes, what the 2.0.0 driver records about them, its USB/IP imports, and, while its device's index cannot be read, the registry ledger entry its create writes. A 1.x program of only keyboards and mice whose device's index cannot be read, on an index a 2.0.0 program holds, goes unseen.</li>
+<li>With no controller present it leaves no sign, so its next create can take a 2.0.0 program's low index and share its sections. Its <code>CreateControllerAt(index)</code> takes whatever index it is given.</li>
+<li>A program older than v1.12.0 leaves no sign of whether it still runs, so its devices are never removed on a guess. Only <code>RemoveAllVirtualControllers(HMCleanupScope.Everything, preserveInstall)</code> and a create of that device's own identity key remove them.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../glossary/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Glossary">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Glossary
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../sdk/" class="md-footer__link md-footer__link--next" aria-label="Next: SDK">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                SDK
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <nav class="product-footer-nav md-grid" aria-label="Site sections">
+    <a href="/">Home</a><a href="/press/">Press</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a>
+  </nav>
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

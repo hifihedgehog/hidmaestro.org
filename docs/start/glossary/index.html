@@ -16,7 +16,7 @@
         <link rel="prev" href="../quickstart/">
       
       
-        <link rel="next" href="../migration/">
+        <link rel="next" href="../../sdk/">
       
       
         
@@ -438,8 +438,6 @@
       
         
       
-        
-      
     
     
     
@@ -744,34 +742,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Moving from 1.x
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -790,10 +760,6 @@
       
         
           
-        
-      
-        
-      
         
       
         
@@ -1109,62 +1075,6 @@
     
   
     Keyboards and Mice
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Wii U GameCube Adapter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Programs Side by Side
   
 
     
@@ -2122,7 +2032,7 @@
 </tr>
 <tr>
 <td><strong>HIDAPI</strong></td>
-<td>The libusb-maintained cross-platform HID library. Skips devices whose path contains <code>&amp;IG_</code> (XInput-handled, by design). Detects Bluetooth via the parent's compatible IDs: a Bluetooth profile carries the <code>BTHENUM</code> or <code>BTHLEDevice</code> IDs of a real device of its transport, so HIDAPI reports <code>bus_type = BT</code>.</td>
+<td>The libusb-maintained cross-platform HID library. Skips devices whose path contains <code>&amp;IG_</code> (XInput-handled, by design). Detects Bluetooth via the device's CompatibleIDs: HIDMaestro spoofs <code>BTHLEDEVICE</code> for BT-mode profiles so HIDAPI reports <code>bus_type = BT</code>.</td>
 </tr>
 <tr>
 <td><strong>STANDARD GAMEPAD</strong></td>
@@ -2153,23 +2063,15 @@
 </tr>
 <tr>
 <td><strong>driverMode</strong></td>
-<td>Profile-level field. <code>"xinputhid"</code> = the profile binds Microsoft's xinputhid kernel filter for native XInput + 16-button synthesis (Xbox Series BT, Xbox One BT, Xbox Elite v2 BT). <code>null</code> (default) = plain HID via <code>mshidumdf</code>. As of v2.0.0 it is the alias of the <code>xinput</code> block's <code>"via": "xinputhid"</code>, and the <code>xinput</code> block, or the presentation the profile takes from a model, selects which of the three architecture groups the profile lands in.</td>
+<td>Profile-level field. <code>"xinputhid"</code> = the profile binds Microsoft's xinputhid kernel filter for native XInput + 16-button synthesis (Xbox Series BT, Xbox One BT, Xbox Elite v2 BT). <code>null</code> (default) = plain HID via <code>mshidumdf</code>. The choice of <code>driverMode</code> plus <code>vid == 0x045E</code> selects which of the three architecture groups the profile lands in.</td>
 </tr>
 <tr>
 <td><strong>Profile</strong></td>
-<td>A JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code> describing one real-world controller's identity (VID, PID, product string, manufacturer string) and HID characteristics (descriptor, input report size, trigger mode, connection). 337 ship in the embedded catalog. Every controller HIDMaestro creates is parameterized by exactly one profile.</td>
+<td>A JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code> describing one real-world controller's identity (VID, PID, product string, manufacturer string) and HID characteristics (descriptor, input report size, trigger mode, connection). 231 ship in the embedded catalog. Every controller HIDMaestro creates is parameterized by exactly one profile.</td>
 </tr>
 <tr>
 <td><strong>HMContext</strong></td>
-<td>The SDK's process-wide entry point. Owns the loaded profile catalog, the slots of its controllers, and the lifecycle of every <code>HMController</code> it creates. One per consuming process.</td>
-</tr>
-<tr>
-<td><strong>Transport index</strong></td>
-<td>The machine-wide number a controller's shared sections, events, owner pipe and registry key are named with, and the <code>ControllerIndex</code> the driver reads. The slot number when no other program uses it, and from 64 while a program built on v1.12.0 runs (v2.0.0). See <code>HMController.TransportIndex</code>.</td>
-</tr>
-<tr>
-<td><strong>Ownership claim</strong></td>
-<td>A named pipe created with <code>FILE_FLAG_FIRST_PIPE_INSTANCE</code> under the prefix <code>ProtectedPrefix\Administrators\</code>, where only an elevated program can create one, that a program holds while it runs: one for the program, and one for each controller's transport index and identity. Windows deletes it when the program ends, however it ends, which is how a sweep knows the program is gone (v2.0.0).</td>
+<td>The SDK's process-wide entry point. Owns the loaded profile catalog, the per-controller index allocator, and the lifecycle of every <code>HMController</code> it creates. One per consuming process.</td>
 </tr>
 <tr>
 <td><strong>HMController</strong></td>
@@ -2267,8 +2169,8 @@
 <td>"Interface Group" marker substring in Xbox device paths (e.g. <code>VID_045E&amp;PID_028E&amp;IG_00</code>). Chromium's RawInput backend skips devices with <code>&amp;IG_</code> in the path; HIDAPI skips them too (XInput handles them). SDL3 falls through to its RawInput backend for these and maps by VID/PID anyway. One substring controls three different detection paths.</td>
 </tr>
 <tr>
-<td><strong>BTHENUM / BTHLEDevice</strong></td>
-<td>The enumerators Windows gives classic and Low Energy Bluetooth devices, which appear in their hardware and compatible IDs. HIDAPI and SDL3 check the compatible IDs to set <code>bus_type = BT</code>. A Bluetooth profile's <code>bluetoothTransport</code> picks which IDs its parent carries, set from user mode without Bluetooth hardware.</td>
+<td><strong>BTHLEDEVICE</strong></td>
+<td>The CompatibleIDs string Windows assigns to Bluetooth Low Energy HID devices. HIDAPI checks for it to set <code>bus_type = BT</code>. HIDMaestro spoofs this from user mode for BT-mode profiles so SDL3's BT-specific parsing path activates. No real Bluetooth hardware is required.</td>
 </tr>
 </tbody>
 </table>
@@ -2398,13 +2300,13 @@
         
         
           
-          <a href="../migration/" class="md-footer__link md-footer__link--next" aria-label="Next: Moving from 1.x">
+          <a href="../../sdk/" class="md-footer__link md-footer__link--next" aria-label="Next: SDK">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Moving from 1.x
+                SDK
               </div>
             </div>
             <div class="md-footer__button md-icon">

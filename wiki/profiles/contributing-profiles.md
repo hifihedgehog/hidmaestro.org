@@ -96,8 +96,6 @@ A profile contribution gets:
 | **Slug naming** | Maintainer adjusts to match catalog conventions | `<vendor>-<model>` or `<vendor>-<model>-<mode>` |
 | **Vendor folder** | Maintainer files it into the right `profiles/<vendor>/` | New vendor folders are fine; if your vendor doesn't exist yet, the maintainer creates it |
 | **Cross-API behavior** | If the maintainer can replicate your device, they run `HIDMaestroTest emulate <id>` and `python scripts/verify.py` | All five APIs see the device with sane state |
-| **Device model** | The catalog loads strictly and every profile compiles, which battery scenarios S79 and S92 check | No entry in `HMContext.ProfileLoadIssues`, and no catalog profile that takes a group from an identity default. A Sony profile names its model with `deviceModelFrom` |
-| **Report lengths** | Maintainer regenerates `test/probes/report_length_check/reference_lengths.json` from hid-tools | Battery scenario S37 fails when a catalog descriptor changes without it |
 
 Most contributions go straight in. Edge cases (descriptors the reconstruction algorithm produced something weird for, devices with multiple modes that need separate profiles, devices whose VID:PID Windows pre-populates with a clone label that needs `OEM Name` override hints) get a comment thread.
 
@@ -141,9 +139,6 @@ This is rare. The HIDAPI algorithm covers ~98% of HID devices well; only vendor-
 - **Test the round-trip.** After extracting, save the JSON to `C:\my-profiles\<id>.json`, then `HIDMaestroTest.exe emulate --profile-dir C:\my-profiles <id>` and check `joy.cpl` shows your device with the right name. If it doesn't, the extraction may have grabbed the wrong collection: try a different dropdown entry.
 - **Capture both wired and wireless** if your device supports both. Two contributions, two issues.
 - **Include firmware version** in Notes if you know it. Some controllers' descriptors changed across firmware revisions.
-- **Check which report the device sends.** A data-only frame fills the descriptor's first input report with game pad fields, or a keyboard's or mouse's first input report. If the real device sends its input as another report, set `dataReportId` to that report's ID, as `microsoft-designer-keyboard` does with `"0x01"`. Set `inputReportSize` only to that report's whole length on the wire, its ID byte included. See [The report a data frame fills](profile-system.md#the-report-a-data-frame-fills-v200).
-- **Run `HIDMaestroProfileCheck` on the file.** It ships in the release ZIP beside the extractor, loads the file as the SDK does and prints each problem with its JSON path. Exit code 0 means it loads clean. See [Checking a profile](profile-system.md#checking-a-profile-before-you-ship-it).
-- **Write the wire form as parameters.** A vendor-blob field takes `min`, `max`, `invert`, `center` and the other [report field parameters](profile-system.md#report-field-parameters-v200). A `uint16-trigger` or `uint16-pressure` field needs `max`, and an int16 Y axis or pad needs `invert`. A behavior no parameter expresses is a request for a new parameter that any profile can use, never code for one device.
 
 ---
 

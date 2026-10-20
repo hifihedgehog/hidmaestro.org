@@ -64,8 +64,7 @@ typedef struct _DEVICE_CONTEXT {
     HID_DESCRIPTOR          HidDescriptor;
     HID_DEVICE_ATTRIBUTES   HidDeviceAttributes;
     ULONG       InputReportByteLength;
-    UCHAR       FirstInputReportId;        // the report a data-only frame goes out as
-    BOOLEAN     InputReportIdConfigured;   // v2.0.0: taken from the SDK's InputReportId
+    UCHAR       FirstInputReportId;
 
     /* Latest input report cache (for READ_REPORT) */
     UCHAR       InputReport[HIDMAESTRO_MAX_REPORT_SIZE];   // 1 KB
@@ -112,8 +111,6 @@ typedef struct _DEVICE_CONTEXT {
     WCHAR       ConfigRegPath[64];     // SOFTWARE\HIDMaestro\Controller<N>
     WCHAR       SharedMappingName[64]; // Global\HIDMaestroInput<N>
     WCHAR       OutputMappingName[64]; // Global\HIDMaestroOutput<N>
-    /* ...the owner pipe fields, then (v2.0.0): */
-    WCHAR       VersionMappingName[64]; // Global\HIDMaestroVersion<N>
 } DEVICE_CONTEXT;
 ```
 
@@ -126,30 +123,25 @@ The full struct is in [`driver/driver.h`](https://github.com/hifihedgehog/HIDMae
 Called by the framework when PnP binds the driver to a device. Sequence:
 
 1. **Create the WDF device.**
-2. **Initialize per-instance paths** from `ControllerIndex`. As of v2.0.0 the driver reads its device instance ID before `WdfDeviceCreate`, takes the identity token from its last segment and reads the index from `HKLM\SOFTWARE\HIDMaestro\Identity\<token>`, which the SDK writes before any PnP work. Since v2.0.0 that is the controller's machine-wide transport index, which can differ from the SDK slot. The driver neither knows nor needs the difference. Builds:
+2. **Initialize per-instance paths** from `ControllerIndex` (read from the device HW key written by the SDK's `SetupController`). Builds:
    - `ConfigRegPath = "SOFTWARE\HIDMaestro\Controller<N>"`
    - `SharedMappingName = "Global\HIDMaestroInput<N>"`
    - `OutputMappingName = "Global\HIDMaestroOutput<N>"`
    - `PidStateMappingName = "Global\HIDMaestroPidState<N>"`
    - `InputEventName = "Global\HIDMaestroInputEvent<N>"`
    - `StopEventName = "Global\HIDMaestroStopEvent<N>"`
-   - `VersionMappingName = "Global\HIDMaestroVersion<N>"` (v2.0.0)
    - `SerialString = "HM-CTL-<index-zero-padded-to-4-digits>"`
 3. **Read configuration** from `HKLM\SOFTWARE\HIDMaestro\Controller<N>`:
    - `ReportDescriptor` (REG_BINARY) &rarr; `ctx->ReportDescriptor`
    - `VendorId` / `ProductId` / `VersionNumber` (REG_DWORD) &rarr; `ctx->HidDeviceAttributes`
-   - `LiveFeatureReport` (REG_DWORD, v2.0.0): one plus the ID of a feature report whose answer is the latest one the SDK wrote, as `dualshock-3-full`'s report 0 is.
-   - `CachedInputReportIds` (REG_BINARY, v2.0.0, read only under the version contract): the profile's input report IDs.
-   As of v2.0.0 `HidAttrPid` is no longer read. A profile's `driverPid` goes into the parent's hardware IDs, where xinputhid's INF matches it.
+   - `HidAttrPid` (REG_DWORD, optional) &rarr; overrides `ProductID` in HID attributes only (companion still reads `ProductId` for XUSB identity). PID 0x0001 is used for xinputhid profiles to prevent GameInput / HIDAPI from claiming the device, so SDL3 falls through to its XInput backend with the correct identity.
    - `ProductString` (REG_SZ)
    - `InputReportByteLength` (REG_DWORD) for buffer sizing.
-   - `FeatureAnswers` (REG_BINARY, v2.0.0): the controller's compiled feature answer table, read only under the version contract (see [Version announcement](#version-announcement-v200)). Without it the driver serves no feature answers.
-   - `InputReportId` (REG_BINARY, v2.0.0, read only under the version contract): the input report a data-only frame fills, in byte 0, its length as a 32-bit little-endian value in bytes 1-4, then the report descriptor the SDK read both from. The driver takes the ID only when that length equals the `InputReportByteLength` it has just read and the descriptor is the one in use, so a value a killed program left never pairs its ID with the length a v1.12.0 program writes for the same index. Without a value that passes, `EvtDeviceAdd` takes the first Report ID item of the descriptor's first Application Collection, as every earlier driver did.
 4. **Set HID device attributes** from the values just read.
 5. **Create the parallel default queue** with `EvtIoDeviceControl` for HID IOCTLs.
 6. **Create the manual queue** for pended `READ_REPORT` requests.
 7. **Create the input lock and output lock.**
-8. **Open the input event and create the stop event** (`InputDataEvent`, which the SDK creates, and `StopEvent`). As of v2.0.0 the driver creates `StopEvent` and the output event with `D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)`, so a program that is not elevated cannot open them. A `StopEvent` name another program made first is not used, and the worker gets an unnamed stop event. See [Shared Memory Protocol](shared-memory-protocol.md#section-names).
+8. **Create the named events** (`InputDataEvent`, `StopEvent`).
 9. **Open the shared input mapping** if it exists, **open the output mapping**, **open the PID state mapping** lazily.
 10. **Spawn the worker thread.**
 
@@ -157,9 +149,13 @@ If any of the optional steps fails (e.g. the SDK hasn't created the shared secti
 
 ---
 
-## A devnode with no configuration
+## Default HID descriptor (used when no registry override)
 
-As of v2.0.0 the drivers keep no default device. A devnode with no index, neither an identity entry nor a `ControllerIndex`, or with no `Controller<index>` key holding a descriptor, fails its start with STATUS_DEVICE_CONFIGURATION_ERROR. Through v1.12.0 both drivers started such a devnode as an Xbox 360 pad on `Controller0`, from a built-in descriptor.
+If `HKLM\SOFTWARE\HIDMaestro\Controller<N>\ReportDescriptor` is missing or empty, the driver falls back to a built-in Xbox 360-shaped descriptor: 6 axes (16-bit), 10 buttons, 1 hat, plus a Vendor-Defined Feature report (Report ID 2) for legacy data-channel use. ~120 bytes.
+
+The fallback exists to make `EvtDeviceAdd` succeed even when the SDK is mid-`SetupController` and hasn't written the registry yet. The driver re-reads the registry on every PnP wake; once the SDK has written the real descriptor, subsequent `IOCTL_HID_GET_REPORT_DESCRIPTOR` returns the right bytes.
+
+In normal operation the fallback is never delivered to a consumer because the SDK orchestrates the registry write before binding the driver. It's a safety net for the corner case of a PnP race or a corrupt registry.
 
 ---
 
@@ -289,14 +285,11 @@ Created in `EvtDeviceAdd` and joined on stop. Cancellation via `SetEvent(StopEve
 
 ## Sony feature reports and why calibration cannot be zeros
 
-The driver answers the Sony arm-handshake feature reads (`0x05`, `0x09`,
-`0x20`, `0x02`, `0xA3`) from the controller's `FeatureAnswers` table. As
-of v2.0.0 the answers are profile data: six models under
-`profiles/models` hold each pad's table, the Sony profiles name theirs with
-`deviceModelFrom`, and the driver holds no Sony code and checks no VID. It
-serves the table only for a 2.0.0 SDK's controller (see
-[Version announcement](#version-announcement-v200)). Through v1.12.0 the
-answers were code in `driver.c`, gated on VID `0x054C`.
+`driver.c` answers the Sony arm-handshake feature reads (`0x05`, `0x09`,
+`0x20`, `0x02`, `0xA3`), gated on VID `0x054C` so the IDs cannot collide
+with an unrelated profile's own feature reports. Report `0x02` is also the
+Feature Report ID the default Xbox 360 descriptor declares, which is
+exactly the collision that gate prevents.
 
 Those payloads were zero-filled until v1.4.4 (issue #43), and for the
 calibration reports that was a defect rather than a shortcut. **Calibration
@@ -457,15 +450,19 @@ is never asked for it.
 
 ---
 
-## Switch Pro protocol
+## Switch Pro protocol responder
 
-Most profiles are passive: the SDK submits state, the worker completes read requests. The Nintendo Switch Pro Controller (issue #33) is not. Hosts (SDL's `HIDAPI_DriverSwitch`, Steam, BetterJoy) drive a Nintendo init-and-subcommand protocol and stall without a device that answers. As of v2.0.0 that protocol is data in `profiles/nintendo/switch-pro.json`, and the SDK's protocol host (`Internal/ProtocolHost.cs`) runs it. The driver keeps no Switch Pro code. It sends each frame the SDK writes and publishes each output report as written. The SDK's output reader hands the report to the protocol before it raises `OutputReceived`, and a reply goes out ahead of the next report once the driver has delivered the frame before it.
+Most profiles are passive: the SDK submits state, the worker completes read requests. The Nintendo Switch Pro Controller (issue #33) is not. Hosts (SDL's `HIDAPI_DriverSwitch`, Steam, BetterJoy) drive a Nintendo init-and-subcommand protocol and stall without a device that answers, so the generic report-builder cannot express it. `driver.c` carries a hardcoded responder keyed on `VID 0x057E && PID 0x2009` (`ctx->SwitchProtocol`), with protocol in code and layout in JSON, the same split as the Sony vendor-blob work.
 
-- **USB init.** `switch-pro-usb` carries the pad's 203-byte USB descriptor and its USB protocol: commands `80 01` / `80 02` / `80 03` get their `81 xx` replies, reporting device type Pro and a stable fabricated MAC, and its replies and reports are 64 bytes. `switch-pro` carries the Bluetooth descriptor, which declares no `0x80`/`0x81` family.
+Three pieces:
+
+- **USB init.** Commands `80 01` / `80 02` / `80 03` get their `81 xx` replies, reporting device type Pro and a stable fabricated MAC.
 - **Subcommands.** Output report `0x01` gets input-report `0x21` replies per the nxbt responder table, including SPI-flash reads served from a fabricated image: factory stick calibration (center `0x800`, range `0x600`) and IMU coefficients (`0x4000` accel, `0x343B` gyro) chosen so SDL's `LoadIMUCalibration` / `LoadStickCalibration` math reduces exactly to its own default scales. Unknown subcommands get a generic ACK rather than nxbt's silent ignore, because SDL retries an unanswered subcommand for ~500 ms where the Switch console does not.
-- **Reports on the device clock.** Full-mode `0x30` goes out every 15 ms on the device clock's grid, its timer byte counted per message. Genuine 12-byte `0x3F` simple-mode frames go out when the state changes, before the handshake and after a host selects simple mode, as a real pad sends them. Through v1.12.0 a driver thread slept 15 ms between frames, about 15.6 ms at the default timer resolution, streamed `0x3F` every 15 ms before the handshake, and sent nothing in mode `0x3F`.
+- **0x30 streaming.** A dedicated `SwitchStreamProc` thread serves input report `0x30` at the wire's ~60 Hz cadence (15 ms), reading the latest consumer-submitted body via `SwitchFillLatestState` and stamping live timer and battery bytes over it. Subcommand replies preempt the stream via `SwitchQueueReply`.
 
-The profile's `stateBlock` turns a normal `SubmitState` into the `0x30` body: layout-mapped buttons, 12-bit nibble-packed sticks, and the calibrated IMU channel. `HMGamepadState.AccelG*` / `GyroDps*` are defined in the SDL-standard sensor frame, and the state block's fields own the SDL-to-Switch wire-frame permutation, so a consumer that reads motion from SDL submits it verbatim and the client-side SDL reconstructs the identical vector. A raw submit is that state block. HD rumble comes back decoded to coarse `leftMotor` / `rightMotor` amplitudes on `OutputDecoded` through `protocol.decoders.rumble`, the same lane Sony rumble rides. A profile made outside the catalog with the Switch Pro's VID and PID takes one of the two catalog models through its identity default, by connection. The `test/probes/switch_pro_check` probe replays SDL's exact init sequence over raw HID as the release gate, `switch_pro_sdl3_check` drives the pad through real SDL3 end to end, and `device_oracle_check switch-engine` holds the profile data to the responder the 1.x driver ran.
+`SwitchStreamProc` and the worker thread both touch `ctx->SharedMemPtr`. The worker's stale-handle recycle skips the shared-view unmap for `SwitchProtocol` devices (the view is unmapped only at cleanup, after both threads join) so it can never unmap the mapping out from under the streaming thread mid-read.
+
+SDK side, `SwitchProPacker` converts a normal `SubmitState` into the 48-byte `0x30` body: layout-mapped buttons, 12-bit nibble-packed sticks, and the calibrated IMU channel. `HMGamepadState.AccelG*` / `GyroDps*` are defined in the SDL-standard sensor frame. The packer owns the SDL-to-Switch wire-frame permutation, so a consumer that reads motion from SDL submits it verbatim and the client-side SDL reconstructs the identical vector. HD rumble comes back decoded to coarse `leftMotor` / `rightMotor` amplitudes on `OutputDecoded`, the same lane Sony rumble rides. The `test/probes/switch_pro_check` probe replays SDL's exact init sequence over raw HID as the release gate, and `switch_pro_sdl3_check` drives the pad through real SDL3 end to end.
 
 ---
 
@@ -559,19 +556,13 @@ If `PidEnabled == 0` (consumer hasn't called `PublishPidPool` yet), the driver r
 
 ## DACL on the shared sections
 
-The SDK creates the shared sections with the SDDL `O:BAD:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)(A;;GR;;;WD)`. Administrators own them. SYSTEM, BUILTIN\Administrators and LocalService get `GENERIC_ALL`, and Everyone gets `GENERIC_READ`. This is required because:
+The SDK creates the shared sections with the SDDL `D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;WD)`: SYSTEM, BUILTIN\Administrators, and Everyone get `GENERIC_ALL`. This is required because:
 
 - The SDK consumer process (admin) writes input frames.
-- WUDFHost runs as LocalService (which lacks `SeCreateGlobalPrivilege`, so the driver can NOT create the section) and must `OpenFileMapping` to read and, for the output, PID state, version and acknowledgement sections, to write.
-- Everyone's read access is for diagnostic tools that are not elevated.
+- WUDFHost runs as LocalService (which lacks `SeCreateGlobalPrivilege`, so the driver can NOT create the section) and must `OpenFileMapping` to read.
+- Unelevated WGI / GameInput consumers also need to read shared sections in some indirect paths.
 
-The section content is one virtual controller's HID state: not security-sensitive. The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared section permissions.
-
----
-
-## Version announcement (v2.0.0)
-
-At add, and each time the driver opens the input section, `AnnounceVersion` opens `Global\HIDMaestroVersion<N>`, the 64-byte section the SDK creates beside the input section, and writes its half: its version from the build's generated version header, its capabilities (0x3, the input acknowledgement's delivered and release bits), the oldest SDK protocol it serves, `HIDMAESTRO_DRIVER_PROTOCOL_MIN`, 4, a memory barrier, and last its protocol, `HIDMAESTRO_DRIVER_PROTOCOL`, 5. A reader that sees a nonzero protocol therefore sees the version that goes with it. The driver reads a controller's 2.0.0 values, `FeatureAnswers` and the cached input report IDs, only when the section holds protocol 4 and the identity tag of the devnode's own token. A devnode whose index's section carries another token's tag fails its start with STATUS_DEVICE_CONFIGURATION_ERROR, and a value the driver cannot read fails the start and is named in the section's error word. `HMController.DriverVersion` reads the result. The layout is in [Shared Memory Protocol](shared-memory-protocol.md#version-section-v200).
+`Everyone GENERIC_ALL` looks loose, but the section content is one virtual controller's HID state: not security-sensitive. The boundary is the IOCTL surface, which is mediated by the kernel HID stack and not by the shared section permissions.
 
 ---
 
@@ -586,12 +577,6 @@ When the device is removed (via `DIF_REMOVE` from the SDK or PnP), `EvtDeviceCon
 5. Close the named events.
 
 The framework calls `EvtDeviceContextCleanup` on the final reference release. WUDFHost may exit shortly after if no other devices are left in the host (per-instance host model).
-
-As of v2.0.0 both drivers let go of their index earlier, at `EvtDeviceSelfManagedIoFlush`, which the framework calls on a surprise removal and on a removal, never on a stop for a rebalance. The flush releases the sections and their views, both events, the owner pipe, and the companion's pump thread and 8 ms timer. Through v1.12.0 they let go only in the context cleanup, which runs on `IRP_MN_REMOVE_DEVICE`. Windows sends that only once every handle to a surprise-removed device has closed, so a driver host whose device was surprise removed and never removed kept the index's output event and the companion's timer. The release clears each field it closes, so the cleanup after a flush finds nothing left. The HID driver purges its two queues first, since neither is power managed when it runs as a filter, so no I/O callback reads a view the release unmapped. A HID request to a surprise-removed device then fails in the framework with STATUS_INVALID_DEVICE_STATE instead of reaching the output ring.
-
-### Failing the device on request (v2.0.0, protocol 5)
-
-The input worker opens `Global\HIDMaestroRemoveEvent<N>` and `Global\HIDMaestroRemovedEvent<N>` with the input event and waits on the first after its other handles. The SDK signals it when a program refuses a `Dispose`'s removal query, and the worker then calls `WdfDeviceSetFailed(WdfDeviceFailedNoRestart)` and signals the second. Windows then removes the device and its HID children by surprise removal, as it removes an unplugged device, and asks no program that holds a child open. A queried removal asks every holder, and one refusal stops it. `IRP_MN_REMOVE_DEVICE` follows once the last handle closes, and the flush above releases the index before that. DsHidMini calls `WdfDeviceSetFailed` the same way, with `WdfDeviceFailedAttemptRestart` because it wants its device back. Microsoft documents both calls in "Handling an IRP_MN_SURPRISE_REMOVAL Request" and the `WdfDeviceSetFailed` reference. The SDK's side is in [Lifecycle and Teardown](lifecycle-and-teardown.md#a-removal-no-program-can-refuse-v200).
 
 ---
 
@@ -647,7 +632,7 @@ The driver doesn't link against MSVCRT. `swprintf` / `wsprintf` aren't available
 | `WorkerThread` + `ProcessSharedInput` | 80 | Event-driven shared-mem read, manual queue drain |
 | `EnsureOutputMapping` / `EnsurePidStateMapping` / etc. | 100 | Lazy mapping helpers |
 
-Total: 2,954 lines (driver.c) + 620 lines (driver.h) + 129 lines (hm_contract.h, the version contract both drivers read) + 1,165 lines (companion.c) + 266 lines (hmswd.c).
+Total: 2,782 lines (driver.c) + 526 lines (driver.h) + 957 lines (companion.c) + 299 lines (hmswd.c).
 
 ---
 

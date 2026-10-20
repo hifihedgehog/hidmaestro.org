@@ -65,7 +65,7 @@ Since v1.3.19 the pre-handshake stream is packed in the layout the descriptor de
 
 Since v1.3.20 (issue #36) the responder's SPI analog-stick parameter block serves a ZERO stick dead zone (a real Pro reports ~150 counts, ~10% of the calibration range). Chromium's Nintendo driver reads the dead zone from that block and radially snaps both axes to center inside it, so the virtual pad now delivers the full linear range from center in every browser Gamepad API consumer. SDL and Steam's SDL lineage never read the parameter block (factory and user calibration only) and are unaffected. `switch_pro_check` asserts the zero on the wire so a future parameter-block refresh from hardware captures cannot silently reintroduce the dead band.
 
-Since v1.3.21 (issue #37) the virtual Pro ships the real BLUETOOTH descriptor, extracted byte-exact from a live Pro Controller's SDP cache. Report 0x3F is the only report DirectInput can parse (16 buttons, null-state hat, X/Y/Rx/Ry at 16 bits). The full-mode reports 0x21/0x30/0x31-0x33 are vendor blobs. Pre-handshake the pad sends genuine 12-byte 0x3F simple-mode frames, so joy.cpl reads a live pad through a report a real Pro actually declares rather than v1.3.19's synthetic layout. As of v2.0.0 the protocol is profile data the SDK runs, and 0x3F goes out when the state changes, before the handshake and after a host selects simple mode, as a real pad sends it. Full-mode 0x30 goes out every 15 ms on the device clock's grid. The first 0x01 subcommand flips the stream to the 49-byte Bluetooth full-mode 0x30, which DirectInput ignores entirely. The DInput view freezes at neutral exactly as a real Bluetooth Pro does once Steam or a browser owns it, so the v1.3.19 Chromium caveat is gone: post-handshake bytes can no longer reach descriptor-driven parsers at all. The 0x80 USB-init family is absent from the descriptor (writes fail at HidClass, as on real hardware), so SDL initializes over its Bluetooth path. The profile presents a Bluetooth bus and HID version 0 to match the live pad's enumeration.
+Since v1.3.21 (issue #37) the virtual Pro ships the real BLUETOOTH descriptor, extracted byte-exact from a live Pro Controller's SDP cache. Report 0x3F is the only report DirectInput can parse (16 buttons, null-state hat, X/Y/Rx/Ry at 16 bits). The full-mode reports 0x21/0x30/0x31-0x33 are vendor blobs. Pre-handshake the driver streams genuine 12-byte 0x3F simple-mode frames, so joy.cpl reads a live pad through a report a real Pro actually declares rather than v1.3.19's synthetic layout. The first 0x01 subcommand flips the stream to the 49-byte Bluetooth full-mode 0x30, which DirectInput ignores entirely. The DInput view freezes at neutral exactly as a real Bluetooth Pro does once Steam or a browser owns it, so the v1.3.19 Chromium caveat is gone: post-handshake bytes can no longer reach descriptor-driven parsers at all. The 0x80 USB-init family is absent from the descriptor (writes fail at HidClass, as on real hardware), so SDL initializes over its Bluetooth path. The profile presents a Bluetooth bus and HID version 0 to match the live pad's enumeration.
 
 ### The 4-slot cap
 
@@ -88,7 +88,7 @@ SDL3 detects gamepads through three backends with fallback: XInput, HIDAPI (libu
 ### What we deliver
 
 - **Correct identity** via `HidD_GetProductString` / `HidD_GetManufacturerString` / `HidD_GetSerialNumberString`.
-- **Bluetooth bus type** for BT-mode profiles, from the hardware and compatible IDs a real device of the profile's transport carries (see [Bluetooth identity](#bluetooth-identity-v200)).
+- **Bluetooth bus type** for BT-mode profiles (via the BTHLEDEVICE spoof).
 - **Per-instance disambiguation.** Two virtual DualSense with the same VID:PID/ProductString get unique serials (`HM-CTL-0001`, `HM-CTL-0002`) so `hid_enumerate` doesn't bucket them as one device.
 
 ### Sony motion calibration (issue #43)
@@ -137,17 +137,13 @@ By using `VID_*&PID_*&IG_00` as the device enumerator, the HID child's device pa
 
 One string in a device path controls three different detection paths across three different libraries.
 
-### Bluetooth identity (v2.0.0)
+### The BTHLEDEVICE spoof
 
-SDL3 and hidapi read the bus as Bluetooth from `BTHENUM` or `BTHLEDEVICE` in the parent's compatible IDs, and as LE from the second (see HIDAPI's Windows backend at [`windows/hid.c`](https://github.com/libusb/hidapi/blob/master/windows/hid.c), `hid_internal_detect_bus_type`). A Bluetooth profile's parent carries the hardware and compatible IDs a real device of its transport carries, read from a present DualSense (classic) and Xbox Series pad (LE), and no bus type GUID, **without Bluetooth hardware** and **without a kernel bus driver**.
+HIDAPI detects Bluetooth controllers by checking for `BTHLEDEVICE` in the device's CompatibleIDs (see HIDAPI's Windows backend at [`windows/hid.c`](https://github.com/libusb/hidapi/blob/master/windows/hid.c): the `hid_get_device_info` bus-type detection). HIDMaestro sets this property from user mode during device creation, **without Bluetooth hardware** and **without a kernel bus driver**.
 
-- `"bluetoothTransport": "classic"`, the default, gives `BTHENUM\{00001124-0000-1000-8000-00805f9b34fb}_VID&0002054c_PID&0ce6` and `..._LOCALMFG&0002`, with compatible IDs `BTHENUM\{00001124-...}` and `..._GENERIC`.
-- `"le"` gives `BTHLEDevice\{00001812-0000-1000-8000-00805f9b34fb}_Dev_VID&02045e_PID&0b13_REV&0523`, the same without `_REV`, and `..._LOCALMFG&0002`, with compatible IDs `BTHLEDevice\{00001812-...}` and `BTHLEDevice\GenericATTService`. The LE revision is the profile's `versionNumber`.
-- `bluetoothVendorIdSource` says who assigned the VID: the USB-IF (`"usb"`, the default, 2) or the Bluetooth SIG (`"bluetooth"`, 1, as the Luna's `_Dev_VID&010171` carries).
+SDL3 then uses its Bluetooth-specific controller parsing path, which handles the descriptor correctly. Without this spoof, SDL3's default parser produces zeros for certain virtual device configurations.
 
-`_LOCALMFG` names the host's Bluetooth radio, and HIDMaestro writes 0002, the company of the Intel radio every Bluetooth device on the development machine carried. No INF there matches a `_LOCALMFG` ID. The catalog has 18 classic and 8 LE profiles.
-
-A create stamps the bus type GUID only on the parent it made, by its connection: GUID_BUS_TYPE_USB for a USB profile, none for a Bluetooth one, and HID class names the child. Through 1.x every Bluetooth profile carried the LE compatible ID and a hardware ID of the form `BTHENUM\Dev_VID&02<vid>`, which no real device carries, and every create stamped GUID_BUS_TYPE_USB on every HIDMaestro devnode on the machine and on each one's first child, Bluetooth profiles and other programs' devices included.
+For BT-mode profiles only (`connection: "bluetooth"` in the JSON). USB profiles get USB CompatibleIDs.
 
 ### Custom SDL3 fork
 
@@ -340,7 +336,7 @@ See [Testing and Verification](testing-and-verification.md) for the regression b
 - HID Usage Tables 1.5: Vx/Vy usage codes (Generic Desktop §4). Download from [usb.org/document-library](https://www.usb.org/document-library).
 - [W3C Gamepad API](https://www.w3.org/TR/gamepad/): STANDARD_GAMEPAD mapping bucket.
 - [Chromium gamepad backend](https://source.chromium.org/chromium/chromium/src/+/main:device/gamepad/): `&IG_` skip semantics in RawInput.
-- [HIDAPI](https://github.com/libusb/hidapi): the Windows backend at `windows/hid.c` has bus type detection (the `BTHENUM` and `BTHLEDEVICE` compatible ID checks).
+- [HIDAPI](https://github.com/libusb/hidapi): the Windows backend at `windows/hid.c` has bus type detection (`BTHLEDEVICE` CompatibleIDs check).
 - [SDL3](https://github.com/libsdl-org/SDL): XInput / RawInput / HIDAPI fallback hierarchy under `src/joystick/windows/`.
 - XInput documentation: search Microsoft Learn for "XInput Game Controller APIs". 4-slot cap, `XInputGetState` semantics.
 - [`docs/investigations/wgi-silent-sink-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04): Ghidra decomp of WGI's `OnPnpDeviceAdded` classifier and `IsDeviceOrAncestorFilteredBy`.

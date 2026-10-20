@@ -35,10 +35,10 @@ Safe to call on every startup. Returns the number restored. See [OEM Name Overri
 
 ```csharp
 using var ctx = new HMContext();
-int loaded = ctx.LoadDefaultProfiles();   // returns 337
+int loaded = ctx.LoadDefaultProfiles();   // returns 336
 ```
 
-`HMContext` is the SDK's process-wide entry point. The constructor is cheap: it kicks off three background prewarm tasks (staging the driver payload when a deploy is coming, profile catalog parse, GameInput service warm-up) but doesn't block.
+`HMContext` is the SDK's process-wide entry point. The constructor is cheap: it kicks off three background prewarm tasks (driver-payload extraction to `%TEMP%`, profile catalog parse, GameInput service warm-up) but doesn't block.
 
 `LoadDefaultProfiles` reads the embedded JSON catalog out of `HIDMaestro.Core.dll`. Consumers don't need to ship profile files alongside their app. To load profiles from disk instead (custom directory, modded profiles), use `LoadProfilesFromDirectory(path)`.
 
@@ -54,16 +54,15 @@ ctx.InstallDriver();
 
 Idempotent. On a fresh machine this:
 
-1. Removes the controllers of programs that exited without removing theirs. A running program's controllers stay.
-2. Takes the machine-wide deploy lock, so two programs never deploy at once.
-3. Generates a per-machine self-signed certificate if needed.
-4. Stages the embedded driver payload under `%ProgramFiles%\HIDMaestro\Staging`, writable only by Administrators and SYSTEM, and checks each file's SHA-256.
-5. Signs `HIDMaestro.dll`, `HMXInput.dll`, and the catalog files.
-6. Calls `pnputil /add-driver` for both INFs.
+1. Sweeps any orphan virtuals from a prior crashed run.
+2. Generates a per-machine self-signed certificate if needed.
+3. Extracts the embedded driver payload to `%TEMP%\HIDMaestro\<hash>\`.
+4. Signs `HIDMaestro.dll`, `HMXInput.dll`, and the catalog files.
+5. Calls `pnputil /add-driver` for both INFs.
 
-Total: ~1.7s on a clean machine, ~50 ms on a machine where the same hash is already installed. A newer installed driver, or an older one that controllers run on, is kept, and `ctx.LastDriverInstall` says which. See [Programs Side by Side](../sdk/programs-side-by-side.md).
+Total: ~1.7s on a clean machine, ~50 ms on a machine where the same hash is already installed.
 
-Throws `UnauthorizedAccessException` if the calling process isn't elevated and has a deploy to do. A process that is not elevated and finds this build's driver installed gets `AlreadyCurrent`. Throws `InvalidOperationException` if any signing or `pnputil` step fails.
+Throws `UnauthorizedAccessException` if the calling process isn't elevated; throws `InvalidOperationException` if any signing or `pnputil` step fails.
 
 ---
 
@@ -77,11 +76,11 @@ using var ctrl0 = ctx.CreateController(ds);
 using var ctrl1 = ctx.CreateController(x360);
 ```
 
-`CreateController` takes the lowest free slot in the context (linear scan from 0) and a machine-wide transport index, runs the per-archetype `SetupController` orchestration, and returns once the device's HID child has reached `DN_STARTED` and any required XInput slot has been claimed (capped at 500ms post-v1.3.2).
+`CreateController` allocates the next free controller index (linear scan from 0), runs the per-archetype `SetupController` orchestration, and returns once the device's HID child has reached `DN_STARTED` and any required XInput slot has been claimed (capped at 500ms post-v1.3.2).
 
-Measured before v2.0.0: ~200 ms warm for a single controller, ~1 s for two mixed. Since v2.0.0 each create waits for Windows' pending device installs, the previous create's included, before it registers its devnode, and no live run has timed that.
+Single-controller wall time: ~200 ms warm. Two mixed: ~1 s. The second create overlaps `pnputil` work with the first's PnP-binding wait so it's not strictly serial.
 
-`ctrl0` is the DualSense at slot 0. `ctrl1` is the Xbox 360 Wired at slot 1. In a program running alone their transport indices are 0 and 1 as well. A running program built on HIDMaestro 1.12.0 moves them to 64 and 65. The XInput slot allocator hands the Xbox 360 user-index 0 (DualSense doesn't claim an XInput slot: it's a non-Xbox-VID profile).
+`ctrl0` is the DualSense at controller index 0. `ctrl1` is the Xbox 360 Wired at index 1. The XInput slot allocator hands the Xbox 360 user-index 0 (DualSense doesn't claim an XInput slot: it's a non-Xbox-VID profile).
 
 `using var` matters: `Dispose` removes the device and frees the kernel slot. Forgetting it leaks the virtual until `HMContext.Dispose()` runs.
 
@@ -180,7 +179,7 @@ ctx.DisposeControllersInParallel(
     perControllerCallback: (c, ms) => Console.WriteLine($"  {c.Profile.Id} disposed in {ms} ms"));
 ```
 
-The system-wide HID orphan sweep runs once at the end instead of per-controller. The removals themselves run one at a time, so the batch takes about the sum of the controllers' removals.
+The system-wide HID orphan sweep runs once at the end instead of per-controller.
 
 ---
 

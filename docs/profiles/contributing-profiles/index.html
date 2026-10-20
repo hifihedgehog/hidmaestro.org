@@ -436,8 +436,6 @@
       
         
       
-        
-      
     
     
     
@@ -604,34 +602,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../start/migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Moving from 1.x
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -650,10 +620,6 @@
       
         
           
-        
-      
-        
-      
         
       
         
@@ -969,62 +935,6 @@
     
   
     Keyboards and Mice
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Wii U GameCube Adapter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Programs Side by Side
   
 
     
@@ -2314,16 +2224,6 @@
 <td>If the maintainer can replicate your device, they run <code>HIDMaestroTest emulate &lt;id&gt;</code> and <code>python scripts/verify.py</code></td>
 <td>All five APIs see the device with sane state</td>
 </tr>
-<tr>
-<td><strong>Device model</strong></td>
-<td>The catalog loads strictly and every profile compiles, which battery scenarios S79 and S92 check</td>
-<td>No entry in <code>HMContext.ProfileLoadIssues</code>, and no catalog profile that takes a group from an identity default. A Sony profile names its model with <code>deviceModelFrom</code></td>
-</tr>
-<tr>
-<td><strong>Report lengths</strong></td>
-<td>Maintainer regenerates <code>test/probes/report_length_check/reference_lengths.json</code> from hid-tools</td>
-<td>Battery scenario S37 fails when a catalog descriptor changes without it</td>
-</tr>
 </tbody>
 </table>
 <p>Most contributions go straight in. Edge cases (descriptors the reconstruction algorithm produced something weird for, devices with multiple modes that need separate profiles, devices whose VID:PID Windows pre-populates with a clone label that needs <code>OEM Name</code> override hints) get a comment thread.</p>
@@ -2359,9 +2259,6 @@
 <li><strong>Test the round-trip.</strong> After extracting, save the JSON to <code>C:\my-profiles\&lt;id&gt;.json</code>, then <code>HIDMaestroTest.exe emulate --profile-dir C:\my-profiles &lt;id&gt;</code> and check <code>joy.cpl</code> shows your device with the right name. If it doesn't, the extraction may have grabbed the wrong collection: try a different dropdown entry.</li>
 <li><strong>Capture both wired and wireless</strong> if your device supports both. Two contributions, two issues.</li>
 <li><strong>Include firmware version</strong> in Notes if you know it. Some controllers' descriptors changed across firmware revisions.</li>
-<li><strong>Check which report the device sends.</strong> A data-only frame fills the descriptor's first input report with game pad fields, or a keyboard's or mouse's first input report. If the real device sends its input as another report, set <code>dataReportId</code> to that report's ID, as <code>microsoft-designer-keyboard</code> does with <code>"0x01"</code>. Set <code>inputReportSize</code> only to that report's whole length on the wire, its ID byte included. See <a href="../profile-system/#the-report-a-data-frame-fills-v200">The report a data frame fills</a>.</li>
-<li><strong>Run <code>HIDMaestroProfileCheck</code> on the file.</strong> It ships in the release ZIP beside the extractor, loads the file as the SDK does and prints each problem with its JSON path. Exit code 0 means it loads clean. See <a href="../profile-system/#checking-a-profile-before-you-ship-it">Checking a profile</a>.</li>
-<li><strong>Write the wire form as parameters.</strong> A vendor-blob field takes <code>min</code>, <code>max</code>, <code>invert</code>, <code>center</code> and the other <a href="../profile-system/#report-field-parameters-v200">report field parameters</a>. A <code>uint16-trigger</code> or <code>uint16-pressure</code> field needs <code>max</code>, and an int16 Y axis or pad needs <code>invert</code>. A behavior no parameter expresses is a request for a new parameter that any profile can use, never code for one device.</li>
 </ul>
 <hr />
 <h2 id="what-happens-after-merge">What happens after merge<a class="headerlink" href="#what-happens-after-merge" title="Permanent link">&para;</a></h2>

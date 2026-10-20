@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://hidmaestro.org/docs/sdk/">
       
       
-        <link rel="prev" href="../start/migration/">
+        <link rel="prev" href="../start/glossary/">
       
       
         <link rel="next" href="sdk-reference/">
@@ -436,8 +436,6 @@
       
         
       
-        
-      
     
     
     
@@ -604,34 +602,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../start/migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Moving from 1.x
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -652,10 +622,6 @@
       
         
           
-        
-      
-        
-      
         
       
         
@@ -974,62 +940,6 @@
     
   
     Keyboards and Mice
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="gamecube-adapter/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Wii U GameCube Adapter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="programs-side-by-side/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Programs Side by Side
   
 
     
@@ -1770,8 +1680,6 @@
 
 <h1 id="sdk">SDK<a class="headerlink" href="#sdk" title="Permanent link">&para;</a></h1>
 <p>The public C# surface a consumer talks to, in <code>HIDMaestro.Core.dll</code>.</p>
-<p>Programs built on HIDMaestro 1.x must move to 2.0.0. <a href="../start/migration/">Moving from 1.x</a>
-lists every change a 1.x program meets.</p>
 <ul>
 <li><strong><a href="sdk-reference/">SDK Reference</a></strong>: <code>HMContext</code> (driver lifecycle,
   profile catalog, controller allocation), <code>HMController</code> (input submit,
@@ -1795,14 +1703,6 @@ lists every change a 1.x program meets.</p>
   ships inside the DLL and deploys itself.</li>
 <li><strong><a href="dualshock-3/">DualShock 3 and Pressure</a></strong>: the <code>dualshock-3-full</code>
   persona, the ten <code>Pressure*</code> fields, and how PCSX2 and RPCS3 read it.</li>
-<li><strong><a href="programs-side-by-side/">Programs Side by Side</a></strong>: two or more
-  programs that embed HIDMaestro on one machine. Ownership claims,
-  machine-wide transport indices, identity keys, sweeps of exited programs
-  only, one driver deploy at a time that never downgrades, and the
-  machine-wide locks.</li>
-<li><strong><a href="gamecube-adapter/">Wii U GameCube Adapter</a></strong>: the
-  <code>gamecube-adapter</code> persona, <code>HMController.Ports</code>, <code>BindWinUsb()</code> for
-  Dolphin, Slippi and SDL, rumble, and the host poll interval.</li>
 <li><strong><a href="switch2-pro/">Switch 2 Pro with Motion</a></strong>: the
   <code>switch2-pro-controller-composite</code> persona, its two USB interfaces,
   motion for Steam and SDL, and what each host needs.</li>
@@ -1850,7 +1750,7 @@ lists every change a 1.x program meets.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../start/migration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Moving from 1.x">
+          <a href="../start/glossary/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Glossary">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1860,7 +1760,7 @@ lists every change a 1.x program meets.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Moving from 1.x
+                Glossary
               </div>
             </div>
           </a>

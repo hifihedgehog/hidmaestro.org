@@ -8,7 +8,7 @@ If you're not sure where to start, run the test app's cleanup command and try ag
 HIDMaestroTest.exe cleanup
 ```
 
-That removes every HIDMaestro device on the machine, another running program's included, then the driver packages and `HKLM\SOFTWARE\HIDMaestro`. After cleanup, a fresh `InstallDriver` rebuilds from scratch.
+That sweeps every HIDMaestro PnP entry, removes the driver packages, and deletes the certificate. After cleanup, a fresh `InstallDriver` rebuilds from scratch.
 
 ---
 
@@ -26,7 +26,7 @@ That removes every HIDMaestro device on the machine, another running program's i
 
 **Fix**: check the consumer's stdout for the specific step that failed. Common causes:
 
-- **Antivirus holding files.** Real-time scanning of `%ProgramFiles%\HIDMaestro\Staging\` causes `signtool` or `Inf2Cat` to fail with sharing violations. Exclude `%ProgramFiles%\HIDMaestro\Staging\` in your AV. Through v1.12.0 the payload was staged under `%TEMP%\HIDMaestro\` instead.
+- **Antivirus holding files.** Real-time scanning of `%TEMP%\HIDMaestro\<hash>\` causes `signtool` or `Inf2Cat` to fail with sharing violations. Whitelist `%TEMP%\HIDMaestro\` in your AV.
 - **No network step exists.** Driver signing runs offline: `signtool sign /a /sm /s My /n <cert> /fd SHA256`, with no timestamp server, so an air-gapped or proxied environment changes nothing here.
 - **Corrupt embedded payload.** Reinstall the SDK (download a fresh release ZIP).
 
@@ -87,24 +87,6 @@ Almost never needed in normal operation. The self-heal sweep prevents this from 
 
 ## Create phase
 
-### A profile is missing after a load
-
-**Cause**: as of v2.0.0 profiles load strictly. A file that does not parse, a key the schema lacks, a key written twice, a value a check refuses, a removed spelling (`steamFirmwareStamp`, the `ds3-battery` type, `usbConfiguration.protocol`) or an id already loaded refuses the file, and the load does not throw.
-
-**Fix**: read `HMContext.ProfileLoadIssues` after the load. Each entry names the file, the JSON path and the reason. Give an edited copy of a catalog profile an id of its own. See [Loading the catalog](profiles/profile-system.md#loading-the-catalog).
-
-### `HMProfileException` from `CreateController` or `HMProfileBuilder.Build`
-
-**Cause**: the profile itself has a defect: no descriptor, a descriptor hex string that is not whole hex bytes, a layout that does not fit the descriptor, or a device model that does not compile. A profile built or changed in code meets these checks at create, before anything machine-wide.
-
-**Fix**: the exception's `JsonPath` and `Reason` name the key and the limit. See [Keys 2.0.0 requires](profiles/profile-system.md#keys-200-requires) for the keys a profile written for 1.x needs.
-
-### `InvalidOperationException` from `CreateController` since v2.0.0
-
-**Cause**: one of the registration checks v2.0.0 added. Another program held the machine-wide PnP lock for ten minutes, the device's prior life or its record was still there after its removal, the wait for Windows' pending device installs failed, what the registration gate removed came back three times, or a gamepad or XUSB companion was not made. Through v1.12.0 a create without its companion succeeded with a controller no game saw.
-
-**Fix**: the message names the check. Set `HIDMAESTRO_DIAG=1` to log each removal's outcome in `teardown_diag.log`. See [Registrations and removals](sdk/programs-side-by-side.md#registrations-and-removals).
-
 ### `InvalidOperationException` "device-node creation failed"
 
 **Cause**: the PnP wait gate timed out. Usually the HID child never reached `DN_STARTED`.
@@ -159,7 +141,7 @@ Get-PnpDevice -InstanceId 'SWD\HIDMAESTRO\*'
 
 **Fix**:
 
-- Set `HIDMAESTRO_DIAG=1` and read `%TEMP%\HIDMaestro\teardown_diag.log`, which records hmswd's exit code and output. As of v2.0.0 hmswd.exe keeps no self-log, run by the SDK or by hand, so `%TEMP%\HIDMaestro\hmswd_self.log` is never written, and neither is a per-create `hmswd_<enumerator>_<suffix>.log`.
+- Check `%TEMP%\HIDMaestro\hmswd_self.log` for the per-call hresult breakdown.
 - Reboot if the failure is "the device is busy" (a prior orphan is somehow still holding the slot).
 - Verify the current driver is signed and registered (`pnputil /enum-drivers | findstr hidmaestro`).
 
@@ -245,12 +227,6 @@ If you see input reaching the consumer (`SubmitState` is being polled by somethi
 
 - Check the SDK's output reader thread is running. Set a breakpoint in `HMOutputReader_<index>`.
 - Check the output section is open. `Marshal.ReadInt32(_outputView, 0)` should return Head value, not 0.
-
-### An output handler throws and nothing seems to happen
-
-**Cause**: the nine events the SDK raises on its own threads (`OutputReceived`, `OutputDecoded`, `KeyboardLedsChanged`, a port's `OutputChanged`, the USB audio events and `HapticReceived`) run each handler in turn and drop what one throws, so the exception reaches no one. The next handler and the SDK's own handling still run. This is v2.0.0 behavior. Through v1.12.0 a throwing handler kept later handlers from running, and one on the audio pump, the thread pool or the VR haptic reader ended the program.
-
-**Fix**: set `HIDMAESTRO_DIAG=1` and read `%TEMP%\HIDMaestro\teardown_diag.log`. Each dropped exception is written there as `a <event> handler threw <type>: <message>`. Catch inside the handler if the program needs to see it.
 
 ### PID FFB: `CreateEffect` succeeds but `Start` does nothing
 
@@ -349,31 +325,13 @@ Both INFs should show the line. If missing, fix the INF and rebuild. Verify per-
 
 ### Dispose hangs on Xbox Series BT (~11 seconds pre-v1.3.1)
 
-Same root cause. The SwD-first ordering shortened it to ~500 ms, measured at v1.3.1.
-
-### Disposing several controllers takes longer than on v1.12.0
-
-**Cause**: as of v2.0.0 every devnode removal holds the machine-wide PnP lock from its call through its removal test, so removals run one at a time, in a program and across programs. A batch takes about the sum of its removals, where it took about the longest one, and each removal also waits up to 2 s for a late DEVICEINSTANCEREMOVED notification.
-
-**Expected.** The lock keeps a program of this release from registering a device while another removes one, and the removals queue behind it.
+Same root cause; SwD-first ordering fix shortens to ~500 ms.
 
 ### Process force-kill leaves orphan devnodes
 
-**Cause**: normal. The consumer process didn't run `Dispose`, or it exited normally while its exit handler's 10-second wait for a create in flight or the phantom cleanup ran out, a device did not leave, or another program held the PnP lock past what was left of those 10 seconds.
+**Cause**: normal. The consumer process didn't run `Dispose`.
 
-**Fix**: the next sweep of any HIDMaestro program on the machine removes them: `InstallDriver`, a program's first create, or `RemoveAllVirtualControllers()`. A program built on HIDMaestro older than v1.12.0 leaves no sign of whether it still runs, so its devices stay until `HIDMaestroTest.exe cleanup` removes everything.
-
-### `HMResourceInUseException` from `CreateController`
-
-**Cause**: another live controller holds what the create asked for: its identity key, in this program or another, or the ParentIdPrefix the key derives. When the identity key is held by a program on HIDMaestro 2.0.0 or later, the message and the exception's `OwnerProcessId`, `OwnerImagePath` and `OwnerSdkVersion` name it. The other refusals name the holder in the message at most, and leave those properties null. The same exception comes when no transport index is free, when a program built on v1.12.0 started on the create's index while it ran, when another program made one of the index's events first, and for a key that a context of the same process dropped without `Dispose` still holds, which the message says. A keyed create first waits up to 120 seconds when no running program's record lists the key, since another program's sweep may hold it while it removes a dead program's device. When the indices are taken by objects other programs made under HIDMaestro's names, the message counts them and names one.
-
-**Fix**: dispose the holder first, or create with another identity key. Two programs that want the same key name the same device, and only one of them can have it. When a v1.12.0 program took the index during the create, create the controller again, and it takes another index. For a key a dropped context holds, dispose the context before dropping it, or use another key in that process.
-
-### `HMDriverVersionException` from `CreateController`
-
-**Cause**: the driver that started the create's device does not serve this SDK's protocol 4 (`Problem` is `ProtocolNotServed`), or it failed the start over a value the create wrote and it could not read (`ValueNotRead`, the value named in the message). A create installs its own driver over an older one first, so `ProtocolNotServed` means a newer driver that dropped protocol 4, or a mis-stamped one. The create has already removed its device.
-
-**Fix**: for `ProtocolNotServed`, use an SDK of the installed driver's release. `ValueNotRead` means this SDK and the installed driver disagree on the named value's format. Report it with the message.
+**Fix**: the next `InstallDriver` call will sweep them via `RemoveAllVirtualControllers` self-heal. Or call `HIDMaestroTest.exe cleanup` manually to wipe state.
 
 ### Phantom devnodes accumulate over time
 
@@ -381,13 +339,7 @@ Same root cause. The SwD-first ordering shortened it to ~500 ms, measured at v1.
 
 **Fix**: `PHANTOM` entries don't occupy XInput slots, don't show in active-controller lists, and don't affect anything user-visible. The regression battery's PASS criterion ignores PHANTOMs.
 
-If they bother you cosmetically, `HIDMaestroTest.exe cleanup` clears them. As of v2.0.0 each process removes HIDMaestro's phantoms once, on a background thread, started by the first of `InstallDriver`, the first create and `RemoveAllVirtualControllers()`. Later calls remove none, and the next process's first cleanup removes what is left.
-
-### Another program's controllers disappeared
-
-**Cause**: a running program built on HIDMaestro 1.12.0 or older called `InstallDriver` or made its first create in its session. Each of those removes every HIDMaestro device on the machine, another program's included, and its `InstallDriver` replaces the installed driver with its own when the payload differs. A v1.12.0 program with no controller present leaves no sign, so its next create can also take a v2.0.0 program's low transport index, its `CreateControllerAt(index)` takes whatever index it is given, and it reaches index 64 with 65 controllers alive.
-
-**Fix**: programs built on HIDMaestro 1.x must move to 2.0.0. Programs on 2.0.0 remove only what exited programs left, and install their driver over any older one. See [Programs Side by Side](sdk/programs-side-by-side.md#programs-built-on-1x) and [Moving from 1.x](start/migration.md).
+If they bother you cosmetically, `HIDMaestroTest.exe cleanup` clears them.
 
 ---
 
@@ -432,8 +384,7 @@ Reboot is the strongest reset for kernel-state issues (xinputhid stuck, DriverSt
 
 | Variable | Effect |
 |----------|--------|
-| `HIDMAESTRO_DIAG=1` | Writes `%TEMP%\HIDMaestro\teardown_diag.log` with per-call timing for every TeardownController and SwdDeviceFactory.Remove, and hmswd's exit code and output |
-| `HIDMAESTRO_TIMING=1` | Writes `%TEMP%\HIDMaestro\setup_timing.log` |
+| `HIDMAESTRO_DIAG=1` | Writes `%TEMP%\HIDMaestro\teardown_diag.log` with per-call timing for every TeardownController and SwdDeviceFactory.Remove |
 | `HIDMAESTRO_TIMEOUT_SCALE=2` | Doubles every PnP wait budget. Use on slow hardware (Atom Z8350) |
 | `HIDMAESTRO_QUIET=1` | Suppresses redundant ProcessExit RemoveAllVirtualControllers call. Used by the regression harness |
 
@@ -441,10 +392,8 @@ Logs to inspect:
 
 | Path | Contents |
 |------|---------|
-| `%TEMP%\HIDMaestro\teardown_diag.log` | Per-call SDK orchestration trace, with hmswd's exit code and output (with `HIDMAESTRO_DIAG=1`) |
-| `%TEMP%\HIDMaestro\setup_timing.log` | Each `SetupController` step's duration (with `HIDMAESTRO_TIMING=1`) |
-
-As of v2.0.0 the SDK writes these logs with the user's own rights, also when it runs elevated from a split UAC token, so an elevated process never creates a file in a folder the user's programs control.
+| `%TEMP%\HIDMaestro\teardown_diag.log` | Per-call SDK orchestration trace (with `HIDMAESTRO_DIAG=1`) |
+| `%TEMP%\HIDMaestro\hmswd_self.log` | Every `SwDeviceCreate` / `SwDeviceClose` call's hresult |
 
 ---
 

@@ -152,7 +152,7 @@ Every derived value is a pure function of the key, nothing is stored, and the me
 |--------|--------|------------------------------|
 | Plain HID | `ROOT\HIDClass\<token>`, SetupAPI with an explicit instance id | The identity's `ParentIdPrefix` is written into the instance key between `SetupDiCreateDeviceInfo` and `DIF_REGISTERDEVICE`, before the HID child exists. |
 | Non-xinputhid Xbox | `ROOT\VID_045E&PID_*&IG_00\<token>` plus `SWD\HIDMAESTRO\<token>` | Main devnode as above. The XUSB companion has no HID child, so a fixed SwDevice tuple is the whole fix. |
-| xinputhid Xbox | `SWD\HIDMAESTRO_VID_045E_PID_*&IG_00\<token>` | Fixed SwDevice tuple. `SwDeviceCreate` starts the driver inside the call, so the child has already enumerated by the time the SDK can write anything after it. As of v2.0.0 the create rewrites the retained record's prefix to the identity's first, so the child starts under it. |
+| xinputhid Xbox | `SWD\HIDMAESTRO_VID_045E_PID_*&IG_00\<token>` | Fixed SwDevice tuple. `SwDeviceCreate` starts the driver inside the call, so the child has already enumerated by the time the SDK can write anything. The identity's prefix is reconciled into the key afterwards, and the restart the creation path already performs re-keys the child under it. |
 | USB/IP composite personas | `USB\VID_054C&PID_0CE6\<serial>` | A profile without a captured serial serves the identity's synthetic serial at a string index the descriptor did not use, so Windows keys the USB instance on the serial instead of the vhci port. Profiles with a captured serial keep it, varied by identity. |
 
 `<token>` is `HM_0000` for the default key of index 0, and `HM_` plus sixteen hex digits for a consumer key. A consumer key also derives a container GUID in the `HIDMAESTRO` family, a `1&hash&0` prefix and a `HM` plus twelve hex digit serial, all from one SHA-256 of the key.
@@ -247,9 +247,7 @@ v1.3.1 inverts the order:
 1. For any `SWD\` parent, **close the SwDevice handle FIRST** via `SwdDeviceFactory.Remove`.
 2. Block on `CM_NOTIFY_ACTION_DEVICEINSTANCEREMOVED` (a value of the `CM_NOTIFY_ACTION` enum on Microsoft Learn) for the parent: so callers know the kernel has actually propagated removal, not just that the handle closed.
 3. Mop up any HID children that survived the cascade. Usually none, because the SwD parent's release fires its children's removal in one cascade.
-4. Net cost, measured at v1.3.1: ~135 ms for Xbox 360 Wired, ~500 ms for Xbox Series BT.
-
-Since v2.0.0 that wait is the removal test, which also requires the devnode out of the tree and, for an uninstall, its record gone, and each removal holds the machine-wide PnP lock through it. Removals therefore run one at a time. See [Registrations and removals](../sdk/programs-side-by-side.md#registrations-and-removals).
+4. Net cost: ~135 ms for Xbox 360 Wired, ~500 ms for Xbox Series BT.
 
 A second optimization in the same change: when a HIDMAESTRO sweep walks registry entries that exist only as `PHANTOM` (registry residue from prior sessions, no live devnode), skip the `hmswd.exe` `SwDeviceCreate`-reconnect roundtrip entirely. Saves ~50-75 ms per stale entry and prevents creep across same-process recreation cycles.
 

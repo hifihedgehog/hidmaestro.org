@@ -436,8 +436,6 @@
       
         
       
-        
-      
     
     
     
@@ -604,34 +602,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../start/migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Moving from 1.x
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -650,10 +620,6 @@
       
         
           
-        
-      
-        
-      
         
       
         
@@ -969,62 +935,6 @@
     
   
     Keyboards and Mice
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Wii U GameCube Adapter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Programs Side by Side
   
 
     
@@ -1513,10 +1423,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-the-337-profile-catalog" class="md-nav__link">
+  <a href="#5-the-336-profile-catalog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. The 337-profile catalog
+        5. The 336-profile catalog
       
     </span>
   </a>
@@ -1533,17 +1443,6 @@
     <span class="md-ellipsis">
       
         Process / privilege model
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#several-programs-on-one-machine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Several programs on one machine
       
     </span>
   </a>
@@ -2034,10 +1933,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-the-337-profile-catalog" class="md-nav__link">
+  <a href="#5-the-336-profile-catalog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. The 337-profile catalog
+        5. The 336-profile catalog
       
     </span>
   </a>
@@ -2054,17 +1953,6 @@
     <span class="md-ellipsis">
       
         Process / privilege model
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#several-programs-on-one-machine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Several programs on one machine
       
     </span>
   </a>
@@ -2252,16 +2140,14 @@
 <p>Lives in the consumer process. Exposes <code>HMContext</code>, <code>HMController</code>, <code>HMProfile</code>, etc. (see <a href="../../sdk/sdk-reference/">SDK Reference</a>).</p>
 <p>Responsibilities:</p>
 <ul>
-<li>Embed the driver payload (driver DLLs, INFs, signing toolchain, <code>hmswd.exe</code>) and stage it, as of v2.0.0, under <code>%ProgramFiles%\HIDMaestro\Staging</code> in directories only Administrators and SYSTEM can write, checking each file's SHA-256 before it runs.</li>
-<li>Generate a self-signed certificate, sign the binaries, run <code>pnputil /add-driver</code>. Deploys take the machine-wide deploy lock, <code>HIDMaestro.Admin\Deploy</code>, a mutex in a namespace only elevated programs can open. They never downgrade an installed driver. They install the 2.0.0 driver over any older one, a full deploy with nothing on it or this build's packages added beside it when another program's devices hold it.</li>
-<li>Claim ownership machine-wide (v2.0.0): the process, each controller's transport index and each identity are named pipes created with <code>FILE_FLAG_FIRST_PIPE_INSTANCE</code> under the pipe prefix <code>ProtectedPrefix\Administrators\</code>, where only an elevated program can create one, and a record under <code>HKLM\SOFTWARE\HIDMaestroOwners</code> names the process and its controllers. Sweeps remove only what exited programs left.</li>
-<li>Allocate per-context slots and machine-wide transport indices, and orchestrate <code>SetupController</code> (registry write &rarr; <code>SwDeviceCreate</code> or <code>SetupDiCreateDeviceInfoW</code> &rarr; PnP wait &rarr; XInput slot-claim wait).</li>
-<li>Compile a profile's device model at create (v2.0.0): ports, the USB/IP device protocol and the WinUSB binding are JSON, and the SDK refuses a profile that declares them wrongly before it takes anything machine-wide.</li>
+<li>Embed and extract the driver payload (driver DLLs, INFs, signing toolchain, <code>hmswd.exe</code>) on first install.</li>
+<li>Generate a self-signed certificate, sign the binaries, run <code>pnputil /add-driver</code>.</li>
+<li>Allocate per-controller indices and orchestrate <code>SetupController</code> (registry write &rarr; <code>SwDeviceCreate</code> or <code>SetupDiCreateDeviceInfoW</code> &rarr; PnP wait &rarr; XInput slot-claim wait).</li>
 <li>Provide the abstract <code>HMGamepadState</code> &rarr; HID descriptor encoding.</li>
 <li>Run the per-controller output-reader background thread that drains the shared output ring at ~125 Hz.</li>
 <li>Manage HID PID 1.0 force-feedback shared state.</li>
 <li>Manage <code>joy.cpl</code> OEM-name overrides with crash-safe restore.</li>
-<li>Embed and load the 337-profile catalog, through source-generated JSON, so the SDK also runs in NativeAOT and trimmed single-file apps (v2.0.0).</li>
+<li>Embed and load the 336-profile catalog.</li>
 </ul>
 <p>Lines of code: ~5,300 in public surface (<code>HMContext</code> / <code>HMController</code> / <code>HidDescriptorBuilder</code> / <code>HMProfileBuilder</code> / <code>HMDeviceExtractor</code> / <code>HMOemNameOverride</code> / value types) plus ~16,600 in <code>Internal/</code> (<code>DeviceOrchestrator</code>, <code>DeviceManager</code>, <code>SwdDeviceFactory</code>, <code>DriverBuilder</code>, <code>HidDescriptorReconstructor</code>, <code>HidReportBuilder</code>, <code>SharedMemoryIO</code>, <code>OemNameOverrideStore</code>, <code>PnputilHelper</code>, etc.).</p>
 <h3 id="2-hidmaestrodll-the-umdf2-driver">2. <code>HIDMaestro.dll</code>: the UMDF2 driver<a class="headerlink" href="#2-hidmaestrodll-the-umdf2-driver" title="Permanent link">&para;</a></h3>
@@ -2272,7 +2158,6 @@
 <li>Handles <code>IOCTL_HID_READ_REPORT</code> synchronously when there's new data (seqno gate); otherwise pends in <code>ManualQueue</code> and completes from the worker thread.</li>
 <li>Handles <code>IOCTL_UMDF_HID_GET_FEATURE</code> / <code>_SET_FEATURE</code> / <code>_SET_OUTPUT_REPORT</code> for HID PID 1.0 and for vendor output reports. Output IOCTLs publish into the shared output ring with <code>OutputLock</code> serialization.</li>
 <li>Handles HID string queries (<code>HID_STRING_ID_IPRODUCT</code> / <code>IMANUFACTURER</code> / <code>ISERIALNUMBER</code>) from per-instance fields.</li>
-<li>Writes its half of <code>Global\HIDMaestroVersion&lt;N&gt;</code> each time it opens the input section (v2.0.0), so the SDK can read the driver's version and protocol.</li>
 </ul>
 <p>INF: <code>hidmaestro.inf</code>. Class GUID: <code>{745a17a0-74d3-11d0-b6fe-00a0c90f57da}</code> (HIDClass). <code>LowerFilters = WUDFRd</code>. <code>UmdfHostProcessSharing = ProcessSharingDisabled</code> so each instance gets its own host process.</p>
 <p>Detail: <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>.</p>
@@ -2293,9 +2178,8 @@
 <p>Args: <code>create | remove &lt;enumerator&gt; &lt;suffix&gt; &lt;container-guid&gt; &lt;hw-ids&gt; &lt;compat-ids&gt; &lt;description&gt;</code>. Returns the resulting instance ID on stdout for the SDK to record.</p>
 <p>Lifetime: <code>SWDeviceLifetimeParentPresent</code> so the device persists past process exit. <code>remove</code> reconnects to the previously-created device by re-<code>SwDeviceCreate</code>-ing with identical args (the docs guarantee this returns a fresh handle to the existing device), downgrades lifetime to <code>Handle</code>, then <code>SwDeviceClose</code>.</p>
 <p>Detail: <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
-<h3 id="5-the-337-profile-catalog">5. The 337-profile catalog<a class="headerlink" href="#5-the-337-profile-catalog" title="Permanent link">&para;</a></h3>
+<h3 id="5-the-336-profile-catalog">5. The 336-profile catalog<a class="headerlink" href="#5-the-336-profile-catalog" title="Permanent link">&para;</a></h3>
 <p>Embedded as a JSON resource inside <code>HIDMaestro.Core.dll</code>. 73 vendors across 59 folders, 1 to 46 profiles each, 103 of the profiles keyboards and mice. See <a href="../../profiles/profile-system/">Profile System</a> for the schema and runtime classification.</p>
-<p>A profile can describe more than a report. As of v2.0.0 <code>extendedReport.ports</code> describes a report that carries several controllers, the top-level <code>protocol</code> describes the commands a USB/IP device answers and when it sends input, <code>stateBlock</code> and <code>inputReports</code> describe a device that builds its reports from its own state, and <code>usbConfiguration.winUsb</code> names the interface GUID a WinUSB binding registers. The SDK checks them when a file loads and compiles them once at create. The Wii U GameCube adapter and the Switch 2 Pro composite use them, and no SDK code names either device. A profile takes the feature answers, protocol and presentation it does not carry itself from a model it names with <code>deviceModelFrom</code>, or from the identity defaults. See <a href="../../profiles/profile-system/#device-models-v200">Device models</a>. See <a href="../../sdk/gamecube-adapter/">Wii U GameCube Adapter</a> and <a href="../../profiles/profile-system/#devices-with-ports-and-protocols-v200">Profile System</a>.</p>
 <hr />
 <h2 id="process-privilege-model">Process / privilege model<a class="headerlink" href="#process-privilege-model" title="Permanent link">&para;</a></h2>
 <table>
@@ -2310,7 +2194,7 @@
 <tr>
 <td>Consumer process</td>
 <td>Admin (or non-admin for read-only operations)</td>
-<td>Hosts <code>HIDMaestro.Core.dll</code>. Drives <code>SubmitState</code> from any thread. Several consumer processes can run on one machine (v2.0.0).</td>
+<td>Hosts <code>HIDMaestro.Core.dll</code>. Drives <code>SubmitState</code> from any thread.</td>
 </tr>
 <tr>
 <td><code>WUDFHost.exe</code> (main HID, per-controller)</td>
@@ -2332,9 +2216,6 @@
 <p><code>UmdfHostProcessSharing = ProcessSharingDisabled</code> in both INFs ensures per-controller hosts. With 6 controllers running you'll see 6-12 <code>WUDFHost.exe</code> instances depending on which profiles are active. ~8 MB RSS, ~10 threads each.</p>
 <p>This was a deliberate fix. Default (<code>ProcessSharingEnabled</code>, the WDF directive defined in INF <code>[...NT.Wdf]</code> sections) funnels every instance into one shared <code>WUDFHost</code>; at 6 controllers that host accumulates 9+ minutes of CPU time vs ~2 seconds per per-instance host. The contention is between writer threads and concurrent <code>XInputGetState</code> reader threads when 2+ virtuals coexist with a real xinputhid device in the same host. See <a href="https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/issue3-dual-xinputhid-saturation-2026-04"><code>docs/investigations/issue3-dual-xinputhid-saturation-2026-04/</code></a> for the full investigation.</p>
 <hr />
-<h2 id="several-programs-on-one-machine">Several programs on one machine<a class="headerlink" href="#several-programs-on-one-machine" title="Permanent link">&para;</a></h2>
-<p>Windows sees devices, so two programs that embed HIDMaestro share one driver, one XInput slot table and one set of machine-wide object names. As of v2.0.0 each program keeps its own part of that: an owner claim, a transport index and an identity per controller, and a record naming them. A sweep removes a device only when its program's claim is gone. The driver is deployed by one program at a time, never downgraded, and installed over any older driver whatever runs on it. A program built on v1.12.0 is judged live by its owner pipe. While such a program runs, transport indices start at 64, out of its way. It still removes every HIDMaestro device on the machine at its <code>InstallDriver</code> and its first create, so programs built on HIDMaestro 1.x must move to 2.0.0. See <a href="../../sdk/programs-side-by-side/">Programs Side by Side</a>.</p>
-<hr />
 <h2 id="data-flow-input">Data flow: input<a class="headerlink" href="#data-flow-input" title="Permanent link">&para;</a></h2>
 <p>A consumer's <code>HMController.SubmitState(state)</code> call arrives at every downstream API in this order:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Consumer thread
@@ -2354,7 +2235,7 @@
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>  └─ WGI (Windows.Gaming.Input.dll)
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        └─ Browser Gamepad
 <a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>For profiles with an XUSB companion, in parallel:
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>For Xbox-VID profiles, in parallel:
 <a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>GIP buffer is read by the XUSB companion on IOCTL_XUSB_GET_STATE
 <a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>  ↓ companion translates 14-byte GIP → XINPUT_GAMEPAD wire format
 <a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>XInput consumers (xinput1_4.dll → XInputGetState)
@@ -2463,7 +2344,7 @@
 <a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a>├── tools/HIDMaestroProfileExtractor/  ; standalone WPF extractor GUI
 <a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a>├── example/SdkDemo/                ; minimal SDK consumer
 <a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a>├── test/                           ; HIDMaestroTest CLI + regression battery + probes
-<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>├── profiles/                       ; 337 profile JSONs
+<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>├── profiles/                       ; 336 profile JSONs
 <a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a>├── scripts/                        ; build, signing, verification, multi-pad-check
 <a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a>├── build/                          ; build outputs (driver DLLs, hmswd.exe, stamped INFs)
 <a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a>└── docs/                           ; README screenshots, investigation notes
@@ -2513,10 +2394,6 @@
 <tr>
 <td><strong>Multi-controller</strong></td>
 <td><a href="../multi-controller/">Multi-Controller</a></td>
-</tr>
-<tr>
-<td><strong>Several programs on one machine</strong></td>
-<td><a href="../../sdk/programs-side-by-side/">Programs Side by Side</a></td>
 </tr>
 <tr>
 <td><strong>Create / dispose</strong></td>

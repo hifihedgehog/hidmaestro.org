@@ -293,9 +293,9 @@ The regression battery covers the FFB path in three scenarios:
 Run from an elevated PowerShell:
 
 ```powershell
-./test/regression/swap_regression.ps1 -Filter 'S24*'
-./test/regression/swap_regression.ps1 -Filter 'S25*'
-./test/regression/swap_regression.ps1 -Filter 'S26*'
+./test/regression/regression_battery.ps1 -Filter 'S24*'
+./test/regression/regression_battery.ps1 -Filter 'S25*'
+./test/regression/regression_battery.ps1 -Filter 'S26*'
 ```
 
 PASS exit code 0; FAIL exit code 1 with leftover instance IDs printed.
@@ -325,5 +325,5 @@ PASS exit code 0; FAIL exit code 1 with leftover instance IDs printed.
 - vJoy `Ffb_GetNextFreeEffect`: in [github.com/njz3/vJoy](https://github.com/njz3/vJoy) under `driver/sys/hid.c`. The kernel-side EBI auto-allocation pattern HIDMaestro mirrors in user mode.
 - vJoy reference FFB descriptor: in the same repo under `driver/sys/hidReportDescFfb.h`. The four-feature variant `AddPidFfbBlock` deliberately omits.
 - [HIDMaestro issue #16](https://github.com/hifihedgehog/HIDMaestro/issues/16): the pid.dll `PID_EffectOperation+0x52` AV.
-- [`test/regression/swap_regression.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1): scenarios S24-S26 validate the FFB round-trip end-to-end.
+- [`test/regression/regression_battery.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1): scenarios S24-S26 validate the FFB round-trip end-to-end.
 - [References](../reference/references.md): full source bibliography.

@@ -77,6 +77,7 @@ nav:
       - Platform support: start/platform-support.md
       - Quickstart: start/quickstart.md
       - Glossary: start/glossary.md
+      - Moving from 1.x: start/migration.md
   - SDK:
       - sdk/index.md
       - SDK Reference: sdk/sdk-reference.md
@@ -88,6 +89,8 @@ nav:
       - DualShock 3 and Pressure: sdk/dualshock-3.md
       - Switch 2 Pro with Motion: sdk/switch2-pro.md
       - Keyboards and Mice: sdk/keyboards-and-mice.md
+      - Wii U GameCube Adapter: sdk/gamecube-adapter.md
+      - Programs Side by Side: sdk/programs-side-by-side.md
       - OEM Name Override: sdk/oem-name-override.md
   - Profiles:
       - profiles/index.md

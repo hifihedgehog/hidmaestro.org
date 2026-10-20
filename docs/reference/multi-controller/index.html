@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -620,6 +650,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -935,6 +969,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -1535,10 +1625,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#sdk-side-linear-index-allocation" class="md-nav__link">
+  <a href="#sdk-side-slots-and-transport-indices" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SDK-side: linear index allocation
+        SDK-side: slots and transport indices
       
     </span>
   </a>
@@ -1639,6 +1729,17 @@
     <span class="md-ellipsis">
       
         SDL3 / DirectInput / HIDAPI: no cap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#several-programs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Several programs
       
     </span>
   </a>
@@ -1922,10 +2023,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#sdk-side-linear-index-allocation" class="md-nav__link">
+  <a href="#sdk-side-slots-and-transport-indices" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SDK-side: linear index allocation
+        SDK-side: slots and transport indices
       
     </span>
   </a>
@@ -2026,6 +2127,17 @@
     <span class="md-ellipsis">
       
         SDL3 / DirectInput / HIDAPI: no cap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#several-programs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Several programs
       
     </span>
   </a>
@@ -2145,48 +2257,38 @@
 
 <h1 id="multi-controller">Multi-Controller<a class="headerlink" href="#multi-controller" title="Permanent link">&para;</a></h1>
 <p>Up to N virtual controllers running simultaneously. Verified working with 6 mixed (2× Xbox Series BT + 2× Xbox 360 Wired + 2× DualSense) on a Ryzen 9955HX3D dev box and on an Intel Atom Z8350 fixture. The SDK supports unlimited; downstream APIs cap variously.</p>
-<p>This page covers the mechanics that make multi-controller work: per-controller indices, the friendly-name re-application race, per-instance WUDFHost, ordering across APIs, and what each downstream consumer caps at.</p>
+<p>This page covers the mechanics that make multi-controller work: slots and transport indices, the friendly-name re-application race, per-instance WUDFHost, ordering across APIs, and what each downstream consumer caps at.</p>
 <p>For per-controller PnP machinery, see <a href="../swdevice-and-pnp/">SwDevice and PnP</a>. For the underlying driver design, see <a href="../umdf2-driver-internals/">UMDF2 Driver Internals</a>.</p>
 <hr />
-<h2 id="sdk-side-linear-index-allocation">SDK-side: linear index allocation<a class="headerlink" href="#sdk-side-linear-index-allocation" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">public</span><span class="w"> </span><span class="n">HMController</span><span class="w"> </span><span class="nf">CreateController</span><span class="p">(</span><span class="n">HMProfile</span><span class="w"> </span><span class="n">profile</span><span class="p">)</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">{</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="k">lock</span><span class="w"> </span><span class="p">(</span><span class="n">_lock</span><span class="p">)</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="p">{</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">_controllers</span><span class="p">.</span><span class="n">ContainsKey</span><span class="p">(</span><span class="n">index</span><span class="p">))</span><span class="w"> </span><span class="n">index</span><span class="o">++</span><span class="p">;</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="c1">// ... SetupController(index, profile, infPath)</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
-</code></pre></div>
-<p>First-fit. No upper bound. Controller indices are dense in normal operation: 0, 1, 2, 3 for four sequential creates. After <code>_controllers[1].Dispose()</code>, the next create lands at index 1 (filling the hole). For deterministic indices, use <code>CreateControllerAt(index, profile)</code> instead.</p>
-<p>The index drives:</p>
+<h2 id="sdk-side-slots-and-transport-indices">SDK-side: slots and transport indices<a class="headerlink" href="#sdk-side-slots-and-transport-indices" title="Permanent link">&para;</a></h2>
+<p><code>CreateController</code> takes the lowest free slot in its context, first-fit with no upper bound. Slots are dense in normal operation: 0, 1, 2, 3 for four sequential creates, and after the controller in slot 1 is disposed, the next create lands in slot 1. For deterministic slots, use <code>CreateControllerAt(index, profile)</code>, which keeps its contract of one controller per slot per context.</p>
+<p>As of v2.0.0 a controller also holds a machine-wide transport index, <code>HMController.TransportIndex</code>. It is the slot number when no other program uses that index, and otherwise the lowest free one, so a program running alone gets the numbers every earlier release gave it, except that a keyed create whose identity a dead program's device still carries lands on that device's index, and an index whose names another program took first is skipped. While a program built on v1.12.0 runs, every create starts at index 64, slot 0 on 64 and slot 1 on 65, and a keyless controller's paths and container id, and every controller's HID serial and MAC bytes, move with the index. See <a href="../../sdk/programs-side-by-side/#transport-index">Programs Side by Side</a>. Through v1.12.0 the slot was the only index, and two programs that each created a first controller both got index 0 and wrote each other's sections and keys. Two contexts in one process collided the same way.</p>
+<p>The transport index drives:</p>
 <ul>
-<li>The shared memory section names (<code>Global\HIDMaestroInput&lt;N&gt;</code>, etc.).</li>
+<li>The shared memory section names (<code>Global\HIDMaestroInput&lt;N&gt;</code>, etc.), listed by <code>HMController.SectionNames</code>.</li>
 <li>The per-instance registry path (<code>HKLM\SOFTWARE\HIDMaestro\Controller&lt;N&gt;</code>).</li>
-<li>The serial number string (<code>HM-CTL-&lt;N&gt;</code> zero-padded to 4 digits).</li>
-<li>The ContainerID GUID's last 16 bits (<code>{48494430-...-4F00&lt;idx:X4&gt;}</code>).</li>
+<li>The <code>ControllerIndex</code> the driver reads from its device key, and the serial number string (<code>HM-CTL-&lt;N&gt;</code> zero-padded to 4 digits).</li>
+<li>The default identity of a controller created without an identity key, and with it the ContainerID GUID's last 16 bits (<code>{48494430-...-4F00&lt;idx:X4&gt;}</code>).</li>
 </ul>
-<p>These are per-process. The devnode instance names and the ContainerID derive from the identity key when the caller passes one, and from the index otherwise, so a controller comes back at the same paths across processes. See <a href="../swdevice-and-pnp/#stable-device-identity">SwDevice and PnP</a>.</p>
+<p>The devnode instance names and the ContainerID derive from the identity key when the caller passes one, and from the transport index otherwise, so a controller created with a key comes back at the same paths across processes. A keyless controller can land on another transport index, and so another identity, when another program holds its slot's index. See <a href="../swdevice-and-pnp/#stable-device-identity">SwDevice and PnP</a> and <a href="../../sdk/programs-side-by-side/#transport-index">Programs Side by Side</a>.</p>
 <hr />
 <h2 id="friendly-name-re-application">Friendly name re-application<a class="headerlink" href="#friendly-name-re-application" title="Permanent link">&para;</a></h2>
 <p>There's a Windows PnP race where the <strong>first</strong> controller's friendly name gets overwritten by the <strong>second</strong> controller's driver-bind activity. Symptom: 4 controllers all show "Game Controller" instead of their per-profile names like "Controller (XBOX 360 For Windows)" / "DualSense Wireless Controller".</p>
 <h3 id="fix-hmcontextfinalizenames">Fix: <code>HMContext.FinalizeNames</code><a class="headerlink" href="#fix-hmcontextfinalizenames" title="Permanent link">&para;</a></h3>
 <p>Call <strong>once after creating ALL controllers</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile1</span><span class="p">);</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile2</span><span class="p">);</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile3</span><span class="p">);</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile4</span><span class="p">);</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">ctx</span><span class="p">.</span><span class="n">FinalizeNames</span><span class="p">();</span><span class="w">   </span><span class="c1">// re-apply friendly names after PnP settles</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile1</span><span class="p">);</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile2</span><span class="p">);</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile3</span><span class="p">);</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile4</span><span class="p">);</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">ctx</span><span class="p">.</span><span class="n">FinalizeNames</span><span class="p">();</span><span class="w">   </span><span class="c1">// re-apply friendly names after PnP settles</span>
 </code></pre></div>
 <p>The method polls each HID child for <code>DN_STARTED</code> (driver fully bound) before re-applying. On fast machines exits in &lt;100 ms; on slow machines adapts up to 5 s rather than failing from an insufficient fixed sleep.</p>
 <p>The proven pre-SDK test app (~v0.x) called this as "Phase 1.5: Finalizing device names". The functionality moved into the SDK; consumers should call it as their final create step.</p>
 <hr />
 <h2 id="per-instance-wudfhost">Per-instance WUDFHost<a class="headerlink" href="#per-instance-wudfhost" title="Permanent link">&para;</a></h2>
 <p>Both INFs (<code>hidmaestro.inf</code> and <code>hidmaestro_xusb.inf</code>) carry:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[..._Install.NT.Wdf]
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>UmdfHostProcessSharing = ProcessSharingDisabled
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[..._Install.NT.Wdf]
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>UmdfHostProcessSharing = ProcessSharingDisabled
 </code></pre></div>
 <p>Each device instance gets its own <code>WUDFHost.exe</code> process (~8 MB RSS, ~10 threads). With 6 controllers running, expect 6-12 <code>WUDFHost.exe</code> processes: one per main HID instance plus one per XUSB companion (companions only exist for non-xinputhid Xbox profiles).</p>
 <h3 id="why-per-instance-hosts">Why per-instance hosts<a class="headerlink" href="#why-per-instance-hosts" title="Permanent link">&para;</a></h3>
@@ -2194,9 +2296,9 @@
 <p>Root cause: contention between writer threads (HIDMaestro virtual instances) and concurrent <code>XInputGetState</code> reader threads when 2+ virtuals coexist with a real xinputhid device in the same host. Per-instance hosts run their I/O paths in parallel, idle CPU stays near zero, and peak throughput scales with controller count.</p>
 <h3 id="detecting-regression">Detecting regression<a class="headerlink" href="#detecting-regression" title="Permanent link">&para;</a></h3>
 <p>If a future change accidentally drops the <code>ProcessSharingDisabled</code> line, the symptom is exponential CPU saturation under multi-controller load. Detection:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">Get-Process</span> <span class="n">WUDFHost</span> <span class="p">|</span> <span class="nb">Measure-Object</span> <span class="n">-Property</span> <span class="n">Count</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c"># Expected: N main HID instances + M XUSB companion instances</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c"># Regression: 1-2 hosts regardless of controller count</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">Get-Process</span> <span class="n">WUDFHost</span> <span class="p">|</span> <span class="nb">Measure-Object</span> <span class="n">-Property</span> <span class="n">Count</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c"># Expected: N main HID instances + M XUSB companion instances</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c"># Regression: 1-2 hosts regardless of controller count</span>
 </code></pre></div>
 <hr />
 <h2 id="xinputs-4-slot-cap">XInput's 4-slot cap<a class="headerlink" href="#xinputs-4-slot-cap" title="Permanent link">&para;</a></h2>
@@ -2210,7 +2312,10 @@
 <hr />
 <h2 id="sdl3-directinput-hidapi-no-cap">SDL3 / DirectInput / HIDAPI: no cap<a class="headerlink" href="#sdl3-directinput-hidapi-no-cap" title="Permanent link">&para;</a></h2>
 <p>These APIs see every controller HIDMaestro creates. 6 mixed = 6 visible. PadForge's bench tests have run 8+ controllers simultaneously through DI/HIDAPI without issue.</p>
-<p>The SDK side scales linearly: each additional controller adds one shared memory section (~17 KB), one WUDFHost process (~8 MB), and proportional cost to <code>SetupController</code> / <code>Dispose</code> / <code>FinalizeNames</code>.</p>
+<p>The SDK side scales linearly: each additional controller adds one shared memory section (~17 KB), one WUDFHost process (~8 MB), and proportional cost to <code>SetupController</code> / <code>Dispose</code> / <code>FinalizeNames</code>. As of v2.0.0 a create also takes its ownership claims and a census of the owner records and present devices, and a dispose releases them.</p>
+<hr />
+<h2 id="several-programs">Several programs<a class="headerlink" href="#several-programs" title="Permanent link">&para;</a></h2>
+<p>Controllers from several programs that embed HIDMaestro share the XInput, Browser and ordering behavior above, since Windows sees devices, not programs. Each program's controllers keep their own transport indices, identities and sections, and a program's cleanup removes only what exited programs left. The XInput cap of 4 slots above counts every Xbox-family controller on the machine, whichever program created it. See <a href="../../sdk/programs-side-by-side/">Programs Side by Side</a>.</p>
 <hr />
 <h2 id="ordering-across-consumers">Ordering across consumers<a class="headerlink" href="#ordering-across-consumers" title="Permanent link">&para;</a></h2>
 <p>Game enumeration anchors to <strong>creation order</strong> across most APIs:</p>
@@ -2255,34 +2360,34 @@
 <p>For UI flows where the user expects "Controller 1 = first one I created", every API except Chromium gets it right. Chromium reorders: the consumer needs to sort or remap if browser ordering matters.</p>
 <h3 id="dont-parallelize-createcontroller">Don't parallelize <code>CreateController</code><a class="headerlink" href="#dont-parallelize-createcontroller" title="Permanent link">&para;</a></h3>
 <p>A consumer might be tempted to parallelize multi-controller creation:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// DON&#39;T DO THIS</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">await</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">WhenAll</span><span class="p">(</span><span class="n">profiles</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">p</span><span class="p">))));</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// DON&#39;T DO THIS</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">await</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">WhenAll</span><span class="p">(</span><span class="n">profiles</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">p</span><span class="p">))));</span>
 </code></pre></div>
 <p>The creation order <strong>anchors</strong> every downstream API. Parallel creates produce non-deterministic order across XInput, WGI, joy.cpl, browser, RawInput, SDL3 simultaneously: the user-visible game enumeration becomes a coin flip per launch.</p>
 <p><strong>Always create sequentially.</strong> Multi-controller perf comes from making each step faster (the v1.3.x latency improvements), not from parallelism. Verified at the SDK level: <code>CreateController</code> takes the context lock for index allocation but otherwise serializes through <code>SetupController</code>'s registry-then-PnP-create path.</p>
 <hr />
 <h2 id="disposecontrollersinparallel"><code>DisposeControllersInParallel</code><a class="headerlink" href="#disposecontrollersinparallel" title="Permanent link">&para;</a></h2>
-<p>Disposal is safe to parallelize because the user-visible ordering is already broken when controllers are gone:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">ctx</span><span class="p">.</span><span class="n">DisposeControllersInParallel</span><span class="p">(</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="k">new</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">ctrl0</span><span class="p">,</span><span class="w"> </span><span class="n">ctrl1</span><span class="p">,</span><span class="w"> </span><span class="n">ctrl2</span><span class="w"> </span><span class="p">},</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">perControllerCallback</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Logger</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">$&quot;  {c.Profile.Id} disposed in {ms} ms&quot;</span><span class="p">));</span>
+<p>Disposal can run from parallel threads because the user-visible ordering is already broken when controllers are gone. Since v2.0.0 the removals themselves run one at a time, because each devnode removal holds the machine-wide PnP lock:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">ctx</span><span class="p">.</span><span class="n">DisposeControllersInParallel</span><span class="p">(</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="k">new</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">ctrl0</span><span class="p">,</span><span class="w"> </span><span class="n">ctrl1</span><span class="p">,</span><span class="w"> </span><span class="n">ctrl2</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="n">perControllerCallback</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Logger</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">$&quot;  {c.Profile.Id} disposed in {ms} ms&quot;</span><span class="p">));</span>
 </code></pre></div>
-<p>The per-controller HID orphan sweep is suppressed during the parallel run and run <strong>once at the end</strong> instead of per-controller. With v1.3.1's SwD-first ordering the per-controller cost is already ~135-500 ms, so the batch path's wall-clock benefit is mostly avoiding the per-controller orphan-sweep duplication.</p>
-<p>For 4-6 mixed controllers the cleanup typically completes in 1.5-4 s end to end. See <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
+<p>The per-controller HID orphan sweep is suppressed during the batch and run <strong>once at the end</strong> instead of per-controller. A batch of several controllers takes about the sum of their removals, where before v2.0.0 it took about the longest one, so what the batch path saves is the repeated orphan sweep.</p>
+<p>Before v2.0.0, with the removals overlapping, 4-6 mixed controllers took 1.5-4 s end to end. No figure for v2.0.0 exists. See <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a> and <a href="../../sdk/programs-side-by-side/#registrations-and-removals">Registrations and removals</a>.</p>
 <hr />
 <h2 id="per-controller-serial-number-for-sdl3-disambiguation">Per-controller serial number for SDL3 disambiguation<a class="headerlink" href="#per-controller-serial-number-for-sdl3-disambiguation" title="Permanent link">&para;</a></h2>
 <p>Two virtual DualSense with the same VID:PID:ProductString get bucketed by <code>hid_enumerate</code> into a single device unless they have different serial numbers. HIDMaestro generates a per-instance serial:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// Driver-side, in InitInstancePaths</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">WCHAR</span><span class="w"> </span><span class="n">serial</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">RtlCopyMemory</span><span class="p">(</span><span class="n">serial</span><span class="p">,</span><span class="w"> </span><span class="sa">L</span><span class="s">&quot;HM-CTL-&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="sa">L</span><span class="s">&quot;HM-CTL-&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">WCHAR</span><span class="p">));</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">AppendUlongDecimal</span><span class="p">(</span><span class="n">serial</span><span class="p">,</span><span class="w"> </span><span class="n">ControllerIndex</span><span class="p">,</span><span class="w"> </span><span class="cm">/* zero-pad to 4 */</span><span class="p">);</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1">// e.g. serial = &quot;HM-CTL-0001&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Driver-side, in InitInstancePaths</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">WCHAR</span><span class="w"> </span><span class="n">serial</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">RtlCopyMemory</span><span class="p">(</span><span class="n">serial</span><span class="p">,</span><span class="w"> </span><span class="sa">L</span><span class="s">&quot;HM-CTL-&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="sa">L</span><span class="s">&quot;HM-CTL-&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">WCHAR</span><span class="p">));</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">AppendUlongDecimal</span><span class="p">(</span><span class="n">serial</span><span class="p">,</span><span class="w"> </span><span class="n">ControllerIndex</span><span class="p">,</span><span class="w"> </span><span class="cm">/* zero-pad to 4 */</span><span class="p">);</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1">// e.g. serial = &quot;HM-CTL-0001&quot;</span>
 </code></pre></div>
 <p>Returned by <code>IOCTL_HID_GET_STRING / HID_STRING_ID_ISERIALNUMBER</code>. SDL3 / HIDAPI use this string as a per-device disambiguator; identical VID:PID/ProductString controllers get distinct GUIDs derived from the serial.</p>
 <p>The exact format (<code>HM-CTL-&lt;index&gt;</code>) isn't part of any contract: consumers are expected to treat the string as opaque. Don't parse the index out and use it for ordering; use creation order instead.</p>
 <hr />
 <h2 id="verified-configurations">Verified configurations<a class="headerlink" href="#verified-configurations" title="Permanent link">&para;</a></h2>
-<p>The regression battery (<code>swap_regression.ps1</code>) exercises multi-controller configurations:</p>
+<p>The regression battery (<code>regression_battery.ps1</code>) exercises multi-controller configurations:</p>
 <table>
 <thead>
 <tr>
@@ -2337,11 +2442,17 @@
 <td>5 mixed: 360 + Series BT + DualSense + Switch Pro + Custom + swap custom slot</td>
 <td>Real PadForge-shape consumer config</td>
 </tr>
+<tr>
+<td><strong>S71_Coexistence</strong></td>
+<td>Programs that embed HIDMaestro as separate processes, with peers built on v1.12.0 and v1.11.0</td>
+<td>Transport indices, identity claims, sweeps and deploys across programs, with an XInput slot, WGI and Raw Input entries left alone</td>
+</tr>
 </tbody>
 </table>
 <p>See <a href="../testing-and-verification/">Testing and Verification</a> for the harness mechanics.</p>
 <hr />
 <h2 id="performance-at-scale">Performance at scale<a class="headerlink" href="#performance-at-scale" title="Permanent link">&para;</a></h2>
+<p>Measured before v2.0.0. The registration gate v2.0.0 adds before each devnode registration has not been timed on a live create.</p>
 <table>
 <thead>
 <tr>

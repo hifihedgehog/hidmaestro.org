@@ -438,6 +438,8 @@
       
         
       
+        
+      
     
     
     
@@ -595,6 +597,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#several-programs-on-one-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Several programs on one machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#build-from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -709,6 +722,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -727,6 +768,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -1042,6 +1087,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -1805,6 +1906,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#several-programs-on-one-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Several programs on one machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#build-from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1845,7 +1957,7 @@
 
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
 <p>Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.</p>
-<p>v1.12.0 ships for x64 and ARM64. See <a href="../platform-support/#validation">platform support</a> for what was measured on each.</p>
+<p>v2.0.0 ships for x64 and ARM64. See <a href="../platform-support/#validation">platform support</a> for what was measured on each.</p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1886,6 +1998,7 @@
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nt">&lt;/ItemGroup&gt;</span>
 </code></pre></div>
 <p>Use win-x64 for an x64 application. The same SDK DLL serves both targets. Native drivers follow the OS architecture.</p>
+<p>The SDK also works in NativeAOT apps and in trimmed, self-contained, single-file apps (v2.0.0). Publish them as any app. Profiles load through source-generated JSON, so the catalog loads in both. See <a href="../platform-support/#nativeaot-trimmed-and-single-file-apps">platform support</a>.</p>
 <h2 id="create-a-controller">Create a controller<a class="headerlink" href="#create-a-controller" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">using</span><span class="w"> </span><span class="nn">HIDMaestro</span><span class="p">;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
@@ -1896,16 +2009,19 @@
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">controller</span><span class="p">.</span><span class="n">SubmitState</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HMGamepadState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Buttons</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HMButton</span><span class="p">.</span><span class="n">A</span><span class="w"> </span><span class="p">});</span>
 </code></pre></div>
 <p>Dispose the controller to remove it. Dispose the context to release its controllers. See <a href="../quickstart/">Quickstart</a> for output capture and additional inputs.</p>
+<h2 id="several-programs-on-one-machine">Several programs on one machine<a class="headerlink" href="#several-programs-on-one-machine" title="Permanent link">&para;</a></h2>
+<p>As of v2.0.0, two or more programs that embed HIDMaestro can run on one machine. Each program calls <code>InstallDriver()</code> itself. Only one deploys at a time, the driver is never downgraded, and the 2.0.0 driver is installed over any older one, whatever runs on it. <code>HMContext.LastDriverInstall</code> reports which of these happened. No program of this release registers a device while another removes one, so disposing several controllers takes about the sum of their removals. Everything the SDK runs elevated is staged under <code>%ProgramFiles%\HIDMaestro\Staging</code>, in directories only Administrators and SYSTEM can write. A running program built on v1.12.0 or older still removes every HIDMaestro device on the machine at its <code>InstallDriver</code> and at its first create, so programs built on HIDMaestro 1.x must move to 2.0.0. See <a href="../../sdk/programs-side-by-side/">Programs Side by Side</a> and <a href="../migration/">Moving from 1.x</a>.</p>
 <h2 id="build-from-source">Build from source<a class="headerlink" href="#build-from-source" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">scripts</span><span class="p">\</span><span class="n">build_all</span><span class="p">.</span><span class="n">cmd</span>
 </code></pre></div>
-<p>The native build creates both payloads before compiling the SDK. Missing native files stop the SDK build.</p>
+<p>The native build creates both payloads before compiling the SDK. Missing native files stop the SDK build. The driver, the companion and the OpenVR driver compile at <code>/W4</code> and hmswd at <code>/W3</code>, with the UMDF headers and Valve's <code>openvr_driver.h</code> marked external so their warnings stay off. Warnings print and do not stop the build. See <a href="../../reference/build-and-release/">Build and Release</a>.</p>
+<p>As of v2.0.0 the build takes settings from environment variables or <code>-p:</code> properties. <code>HMSkipArm64=true</code> leaves out the ARM64 payload, <code>HMSkipUsbip=true</code> leaves out the USB/IP transport, and <code>HM_SDK_ROOT</code>, <code>HM_WDK_ROOT</code> and the rest point at the Windows SDK and WDK when they are not in their default places, as with the NuGet WDK. The defaults also read the variables an EWDK prompt sets. A build without the ARM64 payload or the transport refuses a controller that needs it with <code>HMPayloadMissingException</code>, before it changes anything on the machine, and <code>HMBuildInfo</code> says what the build carries. Official releases carry everything. See <a href="../../reference/build-and-release/#build-settings-v200">Build and Release</a>.</p>
 <p>For one ARM64 application:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">dotnet</span> <span class="n">build</span> <span class="n">test</span><span class="p">\</span><span class="n">HIDMaestroTest</span><span class="p">.</span><span class="n">csproj</span> <span class="n">-c</span> <span class="n">Release</span> <span class="n">-p</span><span class="p">:</span><span class="n">HMTargetArchitecture</span><span class="p">=</span><span class="n">arm64</span>
 </code></pre></div>
 <p>See <a href="../../reference/build-and-release/">Build and release</a> for output directories and validation.</p>
 <h2 id="composite-profiles-and-upgrades">Composite profiles and upgrades<a class="headerlink" href="#composite-profiles-and-upgrades" title="Permanent link">&para;</a></h2>
-<p>Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.8.1, the first time one is created on a machine that has none. No separate download is required on the consumer's machine. The build checks the pinned hashes, and the SDK checks the installer again before running it.</p>
+<p>Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.8.1, the first time one is created on a machine that has none. No separate download is required on the consumer's machine. The build checks the pinned hashes, and the SDK checks the installer again before running it. As of v2.0.0 the installer runs with the smallest set it allows (<code>/COMPONENTS=main,client /TASKS=vcredist /NOICONS</code>), so no GUI, SDK headers, debug symbols, desktop icon or Start menu folder are added, and a machine that holds the installer's uninstall record and its uninstaller file, without its driver package, gets a refusal, not the installer.</p>
 <p>A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. <code>HIDMAESTRO_KEEP_TRANSPORT=1</code> turns the move off. There is nothing for a user to do. USB devices blink once during a first-time install on a machine with no transport, while Windows re-enumerates the root hubs.</p>
 <p>See <a href="../platform-support/">platform support</a> for the architecture matrix and measured results. ARM64 hardware has not run the battery.</p>
 

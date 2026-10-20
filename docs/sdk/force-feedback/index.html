@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -622,6 +652,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -1209,6 +1243,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -2458,9 +2548,9 @@
 </tbody>
 </table>
 <p>Run from an elevated PowerShell:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">swap_regression</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-Filter</span> <span class="s1">&#39;S24*&#39;</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">swap_regression</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-Filter</span> <span class="s1">&#39;S25*&#39;</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">swap_regression</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-Filter</span> <span class="s1">&#39;S26*&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-Filter</span> <span class="s1">&#39;S24*&#39;</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-Filter</span> <span class="s1">&#39;S25*&#39;</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-Filter</span> <span class="s1">&#39;S26*&#39;</span>
 </code></pre></div>
 <p>PASS exit code 0; FAIL exit code 1 with leftover instance IDs printed.</p>
 <hr />
@@ -2486,7 +2576,7 @@
 <li>vJoy <code>Ffb_GetNextFreeEffect</code>: in <a href="https://github.com/njz3/vJoy">github.com/njz3/vJoy</a> under <code>driver/sys/hid.c</code>. The kernel-side EBI auto-allocation pattern HIDMaestro mirrors in user mode.</li>
 <li>vJoy reference FFB descriptor: in the same repo under <code>driver/sys/hidReportDescFfb.h</code>. The four-feature variant <code>AddPidFfbBlock</code> deliberately omits.</li>
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/issues/16">HIDMaestro issue #16</a>: the pid.dll <code>PID_EffectOperation+0x52</code> AV.</li>
-<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/swap_regression.ps1"><code>test/regression/swap_regression.ps1</code></a>: scenarios S24-S26 validate the FFB round-trip end-to-end.</li>
+<li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1"><code>test/regression/regression_battery.ps1</code></a>: scenarios S24-S26 validate the FFB round-trip end-to-end.</li>
 <li><a href="../../reference/references/">References</a>: full source bibliography.</li>
 </ul>
 

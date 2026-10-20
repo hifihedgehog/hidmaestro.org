@@ -2,37 +2,26 @@
 
 Up to N virtual controllers running simultaneously. Verified working with 6 mixed (2× Xbox Series BT + 2× Xbox 360 Wired + 2× DualSense) on a Ryzen 9955HX3D dev box and on an Intel Atom Z8350 fixture. The SDK supports unlimited; downstream APIs cap variously.
 
-This page covers the mechanics that make multi-controller work: per-controller indices, the friendly-name re-application race, per-instance WUDFHost, ordering across APIs, and what each downstream consumer caps at.
+This page covers the mechanics that make multi-controller work: slots and transport indices, the friendly-name re-application race, per-instance WUDFHost, ordering across APIs, and what each downstream consumer caps at.
 
 For per-controller PnP machinery, see [SwDevice and PnP](swdevice-and-pnp.md). For the underlying driver design, see [UMDF2 Driver Internals](umdf2-driver-internals.md).
 
 ---
 
-## SDK-side: linear index allocation
+## SDK-side: slots and transport indices
 
-```csharp
-public HMController CreateController(HMProfile profile)
-{
-    int index;
-    lock (_lock)
-    {
-        index = 0;
-        while (_controllers.ContainsKey(index)) index++;
-    }
-    // ... SetupController(index, profile, infPath)
-}
-```
+`CreateController` takes the lowest free slot in its context, first-fit with no upper bound. Slots are dense in normal operation: 0, 1, 2, 3 for four sequential creates, and after the controller in slot 1 is disposed, the next create lands in slot 1. For deterministic slots, use `CreateControllerAt(index, profile)`, which keeps its contract of one controller per slot per context.
 
-First-fit. No upper bound. Controller indices are dense in normal operation: 0, 1, 2, 3 for four sequential creates. After `_controllers[1].Dispose()`, the next create lands at index 1 (filling the hole). For deterministic indices, use `CreateControllerAt(index, profile)` instead.
+As of v2.0.0 a controller also holds a machine-wide transport index, `HMController.TransportIndex`. It is the slot number when no other program uses that index, and otherwise the lowest free one, so a program running alone gets the numbers every earlier release gave it, except that a keyed create whose identity a dead program's device still carries lands on that device's index, and an index whose names another program took first is skipped. While a program built on v1.12.0 runs, every create starts at index 64, slot 0 on 64 and slot 1 on 65, and a keyless controller's paths and container id, and every controller's HID serial and MAC bytes, move with the index. See [Programs Side by Side](../sdk/programs-side-by-side.md#transport-index). Through v1.12.0 the slot was the only index, and two programs that each created a first controller both got index 0 and wrote each other's sections and keys. Two contexts in one process collided the same way.
 
-The index drives:
+The transport index drives:
 
-- The shared memory section names (`Global\HIDMaestroInput<N>`, etc.).
+- The shared memory section names (`Global\HIDMaestroInput<N>`, etc.), listed by `HMController.SectionNames`.
 - The per-instance registry path (`HKLM\SOFTWARE\HIDMaestro\Controller<N>`).
-- The serial number string (`HM-CTL-<N>` zero-padded to 4 digits).
-- The ContainerID GUID's last 16 bits (`{48494430-...-4F00<idx:X4>}`).
+- The `ControllerIndex` the driver reads from its device key, and the serial number string (`HM-CTL-<N>` zero-padded to 4 digits).
+- The default identity of a controller created without an identity key, and with it the ContainerID GUID's last 16 bits (`{48494430-...-4F00<idx:X4>}`).
 
-These are per-process. The devnode instance names and the ContainerID derive from the identity key when the caller passes one, and from the index otherwise, so a controller comes back at the same paths across processes. See [SwDevice and PnP](swdevice-and-pnp.md#stable-device-identity).
+The devnode instance names and the ContainerID derive from the identity key when the caller passes one, and from the transport index otherwise, so a controller created with a key comes back at the same paths across processes. A keyless controller can land on another transport index, and so another identity, when another program holds its slot's index. See [SwDevice and PnP](swdevice-and-pnp.md#stable-device-identity) and [Programs Side by Side](../sdk/programs-side-by-side.md#transport-index).
 
 ---
 
@@ -109,7 +98,13 @@ Restart Chromium to clear stale slot caching when adding/removing controllers du
 
 These APIs see every controller HIDMaestro creates. 6 mixed = 6 visible. PadForge's bench tests have run 8+ controllers simultaneously through DI/HIDAPI without issue.
 
-The SDK side scales linearly: each additional controller adds one shared memory section (~17 KB), one WUDFHost process (~8 MB), and proportional cost to `SetupController` / `Dispose` / `FinalizeNames`.
+The SDK side scales linearly: each additional controller adds one shared memory section (~17 KB), one WUDFHost process (~8 MB), and proportional cost to `SetupController` / `Dispose` / `FinalizeNames`. As of v2.0.0 a create also takes its ownership claims and a census of the owner records and present devices, and a dispose releases them.
+
+---
+
+## Several programs
+
+Controllers from several programs that embed HIDMaestro share the XInput, Browser and ordering behavior above, since Windows sees devices, not programs. Each program's controllers keep their own transport indices, identities and sections, and a program's cleanup removes only what exited programs left. The XInput cap of 4 slots above counts every Xbox-family controller on the machine, whichever program created it. See [Programs Side by Side](../sdk/programs-side-by-side.md).
 
 ---
 
@@ -146,7 +141,7 @@ The creation order **anchors** every downstream API. Parallel creates produce no
 
 ## `DisposeControllersInParallel`
 
-Disposal is safe to parallelize because the user-visible ordering is already broken when controllers are gone:
+Disposal can run from parallel threads because the user-visible ordering is already broken when controllers are gone. Since v2.0.0 the removals themselves run one at a time, because each devnode removal holds the machine-wide PnP lock:
 
 ```csharp
 ctx.DisposeControllersInParallel(
@@ -154,9 +149,9 @@ ctx.DisposeControllersInParallel(
     perControllerCallback: (c, ms) => Logger.Info($"  {c.Profile.Id} disposed in {ms} ms"));
 ```
 
-The per-controller HID orphan sweep is suppressed during the parallel run and run **once at the end** instead of per-controller. With v1.3.1's SwD-first ordering the per-controller cost is already ~135-500 ms, so the batch path's wall-clock benefit is mostly avoiding the per-controller orphan-sweep duplication.
+The per-controller HID orphan sweep is suppressed during the batch and run **once at the end** instead of per-controller. A batch of several controllers takes about the sum of their removals, where before v2.0.0 it took about the longest one, so what the batch path saves is the repeated orphan sweep.
 
-For 4-6 mixed controllers the cleanup typically completes in 1.5-4 s end to end. See [Lifecycle and Teardown](lifecycle-and-teardown.md).
+Before v2.0.0, with the removals overlapping, 4-6 mixed controllers took 1.5-4 s end to end. No figure for v2.0.0 exists. See [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Registrations and removals](../sdk/programs-side-by-side.md#registrations-and-removals).
 
 ---
 
@@ -180,7 +175,7 @@ The exact format (`HM-CTL-<index>`) isn't part of any contract: consumers are ex
 
 ## Verified configurations
 
-The regression battery (`swap_regression.ps1`) exercises multi-controller configurations:
+The regression battery (`regression_battery.ps1`) exercises multi-controller configurations:
 
 | Scenario | Configuration | What it tests |
 |----------|---------------|---------------|
@@ -193,12 +188,15 @@ The regression battery (`swap_regression.ps1`) exercises multi-controller config
 | **S19_Multi_RapidMultiSlotSwap** | 4 controllers, swap each slot's profile back-to-back, no settle | Closest stdin proxy for PadForge's `ApplyAscendingIndexPreemption` async-dispose path |
 | **S20_Multi_HeterogeneousCascade** | 4 controllers, every family in one batch, then quit | `DisposeControllersInParallel` correctness with all four families simultaneously |
 | **S23_Multi_CustomInMix** | 5 mixed: 360 + Series BT + DualSense + Switch Pro + Custom + swap custom slot | Real PadForge-shape consumer config |
+| **S71_Coexistence** | Programs that embed HIDMaestro as separate processes, with peers built on v1.12.0 and v1.11.0 | Transport indices, identity claims, sweeps and deploys across programs, with an XInput slot, WGI and Raw Input entries left alone |
 
 See [Testing and Verification](testing-and-verification.md) for the harness mechanics.
 
 ---
 
 ## Performance at scale
+
+Measured before v2.0.0. The registration gate v2.0.0 adds before each devnode registration has not been timed on a live create.
 
 | Configuration | Cold start (1st run) | Warm start (subsequent) | Idle CPU |
 |---------------|---------------------|------------------------|----------|

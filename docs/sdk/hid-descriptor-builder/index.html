@@ -436,6 +436,8 @@
       
         
       
+        
+      
     
     
     
@@ -602,6 +604,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from 1.x
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -622,6 +652,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -1191,6 +1225,62 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gamecube-adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wii U GameCube Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programs-side-by-side/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programs Side by Side
   
 
     
@@ -2427,6 +2517,7 @@
 <li><strong>Specific descriptor bytes copied from a real device</strong> when you want bit-identical wire shape rather than logically equivalent.</li>
 </ul>
 <p>The builder doesn't track what <code>AddRaw</code> adds for purposes of <code>TotalInputBits</code>: if you append input items via raw bytes, <code>InputReportByteSize</code> and <code>FromDescriptorBuilder</code>'s wire-size derivation may be off. Use either fully-fluent or fully-raw construction; mixing requires manual <code>InputReportSize</code>.</p>
+<p>It does follow the Usage Page through <code>AddRaw</code> bytes, Push and Pop included (v2.0.0). A stick added after raw bytes that push, change the page and pop lands on the Generic Desktop page. Through v1.12.0 it landed on the Button page.</p>
 <hr />
 <h2 id="build-totalinputbits-inputreportbytesize-descriptorcontainsreportid"><code>Build()</code>, <code>TotalInputBits</code>, <code>InputReportByteSize</code>, <code>DescriptorContainsReportId</code><a class="headerlink" href="#build-totalinputbits-inputreportbytesize-descriptorcontainsreportid" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">public</span><span class="w"> </span><span class="kt">byte</span><span class="p">[]</span><span class="w"> </span><span class="nf">Build</span><span class="p">();</span>

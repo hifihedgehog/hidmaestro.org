@@ -27,11 +27,10 @@ host controller without usbip-win2's installer or its root-hub filter.
 
 Setup and validation
 Device creation and driver installation require administrator rights.
-PENDING-GATE: v2.0.1 result of the 100-scenario battery on both machines.
-For v2.0.0, the 99-scenario regression battery passed on the development
-laptop, a 16-core Lenovo Legion Pro 7 on Windows 11. On a 4-core Celeron
-J4125 Windows 10 mini PC, 95 scenarios passed and 4 skipped, leaving out
-the checks that need a Steam client, a desktop session or Windows Sandbox.
+The 100-scenario regression battery passed on the development laptop, a
+16-core Lenovo Legion Pro 7 on Windows 11. On a 4-core Celeron J4125
+Windows 10 mini PC, 96 scenarios passed and 4 skipped, leaving out the
+checks that need a Steam client, a desktop session or Windows Sandbox.
 ARM64 binaries were built and signed, but the regression battery has not
 been run on ARM64 hardware.
 Installation: https://hidmaestro.org/docs/start/installation/

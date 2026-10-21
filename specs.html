@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12">
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -21,6 +21,7 @@
             <a href="index.html#identity">Identity</a>
             <a href="index.html#latency">Latency</a>
             <a href="index.html#compare">Compare</a>
+            <a href="performance.html">Performance</a>
             <a href="specs.html">Specifications</a>
             <a href="/docs/">Docs</a>
         </div>
@@ -53,6 +54,7 @@
                 <a href="#validation">Validation</a>
                 <a href="#platform">Platform and licensing</a>
                 <a href="#more">Also included</a>
+                <a href="#adopters">Who ships it</a>
                 <a href="#comparison">Full comparison</a>
                 <a href="#faq">Questions</a>
         </div>
@@ -256,6 +258,161 @@
             </dl>
         </section>
 
+        <section class="spec-block" id="adopters">
+            <h2 class="display-s spec-h reveal">Who ships it</h2>
+            <p class="spec-note reveal">Public projects that use, ship or build on HIDMaestro, each checked against its own source, README or site.</p>
+            <dl class="spec-list reveal" data-d="1">
+                <div class="spec-row">
+                    <dt><a href="https://padforge.org/">PadForge</a></dt>
+                    <dd>The flagship. Every capability this SDK ships, in one app.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/AlkaidLab/foundation-sunshine">foundation-sunshine</a></dt>
+                    <dd>A Sunshine fork whose DualSense support is built on HIDMaestro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/Nonary/Vibepollo">Vibepollo</a></dt>
+                    <dd>A Sunshine fork whose DualSense over USB/IP draws on HIDMaestro's composite descriptors.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/qiin2333/sunshine-control-panel">Sunshine Control Panel</a></dt>
+                    <dd>Installs Foundation Sunshine's DualSense sidecar, HIDMaestro Core included.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://kitsuneinput.com/app">Kitsune Input</a></dt>
+                    <dd>A DualSense bridge app whose virtual gamepad is derived from HIDMaestro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/HandHeldLegend/hhl-gamepad-link">HHL Gamepad WLAN</a></dt>
+                    <dd>HandHeld Legend's app for HOJA gamepads over WLAN, on a pinned HIDMaestro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/muchimi/JoystickGremlinEx">JoystickGremlinEx</a></dt>
+                    <dd>A flight-sim remapper driving the SDK from Python over pythonnet.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/RamazanKara/Rubylight">Rubylight</a></dt>
+                    <dd>A Moonlight streaming host whose DualSense haptics draw on HIDMaestro's composite descriptors.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/TheRealFame/Nearcade">Nearcade</a></dt>
+                    <dd>Pins the SDK as a submodule for its remote-play bridge.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/4zyz4/GKME">GKME</a></dt>
+                    <dd>An Android phone as a Windows gamepad, crediting HIDMaestro as its driver framework.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/x-iso/FlexInput">FlexInput</a></dt>
+                    <dd>Uses HIDMaestro as its default virtual-device backend.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/dumbie/DirectXInput">DirectXInput</a></dt>
+                    <dd>Its source drives Xbox pads, keyboards and mice through HIDMaestro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/shiftedx/dualsense-command">dualsense-command</a></dt>
+                    <dd>Bundles the runtime in its bridge installers.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/wlt1920/AxisNex">AxisNex</a></dt>
+                    <dd>A free stick-calibration app whose tuned input reaches games through a HIDMaestro controller.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/TenchiNeko/ControllerOS">ControllerOS</a></dt>
+                    <dd>A programmable controller platform whose virtual Xbox backend is a pinned HIDMaestro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/Dilly2077/DK-Desktop-Essentials-Win">DK Desktop Essentials</a></dt>
+                    <dd>A local-first Windows suite whose Controller Hub outputs through HIDMaestro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/Baga-Sekou/DS5Bridge">DS5Bridge</a></dt>
+                    <dd>Presents a GameSir pad to games as a virtual DualSense.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/matt400/dualsense-bridge">dualsense-bridge</a></dt>
+                    <dd>Forwards a DualSense over UDP to a HIDMaestro DualSense on Windows.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/janeblower/easyrazer">EasyRazer</a></dt>
+                    <dd>A Razer Huntsman analog keyboard tool with an experimental HIDMaestro gamepad.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/mdkdeveloper/ForzaDualSenseHaptic">ForzaDualSenseHaptic</a></dt>
+                    <dd>DualSense haptics for Forza Horizon 6, with HIDMaestro as an Xbox emulation backend.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/4zyz4/GKMD">GKMD</a></dt>
+                    <dd>A virtual USB game controller engine modified from HIDMaestro 1.5.1.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/janeblower/hidmaestro-client-rust">hidmaestro-client-rust</a></dt>
+                    <dd>A native Rust client for a HIDMaestro Xbox 360 controller, with no .NET.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/auron-labs/hidmaestro-rs">hidmaestro-rs</a></dt>
+                    <dd>Virtual controllers for Rust tests and MCP assistants, through a .NET bridge to HIDMaestro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/LizardByte/libvirtualhid">libvirtualhid</a></dt>
+                    <dd>Reuses HIDMaestro's force-feedback descriptor byte for byte.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/Cxsmo-ai/LivePad">LivePad</a></dt>
+                    <dd>Turns live-stream chat into a shared Xbox controller.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/InVincible2016/MagicKeyboardBridge">MagicKeyboardBridge</a></dt>
+                    <dd>Fn and Control remapping for Apple's Magic Keyboard, through a HIDMaestro keyboard.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/farouk-01/mimic-tear">Mimic Tear</a></dt>
+                    <dd>A neural network that learns a player's style to fight Elden Ring bosses, with a HIDMaestro controller bridge.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/nafisajuliansahsaputra/natsx-controller">NATSX Controller</a></dt>
+                    <dd>Turns an Android phone into an Xbox 360 controller on Windows.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/WizardOfXerox/OmniPad">OmniPad</a></dt>
+                    <dd>A phone gamepad whose Windows HID emulation runs on HIDMaestro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/AbbieDoobie/PanguBridge">PanguBridge</a></dt>
+                    <dd>Bridges a Beitong Pangu controller to a virtual DualSense Edge or Xbox controller.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/thisisharshavardhan/PC-SOFTWARE">PC-SOFTWARE</a></dt>
+                    <dd>A phone-as-gamepad relay with a HIDMaestro virtual gamepad.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/realTimexo/ShifterTracker">ShifterTracker</a></dt>
+                    <dd>A webcam tracker for 3D-printed H-pattern shifters, with an optional HIDMaestro gamepad.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/trexx/rust-sunburst">Sunburst</a></dt>
+                    <dd>A Rust streaming project whose gamepad layer ports HIDMaestro's SDK and reuses its profiles.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/brin666/SwitchProXInput">SwitchProXInput</a></dt>
+                    <dd>A Switch Pro to XInput bridge on HIDMaestro's xbox-360-wired profile.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/RunTheBot/TrackPad-CAD">TrackPad CAD</a></dt>
+                    <dd>Touchpad gestures as SpaceMouse input, through a HIDMaestro SpaceMouse Pro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/Kaushik-Sahu/virtual-gamepad">virtual-gamepad</a></dt>
+                    <dd>A phone-to-PC Xbox 360 controller over WebRTC, driven through HIDMaestro.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt><a href="https://github.com/fazrigading/WheelDeck">WheelDeck</a></dt>
+                    <dd>A phone as a steering wheel and dashboard, driving a HIDMaestro Xbox controller.</dd>
+                </div>
+            </dl>
+        </section>
+
         <section class="spec-block" id="comparison">
             <h2 class="display-s spec-h reveal">Full comparison</h2>
             <p class="spec-note reveal">Every capability, against the tools people usually reach for. The product page carries a shortened version of this table.</p>
@@ -342,7 +499,7 @@
     <div class="container">
         <div class="footer-grid">
             <a class="footer-brand" href="index.html"><img src="assets/logo-light.png" alt="" width="26" height="26">HIDMaestro</a>
-            <div class="footer-links"><a href="/">Home</a><a href="/press/">Press</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a><a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a></div>
+            <div class="footer-links"><a href="/">Home</a><a href="/press/">Press</a><a href="/performance.html">Performance</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a><a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a></div>
         </div>
         <div class="footer-note">
             <span>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color:var(--text-muted)">MIT License</a></span>

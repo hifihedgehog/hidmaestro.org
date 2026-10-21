@@ -128,12 +128,16 @@ watch the SDK work without writing any code, install PadForge.
 
 Others include [foundation-sunshine](https://github.com/AlkaidLab/foundation-sunshine),
 a Sunshine fork whose DualSense support is built on HIDMaestro,
+[Vibepollo](https://github.com/Nonary/Vibepollo), a Sunshine fork whose
+DualSense over USB/IP draws on HIDMaestro's composite descriptors,
+[Kitsune Input](https://kitsuneinput.com/app), whose virtual gamepad is
+derived from HIDMaestro, HandHeld Legend's
+[HHL Gamepad WLAN](https://github.com/HandHeldLegend/hhl-gamepad-link) for
+HOJA gamepads, and
 [JoystickGremlinEx](https://github.com/muchimi/JoystickGremlinEx), which drives
-the SDK from Python over pythonnet,
-[Nearcade](https://github.com/TheRealFame/Nearcade), which pins it as a
-submodule, and
-[dualsense-command](https://github.com/shiftedx/dualsense-command), which
-bundles the runtime in its bridge installers.
+the SDK from Python over pythonnet. The
+[specifications page](https://hidmaestro.org/specs.html#adopters) lists every
+project known to use, ship or build on HIDMaestro.
 
 LizardByte's [libvirtualhid](https://github.com/LizardByte/libvirtualhid), from
 the organization behind Sunshine, reuses this project's force-feedback

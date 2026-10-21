@@ -7,6 +7,7 @@ Website: https://hidmaestro.org/
 Press resources: https://hidmaestro.org/press/
 Current release: v2.0.2, October 21, 2026
 Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2
+Performance, release over release: https://hidmaestro.org/performance.html
 Platforms: Windows 10 and 11 on x64. Windows 11 on ARM64.
 SDK: C# / .NET 10. The driver and device profiles are embedded in HIDMaestro.Core.dll.
 Price: Free.
@@ -41,6 +42,20 @@ Platform support: https://hidmaestro.org/docs/start/platform-support/
 Quickstart: https://hidmaestro.org/docs/start/quickstart/
 Testing: https://hidmaestro.org/docs/reference/testing-and-verification/
 
+Performance
+Each release's notes compare it with the release before it, both builds
+measured in one session on the development laptop. Chained from those
+comparisons, 2.0.2 takes 76% of 1.12.0's time from process start to the first
+DualShock 4 controller, 43% of its time to create an Xbox 360 controller, and
+77% of its time from SubmitState to a game's ReadFile on a DualShock 4. Every
+tracked path, slower steps included: https://hidmaestro.org/performance.html
+
+Adoption
+PadForge is built on HIDMaestro end to end. Other public projects that use,
+ship or build on it include foundation-sunshine, Vibepollo, Sunshine Control
+Panel, Kitsune Input, HandHeld Legend's HHL Gamepad WLAN and
+JoystickGremlinEx, 37 projects in all: https://hidmaestro.org/specs.html#adopters
+
 References
 Specifications: https://hidmaestro.org/specs.html
 Architecture: https://hidmaestro.org/docs/reference/architecture-overview/
@@ -50,6 +65,7 @@ Source: https://github.com/hifihedgehog/HIDMaestro
 
 Press assets
 architecture.svg: Architecture overview, 1600 x 960 SVG.
+performance.svg: Release-over-release performance charts, 1600 x 960 SVG.
 hidmaestro-dark-mark.png: Dark conductor mark for light backgrounds, 1024 x 1024 PNG.
 hidmaestro-light-mark.png: Light conductor mark for dark backgrounds, 1024 x 1024 PNG.
 

@@ -78,6 +78,22 @@ for cid, title, items in sections:
             </dl>
         </section>''' % (cid, esc(title), body))
 
+adopters = json.load(io.open(os.path.join(ROOT, "_adopters.json"), encoding="utf-8-sig"))["projects"]
+adopt_rows = "\n".join(
+    '                <div class="spec-row">\n'
+    '                    <dt><a href="%s">%s</a></dt>\n'
+    '                    <dd>%s.</dd>\n'
+    '                </div>' % (html.escape(p["url"]), esc(p["name"]), esc(p["d"])) for p in adopters)
+rows.append(
+'        <section class="spec-block" id="adopters">\n'
+'            <h2 class="display-s spec-h reveal">Who ships it</h2>\n'
+'            <p class="spec-note reveal">Public projects that use, ship or build on HIDMaestro, each checked '
+'against its own source, README or site.</p>\n'
+'            <dl class="spec-list reveal" data-d="1">\n'
++ adopt_rows + '\n'
+'            </dl>\n'
+'        </section>')
+
 CMP = io.open(os.path.join(ROOT, "_cmp_full.html"), encoding="utf-8").read().strip()
 rows.append(
 '        <section class="spec-block" id="comparison">\n'
@@ -107,6 +123,7 @@ rows.append(
 
 nav_links = "\n".join(
     '                <a href="#%s">%s</a>' % (cid, esc(title)) for cid, title, _ in sections)
+nav_links += '\n                <a href="#adopters">Who ships it</a>'
 nav_links += '\n                <a href="#comparison">Full comparison</a>'
 nav_links += '\n                <a href="#faq">Questions</a>'
 
@@ -121,7 +138,7 @@ page = '''<!DOCTYPE html>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12">
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -133,6 +150,7 @@ page = '''<!DOCTYPE html>
             <a href="index.html#identity">Identity</a>
             <a href="index.html#latency">Latency</a>
             <a href="index.html#compare">Compare</a>
+            <a href="performance.html">Performance</a>
             <a href="specs.html">Specifications</a>
             <a href="/docs/">Docs</a>
         </div>
@@ -168,7 +186,7 @@ page = '''<!DOCTYPE html>
     <div class="container">
         <div class="footer-grid">
             <a class="footer-brand" href="index.html"><img src="assets/logo-light.png" alt="" width="26" height="26">HIDMaestro</a>
-            <div class="footer-links"><a href="/">Home</a><a href="/press/">Press</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a><a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a></div>
+            <div class="footer-links"><a href="/">Home</a><a href="/press/">Press</a><a href="/performance.html">Performance</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a><a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a></div>
         </div>
         <div class="footer-note">
             <span>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color:var(--text-muted)">MIT License</a></span>

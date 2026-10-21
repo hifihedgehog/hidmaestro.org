@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIDMaestro performance, release over release</title>
+    <meta name="description" content="The 20 paths every HIDMaestro release since 1.12.0 has measured against the one before, charted to 2.0.2: start, create, removal, input to the game, output and the cost of a submit.">
+    <link rel="icon" type="image/png" href="assets/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=12">
+    <link rel="stylesheet" href="perf.css?v=1">
+    <script>document.documentElement.classList.add('js');</script>
+    <script src="perf.js?v=1" defer></script>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+    <div class="container-wide nav-in">
+        <a class="nav-brand" href="index.html"><img src="assets/logo-light.png" alt="" width="27" height="27">HIDMaestro</a>
+        <div class="nav-links">
+            <a href="index.html#identity">Identity</a>
+            <a href="index.html#latency">Latency</a>
+            <a href="index.html#compare">Compare</a>
+            <a href="performance.html">Performance</a>
+            <a href="specs.html">Specifications</a>
+            <a href="/docs/">Docs</a>
+        </div>
+        <a href="https://github.com/hifihedgehog/HIDMaestro/releases/latest" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Download</a>
+    </div>
+</nav>
+
+<header class="spec-hero">
+    <div class="container">
+        <p class="kicker kicker-cy reveal">Performance</p>
+        <h1 class="display-l reveal" data-d="1">Measured, release over release.</h1>
+        <p class="lede reveal" data-d="2">
+            These charts follow the 20 paths that every release's comparison has measured
+            since 1.12.0, as time relative to 1.12.0. Lower is faster. Point at a chart,
+            or tab to it, to read each release's value. The table under each chart lists every
+            measured value.
+        </p>
+    </div>
+</header>
+
+<div class="container spec-wrap">
+    <aside class="spec-nav">
+        <div class="spec-nav-in">
+            <p class="mono-tag">Contents</p>
+                <a href="#method">How it is measured</a>
+                <a href="#start-and-create">Start and create</a>
+                <a href="#removal">Removal</a>
+                <a href="#input-to-the-game">Input to the game</a>
+                <a href="#output-and-feature-reports">Output and feature reports</a>
+                <a href="#submitstate-per-call">SubmitState, per call</a>
+        </div>
+    </aside>
+    <main class="spec-main">
+        <section class="spec-block" id="method">
+            <h2 class="display-s spec-h reveal">How it is measured</h2>
+            <p class="perf-method reveal" data-d="1">Each release's notes compare it with the release before it on the
+                development laptop, a Lenovo Legion Pro 7 16AFR10H, with diagnostic logging off and both builds
+                measured in the same session. A chart multiplies those comparisons from 1.12.0 on, so the 2.0.2 point is
+                2.0.0's ratio to 1.12.0, times 2.0.1's ratio to 2.0.0, times 2.0.2's ratio to 2.0.1. Each ratio compares medians.</p>
+            <ul class="perf-steps reveal" data-d="1">
+                <li><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a>: 30 runs per build, the two builds one after the other for each path.</li>
+                <li><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a>: 30 runs per build in each of two passes, with the order of the builds flipped between passes, three passes for start, create and Dispose, and six for the per-call rows.</li>
+                <li><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a>: 30 runs per build in each of two passes, with the order of the builds flipped between passes, three passes for start, create and Dispose, and eight rounds alternating the builds for the per-call rows.</li>
+            </ul>
+            <p class="perf-method reveal" data-d="1">Values from different sessions never meet in one ratio. Between two
+                sessions, the same release has measured up to 31 percent apart on a per-call <code>SubmitState</code>
+                row and 86 percent apart on a few-millisecond USB/IP row. Within one session, rows measured in two
+                passes have moved several percent from one pass to the next, so a step of a few percent is within
+                that spread.</p>
+        </section>
+
+        <section class="spec-block" id="start-and-create">
+            <h2 class="display-s spec-h reveal">Start and create</h2>
+            <div class="perf-grid reveal" data-d="1">
+<article class="perf-card" id="m-start-ds4">
+    <h3 class="perf-title">Process start to the first controller, DualShock 4</h3>
+    <p class="perf-now"><b>76%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="Process start to the first controller, DualShock 4, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 76%, 2.0.1 at 76%, 2.0.2 at 76%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;76% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 724.6 to 552.6 ms (-23.7%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;76% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 520.5 to 515.3 ms (-1.0%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;76% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 526.0 to 527.3 ms (+0.2%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,33.74 200,34.5 300,34.31" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:30.67%"></span><span class="perf-pt" style="left:66.67%;top:31.36%"></span><span class="perf-pt" style="left:100%;top:31.19%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ms</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>724.6<span>824.8</span></td><td>552.6<span>653.0</span></td><td>-23.7%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>520.5<span>652.4</span></td><td>515.3<span>668.4</span></td><td>-1.0%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>526.0<span>692.6</span></td><td>527.3<span>688.5</span></td><td>+0.2%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-create-ds4">
+    <h3 class="perf-title"><code>CreateController</code>, DualShock 4</h3>
+    <p class="perf-now"><b>47%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="CreateController, DualShock 4, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 47%, 2.0.1 at 48%, 2.0.2 at 47%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;47% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 467.1 to 217.3 ms (-53.5%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;48% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 213.4 to 219.2 ms (+2.7%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;47% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 213.5 to 211.5 ms (-0.9%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,63.48 200,62.21 300,62.66" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:57.71%"></span><span class="perf-pt" style="left:66.67%;top:56.56%"></span><span class="perf-pt" style="left:100%;top:56.97%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ms</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>467.1<span>523.1</span></td><td>217.3<span>302.2</span></td><td>-53.5%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>213.4<span>337.6</span></td><td>219.2<span>361.7</span></td><td>+2.7%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>213.5<span>390.1</span></td><td>211.5<span>399.5</span></td><td>-0.9%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-create-x360">
+    <h3 class="perf-title"><code>CreateController</code>, Xbox 360</h3>
+    <p class="perf-now"><b>43%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="CreateController, Xbox 360, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 53%, 2.0.1 at 43%, 2.0.2 at 43%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;53% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 673.5 to 357.8 ms (-46.9%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;43% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 440.6 to 355.1 ms (-19.4%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;43% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 357.9 to 363.5 ms (+1.6%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,56.87 200,67.18 300,66.51" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:51.7%"></span><span class="perf-pt" style="left:66.67%;top:61.08%"></span><span class="perf-pt" style="left:100%;top:60.47%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ms</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>673.5<span>829.4</span></td><td>357.8<span>421.5</span></td><td>-46.9%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>440.6<span>756.1</span></td><td>355.1<span>672.9</span></td><td>-19.4%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>357.9<span>757.7</span></td><td>363.5<span>567.1</span></td><td>+1.6%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-create-ds-usbip">
+    <h3 class="perf-title"><code>CreateController</code>, DualSense over USB/IP</h3>
+    <p class="perf-now"><b>76%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="CreateController, DualSense over USB/IP, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 84%, 2.0.1 at 87%, 2.0.2 at 76%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;84% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 4.3 to 3.6 ms (-16.3%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;87% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 2.4 to 2.5 ms (+4.2%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;76% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 3.9 to 3.4 ms (-12.8%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,26.28 200,22.79 300,33.97" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:23.89%"></span><span class="perf-pt" style="left:66.67%;top:20.72%"></span><span class="perf-pt" style="left:100%;top:30.88%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ms</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>4.3<span>7.6</span></td><td>3.6<span>15.1</span></td><td>-16.3%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>2.4<span>3.8</span></td><td>2.5<span>5.2</span></td><td>+4.2%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>3.9<span>4.7</span></td><td>3.4<span>4.4</span></td><td>-12.8%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+            </div>
+        </section>
+
+        <section class="spec-block" id="removal">
+            <h2 class="display-s spec-h reveal">Removal</h2>
+            <div class="perf-grid reveal" data-d="1">
+<article class="perf-card" id="m-dispose-ds4">
+    <h3 class="perf-title"><code>Dispose</code>, DualShock 4</h3>
+    <p class="perf-now"><b>81%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="Dispose, DualShock 4, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 82%, 2.0.1 at 81%, 2.0.2 at 81%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;82% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 72.5 to 59.4 ms (-18.1%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;81% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 52.4 to 52.0 ms (-0.8%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;81% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 64.0 to 63.9 ms (-0.2%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,28.07 200,28.69 300,28.82" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:25.52%"></span><span class="perf-pt" style="left:66.67%;top:26.09%"></span><span class="perf-pt" style="left:100%;top:26.2%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ms</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>72.5<span>83.5</span></td><td>59.4<span>79.1</span></td><td>-18.1%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>52.4<span>59.5</span></td><td>52.0<span>57.5</span></td><td>-0.8%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>64.0<span>70.0</span></td><td>63.9<span>76.7</span></td><td>-0.2%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-dispose-x360">
+    <h3 class="perf-title"><code>Dispose</code>, Xbox 360</h3>
+    <p class="perf-now"><b>77%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="Dispose, Xbox 360, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 78%, 2.0.1 at 78%, 2.0.2 at 77%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;78% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 160.7 to 125.8 ms (-21.7%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;78% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 120.9 to 119.8 ms (-0.9%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;77% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 141.7 to 141.1 ms (-0.4%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,31.72 200,32.43 300,32.76" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:28.83%"></span><span class="perf-pt" style="left:66.67%;top:29.48%"></span><span class="perf-pt" style="left:100%;top:29.78%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ms</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>160.7<span>194.5</span></td><td>125.8<span>169.5</span></td><td>-21.7%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>120.9<span>295.7</span></td><td>119.8<span>265.4</span></td><td>-0.9%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>141.7<span>297.6</span></td><td>141.1<span>314.9</span></td><td>-0.4%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-dispose-ds-usbip">
+    <h3 class="perf-title"><code>Dispose</code>, DualSense over USB/IP</h3>
+    <p class="perf-now"><b>0.8%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="Dispose, DualSense over USB/IP, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 1.2%, 2.0.1 at 0.8%, 2.0.2 at 0.8%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;1.2% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 509.2 to 5.9 ms (-98.8%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;0.8% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 11.0 to 7.9 ms (-28.2%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;0.8% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 11.3 to 11.2 ms (-0.9%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,108.84 200,109.17 300,109.18" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:98.95%"></span><span class="perf-pt" style="left:66.67%;top:99.24%"></span><span class="perf-pt" style="left:100%;top:99.25%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ms</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>509.2<span>511.8</span></td><td>5.9<span>26.0</span></td><td>-98.8%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>11.0<span>23.8</span></td><td>7.9<span>24.2</span></td><td>-28.2%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>11.3<span>22.5</span></td><td>11.2<span>23.3</span></td><td>-0.9%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+            </div>
+        </section>
+
+        <section class="spec-block" id="input-to-the-game">
+            <h2 class="display-s spec-h reveal">Input to the game</h2>
+            <div class="perf-grid reveal" data-d="1">
+<article class="perf-card" id="m-read-ds4">
+    <h3 class="perf-title"><code>SubmitState</code> to a game&#x27;s <code>ReadFile</code>, DualShock 4</h3>
+    <p class="perf-now"><b>77%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState to a game&#x27;s ReadFile, DualShock 4, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 74%, 2.0.1 at 74%, 2.0.2 at 77%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;74% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 65.5 to 48.7 µs (-25.6%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;74% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 42.3 to 42.1 µs (-0.5%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;77% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 44.0 to 46.0 µs (+4.5%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,35.65 200,36 300,32.64" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:32.41%"></span><span class="perf-pt" style="left:66.67%;top:32.73%"></span><span class="perf-pt" style="left:100%;top:29.67%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in µs</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>65.5<span>107.6</span></td><td>48.7<span>87.8</span></td><td>-25.6%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>42.3<span>85.5</span></td><td>42.1<span>93.8</span></td><td>-0.5%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>44.0<span>83.5</span></td><td>46.0<span>80.2</span></td><td>+4.5%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-read-ds">
+    <h3 class="perf-title"><code>SubmitState</code> to a game&#x27;s <code>ReadFile</code>, DualSense</h3>
+    <p class="perf-now"><b>74%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState to a game&#x27;s ReadFile, DualSense, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 73%, 2.0.1 at 68%, 2.0.2 at 74%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;73% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 66.0 to 48.1 µs (-27.1%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;68% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 44.4 to 41.5 µs (-6.5%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;74% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 41.7 to 45.4 µs (+8.9%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,37.12 200,41.88 300,35.84" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:33.75%"></span><span class="perf-pt" style="left:66.67%;top:38.07%"></span><span class="perf-pt" style="left:100%;top:32.58%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in µs</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>66.0<span>107.8</span></td><td>48.1<span>87.0</span></td><td>-27.1%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>44.4<span>91.6</span></td><td>41.5<span>91.5</span></td><td>-6.5%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>41.7<span>87.5</span></td><td>45.4<span>72.0</span></td><td>+8.9%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-read-ds3">
+    <h3 class="perf-title"><code>SubmitState</code> to a game&#x27;s <code>ReadFile</code>, DualShock 3</h3>
+    <p class="perf-now"><b>83%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState to a game&#x27;s ReadFile, DualShock 3, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 86%, 2.0.1 at 76%, 2.0.2 at 83%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;86% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 69.6 to 59.7 µs (-14.2%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;76% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 70.7 to 62.8 µs (-11.2%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;83% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 50.0 to 54.2 µs (+8.4%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,24.22 200,33.81 300,27.41" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:22.02%"></span><span class="perf-pt" style="left:66.67%;top:30.74%"></span><span class="perf-pt" style="left:100%;top:24.92%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in µs</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>69.6<span>106.2</span></td><td>59.7<span>107.8</span></td><td>-14.2%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>70.7<span>111.3</span></td><td>62.8<span>111.9</span></td><td>-11.2%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>50.0<span>95.5</span></td><td>54.2<span>104.8</span></td><td>+8.4%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-read-ds-usbip">
+    <h3 class="perf-title"><code>SubmitState</code> to a game&#x27;s <code>ReadFile</code>, DualSense over USB/IP</h3>
+    <p class="perf-now"><b>53%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState to a game&#x27;s ReadFile, DualSense over USB/IP, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 55%, 2.0.1 at 53%, 2.0.2 at 53%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;55% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 106.4 to 58.1 µs (-45.4%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;53% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 66.2 to 64.8 µs (-2.1%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;53% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 62.5 to 61.7 µs (-1.3%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,55.39 200,56.55 300,57.23" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:50.36%"></span><span class="perf-pt" style="left:66.67%;top:51.41%"></span><span class="perf-pt" style="left:100%;top:52.03%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in µs</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>106.4<span>182.0</span></td><td>58.1<span>133.1</span></td><td>-45.4%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>66.2<span>147.4</span></td><td>64.8<span>148.4</span></td><td>-2.1%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>62.5<span>140.7</span></td><td>61.7<span>137.1</span></td><td>-1.3%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-xinput-x360">
+    <h3 class="perf-title"><code>SubmitState</code> to <code>XInputGetState</code>, Xbox 360</h3>
+    <p class="perf-now"><b>98%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState to XInputGetState, Xbox 360, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 93%, 2.0.1 at 95%, 2.0.2 at 98%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;93% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 90.6 to 83.9 µs (-7.4%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;95% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 68.8 to 70.8 µs (+2.9%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;98% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 72.3 to 74.2 µs (+2.6%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,17.4 200,14.7 300,12.2" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:15.81%"></span><span class="perf-pt" style="left:66.67%;top:13.37%"></span><span class="perf-pt" style="left:100%;top:11.09%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in µs</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>90.6<span>150.8</span></td><td>83.9<span>156.9</span></td><td>-7.4%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>68.8<span>122.6</span></td><td>70.8<span>125.5</span></td><td>+2.9%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>72.3<span>129.4</span></td><td>74.2<span>134.6</span></td><td>+2.6%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+            </div>
+        </section>
+
+        <section class="spec-block" id="output-and-feature-reports">
+            <h2 class="display-s spec-h reveal">Output and feature reports</h2>
+            <div class="perf-grid reveal" data-d="1">
+<article class="perf-card" id="m-output-ds4">
+    <h3 class="perf-title">Output report 0x05 to <code>OutputReceived</code>, DualShock 4</h3>
+    <p class="perf-now"><b>93%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="Output report 0x05 to OutputReceived, DualShock 4, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 89%, 2.0.1 at 89%, 2.0.2 at 93%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;89% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 37.8 to 33.6 µs (-11.1%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;89% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 33.6 to 33.8 µs (+0.6%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;93% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 36.8 to 38.3 µs (+4.1%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,21.11 200,20.58 300,16.94" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:19.19%"></span><span class="perf-pt" style="left:66.67%;top:18.71%"></span><span class="perf-pt" style="left:100%;top:15.4%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in µs</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>37.8<span>61.1</span></td><td>33.6<span>54.8</span></td><td>-11.1%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>33.6<span>55.0</span></td><td>33.8<span>53.1</span></td><td>+0.6%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>36.8<span>58.1</span></td><td>38.3<span>62.1</span></td><td>+4.1%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-feature-ds-usbip">
+    <h3 class="perf-title"><code>GET_REPORT(Feature 0x05)</code>, DualSense over USB/IP</h3>
+    <p class="perf-now"><b>92%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="GET_REPORT(Feature 0x05), DualSense over USB/IP, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 98%, 2.0.1 at 96%, 2.0.2 at 92%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;98% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 22.0 to 21.6 µs (-1.8%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;96% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 21.8 to 21.3 µs (-2.3%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;92% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 24.3 to 23.2 µs (-4.5%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,11.82 200,14.07 300,18.41" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:10.74%"></span><span class="perf-pt" style="left:66.67%;top:12.79%"></span><span class="perf-pt" style="left:100%;top:16.74%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in µs</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>22.0<span>52.7</span></td><td>21.6<span>29.6</span></td><td>-1.8%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>21.8<span>55.0</span></td><td>21.3<span>29.3</span></td><td>-2.3%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>24.3<span>39.5</span></td><td>23.2<span>45.6</span></td><td>-4.5%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+            </div>
+        </section>
+
+        <section class="spec-block" id="submitstate-per-call">
+            <h2 class="display-s spec-h reveal">SubmitState, per call</h2>
+            <div class="perf-grid reveal" data-d="1">
+<article class="perf-card" id="m-submit-ds4">
+    <h3 class="perf-title"><code>SubmitState</code>, DualShock 4</h3>
+    <p class="perf-now"><b>102%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState, DualShock 4, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 97%, 2.0.1 at 98%, 2.0.2 at 102%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;97% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 275.7 to 268.0 ns (-2.8%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;98% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 264.3 to 267.4 ns (+1.2%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;102% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 303.7 to 313.5 ns (+3.2%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,12.79 200,11.65 300,8.48" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:11.63%"></span><span class="perf-pt" style="left:66.67%;top:10.59%"></span><span class="perf-pt" style="left:100%;top:7.71%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ns</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>275.7<span>1,474.3</span></td><td>268.0<span>1,029.1</span></td><td>-2.8%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>264.3<span>985.2</span></td><td>267.4<span>1,021.4</span></td><td>+1.2%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>303.7<span>1,441.3</span></td><td>313.5<span>1,450.4</span></td><td>+3.2%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-submit-x360">
+    <h3 class="perf-title"><code>SubmitState</code>, Xbox 360</h3>
+    <p class="perf-now"><b>85%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState, Xbox 360, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 92%, 2.0.1 at 92%, 2.0.2 at 85%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;92% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 687.4 to 633.0 ns (-7.9%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;92% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 744.9 to 744.4 ns (-0.1%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;85% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 855.7 to 792.4 ns (-7.4%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,17.91 200,17.98 300,24.78" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:16.29%"></span><span class="perf-pt" style="left:66.67%;top:16.34%"></span><span class="perf-pt" style="left:100%;top:22.53%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ns</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>687.4<span>704.7</span></td><td>633.0<span>801.4</span></td><td>-7.9%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>744.9<span>799.3</span></td><td>744.4<span>800.8</span></td><td>-0.1%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>855.7<span>1,255.6</span></td><td>792.4<span>1,108.2</span></td><td>-7.4%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-submit-ds3">
+    <h3 class="perf-title"><code>SubmitState</code>, DualShock 3</h3>
+    <p class="perf-now"><b>98%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState, DualShock 3, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 97%, 2.0.1 at 99%, 2.0.2 at 98%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;97% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 408.7 to 397.3 ns (-2.8%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;99% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 388.8 to 397.1 ns (+2.1%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;98% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 519.8 to 511.9 ns (-1.5%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,12.79 200,10.71 300,12.22" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:11.63%"></span><span class="perf-pt" style="left:66.67%;top:9.74%"></span><span class="perf-pt" style="left:100%;top:11.11%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ns</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>408.7<span>803.4</span></td><td>397.3<span>422.9</span></td><td>-2.8%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>388.8<span>414.2</span></td><td>397.1<span>426.2</span></td><td>+2.1%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>519.8<span>625.6</span></td><td>511.9<span>622.9</span></td><td>-1.5%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-submit-ds-bt">
+    <h3 class="perf-title"><code>SubmitState</code>, DualSense over Bluetooth (report 0x31)</h3>
+    <p class="perf-now"><b>83%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState, DualSense over Bluetooth (report 0x31), time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 90%, 2.0.1 at 89%, 2.0.2 at 83%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;90% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 460.8 to 412.9 ns (-10.4%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;89% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 406.0 to 404.0 ns (-0.5%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;83% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 480.6 to 446.4 ns (-7.1%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,20.39 200,20.84 300,27.18" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:18.54%"></span><span class="perf-pt" style="left:66.67%;top:18.94%"></span><span class="perf-pt" style="left:100%;top:24.71%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ns</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>460.8<span>708.1</span></td><td>412.9<span>427.1</span></td><td>-10.4%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>406.0<span>420.2</span></td><td>404.0<span>414.0</span></td><td>-0.5%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>480.6<span>679.5</span></td><td>446.4<span>615.6</span></td><td>-7.1%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-submit-ns2">
+    <h3 class="perf-title"><code>SubmitState</code>, Switch 2 Pro</h3>
+    <p class="perf-now"><b>75%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState, Switch 2 Pro, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 72%, 2.0.1 at 75%, 2.0.2 at 75%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;72% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 401.0 to 290.1 ns (-27.7%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;75% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 259.2 to 267.3 ns (+3.1%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;75% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 346.1 to 348.9 ns (+0.8%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,37.66 200,35.4 300,34.79" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:34.23%"></span><span class="perf-pt" style="left:66.67%;top:32.18%"></span><span class="perf-pt" style="left:100%;top:31.63%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in ns</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>401.0<span>450.8</span></td><td>290.1<span>335.6</span></td><td>-27.7%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>259.2<span>281.9</span></td><td>267.3<span>293.0</span></td><td>+3.1%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>346.1<span>396.9</span></td><td>348.9<span>377.8</span></td><td>+0.8%</td></tr></tbody></table>
+        <p>Medians, with the 95th percentile under each.</p>
+    </details>
+</article>
+<article class="perf-card" id="m-rate-x360">
+    <h3 class="perf-title"><code>SubmitState</code> back to back, Xbox 360</h3>
+    <p class="perf-now"><b>91%</b> of 1.12.0's time</p>
+    <div class="perf-plot" role="img" tabindex="0" aria-label="SubmitState back to back, Xbox 360, time relative to 1.12.0: 1.12.0 at 100%, 2.0.0 at 95%, 2.0.1 at 94%, 2.0.2 at 91%." data-points="[{&quot;r&quot;:&quot;1.12.0&quot;,&quot;v&quot;:&quot;100%, the baseline&quot;,&quot;s&quot;:&quot;&quot;},{&quot;r&quot;:&quot;2.0.0&quot;,&quot;v&quot;:&quot;95% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 1.12.0: 1,682,169 to 1,761,893 frames a second (+4.7%)&quot;},{&quot;r&quot;:&quot;2.0.1&quot;,&quot;v&quot;:&quot;94% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.0: 1,769,486 to 1,790,965 frames a second (+1.2%)&quot;},{&quot;r&quot;:&quot;2.0.2&quot;,&quot;v&quot;:&quot;91% of 1.12.0&#x27;s time&quot;,&quot;s&quot;:&quot;From 2.0.1: 1,437,986 to 1,490,247 frames a second (+3.6%)&quot;}]"><svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="110" x2="300" y2="110" vector-effect="non-scaling-stroke"/><line x1="0" y1="60" x2="300" y2="60" vector-effect="non-scaling-stroke"/><line class="base" x1="0" y1="10" x2="300" y2="10" vector-effect="non-scaling-stroke"/><polyline points="0,10 100,14.52 200,15.67 300,18.98" vector-effect="non-scaling-stroke"/></svg><span class="perf-tick" style="top:100%">0%</span><span class="perf-tick" style="top:54.55%">50%</span><span class="perf-tick base" style="top:9.09%">100%</span><span class="perf-rel" style="left:0%">1.12.0</span><span class="perf-rel" style="left:33.33%">2.0.0</span><span class="perf-rel" style="left:66.67%">2.0.1</span><span class="perf-rel" style="left:100%">2.0.2</span><span class="perf-pt" style="left:0%;top:9.09%"></span><span class="perf-pt" style="left:33.33%;top:13.2%"></span><span class="perf-pt" style="left:66.67%;top:14.25%"></span><span class="perf-pt" style="left:100%;top:17.25%"></span></div>
+    <details class="perf-values">
+        <summary>Measured values, in frames a second</summary>
+        <table><thead><tr><th>Step</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0">1.12.0 to 2.0.0</a></td><td>1,682,169</td><td>1,761,893</td><td>+4.7%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1">2.0.0 to 2.0.1</a></td><td>1,769,486</td><td>1,790,965</td><td>+1.2%</td></tr><tr><td><a href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2">2.0.1 to 2.0.2</a></td><td>1,437,986</td><td>1,490,247</td><td>+3.6%</td></tr></tbody></table>
+        <p>Medians. The chart plots time per frame, the inverse of this rate, so lower is faster there too.</p>
+    </details>
+</article>
+            </div>
+        </section>
+    </main>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <a class="footer-brand" href="index.html"><img src="assets/logo-light.png" alt="" width="26" height="26">HIDMaestro</a>
+            <div class="footer-links"><a href="/">Home</a><a href="/press/">Press</a><a href="/performance.html">Performance</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a><a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a></div>
+        </div>
+        <div class="footer-note">
+            <span>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color:var(--text-muted)">MIT License</a></span>
+            <span>The engine inside PadForge</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+(function () {
+    "use strict";
+    var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.04 });
+    document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+
+    var nav = document.getElementById("nav");
+    addEventListener("scroll", function () { nav.classList.toggle("stuck", scrollY > 40); }, { passive: true });
+
+    /* Mark the section currently in view in the contents rail. */
+    var links = [].slice.call(document.querySelectorAll(".spec-nav a"));
+    var blocks = links.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); });
+    blocks.forEach(function (b) {
+        new IntersectionObserver(function (es) {
+            es.forEach(function (e) {
+                if (!e.isIntersecting) return;
+                var i = blocks.indexOf(e.target);
+                links.forEach(function (l, n) { l.classList.toggle("on", n === i); });
+            });
+        }, { rootMargin: "-20% 0px -70% 0px" }).observe(b);
+    });
+})();
+</script>
+</body>
+</html>

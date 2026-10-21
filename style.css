@@ -473,6 +473,10 @@ a { color: inherit; text-decoration: none; }
     color: var(--text-hi); letter-spacing: -0.012em;
 }
 .spec-row dd { color: var(--text-muted); font-size: 0.94rem; line-height: 1.6; }
+/* Adopter names are links, marked as the product page's adoption list
+   marks them. */
+.spec-row dt a { border-bottom: 1px solid rgba(242,101,42,0.45); transition: border-color 0.2s, color 0.2s; }
+.spec-row dt a:hover { color: var(--ember); border-bottom-color: var(--ember); }
 @media (max-width: 640px) { .spec-row { grid-template-columns: 1fr; gap: 0.4rem; } }
 
 /* A quiet entry point to the specs page from the product page. */

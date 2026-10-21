@@ -1,0 +1,811 @@
+{
+  "about": "Release-over-release performance of HIDMaestro on the development laptop, a Lenovo Legion Pro 7 16AFR10H. Each step is the side-by-side comparison published in that release's notes, written by tools/perf_from_notes.py. tools/build_perf.py draws performance.html and the home and press sections from this file.",
+  "releases": [
+    "1.12.0",
+    "2.0.0",
+    "2.0.1",
+    "2.0.2"
+  ],
+  "steps": [
+    {
+      "from": "1.12.0",
+      "to": "2.0.0",
+      "notes": "https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0",
+      "method": "30 runs per build, the two builds one after the other for each path"
+    },
+    {
+      "from": "2.0.0",
+      "to": "2.0.1",
+      "notes": "https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1",
+      "method": "30 runs per build in each of two passes, with the order of the builds flipped between passes, three passes for start, create and Dispose, and six for the per-call rows"
+    },
+    {
+      "from": "2.0.1",
+      "to": "2.0.2",
+      "notes": "https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2",
+      "method": "30 runs per build in each of two passes, with the order of the builds flipped between passes, three passes for start, create and Dispose, and eight rounds alternating the builds for the per-call rows"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "start-ds4",
+      "group": "Start and create",
+      "label": "Process start to the first controller, DualShock 4",
+      "unit": "ms",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            724.6,
+            824.8
+          ],
+          "after": [
+            552.6,
+            653.0
+          ]
+        },
+        {
+          "before": [
+            520.5,
+            652.4
+          ],
+          "after": [
+            515.3,
+            668.4
+          ]
+        },
+        {
+          "before": [
+            526.0,
+            692.6
+          ],
+          "after": [
+            527.3,
+            688.5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "create-ds4",
+      "group": "Start and create",
+      "label": "`CreateController`, DualShock 4",
+      "unit": "ms",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            467.1,
+            523.1
+          ],
+          "after": [
+            217.3,
+            302.2
+          ]
+        },
+        {
+          "before": [
+            213.4,
+            337.6
+          ],
+          "after": [
+            219.2,
+            361.7
+          ]
+        },
+        {
+          "before": [
+            213.5,
+            390.1
+          ],
+          "after": [
+            211.5,
+            399.5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "create-x360",
+      "group": "Start and create",
+      "label": "`CreateController`, Xbox 360",
+      "unit": "ms",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            673.5,
+            829.4
+          ],
+          "after": [
+            357.8,
+            421.5
+          ]
+        },
+        {
+          "before": [
+            440.6,
+            756.1
+          ],
+          "after": [
+            355.1,
+            672.9
+          ]
+        },
+        {
+          "before": [
+            357.9,
+            757.7
+          ],
+          "after": [
+            363.5,
+            567.1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "create-ds-usbip",
+      "group": "Start and create",
+      "label": "`CreateController`, DualSense over USB/IP",
+      "unit": "ms",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            4.3,
+            7.6
+          ],
+          "after": [
+            3.6,
+            15.1
+          ]
+        },
+        {
+          "before": [
+            2.4,
+            3.8
+          ],
+          "after": [
+            2.5,
+            5.2
+          ]
+        },
+        {
+          "before": [
+            3.9,
+            4.7
+          ],
+          "after": [
+            3.4,
+            4.4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dispose-ds4",
+      "group": "Removal",
+      "label": "`Dispose`, DualShock 4",
+      "unit": "ms",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            72.5,
+            83.5
+          ],
+          "after": [
+            59.4,
+            79.1
+          ]
+        },
+        {
+          "before": [
+            52.4,
+            59.5
+          ],
+          "after": [
+            52.0,
+            57.5
+          ]
+        },
+        {
+          "before": [
+            64.0,
+            70.0
+          ],
+          "after": [
+            63.9,
+            76.7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dispose-x360",
+      "group": "Removal",
+      "label": "`Dispose`, Xbox 360",
+      "unit": "ms",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            160.7,
+            194.5
+          ],
+          "after": [
+            125.8,
+            169.5
+          ]
+        },
+        {
+          "before": [
+            120.9,
+            295.7
+          ],
+          "after": [
+            119.8,
+            265.4
+          ]
+        },
+        {
+          "before": [
+            141.7,
+            297.6
+          ],
+          "after": [
+            141.1,
+            314.9
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dispose-ds-usbip",
+      "group": "Removal",
+      "label": "`Dispose`, DualSense over USB/IP",
+      "unit": "ms",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            509.2,
+            511.8
+          ],
+          "after": [
+            5.9,
+            26.0
+          ]
+        },
+        {
+          "before": [
+            11.0,
+            23.8
+          ],
+          "after": [
+            7.9,
+            24.2
+          ]
+        },
+        {
+          "before": [
+            11.3,
+            22.5
+          ],
+          "after": [
+            11.2,
+            23.3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-ds4",
+      "group": "Input to the game",
+      "label": "`SubmitState` to a game's `ReadFile`, DualShock 4",
+      "unit": "µs",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            65.5,
+            107.6
+          ],
+          "after": [
+            48.7,
+            87.8
+          ]
+        },
+        {
+          "before": [
+            42.3,
+            85.5
+          ],
+          "after": [
+            42.1,
+            93.8
+          ]
+        },
+        {
+          "before": [
+            44.0,
+            83.5
+          ],
+          "after": [
+            46.0,
+            80.2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-ds",
+      "group": "Input to the game",
+      "label": "`SubmitState` to a game's `ReadFile`, DualSense",
+      "unit": "µs",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            66.0,
+            107.8
+          ],
+          "after": [
+            48.1,
+            87.0
+          ]
+        },
+        {
+          "before": [
+            44.4,
+            91.6
+          ],
+          "after": [
+            41.5,
+            91.5
+          ]
+        },
+        {
+          "before": [
+            41.7,
+            87.5
+          ],
+          "after": [
+            45.4,
+            72.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-ds3",
+      "group": "Input to the game",
+      "label": "`SubmitState` to a game's `ReadFile`, DualShock 3",
+      "unit": "µs",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            69.6,
+            106.2
+          ],
+          "after": [
+            59.7,
+            107.8
+          ]
+        },
+        {
+          "before": [
+            70.7,
+            111.3
+          ],
+          "after": [
+            62.8,
+            111.9
+          ]
+        },
+        {
+          "before": [
+            50.0,
+            95.5
+          ],
+          "after": [
+            54.2,
+            104.8
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-ds-usbip",
+      "group": "Input to the game",
+      "label": "`SubmitState` to a game's `ReadFile`, DualSense over USB/IP",
+      "unit": "µs",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            106.4,
+            182.0
+          ],
+          "after": [
+            58.1,
+            133.1
+          ]
+        },
+        {
+          "before": [
+            66.2,
+            147.4
+          ],
+          "after": [
+            64.8,
+            148.4
+          ]
+        },
+        {
+          "before": [
+            62.5,
+            140.7
+          ],
+          "after": [
+            61.7,
+            137.1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "xinput-x360",
+      "group": "Input to the game",
+      "label": "`SubmitState` to `XInputGetState`, Xbox 360",
+      "unit": "µs",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            90.6,
+            150.8
+          ],
+          "after": [
+            83.9,
+            156.9
+          ]
+        },
+        {
+          "before": [
+            68.8,
+            122.6
+          ],
+          "after": [
+            70.8,
+            125.5
+          ]
+        },
+        {
+          "before": [
+            72.3,
+            129.4
+          ],
+          "after": [
+            74.2,
+            134.6
+          ]
+        }
+      ]
+    },
+    {
+      "id": "output-ds4",
+      "group": "Output and feature reports",
+      "label": "Output report 0x05 to `OutputReceived`, DualShock 4",
+      "unit": "µs",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            37.8,
+            61.1
+          ],
+          "after": [
+            33.6,
+            54.8
+          ]
+        },
+        {
+          "before": [
+            33.6,
+            55.0
+          ],
+          "after": [
+            33.8,
+            53.1
+          ]
+        },
+        {
+          "before": [
+            36.8,
+            58.1
+          ],
+          "after": [
+            38.3,
+            62.1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feature-ds-usbip",
+      "group": "Output and feature reports",
+      "label": "`GET_REPORT(Feature 0x05)`, DualSense over USB/IP",
+      "unit": "µs",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            22.0,
+            52.7
+          ],
+          "after": [
+            21.6,
+            29.6
+          ]
+        },
+        {
+          "before": [
+            21.8,
+            55.0
+          ],
+          "after": [
+            21.3,
+            29.3
+          ]
+        },
+        {
+          "before": [
+            24.3,
+            39.5
+          ],
+          "after": [
+            23.2,
+            45.6
+          ]
+        }
+      ]
+    },
+    {
+      "id": "submit-ds4",
+      "group": "SubmitState, per call",
+      "label": "`SubmitState`, DualShock 4",
+      "unit": "ns",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            275.7,
+            1474.3
+          ],
+          "after": [
+            268.0,
+            1029.1
+          ]
+        },
+        {
+          "before": [
+            264.3,
+            985.2
+          ],
+          "after": [
+            267.4,
+            1021.4
+          ]
+        },
+        {
+          "before": [
+            303.7,
+            1441.3
+          ],
+          "after": [
+            313.5,
+            1450.4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "submit-x360",
+      "group": "SubmitState, per call",
+      "label": "`SubmitState`, Xbox 360",
+      "unit": "ns",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            687.4,
+            704.7
+          ],
+          "after": [
+            633.0,
+            801.4
+          ]
+        },
+        {
+          "before": [
+            744.9,
+            799.3
+          ],
+          "after": [
+            744.4,
+            800.8
+          ]
+        },
+        {
+          "before": [
+            855.7,
+            1255.6
+          ],
+          "after": [
+            792.4,
+            1108.2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "submit-ds3",
+      "group": "SubmitState, per call",
+      "label": "`SubmitState`, DualShock 3",
+      "unit": "ns",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            408.7,
+            803.4
+          ],
+          "after": [
+            397.3,
+            422.9
+          ]
+        },
+        {
+          "before": [
+            388.8,
+            414.2
+          ],
+          "after": [
+            397.1,
+            426.2
+          ]
+        },
+        {
+          "before": [
+            519.8,
+            625.6
+          ],
+          "after": [
+            511.9,
+            622.9
+          ]
+        }
+      ]
+    },
+    {
+      "id": "submit-ds-bt",
+      "group": "SubmitState, per call",
+      "label": "`SubmitState`, DualSense over Bluetooth (report 0x31)",
+      "unit": "ns",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            460.8,
+            708.1
+          ],
+          "after": [
+            412.9,
+            427.1
+          ]
+        },
+        {
+          "before": [
+            406.0,
+            420.2
+          ],
+          "after": [
+            404.0,
+            414.0
+          ]
+        },
+        {
+          "before": [
+            480.6,
+            679.5
+          ],
+          "after": [
+            446.4,
+            615.6
+          ]
+        }
+      ]
+    },
+    {
+      "id": "submit-ns2",
+      "group": "SubmitState, per call",
+      "label": "`SubmitState`, Switch 2 Pro",
+      "unit": "ns",
+      "better": "lower",
+      "steps": [
+        {
+          "before": [
+            401.0,
+            450.8
+          ],
+          "after": [
+            290.1,
+            335.6
+          ]
+        },
+        {
+          "before": [
+            259.2,
+            281.9
+          ],
+          "after": [
+            267.3,
+            293.0
+          ]
+        },
+        {
+          "before": [
+            346.1,
+            396.9
+          ],
+          "after": [
+            348.9,
+            377.8
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rate-x360",
+      "group": "SubmitState, per call",
+      "label": "`SubmitState` back to back, Xbox 360",
+      "unit": "frames a second",
+      "better": "higher",
+      "steps": [
+        {
+          "before": [
+            1682169.0,
+            null
+          ],
+          "after": [
+            1761893.0,
+            null
+          ]
+        },
+        {
+          "before": [
+            1769486.0,
+            null
+          ],
+          "after": [
+            1790965.0,
+            null
+          ]
+        },
+        {
+          "before": [
+            1437986.0,
+            null
+          ],
+          "after": [
+            1490247.0,
+            null
+          ]
+        }
+      ]
+    }
+  ]
+}

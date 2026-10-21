@@ -290,7 +290,11 @@ a { color: inherit; text-decoration: none; }
 .moment-media { width: 100%; }
 .moment-media img { width: 100%; height: auto; }
 .moment-split.flip > .moment-media { order: -1; }
-@media (max-width: 940px) { .moment-split { grid-template-columns: 1fr; } .moment-split.flip > .moment-media { order: 0; } }
+/* minmax(0, 1fr), not 1fr: a bare 1fr track never shrinks below its
+   content's min-content width, so the code panel's longest line widened
+   the stacked column past a phone's viewport and cut the headline off.
+   With a zero minimum the panel's own overflow-x scroll takes the line. */
+@media (max-width: 940px) { .moment-split { grid-template-columns: minmax(0, 1fr); } .moment-split.flip > .moment-media { order: 0; } }
 .moment-copy .display-m { margin-bottom: 1.3rem; }
 
 .shot {

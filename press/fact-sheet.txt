@@ -1,11 +1,11 @@
 HIDMaestro
-Product information | October 19, 2026
+Product information | October 20, 2026
 
 HIDMaestro is a free, open-source SDK for creating virtual game controllers, keyboards and mice on Windows. Applications use its C# API and JSON device profiles to define device identity, submit input, and receive output such as rumble and force feedback. PadForge uses HIDMaestro for virtual controller output. HIDMaestro is available under the MIT license, including for commercial use.
 
 Website: https://hidmaestro.org/
 Press resources: https://hidmaestro.org/press/
-Current release: v2.0.0, October 19, 2026
+Current release: v2.0.0, October 20, 2026
 Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0
 Platforms: Windows 10 and 11 on x64. Windows 11 on ARM64.
 SDK: C# / .NET 10. The driver and device profiles are embedded in HIDMaestro.Core.dll.
@@ -24,8 +24,12 @@ Programs built on HIDMaestro 1.x must move to 2.0.0.
 
 Setup and validation
 Device creation and driver installation require administrator rights.
-[D3-PLACEHOLDER: v2.0.0 battery result] ARM64 binaries were built and
-signed, but the regression battery has not been run on ARM64 hardware.
+The 99-scenario regression battery passed on the development laptop, a
+16-core Lenovo Legion Pro 7 on Windows 11. On a 4-core Celeron J4125
+Windows 10 mini PC, 95 scenarios passed and 4 skipped, leaving out the
+checks that need a Steam client, a desktop session or Windows Sandbox.
+ARM64 binaries were built and signed, but the regression battery has not
+been run on ARM64 hardware.
 Installation: https://hidmaestro.org/docs/start/installation/
 Platform support: https://hidmaestro.org/docs/start/platform-support/
 Quickstart: https://hidmaestro.org/docs/start/quickstart/

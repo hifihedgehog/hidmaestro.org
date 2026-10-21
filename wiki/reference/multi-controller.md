@@ -1,6 +1,6 @@
 ﻿# Multi-Controller
 
-Up to N virtual controllers running simultaneously. Verified working with 6 mixed (2× Xbox Series BT + 2× Xbox 360 Wired + 2× DualSense) on a Ryzen 9955HX3D dev box and on an Intel Atom Z8350 fixture. The SDK supports unlimited; downstream APIs cap variously.
+Up to N virtual controllers running simultaneously. Verified working with 6 mixed (2× Xbox Series BT + 2× Xbox 360 Wired + 2× DualSense) on the development laptop, a Lenovo Legion Pro 7 with a Ryzen 9 9955HX3D, and on an Intel Atom Z8350 fixture. The SDK sets no limit. Downstream APIs set their own, such as XInput's four slots.
 
 This page covers the mechanics that make multi-controller work: slots and transport indices, the friendly-name re-application race, per-instance WUDFHost, ordering across APIs, and what each downstream consumer caps at.
 
@@ -212,11 +212,11 @@ Idle CPU is the **per-controller WUDFHost** measurement. Each per-instance host 
 
 ---
 
-## Atom Z8350 fixture (slow-hardware validation)
+## Celeron J4125 fixture (slow-hardware validation)
 
-The regression battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). Slow-hardware target for validating the event-driven harness without time-based settles.
+The regression battery also runs on an Intel Celeron J4125 mini PC (4 cores, 2.0 GHz, 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044). Slow-hardware target for validating the event-driven harness without time-based settles.
 
-It runs the full battery at `HIDMAESTRO_TIMEOUT_SCALE=2`. Its last full run, the 57-scenario v1.7.3 battery, passed 57/57, as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom. ACK-driven waits scale with the machine.
+It runs the full battery at `HIDMAESTRO_TIMEOUT_SCALE=2`. On the v2.0.0 release binaries every multi-controller scenario passed there, as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on a slow one. ACK-driven waits scale with the machine.
 
 See [Testing and Verification](testing-and-verification.md).
 

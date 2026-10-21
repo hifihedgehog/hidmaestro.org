@@ -57,7 +57,7 @@ A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 
 
 ## Validation
 
-[D3-PLACEHOLDER: v2.0.0 battery result]
+The v2.0.0 release gate ran on x64: the full 99-scenario battery passed all 99 scenarios on the release binaries on the development laptop, a Lenovo Legion Pro 7 16AFR10H with a 16-core AMD Ryzen 9 9955HX3D, 64 GB of DDR5-5600 and an NVIDIA GeForce RTX 5080 Laptop GPU on Windows 11 build 26200, in 29 minutes. On a 4-core Intel Celeron J4125 mini PC with Windows 10 IoT Enterprise LTSC 19044, at `HIDMAESTRO_TIMEOUT_SCALE=2` over SSH, 95 passed in 39 minutes and 4 skipped their probes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the `wsb` command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65.
 
 The v1.12.0 release gate ran on x64: the full 70-scenario battery passed all 70 scenarios on the release binaries on Windows 11 26200. The gate machine's host controller runs 0.9.8.1, put there by the v1.9.2 move, so every composite scenario ran through the client's 0.9.8.1 request format against the live driver. The DualSense composite passed 26/26 end to end, and the Switch 2 Pro composite 255/255, with Windows binding WinUSB to its vendor interface from the persona's own descriptors. Its root-hub filter is still the older one the move leaves alone, so SET_INTERFACE never reaches a composite there, and audio stream state comes from the traffic instead ([USB audio composite](../sdk/usb-audio-composite.md)).
 
@@ -67,4 +67,4 @@ The 0.9.8.0 request format was checked by compiling that version's own header wi
 
 Both native payloads and the ARM64 applications compile, link and stamp as ARM64, and both bundled transport drivers are verified as the right architecture with valid Microsoft signatures.
 
-ARM64 hardware has not run the battery. On ARM64, the steps after the catalog, signing it and adding the package to the driver store, have not run. The Atom fixture was not reachable for this release.
+ARM64 hardware has not run the battery. On ARM64, the steps after the catalog, signing it and adding the package to the driver store, have not run.

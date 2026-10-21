@@ -153,7 +153,7 @@ The 99-scenario battery that drives `HIDMaestroTest.exe` through every interesti
 ./test/regression/regression_battery.ps1 -Exe C:\path\to\HIDMaestroTest.exe
 ```
 
-Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 minutes on Ryzen-class, ~75 minutes on Atom Z8350 fixture (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`).
+Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 29 minutes on the development laptop, a 16-core Lenovo Legion Pro 7, 39 minutes on the 4-core Celeron J4125 fixture (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`).
 
 ### What each scenario catches
 
@@ -276,11 +276,11 @@ These five fixes interact; missing any one makes the harness hang on Win11. Pres
 
 ### Slow-hardware fixture
 
-The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). It runs at `HIDMAESTRO_TIMEOUT_SCALE=2`. Its last full run, the 57-scenario v1.7.3 battery, passed 57/57. The Atom has not run a release battery since.
+The full battery also runs on a MeLE PCG02 GLE mini PC: Intel Celeron J4125 (4 cores, 2.0 GHz), 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044. It runs at `HIDMAESTRO_TIMEOUT_SCALE=2` over SSH, with no desktop session. On the v2.0.0 release binaries 95 scenarios passed there and 4 skipped their probes, in 39 minutes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the `wsb` command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65.
 
-The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom. ACK-driven waits scale with the machine.
+The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on a slow one. ACK-driven waits scale with the machine.
 
-The Atom fixture runs the same `regression_battery.ps1` script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH `scp`), run the battery there.
+The Celeron fixture runs the same `regression_battery.ps1` script. Build the SDK on the development laptop, copy artifacts to the Celeron over SSH (`scp`), run the battery there.
 
 ---
 
@@ -349,4 +349,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-[D3-PLACEHOLDER: v2.0.0 battery result] See [platform support](../start/platform-support.md#validation) for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.
+The v2.0.0 battery passed all 99 scenarios on the development laptop. On the Celeron J4125, 95 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See [platform support](../start/platform-support.md#validation) for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.

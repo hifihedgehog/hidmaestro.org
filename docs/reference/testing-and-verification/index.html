@@ -2415,7 +2415,7 @@
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="c"># point at a non-default exe (e.g. a published build)</span>
 <a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-Exe</span> <span class="n">C</span><span class="p">:\</span><span class="n">path</span><span class="p">\</span><span class="n">to</span><span class="p">\</span><span class="n">HIDMaestroTest</span><span class="p">.</span><span class="n">exe</span>
 </code></pre></div>
-<p>Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 16-25 minutes on Ryzen-class, ~75 minutes on Atom Z8350 fixture (slow-hardware target with <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>).</p>
+<p>Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 29 minutes on the development laptop, a 16-core Lenovo Legion Pro 7, 39 minutes on the 4-core Celeron J4125 fixture (slow-hardware target with <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>).</p>
 <h3 id="what-each-scenario-catches">What each scenario catches<a class="headerlink" href="#what-each-scenario-catches" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -2791,9 +2791,9 @@
 <p>These five fixes interact; missing any one makes the harness hang on Win11. Preserved as the canonical recipe.</p>
 <hr />
 <h3 id="slow-hardware-fixture">Slow-hardware fixture<a class="headerlink" href="#slow-hardware-fixture" title="Permanent link">&para;</a></h3>
-<p>The full battery also runs on an Intel Atom Z8350 (4 cores @ 1.44 GHz, 4 GB RAM, Win10 IoT LTSC 19044). It runs at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>. Its last full run, the 57-scenario v1.7.3 battery, passed 57/57. The Atom has not run a release battery since.</p>
-<p>The slow-hardware result is the reason the harness is <strong>pure ACK-driven</strong> instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on Atom. ACK-driven waits scale with the machine.</p>
-<p>The Atom fixture runs the same <code>regression_battery.ps1</code> script. Build the SDK on the dev box, copy artifacts to the Atom (SMB share or SSH <code>scp</code>), run the battery there.</p>
+<p>The full battery also runs on a MeLE PCG02 GLE mini PC: Intel Celeron J4125 (4 cores, 2.0 GHz), 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044. It runs at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code> over SSH, with no desktop session. On the v2.0.0 release binaries 95 scenarios passed there and 4 skipped their probes, in 39 minutes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the <code>wsb</code> command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65.</p>
+<p>The slow-hardware result is the reason the harness is <strong>pure ACK-driven</strong> instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on a slow one. ACK-driven waits scale with the machine.</p>
+<p>The Celeron fixture runs the same <code>regression_battery.ps1</code> script. Build the SDK on the development laptop, copy artifacts to the Celeron over SSH (<code>scp</code>), run the battery there.</p>
 <hr />
 <h2 id="testprobes-one-off-investigation-tools"><code>test/probes/</code>: one-off investigation tools<a class="headerlink" href="#testprobes-one-off-investigation-tools" title="Permanent link">&para;</a></h2>
 <p>The <code>test/probes/</code> directory holds investigation tools used during HIDMaestro development. These are not part of the regression battery and are not built by <code>build_all.cmd</code>. They are situational and often unfinished:</p>
@@ -2847,7 +2847,7 @@
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md"><code>test/regression/README.md</code></a>: the in-repo battery doc.</li>
 </ul>
 <h2 id="arm64-and-usbip-validation">ARM64 and USB/IP validation<a class="headerlink" href="#arm64-and-usbip-validation" title="Permanent link">&para;</a></h2>
-<p>[D3-PLACEHOLDER: v2.0.0 battery result] See <a href="../../start/platform-support/#validation">platform support</a> for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery, and the Atom fixture was not reachable for this release.</p>
+<p>The v2.0.0 battery passed all 99 scenarios on the development laptop. On the Celeron J4125, 95 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See <a href="../../start/platform-support/#validation">platform support</a> for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.</p>
 
 
 

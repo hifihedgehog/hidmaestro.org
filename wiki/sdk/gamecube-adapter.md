@@ -84,7 +84,7 @@ Melee players overclock the adapter by making Windows poll it every millisecond.
 adapter.DeviceProtocol!.HostPollInterval = TimeSpan.FromMilliseconds(1);
 ```
 
-Measured during development at commit d740d2c, on a 16-core Windows 11 laptop, not on the release build: 1200 submits, forty in each of 30 runs, each at a random offset from the poll grid, submit to read at p50 and p95, and reports a second counted at the device, p50 over the 30 runs. The battery checks bounds, not these values: each read within the poll period plus the adapter's controller read plus 2 ms, and the rates within ranges around 125, 833 and 1000.
+Measured during development at commit d740d2c, on the development laptop, a 16-core Lenovo Legion Pro 7 on Windows 11, not on the release build: 1200 submits, forty in each of 30 runs, each at a random offset from the poll grid, submit to read at p50 and p95, and reports a second counted at the device, p50 over the 30 runs. The battery checks bounds, not these values: each read within the poll period plus the adapter's controller read plus 2 ms, and the rates within ranges around 125, 833 and 1000.
 
 | Host | 8 ms poll | 1 ms poll | Reports a second at 1 ms, four ports | Exactly ports 1 and 2 |
 |---|---|---|---|---|

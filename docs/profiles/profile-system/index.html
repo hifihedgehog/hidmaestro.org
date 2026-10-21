@@ -3164,7 +3164,7 @@
 <tr>
 <td><code>uint16-pressure</code></td>
 <td>input</td>
-<td>Pad pressure: <code>max</code> while a finger touches, <code>min</code> otherwise. <code>max</code> is required</td>
+<td>Pad pressure from <code>TouchpadFinger0Pressure</code> or <code>TouchpadFinger1Pressure</code>, <code>min</code> at 0 and <code>max</code> at 1. A touching finger left at 0 sends <code>max</code>, as every touch did before v2.0.2. <code>max</code> is required</td>
 </tr>
 <tr>
 <td><code>uint10-be</code></td>
@@ -3284,6 +3284,11 @@
 <td><code>parts</code></td>
 <td><code>packed-uint</code></td>
 <td>Bit groups over frames of a stride, reduced by <code>max</code>, scaled and clamped to a byte, as the Switch Pro's and Switch 2 Pro's rumble is</td>
+</tr>
+<tr>
+<td><code>triggerThreshold: { max, at }</code></td>
+<td><code>button-mask</code> with <code>LT_DIGITAL</code> or <code>RT_DIGITAL</code></td>
+<td>Since v2.0.2, each trigger bit is set while the trigger's value on <code>max</code> counts is at least <code>at</code>. Without it a bit sets at the first count of an 8-bit trigger. <code>steam-deck-composite</code> and <code>steam-controller-2</code> set 29490 of 32767, the 90 percent default of their firmware, and <code>steam-controller-composite</code> 255 of 255, where its trigger switch closes</td>
 </tr>
 </tbody>
 </table>
@@ -3571,6 +3576,7 @@
 </tbody>
 </table>
 <p><code>extendedReport.idleFrameIntervalMs</code> still loads as a stream of that period. 21 catalog profiles repeat at rest: the DualSense family at 1 ms (Edge), 1.25 ms (Bluetooth) and 4 ms (USB), the DualShock 4 USB family and <code>steam-deck</code> at 4 ms, <code>openffboard</code> at 101 ms and five Thrustmaster wheels at 250 ms, none of which repeated anything before 2.0.0, and <code>steam-controller-2</code>, <code>steam-deck-composite</code> and <code>steam-controller-composite</code>, which already did. A consumer that counts frames sees the repeats.</p>
+<p>Since v2.0.2 those three Valve profiles set <code>extendedReport.send</code> to <code>"clock"</code>: every report goes out on the device clock, one each <code>idleFrameIntervalMs</code> (4 ms on the Deck and the 2026 controller, 9 ms on the 2015 controller), carrying the consumer's latest frame, and a submit only stores it. <code>"submit"</code>, the default, sends each frame as the consumer submits it and repeats the last one while the consumer is quiet.</p>
 <hr />
 <h2 id="device-models-v200">Device models (v2.0.0)<a class="headerlink" href="#device-models-v200" title="Permanent link">&para;</a></h2>
 <p>A profile's device model is the behavior it gives beyond its reports, in three groups, each resolved at load on its own:</p>

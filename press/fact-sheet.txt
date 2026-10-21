@@ -5,13 +5,13 @@ HIDMaestro is a free, open-source SDK for creating virtual game controllers, key
 
 Website: https://hidmaestro.org/
 Press resources: https://hidmaestro.org/press/
-Current release: v2.0.1, October 21, 2026
-Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1
+Current release: v2.0.2, October 21, 2026
+Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2
 Platforms: Windows 10 and 11 on x64. Windows 11 on ARM64.
 SDK: C# / .NET 10. The driver and device profiles are embedded in HIDMaestro.Core.dll.
 Price: Free.
 License: MIT. Commercial use is permitted subject to the license terms.
-License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.1/LICENSE
+License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.2/LICENSE
 
 Architecture
 Applications submit input through the C# SDK. JSON profiles describe device
@@ -24,6 +24,9 @@ Programs built on HIDMaestro 1.x must move to 2.0.0.
 Version 2.0.1 removes HIDMaestro from a computer, with HIDMaestroUninstall.exe
 from the release ZIP or one call from a program, and installs usbip-win2's
 host controller without usbip-win2's installer or its root-hub filter.
+Version 2.0.2 gives the Steam Deck and Steam Controller personas the motion,
+report timing, unit serials, pad pressure and trigger bits that SDL and Steam
+read from the real controllers.
 
 Setup and validation
 Device creation and driver installation require administrator rights.
@@ -56,4 +59,4 @@ https://github.com/nefarius/DsHidMini
 The DualShock 3 profile's report descriptor is DsHidMini's, under its BSD 3-Clause license.
 Composite USB profiles use usbip-win2 by Vadym Hrynchyshyn:
 https://github.com/vadimgrn/usbip-win2
-Third-party notices: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.1/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt
+Third-party notices: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.2/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt

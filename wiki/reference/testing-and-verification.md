@@ -153,7 +153,7 @@ The 100-scenario battery that drives `HIDMaestroTest.exe` through every interest
 ./test/regression/regression_battery.ps1 -Exe C:\path\to\HIDMaestroTest.exe
 ```
 
-Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 26 minutes on the development laptop, a 16-core Lenovo Legion Pro 7, 38 minutes on the 4-core Celeron J4125 fixture (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`).
+Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 33 minutes on the development laptop, a 16-core Lenovo Legion Pro 7, 39 minutes on the 4-core Celeron J4125 fixture (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`).
 
 ### What each scenario catches
 
@@ -277,7 +277,7 @@ These five fixes interact; missing any one makes the harness hang on Win11. Pres
 
 ### Slow-hardware fixture
 
-The full battery also runs on a MeLE PCG02 GLE mini PC: Intel Celeron J4125 (4 cores, 2.0 GHz), 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044. It runs at `HIDMAESTRO_TIMEOUT_SCALE=2` over SSH, with no desktop session. On the v2.0.1 release binaries 96 scenarios passed there and 4 skipped their probes, in 38 minutes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the `wsb` command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. S101 removes HIDMaestro from that machine itself, reads it clean and installs the driver again, and only its run inside Windows Sandbox skips.
+The full battery also runs on a MeLE PCG02 GLE mini PC: Intel Celeron J4125 (4 cores, 2.0 GHz), 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044. It runs at `HIDMAESTRO_TIMEOUT_SCALE=2` over SSH, with no desktop session. On the v2.0.2 release binaries 96 scenarios passed there and 4 skipped their probes, in 39 minutes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the `wsb` command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. S101 removes HIDMaestro from that machine itself, reads it clean and installs the driver again, and only its run inside Windows Sandbox skips.
 
 The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on a slow one. ACK-driven waits scale with the machine.
 
@@ -350,4 +350,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-The v2.0.1 battery passed all 100 scenarios on the development laptop. On the Celeron J4125, 96 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See [platform support](../start/platform-support.md#validation) for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.
+The v2.0.2 battery passed all 100 scenarios on the development laptop. On the Celeron J4125, 96 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See [platform support](../start/platform-support.md#validation) for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.

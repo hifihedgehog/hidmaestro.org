@@ -217,7 +217,7 @@ Pre-v1.3.5 the SDK couldn't pack these: it would fall back to whatever simpler i
 | `int16-pad`, `int16-pad-or-stick` | input | A Valve trackpad coordinate from the touch fingers. `int16-pad-or-stick` sends the stick while the finger is up, as the 2015 Steam Controller does |
 | `uint16-le`, `uint32-le` | input | `sensorTimestamp`: the consumer's stamp, divided by `divisor` in the 16-bit form, or with `clock: "accumulate"` elapsed time over `divisor` |
 | `uint16-trigger` | input | 16-bit trigger, `min`..`max`. `max` is required |
-| `uint16-pressure` | input | Pad pressure: `max` while a finger touches, `min` otherwise. `max` is required |
+| `uint16-pressure` | input | Pad pressure from `TouchpadFinger0Pressure` or `TouchpadFinger1Pressure`, `min` at 0 and `max` at 1. A touching finger left at 0 sends `max`, as every touch did before v2.0.2. `max` is required |
 | `uint10-be` | input | A 10-bit big-endian motion value about `center`, rescaled by `resolution` over `sourceResolution` |
 | `uint32-rolling` | input | 32-bit packet counter that advances every report |
 | `touchpad-finger` | input | Sony's 4-byte touch finger: lifted bit, tracking ID, 12-bit X and Y |
@@ -248,6 +248,7 @@ As of v2.0.0 a field's wire form is set by parameters, never by a type named for
 | `levels`, `chargingValue`, `fullValue` | `uint8-level-map` | The battery byte as an 11-entry table, `fullValue` ahead of `chargingValue` |
 | `clock: "accumulate"`, `divisor`, `holdWhile` | `uint16-le`, `uint32-le` of `sensorTimestamp` | Elapsed time in the 1/3 microsecond ticks of `SensorTimestamp`, from the controller's clock until the first nonzero consumer stamp and from the consumer's stamps after. A repeat of the last state adds nothing, and a stamp that runs backward adds one idle interval. `holdWhile` names a protocol register under which the clock holds still, as `steam-controller-2`'s does while the host has its IMU off |
 | `parts` | `packed-uint` | Bit groups over frames of a stride, reduced by `max`, scaled and clamped to a byte, as the Switch Pro's and Switch 2 Pro's rumble is |
+| `triggerThreshold: { max, at }` | `button-mask` with `LT_DIGITAL` or `RT_DIGITAL` | Since v2.0.2, each trigger bit is set while the trigger's value on `max` counts is at least `at`. Without it a bit sets at the first count of an 8-bit trigger. `steam-deck-composite` and `steam-controller-2` set 29490 of 32767, the 90 percent default of their firmware, and `steam-controller-composite` 255 of 255, where its trigger switch closes |
 
 `ps-move` writes its motion with them:
 
@@ -503,6 +504,8 @@ The build turns every catalog program and decoder into straight-line C#, and the
 | `timestamps` | `"hold"`, the default, repeats the consumer's last sensor timestamp. `"advance"` moves it on by the time since the frame it repeats |
 
 `extendedReport.idleFrameIntervalMs` still loads as a stream of that period. 21 catalog profiles repeat at rest: the DualSense family at 1 ms (Edge), 1.25 ms (Bluetooth) and 4 ms (USB), the DualShock 4 USB family and `steam-deck` at 4 ms, `openffboard` at 101 ms and five Thrustmaster wheels at 250 ms, none of which repeated anything before 2.0.0, and `steam-controller-2`, `steam-deck-composite` and `steam-controller-composite`, which already did. A consumer that counts frames sees the repeats.
+
+Since v2.0.2 those three Valve profiles set `extendedReport.send` to `"clock"`: every report goes out on the device clock, one each `idleFrameIntervalMs` (4 ms on the Deck and the 2026 controller, 9 ms on the 2015 controller), carrying the consumer's latest frame, and a submit only stores it. `"submit"`, the default, sends each frame as the consumer submits it and repeats the last one while the consumer is quiet.
 
 ---
 

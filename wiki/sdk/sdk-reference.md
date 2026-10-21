@@ -382,7 +382,9 @@ The Sony surface keeps native units. `GyroPitch`, `GyroYaw` and `GyroRoll` carry
 
 Ten `Pressure*` fields (v1.10.0) carry how hard a DualShock 3's pressure-sensitive buttons are pressed, 0 to 255: `PressureA` (cross), `PressureB` (circle), `PressureX` (square), `PressureY` (triangle), `PressureLeftBumper`, `PressureRightBumper`, and the four `PressureDpad*` directions. A pressed button left at 0 is sent as 255. Only `dualshock-3-full` carries them. See [DualShock 3 and Pressure](dualshock-3.md).
 
-Six calibrated motion fields carry SDL's sensor frame: `AccelGX`, `AccelGY` and `AccelGZ` in g, and `GyroDpsX`, `GyroDpsY` and `GyroDpsZ` in degrees per second. `switch-pro` and, since v1.11.0, `switch2-pro-controller-composite` read them and convert them to their pad's own counts, so a consumer that reads motion from SDL submits it as it reads it. See [Switch 2 Pro with Motion](switch2-pro.md).
+Two pad pressure fields (v2.0.2), `TouchpadFinger0Pressure` and `TouchpadFinger1Pressure`, carry how hard each trackpad is pressed, 0 to 1, on the Steam Deck and the 2026 Steam Controller, whose two pads are finger 0 and finger 1. They follow the pressure buttons' rule: a touching finger left at 0 is sent at full pressure, so a consumer that only sends touch presses fully, and a nonzero pressure is sent as given. NaN reads as 0, and a value outside 0 to 1 is clamped.
+
+Six calibrated motion fields carry SDL's sensor frame: `AccelGX`, `AccelGY` and `AccelGZ` in g, and `GyroDpsX`, `GyroDpsY` and `GyroDpsZ` in degrees per second. `switch-pro`, since v1.11.0 `switch2-pro-controller-composite`, and since v2.0.2 `steam-deck-composite`, `steam-controller-composite` and `steam-controller-2` read them and convert them to each device's own axes and counts, so a consumer that reads motion from SDL submits it as it reads it. See [Switch 2 Pro with Motion](switch2-pro.md).
 
 For data `HMGamepadState` does not model, such as vendor extensions, use `SubmitRawReport` with bytes you assembled per the profile's descriptor.
 

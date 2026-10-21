@@ -185,7 +185,7 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>One DLL</dt>
-                    <dd>HIDMaestro.Core.dll contains the 337-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and the signed USB/IP installers for both. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host. A source build can leave out the ARM64 payload or the USB/IP transport, and HMBuildInfo reports what a build carries.</dd>
+                    <dd>HIDMaestro.Core.dll contains the 337-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and usbip-win2's signed host controller driver for both, 18.1 MB in all as of v2.0.1. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host. A source build can leave out the ARM64 payload or the USB/IP transport, and HMBuildInfo reports what a build carries.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>NativeAOT and single-file apps</dt>
@@ -194,6 +194,10 @@
                 <div class="spec-row">
                     <dt>Self-bootstrapping install</dt>
                     <dd>InstallDriver() creates a locally trusted certificate, signs the driver, and installs it. No EV certificate, no test-signing mode, no reboot. When the installed driver already matches, the call completes in ~40-60 ms. Only one program deploys at a time. An older driver is upgraded whatever runs on it, and a newer one is never downgraded.</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Removing HIDMaestro</dt>
+                    <dd>HIDMaestroUninstall.exe, in the release ZIP as a NativeAOT build for x64 and ARM64 that needs no .NET runtime, removes HIDMaestro from a computer: every virtual controller and its device records, the driver packages, the signing certificate and its private key, HIDMaestro's registry keys, its staging and OpenVR folders, the folders older releases left in each account's %TEMP%, its OpenVR registration, its OEM name overrides and its DeviceOverrides keys. The joy.cpl and GameInput keys it shares with real controllers go back to what they held before, each only while it still holds what HIDMaestro wrote. --preview lists what would go and changes nothing, and --json writes the report as JSON. A program does the same with HMUninstall.Preview() and HMUninstall.Run(), and never blocks itself. The driver is shared by every HIDMaestro program on the machine, so a removal refuses while another one runs and names it, and a program on 2.0.1 or later that starts during a removal waits for it to end. A removal never restarts the computer or a USB root hub and never follows a link. The report says what stays and why, such as the GameInputSvc start type, Windows' own logs and usbip-win2's root-hub filter.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>A UI instead of code</dt>
@@ -207,7 +211,7 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>Regression coverage</dt>
-                    <dd>The battery has 99 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, every catalog keyboard and mouse through Raw Input, programs running side by side as separate processes, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, every raw value of every catalog conversion through the SDK's rounding, the Sony, Valve and Nintendo vendor-blob reports against golden bytes, profiles and device models loaded strictly, every report program three ways, the protocol engine and device clock, the version contract on the live driver, a Joy-Con built from the Switch Pro's mechanisms, and the SDK and drivers checked for device shortcuts. Production signing and the full HIDMaestro integration gate remain pending.</dd>
+                    <dd>The battery has 100 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, every catalog keyboard and mouse through Raw Input, programs running side by side as separate processes, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, every raw value of every catalog conversion through the SDK's rounding, the Sony, Valve and Nintendo vendor-blob reports against golden bytes, profiles and device models loaded strictly, every report program three ways, the protocol engine and device clock, the version contract on the live driver, a Joy-Con built from the Switch Pro's mechanisms, the SDK and drivers checked for device shortcuts, and a full removal of HIDMaestro inside Windows Sandbox. Production signing and the full HIDMaestro integration gate remain pending.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Judged by the real consumers</dt>
@@ -233,7 +237,7 @@
                 </div>
                 <div class="spec-row">
                     <dt>The composite exception, stated</dt>
-                    <dd>Composite Sony, Valve and Nintendo profiles use the bundled usbip-win2 0.9.8.1 kernel transport, redistributed unmodified and checked against its pinned SHA-256 at build and again before execution. The SDK installs it silently on a machine that has none, with the smallest set of components its installer allows, and never invokes the vendor uninstaller. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused.</dd>
+                    <dd>Composite Sony, Valve and Nintendo profiles use the bundled usbip-win2 0.9.8.1 kernel transport, redistributed unmodified and checked against its pinned SHA-256 at build and again before Windows installs it. As of v2.0.1 the SDK installs only its host controller, silently, on a machine that has none. It never runs usbip-win2's installer or uninstaller and never installs its root-hub filter, so no USB device drops. The install is recorded, so a removal takes HIDMaestro's install and leaves another program's. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>MIT licensed</dt>
@@ -295,7 +299,7 @@
                 </details>
                 <details class="detail">
                     <summary>Does anything kernel-mode get installed?</summary>
-                    <div class="detail-body">Composite Sony and Valve profiles install the bundled usbip-win2 0.9.8.1 transport on a machine that has none. Standard profiles use the Windows UMDF2 stack. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, with no window and no USB device dropping, so there is nothing to do when updating.</div>
+                    <div class="detail-body">Composite Sony, Valve and Nintendo profiles install the bundled usbip-win2 0.9.8.1 transport on a machine that has none. As of v2.0.1 that is its host controller alone: the SDK never runs usbip-win2's installer or installs its root-hub filter, so no USB device drops. Standard profiles use the Windows UMDF2 stack. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, with no window and no USB device dropping, so there is nothing to do when updating.</div>
                 </details>
                 <details class="detail">
                     <summary>Can I add a controller you don't ship?</summary>
@@ -312,6 +316,10 @@
                 <details class="detail">
                     <summary>Can two programs that embed HIDMaestro run on one machine?</summary>
                     <div class="detail-body">Yes, as of v2.0.0. Each program keeps its own controllers, identities and sections, and a sweep removes only what exited programs left. The one exception is the remove-everything cleanup, RemoveAllVirtualControllers(HMCleanupScope.Everything, ...), which an uninstaller or a support tool calls. The driver is deployed by one program at a time and never downgraded, and the 2.0.0 driver is installed over any older one, whatever runs on it. A running program built on v1.12.0 or older still removes every HIDMaestro device on the machine at its InstallDriver and at its first create, and while one runs, a v2.0.0 program's controllers take transport indices from 64. Programs built on HIDMaestro 1.x must move to 2.0.0.</div>
+                </details>
+                <details class="detail">
+                    <summary>How do I remove HIDMaestro from a computer?</summary>
+                    <div class="detail-body">As of v2.0.1, run HIDMaestroUninstall.exe from the release ZIP. --preview lists what would go and changes nothing, and --yes removes without asking. A program that embeds HIDMaestro calls HMUninstall.Run() instead, from its own uninstaller or a settings button. A removal refuses while another program that embeds HIDMaestro runs, and other programs install the driver again at their next InstallDriver or create. usbip-win2's root-hub filter, Windows' own logs and the GameInputSvc start type stay, and the report says why.</div>
                 </details>
                 <details class="detail">
                     <summary>Does it work in NativeAOT and single-file apps?</summary>

@@ -48,6 +48,11 @@ does.</p>
     <h3>Technical Reference</h3>
     <p>Architecture, driver internals, the shared memory protocol, PnP lifecycle, and how every gaming API is satisfied.</p>
   </a>
+  <a href="start/removing-hidmaestro/">
+    <span class="pf-eyebrow">New in v2.0.1</span>
+    <h3>Removing HIDMaestro</h3>
+    <p>One tool or one call takes the controllers, driver, certificate, keys and files, puts shared Windows keys back, and says what stays.</p>
+  </a>
   <a href="start/migration/">
     <span class="pf-eyebrow">New in v2.0.0</span>
     <h3>Moving from 1.x</h3>
@@ -78,6 +83,11 @@ whenever you need a virtual gamepad, keyboard or mouse. It replaces ViGEmBus and
 user-mode driver, 337 embedded profiles, runtime-built custom profiles,
 HID PID 1.0 force feedback, and live-swap teardown that does not leak PnP
 state.
+
+v2.0.1 removes HIDMaestro from a computer, with `HIDMaestroUninstall.exe`
+from the release ZIP or with `HMUninstall.Run()` from a program, and
+installs usbip-win2's host controller without its installer or root-hub
+filter. See [Removing HIDMaestro](start/removing-hidmaestro.md).
 
 v2.0.0 moves device behavior out of code and into the profiles, and its
 driver takes precedence over every older one. Programs built on

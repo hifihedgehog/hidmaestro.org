@@ -438,6 +438,8 @@
       
         
       
+        
+      
     
     
     
@@ -507,6 +509,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/removing-hidmaestro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Removing HIDMaestro
   
 
     
@@ -2050,7 +2080,7 @@
 <h2 id="build">Build<a class="headerlink" href="#build" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">scripts</span><span class="p">\</span><span class="n">build_all</span><span class="p">.</span><span class="n">cmd</span>
 </code></pre></div>
-<p>The native build compiles the HID driver, XInput companion, and hmswd helper for x64 and again for ARM64. It also builds the x64 OpenVR plugin. The SDK build embeds both payload sets and both signed USB/IP installers.</p>
+<p>The native build compiles the HID driver, XInput companion, and hmswd helper for x64 and again for ARM64. It also builds the x64 OpenVR plugin. The SDK build embeds both payload sets and usbip-win2's host controller driver for both architectures.</p>
 <p>The native scripts compile the driver, the companion and the OpenVR driver at <code>/W4</code>, and hmswd at <code>/W3</code>. Since v2.0.0 they compile the driver and the companion with <code>/Ox /Os</code>, the release setting of the WDK's own driver projects (full optimization, favoring size). Through v1.12.0 they passed no optimization switch, so <code>cl.exe</code> compiled both unoptimized. The UMDF headers and Valve's <code>openvr_driver.h</code> are passed with <code>/external:I</code> and <code>/external:W0</code>, which turn warnings off in those headers and the headers they include, while every warning in HIDMaestro's own sources still prints. No <code>/WX</code> is set, so a new warning prints and does not stop the build. A full <code>build_all.cmd</code> printed 70 compiler warnings at commit c5c0f05 and none at a6fbbe8, development measurements.</p>
 <p>The script runs the SDK build once. The SDK project embeds exactly the files its pre-build target stages for the settings in force, each listed with the path it is staged at and the name it is embedded under (v2.0.0). Through v1.12.0 the project globbed <code>Resources\</code>, which was evaluated before anything was staged, so a fresh tree needed two builds, and a skip build in a tree that once built everything would have embedded the stale files. Missing native files fail the build with a message naming the script.</p>
 <p>The test build script builds the test app, ProfileExtractor, example, and the probe projects used by the battery. It copies a canonical SDK assembly into their outputs and verifies each copy's SHA-256 hash.</p>
@@ -2068,12 +2098,12 @@
 <tbody>
 <tr>
 <td><code>HMSkipArm64=true</code></td>
-<td>Builds and embeds the x64 driver, companion and helper only, and leaves out every ARM64 payload: the ARM64 INFs, signtool set, usbip-win2 installer and host controller files.</td>
+<td>Builds and embeds the x64 driver, companion and helper only, and leaves out every ARM64 payload: the ARM64 INFs, signtool set and usbip-win2 host controller files.</td>
 <td>unset</td>
 </tr>
 <tr>
 <td><code>HMSkipUsbip=true</code></td>
-<td>Leaves out the USB/IP transport: both installers and the host controller files. Nothing is downloaded, hashed or unpacked for it.</td>
+<td>Leaves out the USB/IP transport: the host controller files, and the installers they are unpacked from. Nothing is downloaded, hashed or unpacked for it.</td>
 <td>unset</td>
 </tr>
 <tr>
@@ -2146,7 +2176,7 @@
 </tr>
 <tr>
 <td>sdk/HIDMaestro.Core/Resources/</td>
-<td>Staged payloads and the two verified upstream USB/IP installers</td>
+<td>Staged payloads, the two verified upstream USB/IP installers, and the host controller files unpacked from them</td>
 </tr>
 <tr>
 <td>sdk/HIDMaestro.Core/bin/Release/net10.0-windows10.0.26100.0/</td>
@@ -2170,7 +2200,7 @@
 <h2 id="validation-and-release-order">Validation and release order<a class="headerlink" href="#validation-and-release-order" title="Permanent link">&para;</a></h2>
 <p>Finish and commit the intended changes, create the local release tag, and then build. The assembly's informational version includes its commit identifier. Package the outputs that were tested.</p>
 <p>Stage the release test machine and the Celeron fixture before starting their full batteries together. Stream each scenario result. Record each machine's actual result and any unavailable fixture.</p>
-<p>The battery has 99 scenarios, S01 to S85 and S87 to S100. S44 checks the bundled USB/IP transport: that it is present, that its hash still matches the pinned SHA-256, and that the deploy path refuses tampered bytes. S58 and S59 cover device identity, derivation without a device and then one controller per family across nine lives. S60 covers the battery reply a pad gives XInput. S61 builds the driver catalogs for both architectures with the embedded Inf2Cat. S62 runs Steam's own firmware updater against the 2026 Steam Controller persona, and skips on a machine without Steam. S63 checks the DualShock 4 reports against SDL and Linux, and S64 the DualShock 3 persona against SDL, Linux, RPCS3 and DsHidMini. Both run stock SDL3 and skip that part without it. S65 checks the Switch 2 Pro composite persona against a capture of a real pad, then through PadForge's SDL3 fork with libusb and through the Steam client. It skips those parts without a build of that fork beside the repository or without Steam. S66 checks that a registry key a virtual shares with real devices goes back to its prior state, S67 what WGI reads from a virtual pad, and S68 that <code>HMVR.FindDriverNameConflicts</code> reports a foreign OpenVR driver under HIDMaestro's name. S69 checks the keyboard and mouse descriptors and packers with no device, and S70 every catalog keyboard and mouse through Raw Input, including a consumer killed with input held and the cleanup after it. S71 and S72 run programs side by side as separate processes and check the protected staging. S73 runs the usbip-win2 install in Windows Sandbox, S74 and S75 the NativeAOT and trimmed single-file apps, S76 the JSON parity, S77 the PnP notifications and S78 what a build carries. S79 to S83 cover the GameCube adapter persona: its bytes, its protocol, its WinUSB binding, Dolphin and Slippi, and SDL. S84 fails when a submit path allocates: the worst of its runs for the UMDF2 paths, the median of five runs for a USB/IP device's frame and transfer paths. S85 checks that an event handler that throws stops no other handler and none of the SDK's own handling, and that a handler can dispose its own controller. S87 checks that no <code>DllImport</code> is left and that every method the SDK's messages and XML docs name exists. See <a href="../testing-and-verification/">Testing and Verification</a>.</p>
+<p>The battery has 100 scenarios, S01 to S85 and S87 to S101. S44 checks the bundled USB/IP transport: that it is present, that its hash still matches the pinned SHA-256, and that the deploy path refuses tampered bytes. S58 and S59 cover device identity, derivation without a device and then one controller per family across nine lives. S60 covers the battery reply a pad gives XInput. S61 builds the driver catalogs for both architectures with the embedded Inf2Cat. S62 runs Steam's own firmware updater against the 2026 Steam Controller persona, and skips on a machine without Steam. S63 checks the DualShock 4 reports against SDL and Linux, and S64 the DualShock 3 persona against SDL, Linux, RPCS3 and DsHidMini. Both run stock SDL3 and skip that part without it. S65 checks the Switch 2 Pro composite persona against a capture of a real pad, then through PadForge's SDL3 fork with libusb and through the Steam client. It skips those parts without a build of that fork beside the repository or without Steam. S66 checks that a registry key a virtual shares with real devices goes back to its prior state, S67 what WGI reads from a virtual pad, and S68 that <code>HMVR.FindDriverNameConflicts</code> reports a foreign OpenVR driver under HIDMaestro's name. S69 checks the keyboard and mouse descriptors and packers with no device, and S70 every catalog keyboard and mouse through Raw Input, including a consumer killed with input held and the cleanup after it. S71 and S72 run programs side by side as separate processes and check the protected staging. S73 runs usbip-win2's host controller install, its use with no root-hub filter and its removal in Windows Sandbox, S74 and S75 the NativeAOT and trimmed single-file apps, S76 the JSON parity, S77 the PnP notifications and S78 what a build carries. S79 to S83 cover the GameCube adapter persona: its bytes, its protocol, its WinUSB binding, Dolphin and Slippi, and SDL. S84 fails when a submit path allocates: the worst of its runs for the UMDF2 paths, the median of five runs for a USB/IP device's frame and transfer paths. S85 checks that an event handler that throws stops no other handler and none of the SDK's own handling, and that a handler can dispose its own controller. S87 checks that no <code>DllImport</code> is left and that every method the SDK's messages and XML docs name exists. S101 checks the removal: the previews of <code>HIDMaestroUninstall.exe</code> and <code>HMUninstall</code> change nothing, and a full removal runs in Windows Sandbox. See <a href="../testing-and-verification/">Testing and Verification</a>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c"># Run elevated after staging the matching outputs.</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">test</span><span class="p">\</span><span class="n">regression</span><span class="p">\</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
@@ -2179,13 +2209,13 @@
 </code></pre></div>
 <p>Steam recognition tests must not submit input that a desktop layout could turn into keyboard or mouse actions.</p>
 <h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
-<p>Each release has two ZIPs, one for x64 and one for ARM64. Each holds the SDK, the test application, ProfileExtractor, HIDMaestroProfileCheck (v2.0.0), README, and LICENSE. The SDK DLL is an AnyCPU assembly and is byte-identical in both. The test application and ProfileExtractor are built for the ZIP's architecture.</p>
+<p>Each release has two ZIPs, one for x64 and one for ARM64. Each holds the SDK, the test application, ProfileExtractor, HIDMaestroProfileCheck (v2.0.0), HIDMaestroUninstall (v2.0.1), README, and LICENSE. The SDK DLL is an AnyCPU assembly and is byte-identical in both. The test application and ProfileExtractor are built for the ZIP's architecture. HIDMaestroUninstall is a NativeAOT build for the ZIP's architecture and needs no .NET runtime (<a href="../../start/removing-hidmaestro/">Removing HIDMaestro</a>).</p>
 <p>Preserve probe directory hierarchies when staging a fixture. Verify the SDK hash at each consumer location. Include ProfileExtractor in every release ZIP.</p>
 <p>A failed or unavailable test must not be described as passed. Update the website, documentation, and release notes with the actual supported configurations and results.</p>
 <h2 id="usbip-package-preparation">USB/IP package preparation<a class="headerlink" href="#usbip-package-preparation" title="Permanent link">&para;</a></h2>
-<p>The build downloads the pinned usbip-win2 0.9.8.1 installers, the x64 one from the release and the ARM64 one from the project's signing service, and checks each against its pinned SHA-256. A mismatch fails the build. Both are embedded unmodified, and the license notice embedded beside them names both files and both hashes.</p>
-<p>The build also unpacks the host controller's INF, SYS and CAT from those installers with a pinned unpacker, checks each file against UsbipPackage.json, and embeds them per architecture. That is what lets the SDK move a machine from an older transport to 0.9.8.1 through PnP.</p>
-<p>At run time the SDK verifies the extracted installer again and runs it with <code>/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /COMPONENTS=main,client /TASKS=vcredist /NOICONS</code> (v2.0.0), and only on a machine with no usbip-win2 driver package and no installer record. See <a href="../driver-install-and-signing/#usbip-transport">Driver Install and Signing</a> for what each switch does. It never invokes the vendor uninstaller, which removes the shared root-hub filter, and it never runs an installer over an existing install.</p>
+<p>The build downloads the pinned usbip-win2 0.9.8.1 installers, the x64 one from the release and the ARM64 one from the project's signing service, and checks each against its pinned SHA-256. A mismatch fails the build.</p>
+<p>The build unpacks the host controller's INF, SYS and CAT from those installers with a pinned unpacker, checks each file against UsbipPackage.json, and embeds them per architecture, unmodified. As of v2.0.1 the installers are not embedded, which brought <code>HIDMaestro.Core.dll</code> from 63.1 MB to 18.1 MB. The license notice embedded beside the files names both installers, their hashes and the hash of every file unpacked from them.</p>
+<p>At run time the SDK checks the staged files again and installs the host controller from them through Windows' driver update, only where no host controller is present. The same files move a machine from an older transport to 0.9.8.1. It never runs usbip-win2's installer or its uninstaller, which removes the shared root-hub filter. See <a href="../driver-install-and-signing/#usbip-transport">Driver Install and Signing</a>.</p>
 
 
 

@@ -1,17 +1,17 @@
 HIDMaestro
-Product information | October 20, 2026
+Product information | October 21, 2026
 
 HIDMaestro is a free, open-source SDK for creating virtual game controllers, keyboards and mice on Windows. Applications use its C# API and JSON device profiles to define device identity, submit input, and receive output such as rumble and force feedback. PadForge uses HIDMaestro for virtual controller output. HIDMaestro is available under the MIT license, including for commercial use.
 
 Website: https://hidmaestro.org/
 Press resources: https://hidmaestro.org/press/
-Current release: v2.0.0, October 20, 2026
-Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.0
+Current release: v2.0.1, October 21, 2026
+Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.1
 Platforms: Windows 10 and 11 on x64. Windows 11 on ARM64.
 SDK: C# / .NET 10. The driver and device profiles are embedded in HIDMaestro.Core.dll.
 Price: Free.
 License: MIT. Commercial use is permitted subject to the license terms.
-License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.0/LICENSE
+License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.1/LICENSE
 
 Architecture
 Applications submit input through the C# SDK. JSON profiles describe device
@@ -21,13 +21,17 @@ Output events return to the application, which handles physical-device routing.
 Input API support depends on the selected profile.
 Version 2.0.0 moves device behavior out of code and into the profiles.
 Programs built on HIDMaestro 1.x must move to 2.0.0.
+Version 2.0.1 removes HIDMaestro from a computer, with HIDMaestroUninstall.exe
+from the release ZIP or one call from a program, and installs usbip-win2's
+host controller without usbip-win2's installer or its root-hub filter.
 
 Setup and validation
 Device creation and driver installation require administrator rights.
-The 99-scenario regression battery passed on the development laptop, a
-16-core Lenovo Legion Pro 7 on Windows 11. On a 4-core Celeron J4125
-Windows 10 mini PC, 95 scenarios passed and 4 skipped, leaving out the
-checks that need a Steam client, a desktop session or Windows Sandbox.
+PENDING-GATE: v2.0.1 result of the 100-scenario battery on both machines.
+For v2.0.0, the 99-scenario regression battery passed on the development
+laptop, a 16-core Lenovo Legion Pro 7 on Windows 11. On a 4-core Celeron
+J4125 Windows 10 mini PC, 95 scenarios passed and 4 skipped, leaving out
+the checks that need a Steam client, a desktop session or Windows Sandbox.
 ARM64 binaries were built and signed, but the regression battery has not
 been run on ARM64 hardware.
 Installation: https://hidmaestro.org/docs/start/installation/
@@ -53,4 +57,4 @@ https://github.com/nefarius/DsHidMini
 The DualShock 3 profile's report descriptor is DsHidMini's, under its BSD 3-Clause license.
 Composite USB profiles use usbip-win2 by Vadym Hrynchyshyn:
 https://github.com/vadimgrn/usbip-win2
-Third-party notices: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.0/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt
+Third-party notices: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.1/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt

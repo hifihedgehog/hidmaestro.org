@@ -11,6 +11,9 @@ Everything between an empty project and a live virtual controller.
   self-bootstrapping: no EV certificate, no test-signing mode, no manual
   signing. Windows 10/11 x64 and Windows 11 ARM64, .NET 10, admin required for
   `CreateController`.
+- **[Removing HIDMaestro](removing-hidmaestro.md)**: `HIDMaestroUninstall.exe`
+  and `HMUninstall` (v2.0.1). What a removal takes, what it puts back, what
+  stays and why, the exit codes and the JSON report.
 - **[Quickstart](quickstart.md)**: the `example/SdkDemo` walkthrough. Load
   the embedded profile catalog, install the driver, create a DualSense and
   an Xbox 360 Wired side by side, push input, capture rumble.

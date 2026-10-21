@@ -123,7 +123,8 @@ For symbols below, search [learn.microsoft.com](https://learn.microsoft.com/) by
 
 - **libusb**: [github.com/libusb/libusb](https://github.com/libusb/libusb). `libusb/os/windows_winusb.c` reads a device's `DeviceInterfaceGUIDs` or `DeviceInterfaceGUID` to reach an interface on WinUSB.
 
-- **usbip-win2 installer (v2.0.0)**: [github.com/vadimgrn/usbip-win2](https://github.com/vadimgrn/usbip-win2) at tag `v.0.9.8.1`, `userspace/innosetup/setup.iss`. The `main` and `client` components carry `Flags: fixed`, the `vcredist` task installs the runtime `devnode.exe` needs, `AlwaysRestart=yes` makes `/NORESTART` required, and `PrepareToInstall` and `GetInstalledUninstallString` run the uninstaller of any copy whose record sits under `{199505b0-b93d-4521-a8c7-897818e0205a}_is1`. The Inno Setup 7.1 help documents `/COMPONENTS`, `/TASKS`, `/NOICONS` and `/NORESTART`. Back the install arguments in [Driver Install and Signing](driver-install-and-signing.md).
+- **usbip-win2 host controller install (v2.0.1)**: [github.com/vadimgrn/usbip-win2](https://github.com/vadimgrn/usbip-win2) at tag `v.0.9.8.1`. `userspace/devnode/main.cpp` lines 232-295 are the two calls `devnode.exe install` makes, which the SDK makes itself. `userspace/innosetup/setup.iss` line 176 adds the root-hub filter with pnputil, and `drivers/ude_filter/usbip2_filter.inf` lines 32-43 make it an extension INF on `USB\ROOT_HUB30`, which is why its install restarts every USB 3 root hub. `drivers/ude/device.cpp` lines 405-411 and `drivers/ude/filter_request.cpp` are why SET_CONFIGURATION and SET_INTERFACE need the filter. Back the install in [Driver Install and Signing](driver-install-and-signing.md#usbip-transport).
+- **Programs that run usbip-win2's installer (v2.0.1)**: Handheld Companion's `HandheldCompanion.iss` lines 568-577 and `utils/Utils.iss` lines 75-113, and VIIPER's `scripts/install.ps1` lines 120-132. Back what happens when they find HIDMaestro's install.
 
 - **Wii U GameCube adapter hosts (v2.0.0)**: Dolphin (`Source/Core/InputCommon/GCAdapter.cpp`), Slippi's Dolphin fork (the same file, and `LibusbUtils.cpp`), SDL (`src/joystick/hidapi/SDL_hidapi_gamecube.c`, and `src/hidapi/SDL_hidapi.c`, which opens 057E:0337 only through libusb), eden (`src/input_common/drivers/gc_adapter.cpp`), RMG (`Source/RMG-Input-GCA/main.cpp`), gcfeeder and Nintendont (`kernel/HID.c`, `PADReadGC.c`). They back the command protocol, the report `0x21` layout and the status bits in [Wii U GameCube Adapter](../sdk/gamecube-adapter.md). [github.com/dolphin-emu/dolphin](https://github.com/dolphin-emu/dolphin), [github.com/libsdl-org/SDL](https://github.com/libsdl-org/SDL).
 
@@ -176,6 +177,7 @@ These archive Ghidra decomp output, ProcMon traces, registry dumps, and empirica
 - [`docs/design/data-driven-devices.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/design/data-driven-devices.md): the design note for devices as profile data, behind the [report field parameters](../profiles/profile-system.md#report-field-parameters-v200) and the [values on the wire](../profiles/profile-system.md#values-on-the-wire-v200).
 
 - [`docs/MIGRATION.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/MIGRATION.md): the repository's copy of [Moving from 1.x](../start/migration.md).
+- [`docs/UNINSTALL.md`](https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/UNINSTALL.md): the repository's source for [Removing HIDMaestro](../start/removing-hidmaestro.md).
 
 - [`docs/investigations/wgi-silent-sink-2026-04/`](https://github.com/hifihedgehog/HIDMaestro/tree/master/docs/investigations/wgi-silent-sink-2026-04): the WGI dispatch / `IsDeviceOrAncestorFilteredBy` / classifier pass-list / `IOCTL_XUSB_WAIT_FOR_INPUT` 29-byte format reverse engineering. Backs all of [XUSB Companion](xusb-companion.md) and [Cross-API Coverage](cross-api-coverage.md)'s WGI sections.
 
@@ -185,7 +187,7 @@ These archive Ghidra decomp output, ProcMon traces, registry dumps, and empirica
 
 - [HIDMaestro issue #19](https://github.com/hifihedgehog/HIDMaestro/issues/19): the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in [XUSB Companion](xusb-companion.md).
 
-- [`test/regression/regression_battery.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1): the 99-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
+- [`test/regression/regression_battery.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1): the 100-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
 
 ---
 

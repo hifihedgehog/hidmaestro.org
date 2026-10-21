@@ -440,6 +440,8 @@
       
         
       
+        
+      
     
     
     
@@ -512,6 +514,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../removing-hidmaestro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Removing HIDMaestro
   
 
     
@@ -2096,7 +2126,7 @@
 <li><code>InstallDriver</code> no longer removes devices of running programs before deploying and never downgrades the driver. It installs the 2.0.0 driver over any older one and returns <code>Upgraded</code>: a full deploy when nothing runs on the old driver, and this build's packages added beside the old ones when another program's devices or create hold it, which updates no present device. <code>HMDriverInstallOutcome</code> has no <code>KeptInUse</code>, and nothing is refused for a holder. <code>HMContext.LastDriverInstall</code> says what it did. It can throw <code>HMPayloadMissingException</code>, <code>InvalidOperationException</code> after waiting ten minutes for another program's deploy, and <code>InvalidOperationException</code> after waiting two minutes for another program's staging prune.</li>
 <li>A UMDF2 <code>CreateController</code> checks the installed driver set under the deploy lock and runs the install policy when either INF is missing or older than this build's, so a program whose packages another program uninstalled or replaced with older ones gets its own back at its next create, and a create can wait for another program's deploy. A create whose started driver does not serve protocol 4, or could not read a value the create wrote, removes its device and throws <code>HMDriverVersionException</code>, whose <code>Problem</code> says which (<code>ProtocolNotServed</code>, <code>ValueNotRead</code>). A start the driver fails fails the create within one poll and names the device and its problem code. While Windows has a device installation pending, a failed start waits for it, since a device Windows flagged for reinstall fails its start until the queued install restarts it, and a wait that runs out fails the create on any problem the device shows. A USB/IP composite create takes the transport lock for the usbip-win2 install instead.</li>
 <li>A plain HID or non-xinputhid create installs the driver on its own devnode only, so a newer SDK no longer moves another program's controller of the same profile onto its package.</li>
-<li><code>InstallUsbipBackend</code> and a process's first composite create throw <code>InvalidOperationException</code> after waiting ten minutes for the transport lock, when a usbip-win2 installer still runs after five minutes, and when usbip-win2's uninstall entry exists without its driver package.</li>
+<li><code>InstallUsbipBackend</code> and a process's first composite create throw <code>InvalidOperationException</code> after waiting ten minutes for the transport lock, when a usbip-win2 installer still runs after five minutes, and when usbip-win2's uninstall entry exists without its driver package. Since 2.0.1 that last case no longer throws: the SDK installs the host controller from its own package and never runs that entry's uninstaller.</li>
 <li>Staging moved from <code>%TEMP%</code> to <code>%ProgramFiles%\HIDMaestro\Staging</code>. <code>InstallDriver</code>, a UMDF2 create whose device needs the SWD helper, <code>InstallUsbipBackend</code>, a first composite create, <code>BindWinUsb</code> and the public <code>DriverBuilder</code> steps throw <code>InvalidOperationException</code> when <code>%ProgramFiles%\HIDMaestro</code> belongs to another program, when a staging directory that cannot be moved aside is hostile, when another program creates one while HIDMaestro creates it, when a staged file does not match its SHA-256 or changed between its repair and its use, and, in an elevated process, when the protected TEMP for pnputil or devcon cannot be made.</li>
 <li><code>HMContext.IsDriverInstalled</code> answers false when the driver store cannot be read, logs why, and throws only <code>ObjectDisposedException</code>. <code>DriverBuilder.IsDriverInstalled()</code> throws <code>InvalidOperationException</code> when the pnputil listing fails, where it returned false.</li>
 <li><code>%TEMP%\HIDMaestro\hmswd_&lt;enumerator&gt;_&lt;suffix&gt;.log</code> is no longer written, and hmswd.exe writes no <code>hmswd_self.log</code>. hmswd's exit code and output go into <code>teardown_diag.log</code> under <code>HIDMAESTRO_DIAG=1</code>, and the diagnostic logs are written as the user.</li>

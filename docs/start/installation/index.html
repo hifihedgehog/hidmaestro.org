@@ -16,7 +16,7 @@
         <link rel="prev" href="../">
       
       
-        <link rel="next" href="../platform-support/">
+        <link rel="next" href="../removing-hidmaestro/">
       
       
         
@@ -440,6 +440,8 @@
       
         
       
+        
+      
     
     
     
@@ -633,6 +635,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../removing-hidmaestro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Removing HIDMaestro
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1957,7 +1987,7 @@
 
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
 <p>Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.</p>
-<p>v2.0.0 ships for x64 and ARM64. See <a href="../platform-support/#validation">platform support</a> for what was measured on each.</p>
+<p>v2.0.1 ships for x64 and ARM64. See <a href="../platform-support/#validation">platform support</a> for what was measured on each.</p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2021,8 +2051,8 @@
 </code></pre></div>
 <p>See <a href="../../reference/build-and-release/">Build and release</a> for output directories and validation.</p>
 <h2 id="composite-profiles-and-upgrades">Composite profiles and upgrades<a class="headerlink" href="#composite-profiles-and-upgrades" title="Permanent link">&para;</a></h2>
-<p>Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.8.1, the first time one is created on a machine that has none. No separate download is required on the consumer's machine. The build checks the pinned hashes, and the SDK checks the installer again before running it. As of v2.0.0 the installer runs with the smallest set it allows (<code>/COMPONENTS=main,client /TASKS=vcredist /NOICONS</code>), so no GUI, SDK headers, debug symbols, desktop icon or Start menu folder are added, and a machine that holds the installer's uninstall record and its uninstaller file, without its driver package, gets a refusal, not the installer.</p>
-<p>A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. <code>HIDMAESTRO_KEEP_TRANSPORT=1</code> turns the move off. There is nothing for a user to do. USB devices blink once during a first-time install on a machine with no transport, while Windows re-enumerates the root hubs.</p>
+<p>Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.8.1's host controller, the first time one is created on a machine that has none. No separate download is required on the consumer's machine. The build checks the pinned hashes, and the SDK checks the driver files again before Windows installs them. As of v2.0.1 the SDK installs the host controller alone, from the signed driver package it carries, and never runs usbip-win2's installer or installs its root-hub filter. No USB root hub restarts, no USB device drops, and no Apps entry, program folder, scheduled task or shortcut is added. The install is recorded under <code>HKLM\SOFTWARE\HIDMaestroUsbip</code>, so a <a href="../removing-hidmaestro/#usbip-win2">removal</a> can tell it from another program's.</p>
+<p>A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. <code>HIDMAESTRO_KEEP_TRANSPORT=1</code> turns the move off. There is nothing for a user to do.</p>
 <p>See <a href="../platform-support/">platform support</a> for the architecture matrix and measured results. ARM64 hardware has not run the battery.</p>
 
 
@@ -2078,13 +2108,13 @@
         
         
           
-          <a href="../platform-support/" class="md-footer__link md-footer__link--next" aria-label="Next: Platform support">
+          <a href="../removing-hidmaestro/" class="md-footer__link md-footer__link--next" aria-label="Next: Removing HIDMaestro">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Platform support
+                Removing HIDMaestro
               </div>
             </div>
             <div class="md-footer__button md-icon">

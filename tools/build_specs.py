@@ -35,7 +35,7 @@ CATS = [
    "Virtual VR controllers"]),
  ("sdk", "The SDK", [
    "One DLL", "NativeAOT and single-file apps", "Self-bootstrapping install",
-   "A UI instead of code"]),
+   "Removing HIDMaestro", "A UI instead of code"]),
  ("validation", "Validation", [
    "Regression coverage", "Judged by the real consumers"]),
  ("platform", "Platform and licensing", [

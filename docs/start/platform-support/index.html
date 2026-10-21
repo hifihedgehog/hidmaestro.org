@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://hidmaestro.org/docs/start/platform-support/">
       
       
-        <link rel="prev" href="../installation/">
+        <link rel="prev" href="../removing-hidmaestro/">
       
       
         <link rel="next" href="../quickstart/">
@@ -440,6 +440,8 @@
       
         
       
+        
+      
     
     
     
@@ -512,6 +514,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../removing-hidmaestro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Removing HIDMaestro
   
 
     
@@ -1977,9 +2007,10 @@
 <p>Battery scenario S61 extracts each architecture's payload with the embedded Inf2Cat, runs Inf2Cat with the value the SDK picks for that architecture, and requires one catalog per INF. Inf2Cat only parses the INFs and hashes the files, so the check runs on x64 for both architectures.</p>
 <h2 id="usbip-0981">USB/IP 0.9.8.1<a class="headerlink" href="#usbip-0981" title="Permanent link">&para;</a></h2>
 <p>Composite personas use the bundled usbip-win2 0.9.8.1. It is the first release with the fix for the attach work item that blocked driver unload in 0.9.8.0 (<a href="https://github.com/vadimgrn/usbip-win2/pull/188">usbip-win2#188</a>). The <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.8.1">release page</a> carries the x64 installer only. The ARM64 installer is the same tag's build that the project's signing service posted in <a href="https://github.com/vadimgrn/usbip-win2/issues/13">usbip-win2#13</a>. Both installers ship the 0.9.8.1 tag's own headers, and neither carries the development branch's later changes.</p>
-<p>Both installers are inside the SDK DLL. The build checks each against its pinned SHA-256, and the SDK checks the extracted copy again before running it. Both drivers are signed by Microsoft: the x64 one after hardware certification testing, the ARM64 one by attestation.</p>
+<p>As of v2.0.1 the SDK DLL holds the host controller's driver package for each architecture, <code>usbip2_ude.inf</code>, <code>.sys</code> and <code>.cat</code>, unpacked at build time from those installers, and no longer the installers themselves. That brought <code>HIDMaestro.Core.dll</code> from 63.1 MB to 18.1 MB. The build checks each installer against its pinned SHA-256 and each unpacked file against its own, and the SDK checks the staged files again before Windows installs them. Both drivers are signed by Microsoft: the x64 one after hardware certification testing, the ARM64 one by attestation.</p>
 <p>The driver's request layout changed in 0.9.8.0 and again in 0.9.8.1. The SDK speaks 0.9.7.x, 0.9.8.0 and 0.9.8.1 and asks the driver which one it has.</p>
-<p>Where no usbip-win2 exists, the SDK runs the bundled installer silently, with no window and no prompt. As of v2.0.0 it passes <code>/COMPONENTS=main,client /TASKS=vcredist /NOICONS</code>, so the installer leaves out the GUI, the SDK headers, the debug symbols, the desktop icon and the Start menu folder. A machine that holds the installer's uninstall record and its uninstaller file, without its driver package, gets a refusal, because the installer would run that record's uninstaller first. See <a href="../../reference/driver-install-and-signing/#usbip-transport">Driver Install and Signing</a>. Windows re-enumerates the USB root hubs once during that install, so USB devices blink for a moment. If usbip-win2 is installed and its host controller is not answering, the SDK restarts that device and does not reinstall.</p>
+<p>Where no host controller exists, the SDK installs one silently, with no window and no prompt. As of v2.0.1 it registers the <code>ROOT\USB</code> devnode usbip-win2's own <code>devnode.exe</code> would and installs the driver on it through Windows' driver update. It never runs usbip-win2's installer and never installs its root-hub filter, so no USB root hub restarts and no USB device drops, and it adds no Apps entry, program folder, scheduled task, shortcut or VC++ runtime. Without the filter the host controller passes no SET_CONFIGURATION or SET_INTERFACE to the device, and a composite persona reads its audio streams' state from their traffic, as it has beside an older filter since v1.10.0. The install is recorded under <code>HKLM\SOFTWARE\HIDMaestroUsbip</code>, so a <a href="../removing-hidmaestro/#usbip-win2">removal</a> takes HIDMaestro's install and leaves another program's. See <a href="../../reference/driver-install-and-signing/#usbip-transport">Driver Install and Signing</a>. Through v2.0.0 the SDK ran usbip-win2's installer, which adds the filter and restarts every USB root hub. If a host controller is present and not answering, the SDK restarts that device and never adds a second one.</p>
+<p>Handheld Companion's and VIIPER's installers look for usbip-win2's Apps entry, find none after HIDMaestro's install, and run usbip-win2's installer. That adds the root-hub filter, so every USB device drops once, and a second host controller. HIDMaestro works with two host controllers.</p>
 <p>A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. <code>HIDMAESTRO_KEEP_TRANSPORT=1</code> turns the move off.</p>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
 <p>The v2.0.0 release gate ran on x64: the full 99-scenario battery passed all 99 scenarios on the release binaries on the development laptop, a Lenovo Legion Pro 7 16AFR10H with a 16-core AMD Ryzen 9 9955HX3D, 64 GB of DDR5-5600 and an NVIDIA GeForce RTX 5080 Laptop GPU on Windows 11 build 26200, in 29 minutes. On a 4-core Intel Celeron J4125 mini PC with Windows 10 IoT Enterprise LTSC 19044, at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code> over SSH, 95 passed in 39 minutes and 4 skipped their probes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the <code>wsb</code> command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65.</p>
@@ -2025,7 +2056,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../installation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Installation">
+          <a href="../removing-hidmaestro/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Removing HIDMaestro">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2035,7 +2066,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Installation
+                Removing HIDMaestro
               </div>
             </div>
           </a>

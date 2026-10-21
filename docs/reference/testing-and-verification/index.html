@@ -438,6 +438,8 @@
       
         
       
+        
+      
     
     
     
@@ -507,6 +509,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/removing-hidmaestro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Removing HIDMaestro
   
 
     
@@ -2300,7 +2330,7 @@
 
 
 <h1 id="testing-and-verification">Testing and Verification<a class="headerlink" href="#testing-and-verification" title="Permanent link">&para;</a></h1>
-<p>The regression battery has 99 scenarios, S01 to S85 and S87 to S100, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms and the catalog's capture fidelity. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
+<p>The regression battery has 100 scenarios, S01 to S85 and S87 to S101, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms, the catalog's capture fidelity and removing HIDMaestro from a computer. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
 <p>For the wiki coverage of where these pipelines fit, see <a href="../build-and-release/">Build and Release</a>. For the underlying SDK mechanics they exercise, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 <hr />
 <h2 id="scriptsverifypy-cross-api-correctness"><code>scripts/verify.py</code>: cross-API correctness<a class="headerlink" href="#scriptsverifypy-cross-api-correctness" title="Permanent link">&para;</a></h2>
@@ -2402,7 +2432,7 @@
 <p><code>--filter</code> runs only the named API check. Useful for iterating on a specific subsystem without waiting for the full pipeline.</p>
 <hr />
 <h2 id="testregressionregression_batteryps1-lifecycle-battery"><code>test/regression/regression_battery.ps1</code>: lifecycle battery<a class="headerlink" href="#testregressionregression_batteryps1-lifecycle-battery" title="Permanent link">&para;</a></h2>
-<p>The 99-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, and the GameCube adapter persona through Dolphin, Slippi and SDL. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
+<p>The 100-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, and a full removal of HIDMaestro inside Windows Sandbox. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># from an ELEVATED PowerShell, repo root or anywhere</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2638,8 +2668,8 @@
 </tr>
 <tr>
 <td><strong>S73_Usbip_Clean_Install</strong></td>
-<td>The usbip-win2 install on a clean machine, in Windows Sandbox started without a window</td>
-<td>A composite create runs the bundled installer and leaves no Start menu folder, desktop shortcut, GUI, SDK or debug file, while the composite enumerates and carries input, read back from the device against a neutral control. A machine holding the installer's uninstall entry and its uninstaller file, without its driver package, gets a refusal. Two programs whose first composites arrive together install once. Without Windows Sandbox the probe exits 2 and the battery prints <code>[SKIP]</code> and counts the scenario as passed, so a machine without Sandbox has not run S73 whatever the tally says.</td>
+<td>usbip-win2's host controller installed, used and removed with no vendor installer and no root-hub filter, in Windows Sandbox started without a window</td>
+<td>A composite create installs the host controller from the package the SDK carries: one <code>ROOT\USBIP_WIN2\UDE</code> devnode with HIDMaestro's stamp, the package in the driver store, and an install record naming the devnode, its owner token and the package's DriverVer. No usbip2_filter package or service, Apps entry, program folder, task, shortcut or KMDF debug value is left. A planted usbip-win2 uninstall entry is left as it was and its uninstaller never runs. Two programs whose first composites arrive together install once. S45's and S65's probes then run over that install with no filter on the root hub. A second sandbox runs the usbip-win2 part of a removal: a preview that changes nothing, a removal the record proves, installs no record proves, kept or taken with usbip-win2 included, another release's package forced onto HIDMaestro's devnode never recorded, and a host controller used since Windows started kept until a restart. Without Windows Sandbox the probe exits 2 and the battery prints <code>[SKIP]</code> and counts the scenario as passed, so a machine without Sandbox has not run S73 whatever the tally says.</td>
 </tr>
 <tr>
 <td><strong>S74_NativeAot_Smoke</strong></td>
@@ -2756,6 +2786,11 @@
 <td>A second device on the Switch Pro's mechanisms, no device</td>
 <td><code>joycon-l-proof</code>, a Joy-Con (L) built from <code>switch-pro</code>'s protocol, state block and report programs, loads, answers SDL's Joy-Con open with nxbt's device info, and its 0x3F stick hat follows dekuNukem's grid in all eight directions and reads centered inside its dead zone.</td>
 </tr>
+<tr>
+<td><strong>S101_Uninstall</strong></td>
+<td>Removing HIDMaestro: <code>HIDMaestroUninstall.exe</code> and <code>HMUninstall</code> (v2.0.1)</td>
+<td>On every machine, the tool's <code>--preview --json</code> and <code>HMUninstall.Preview</code> change nothing against a snapshot of devices, packages, the certificate, registry keys and files. Inside Windows Sandbox, with a program running that holds four controllers (a composite among them), an OEM name override and the OpenVR registration, the tool exits 2, names it and changes nothing. Once that program is killed, the removal leaves no device record, package, certificate, private key, registry key or folder, puts the OEM targets back, takes the OpenVR registration, restarts no USB root hub, and does not follow planted junctions. A program that starts during the removal waits for it to end, then installs again and keeps its controller. A file held open under <code>%ProgramFiles%\HIDMaestro</code> waits for the next start, and one under <code>%ProgramData%\HIDMaestro</code> stays, reported failed. Without Windows Sandbox and with <code>HIDMAESTRO_UNINSTALL_FIXTURE=1</code>, it removes HIDMaestro from that machine, checks it reads clean and installs the driver again.</td>
+</tr>
 </tbody>
 </table>
 <p>Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1"><code>test/regression/regression_battery.ps1</code></a> is the authoritative full list.</p>
@@ -2831,7 +2866,7 @@
 <ol>
 <li>Build: <code>build_all.cmd</code> with <code>HMSkipArm64</code>, <code>HMSkipUsbip</code> and <code>HM_STAMP_TIME</code> cleared, then <code>scripts\check_build_layouts.ps1</code> (v2.0.0), then the test app, the profile extractor and the probe set. <code>check_build_layouts.ps1</code> builds the native payloads from the pinned NuGet WDK packages, under the variables an EWDK prompt sets (x64 only) and with roots that hold no kit, runs SDK-project builds of each layout, and checks the <code>HM_STAMP_TIME</code> stamping.</li>
 <li>The Switch Pro protocol check, the Switch descriptor idle check and the Switch Pro SDL3 acceptance.</li>
-<li><code>regression_battery.ps1</code>: full 99-scenario battery. <strong>99/99 PASS required.</strong></li>
+<li><code>regression_battery.ps1</code>: full 100-scenario battery. <strong>100/100 PASS required.</strong></li>
 <li>The script prints the result.</li>
 </ol>
 <p>The script does not run <code>verify.py</code>, <code>HIDMaestroTest cleanup</code> or a profile extractor smoke test.</p>

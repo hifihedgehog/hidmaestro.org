@@ -1,6 +1,6 @@
 {
   "about": "Public projects that use, ship or build on HIDMaestro, each checked against its own source, README or site. Projects with home true appear on the product page in this order. tools/build_adopters.py writes that list into index.html and tools/build_specs.py writes the full list into specs.html.",
-  "rest": "Phone gamepads, sim-racing rigs, CAD input, keyboards and test tools",
+  "rest": "Phone gamepads, controller bridges, CAD input, keyboards and test tools",
   "projects": [
     {"name": "PadForge", "url": "https://padforge.org/", "home": true,
      "d": "The flagship. Every capability this SDK ships, in one app"},
@@ -49,8 +49,6 @@
      "d": "A native Rust client for a HIDMaestro Xbox 360 controller, with no .NET"},
     {"name": "hidmaestro-rs", "url": "https://github.com/auron-labs/hidmaestro-rs",
      "d": "Virtual controllers for Rust tests and MCP assistants, through a .NET bridge to HIDMaestro"},
-    {"name": "libvirtualhid", "url": "https://github.com/LizardByte/libvirtualhid",
-     "d": "Reuses HIDMaestro's force-feedback descriptor byte for byte"},
     {"name": "LivePad", "url": "https://github.com/Cxsmo-ai/LivePad",
      "d": "Turns live-stream chat into a shared Xbox controller"},
     {"name": "MagicKeyboardBridge", "url": "https://github.com/InVincible2016/MagicKeyboardBridge",
@@ -63,10 +61,6 @@
      "d": "A phone gamepad whose Windows HID emulation runs on HIDMaestro"},
     {"name": "PanguBridge", "url": "https://github.com/AbbieDoobie/PanguBridge",
      "d": "Bridges a Beitong Pangu controller to a virtual DualSense Edge or Xbox controller"},
-    {"name": "PC-SOFTWARE", "url": "https://github.com/thisisharshavardhan/PC-SOFTWARE",
-     "d": "A phone-as-gamepad relay with a HIDMaestro virtual gamepad"},
-    {"name": "ShifterTracker", "url": "https://github.com/realTimexo/ShifterTracker",
-     "d": "A webcam tracker for 3D-printed H-pattern shifters, with an optional HIDMaestro gamepad"},
     {"name": "Sunburst", "url": "https://github.com/trexx/rust-sunburst",
      "d": "A Rust streaming project whose gamepad layer ports HIDMaestro's SDK and reuses its profiles"},
     {"name": "SwitchProXInput", "url": "https://github.com/brin666/SwitchProXInput",
@@ -74,8 +68,6 @@
     {"name": "TrackPad CAD", "url": "https://github.com/RunTheBot/TrackPad-CAD",
      "d": "Touchpad gestures as SpaceMouse input, through a HIDMaestro SpaceMouse Pro"},
     {"name": "virtual-gamepad", "url": "https://github.com/Kaushik-Sahu/virtual-gamepad",
-     "d": "A phone-to-PC Xbox 360 controller over WebRTC, driven through HIDMaestro"},
-    {"name": "WheelDeck", "url": "https://github.com/fazrigading/WheelDeck",
-     "d": "A phone as a steering wheel and dashboard, driving a HIDMaestro Xbox controller"}
+     "d": "A phone-to-PC Xbox 360 controller over WebRTC, driven through HIDMaestro"}
   ]
 }

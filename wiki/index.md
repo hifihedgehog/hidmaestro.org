@@ -135,15 +135,8 @@ derived from HIDMaestro, HandHeld Legend's
 [HHL Gamepad WLAN](https://github.com/HandHeldLegend/hhl-gamepad-link) for
 HOJA gamepads, and
 [JoystickGremlinEx](https://github.com/muchimi/JoystickGremlinEx), which drives
-the SDK from Python over pythonnet. The
-[specifications page](https://hidmaestro.org/specs.html#adopters) lists every
-project known to use, ship or build on HIDMaestro.
-
-LizardByte's [libvirtualhid](https://github.com/LizardByte/libvirtualhid), from
-the organization behind Sunshine, reuses this project's force-feedback
-descriptor byte for byte and says so in its own source: "HIDMaestro's
-MIT-licensed `MinimumViablePidFfbBlock`, byte-for-byte." Their alternatives
-table lists HIDMaestro beside ViGEmBus, inputtino and WinUHid.
+the SDK from Python over pythonnet. More are listed on the
+[specifications page](https://hidmaestro.org/specs.html#adopters).
 
 ## What HIDMaestro is not
 

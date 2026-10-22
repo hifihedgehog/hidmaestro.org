@@ -29,7 +29,7 @@
     },
     {
         "q":  "How do I remove HIDMaestro from a computer?",
-        "a":  "As of v2.0.1, run HIDMaestroUninstall.exe from the release ZIP. --preview lists what would go and changes nothing, and --yes removes without asking. A program that embeds HIDMaestro calls HMUninstall.Run() instead, from its own uninstaller or a settings button. A removal refuses while another program that embeds HIDMaestro runs, and other programs install the driver again at their next InstallDriver or create. usbip-win2\u0027s root-hub filter, Windows\u0027 own logs and the GameInputSvc start type stay, and the report says why."
+        "a":  "As of v2.0.1, run HIDMaestroUninstall.exe from the release ZIP. --preview lists what would go and changes nothing, and --yes removes without asking. A program that embeds HIDMaestro calls HMUninstall.Run() instead, from its own uninstaller or a settings button. A removal refuses while another program that embeds HIDMaestro runs, and other programs install the driver again at their next InstallDriver or create. With --include-usbip it also takes what usbip-win2\u0027s own installer left, its root-hub filter included, which restarts every USB 3 root hub. Windows\u0027 own logs and the GameInputSvc start type stay, and the report says why."
     },
     {
         "q":  "Does it work in NativeAOT and single-file apps?",

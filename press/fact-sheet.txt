@@ -5,14 +5,14 @@ HIDMaestro is a free, open-source SDK for creating virtual game controllers, key
 
 Website: https://hidmaestro.org/
 Press resources: https://hidmaestro.org/press/
-Current release: v2.0.2, October 21, 2026
-Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2
+Current release: v2.0.3, October 21, 2026
+Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.3
 Performance, release over release: https://hidmaestro.org/performance.html
 Platforms: Windows 10 and 11 on x64. Windows 11 on ARM64.
 SDK: C# / .NET 10. The driver and device profiles are embedded in HIDMaestro.Core.dll.
 Price: Free.
 License: MIT. Commercial use is permitted subject to the license terms.
-License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.2/LICENSE
+License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.3/LICENSE
 
 Architecture
 Applications submit input through the C# SDK. JSON profiles describe device
@@ -28,13 +28,17 @@ host controller without usbip-win2's installer or its root-hub filter.
 Version 2.0.2 gives the Steam Deck and Steam Controller personas the motion,
 report timing, unit serials, pad pressure and trigger bits that SDL and Steam
 read from the real controllers.
+Version 2.0.3 makes a removal that includes usbip-win2 take usbip-win2's
+root-hub filter too, which an SDK through 2.0.0 installed.
 
 Setup and validation
 Device creation and driver installation require administrator rights.
-The 100-scenario regression battery passed on the development laptop, a
-16-core Lenovo Legion Pro 7 on Windows 11. On a 4-core Celeron J4125
-Windows 10 mini PC, 96 scenarios passed and 4 skipped, leaving out the
+For 2.0.2, the 100-scenario regression battery passed on the development
+laptop, a 16-core Lenovo Legion Pro 7 on Windows 11. On a 4-core Celeron
+J4125 Windows 10 mini PC, 96 scenarios passed and 4 skipped, leaving out the
 checks that need a Steam client, a desktop session or Windows Sandbox.
+2.0.3 changes only the removal's usbip-win2 step, which was checked in
+Windows Sandbox.
 ARM64 binaries were built and signed, but the regression battery has not
 been run on ARM64 hardware.
 Installation: https://hidmaestro.org/docs/start/installation/
@@ -75,4 +79,4 @@ https://github.com/nefarius/DsHidMini
 The DualShock 3 profile's report descriptor is DsHidMini's, under its BSD 3-Clause license.
 Composite USB profiles use usbip-win2 by Vadym Hrynchyshyn:
 https://github.com/vadimgrn/usbip-win2
-Third-party notices: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.2/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt
+Third-party notices: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.3/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt

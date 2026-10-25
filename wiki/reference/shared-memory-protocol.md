@@ -93,14 +93,14 @@ For every other profile, the GIP buffer is left zeroed (no XUSB companion is bou
 
 ```csharp
 // SDK side, in WriteInputFrame
-// Increment SeqNo to odd → readers know "writer is mid-update"
-view->SeqNo += 1;        // odd = mid-write
-MemoryBarrier();
-// ... write DataSize, Data, GipData
-MemoryBarrier();
-view->SeqNo += 1;        // even = stable
-SetEvent(inputEventHandle);   // wake driver worker
+Volatile.Write(ref view->SeqNo, seq + 1);  // odd = mid-write
+Volatile.WriteBarrier();                   // the payload's stores after the odd number
+// ... write DataSize, Data, GipData, ExtendedReportSize and ExtendedReportData
+Volatile.Write(ref view->SeqNo, seq + 2);  // even = stable, a release store after the payload
+SetEvent(inputEventHandle);                // wake the driver's worker
 ```
+
+Until 2.1.0 the SDK wrote the payload between two full memory fences. The write barrier and the release store keep the order a reader needs: the odd number before the payload, and the payload before the even number. On x64 neither is a fence instruction, and on ARM64 they are `dmb ish` and `stlr`.
 
 ### Seqlock read protocol (reader)
 

@@ -1,18 +1,18 @@
 HIDMaestro
-Product information | October 21, 2026
+Product information | October 25, 2026
 
 HIDMaestro is a free, open-source SDK for creating virtual game controllers, keyboards and mice on Windows. Applications use its C# API and JSON device profiles to define device identity, submit input, and receive output such as rumble and force feedback. PadForge uses HIDMaestro for virtual controller output. HIDMaestro is available under the MIT license, including for commercial use.
 
 Website: https://hidmaestro.org/
 Press resources: https://hidmaestro.org/press/
-Current release: v2.0.3, October 21, 2026
-Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.3
+Current release: v2.1.0, October 25, 2026
+Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.1.0
 Performance, release over release: https://hidmaestro.org/performance.html
 Platforms: Windows 10 and 11 on x64. Windows 11 on ARM64.
 SDK: C# / .NET 10. The driver and device profiles are embedded in HIDMaestro.Core.dll.
 Price: Free.
 License: MIT. Commercial use is permitted subject to the license terms.
-License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.3/LICENSE
+License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.1.0/LICENSE
 
 Architecture
 Applications submit input through the C# SDK. JSON profiles describe device
@@ -30,15 +30,15 @@ report timing, unit serials, pad pressure and trigger bits that SDL and Steam
 read from the real controllers.
 Version 2.0.3 makes a removal that includes usbip-win2 take usbip-win2's
 root-hub filter too, which an SDK through 2.0.0 installed.
+Version 2.1.0 keeps the Xbox 360 profiles' HID devices alive across a system
+sleep, and cuts the work the SDK and the USB/IP transport do for each frame.
 
 Setup and validation
 Device creation and driver installation require administrator rights.
-For 2.0.2, the 100-scenario regression battery passed on the development
+For 2.1.0, the 100-scenario regression battery passed on the development
 laptop, a 16-core Lenovo Legion Pro 7 on Windows 11. On a 4-core Celeron
 J4125 Windows 10 mini PC, 96 scenarios passed and 4 skipped, leaving out the
 checks that need a Steam client, a desktop session or Windows Sandbox.
-2.0.3 changes only the removal's usbip-win2 step, which was checked in
-Windows Sandbox.
 ARM64 binaries were built and signed, but the regression battery has not
 been run on ARM64 hardware.
 Installation: https://hidmaestro.org/docs/start/installation/

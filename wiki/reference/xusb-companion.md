@@ -131,7 +131,7 @@ typedef struct _COMPANION_CTX {
 } COMPANION_CTX;
 ```
 
-The pump is doorbell-driven as well as timed. `CompanionInputEvent` wakes `PumpThread` on each new frame and the 8 ms `PumpTimer` is the backstop, so a parked `WAIT_FOR_INPUT` completes on arrival rather than waiting out the tick. `PacketCount` advances only when the decoded state actually changed, matching physical `xusb22` behavior.
+The pump is doorbell-driven as well as timed. `CompanionInputEvent` wakes `PumpThread` on each new frame and the 8 ms `PumpTimer` is the backstop, so a parked `WAIT_FOR_INPUT` completes on arrival rather than waiting out the tick. `PacketCount` advances only when the decoded state actually changed, matching physical `xusb22` behavior. From 2.1.0 the SDK rings the doorbell only while the companion holds a parked WAIT_FOR_INPUT, counted in the signal section's `CompanionParked`. A request parked after the last ring looks at the input section itself and wakes the pump when the section holds a frame the last completion did not carry.
 
 The companion shares the input + output sections with the main HID device (same `ControllerIndex` &rarr; same section names). It reads `GipData[14]` from `HIDMAESTRO_SHARED_INPUT` (the SDK packs that 14-byte slice on every `SubmitState` for profiles with an XUSB companion) and writes XInput rumble captures to the same output ring the main driver writes to.
 

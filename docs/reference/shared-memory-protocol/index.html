@@ -1815,6 +1815,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#signal-section-v210" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal section (v2.1.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#section-creation-lifecycle" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2302,6 +2313,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#signal-section-v210" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal section (v2.1.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#section-creation-lifecycle" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2397,6 +2419,12 @@
 <td>64 bytes</td>
 <td>Both directions: the SDK's and the driver's versions and protocols, and the controller's identity tag. See <a href="#version-section-v200">Version section</a></td>
 </tr>
+<tr>
+<td>Signal (v2.1.0)</td>
+<td><code>Global\HIDMaestroSignal&lt;N&gt;</code></td>
+<td>256 bytes</td>
+<td>Both directions: each driver's capability word, the HID driver's waiting workers, a frame the SDK hands to a busy worker instead of signaling it, and the companion's parked requests. See <a href="#signal-section-v210">Signal section</a></td>
+</tr>
 </tbody>
 </table>
 <p>Plus named events for wake-up, and the owner pipe:</p>
@@ -2412,17 +2440,17 @@
 <tr>
 <td>Input data</td>
 <td><code>Global\HIDMaestroInputEvent&lt;N&gt;</code></td>
-<td>Auto-reset; signaled by the SDK after every input frame. Driver worker thread waits on this.</td>
+<td>Auto-reset. Signaled by the SDK after an input frame, from 2.1.0 only while the driver's worker waits (see <a href="#signal-section-v210">Signal section</a>). The driver's worker thread waits on this.</td>
 </tr>
 <tr>
 <td>Companion input</td>
 <td><code>Global\HIDMaestroCompanionInputEvent&lt;N&gt;</code></td>
-<td>Auto-reset. Signaled with the input event, for frames that carry GIP data, so the XUSB companion completes a parked read at frame arrival.</td>
+<td>Auto-reset. Signaled with the input event, for frames that carry GIP data, so the XUSB companion completes a parked read at frame arrival. From 2.1.0, only while the companion holds a parked WAIT_FOR_INPUT.</td>
 </tr>
 <tr>
 <td>Input acknowledgement</td>
 <td><code>Global\HIDMaestroInputAckEvent&lt;N&gt;</code></td>
-<td>Auto-reset. Signaled by the driver when it acknowledges a delivered frame (v1.12.0).</td>
+<td>Auto-reset. Signaled by the driver when it acknowledges a delivered frame (v1.12.0). From 2.1.0 the driver skips it when the controller's <code>AckSignal</code> value is 0, which a 2.1.0 SDK writes when nothing of the controller waits on it.</td>
 </tr>
 <tr>
 <td>Remove</td>
@@ -2533,14 +2561,13 @@
 <p>For every other profile, the GIP buffer is left zeroed (no XUSB companion is bound, so the bytes are unused). The SDK's <code>_packsGipBuffer</code> flag short-circuits the packing entirely: ~60-80 instructions saved per frame on DualSense / Switch Pro / generic gamepad paths.</p>
 <h3 id="seqlock-write-protocol-writer">Seqlock write protocol (writer)<a class="headerlink" href="#seqlock-write-protocol-writer" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// SDK side, in WriteInputFrame</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">// Increment SeqNo to odd → readers know &quot;writer is mid-update&quot;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">view</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">        </span><span class="c1">// odd = mid-write</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">MemoryBarrier</span><span class="p">();</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">// ... write DataSize, Data, GipData</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">MemoryBarrier</span><span class="p">();</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">view</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">        </span><span class="c1">// even = stable</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">SetEvent</span><span class="p">(</span><span class="n">inputEventHandle</span><span class="p">);</span><span class="w">   </span><span class="c1">// wake driver worker</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">Volatile</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="k">ref</span><span class="w"> </span><span class="n">view</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">,</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w">  </span><span class="c1">// odd = mid-write</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">Volatile</span><span class="p">.</span><span class="n">WriteBarrier</span><span class="p">();</span><span class="w">                   </span><span class="c1">// the payload&#39;s stores after the odd number</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">// ... write DataSize, Data, GipData, ExtendedReportSize and ExtendedReportData</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">Volatile</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="k">ref</span><span class="w"> </span><span class="n">view</span><span class="o">-&gt;</span><span class="n">SeqNo</span><span class="p">,</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w">  </span><span class="c1">// even = stable, a release store after the payload</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">SetEvent</span><span class="p">(</span><span class="n">inputEventHandle</span><span class="p">);</span><span class="w">                </span><span class="c1">// 2.1.0: only while the driver&#39;s worker waits</span>
 </code></pre></div>
+<p>Until 2.1.0 the SDK wrote the payload between two full memory fences. The write barrier and the release store keep the order a reader needs: the odd number before the payload, and the payload before the even number. On x64 neither is a fence instruction, and on ARM64 they are <code>dmb ish</code> and <code>stlr</code>. From 2.1.0 the SetEvent depends on the signal section: see <a href="#signal-section-v210">Signal section</a>.</p>
 <h3 id="seqlock-read-protocol-reader">Seqlock read protocol (reader)<a class="headerlink" href="#seqlock-read-protocol-reader" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// Driver / companion side</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">volatile</span><span class="w"> </span><span class="n">SHARED_INPUT</span><span class="w"> </span><span class="o">*</span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
@@ -2565,7 +2592,7 @@
 <li><strong>SdkDemo</strong>: 125 Hz (just enough to drive the example).</li>
 <li><strong>A profile-switch utility</strong>: 0 Hz between switches.</li>
 </ul>
-<p>The driver's worker thread wakes on <code>SetEvent</code> so its CPU cost scales with submission rate, not with a fixed polling interval. Idle CPU per controller: ~0.04% (down from ~3% pre-event-driven, when the driver had a 1ms WdfTimer busy-poll).</p>
+<p>The driver's worker thread wakes on <code>SetEvent</code> so its CPU cost scales with submission rate, not with a fixed polling interval. From 2.1.0 a frame written while the worker is busy carries no signal. The SDK hands it over in the signal section, and the worker reads it before it waits again. Idle CPU per controller: ~0.04% (down from ~3% pre-event-driven, when the driver had a 1ms WdfTimer busy-poll).</p>
 <hr />
 <h2 id="output-section-hidmaestro_shared_output">Output section: <code>HIDMAESTRO_SHARED_OUTPUT</code><a class="headerlink" href="#output-section-hidmaestro_shared_output" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="cp">#define HIDMAESTRO_OUTPUT_RING_SLOTS     64u</span>
@@ -2790,6 +2817,55 @@
 </table>
 <p>The driver reads its device instance ID before <code>WdfDeviceCreate</code>, takes the identity token from its last segment and reads the index from the identity key. It reads the controller's 2.0.0 values, <code>FeatureAnswers</code> and the cached input report IDs, only when the section exists, its range holds protocol 4 and its tag equals the tag of the devnode's own token. Every other devnode, a 1.x program's or one a killed program's key still names, is read as a 1.x controller: the values every version writes and nothing of 2.0.0, so it gets no feature answers. A devnode whose index's section carries another token's tag fails its start with STATUS_DEVICE_CONFIGURATION_ERROR. The driver writes its version, capabilities and oldest served protocol first and its protocol last, with a barrier between, at add and each time it opens the input section.</p>
 <p>Protocol 1 is the layout set through v1.11.0: the input and output sections, the events and the PID state. Protocol 2 adds the input acknowledgement and the owner pipe (v1.12.0). Protocol 3 added this section in a build that never shipped, and protocol 4 is the 2.0.0 contract. The 2.0.0 HID driver serves protocols 4 to 5 and the XUSB companion 4: driver protocol 5 adds the remove and removed events above, which the SDK uses only when the driver's half says 5, and the contract the SDK checks at create stays protocol 4. A create reads the section once its device has started. A driver whose range does not hold 4 fails the create, which removes its devnode and throws <code>HMDriverVersionException</code> with <code>Problem</code> <code>ProtocolNotServed</code>, and a set error word throws it with <code>ValueNotRead</code>. <code>HMController.DriverVersion</code> reads the driver's half. It is null until the driver has started the device, on a driver older than v2.0.0, which never writes it, and on a USB/IP persona, which has no driver.</p>
+<hr />
+<h2 id="signal-section-v210">Signal section (v2.1.0)<a class="headerlink" href="#signal-section-v210" title="Permanent link">&para;</a></h2>
+<p><code>Global\HIDMaestroSignal&lt;N&gt;</code>, 256 bytes, <code>HIDMAESTRO_SIGNAL</code> in <code>driver/hm_contract.h</code>. A 2.1.0 or later SDK creates it as it maps the index, after the owner pipe and after it zeroes the input section. Each HID driver host maps it once and keeps it until its device goes, and the XUSB companion holds it from its add to its release. No existing layout changed.</p>
+<table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Field</th>
+<th>Written by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Layout version, 1</td>
+<td>SDK, when it creates the section</td>
+</tr>
+<tr>
+<td>4</td>
+<td>The HID driver's capabilities: 0x1, it counts its workers and takes handed-over frames</td>
+<td>HID driver</td>
+</tr>
+<tr>
+<td>8</td>
+<td>The companion's capabilities: 0x1, it counts its parked requests</td>
+<td>companion</td>
+</tr>
+<tr>
+<td>64</td>
+<td><code>InputWaiters</code>: the HID driver's workers inside a counted wait on the input event</td>
+<td>HID driver</td>
+</tr>
+<tr>
+<td>68</td>
+<td><code>InputHandoff</code>: a frame handed to a worker instead of signaled. Its even SeqNo once final, the SeqNo with its low bit set while provisional, or 0</td>
+<td>SDK and HID driver</td>
+</tr>
+<tr>
+<td>128</td>
+<td><code>CompanionParked</code>: the WAIT_FOR_INPUT requests the companion holds</td>
+<td>companion</td>
+</tr>
+</tbody>
+</table>
+<p><code>InputHandoff</code> shares <code>InputWaiters</code>'s cache line, and <code>CompanionParked</code> has its own.</p>
+<p>Before each wait on the input event, the HID driver's worker increments <code>InputWaiters</code> and then takes <code>InputHandoff</code> with an interlocked exchange of 0. For a final SeqNo it reads the section without waiting and sends whatever new frame the section holds. A provisional SeqNo it drops. It decrements the count as its wait returns.</p>
+<p>After a frame's even SeqNo, a 2.1.0 SDK with the driver's capability reads <code>InputHandoff</code>. A final SeqNo still there is a read the worker owes, which finds this frame too, so one compare-exchange puts this frame's SeqNo in its place and no <code>SetEvent</code> runs. Otherwise, with a worker counted, it calls <code>SetEvent</code> and leaves <code>InputHandoff</code> alone. Otherwise it exchanges the provisional SeqNo in, reads the capability and the count again, and with the capability set and no worker counted makes the frame final with a compare-exchange. Otherwise it takes the frame back and calls <code>SetEvent</code>. A compare-exchange that fails found the provisional SeqNo taken, and the SDK signals. The SDK's exchange and the worker's take are full fences, so either the take sees the provisional SeqNo or the SDK's second look sees the count. A frame whose program keeps running therefore gets one read after its store: the take or the signal.</p>
+<p>The companion looks at the input section before it queues a WAIT_FOR_INPUT, counts the request in <code>CompanionParked</code> once it is queued, and then looks again. A frame written between the two looks wakes the companion's own pump, which reports it. The SDK rings the companion doorbell only while that count is not zero.</p>
+<p>Without a driver's capability the SDK signals every frame, so a 2.1.0 SDK on an older driver, and a program before 2.1.0 on this one, signal as before. The SDK never zeroes a section that already exists, since a driver host may be counting in it. The design note is <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/design/signal-gate.md">docs/design/signal-gate.md</a>.</p>
 <hr />
 <h2 id="section-creation-lifecycle">Section creation lifecycle<a class="headerlink" href="#section-creation-lifecycle" title="Permanent link">&para;</a></h2>
 <p>The SDK consumer creates the sections and its events in <code>SetupController</code> before binding the driver, under the transport index its lease claimed:</p>

@@ -1,6 +1,6 @@
 ﻿# Testing and Verification
 
-The regression battery has 100 scenarios, S01 to S85 and S87 to S101, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms, the catalog's capture fidelity and removing HIDMaestro from a computer. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
+The regression battery has 101 scenarios, S01 to S85 and S87 to S102, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms, the catalog's capture fidelity and removing HIDMaestro from a computer. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.
 
 For the wiki coverage of where these pipelines fit, see [Build and Release](build-and-release.md). For the underlying SDK mechanics they exercise, see [SDK Reference](../sdk/sdk-reference.md) and [Lifecycle and Teardown](lifecycle-and-teardown.md).
 
@@ -137,7 +137,7 @@ python scripts\verify.py --controllers 6 --filter order
 
 ## `test/regression/regression_battery.ps1`: lifecycle battery
 
-The 100-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, and a full removal of HIDMaestro inside Windows Sandbox. It verifies no PnP devnodes are left in the `PRESENT` state after each one.
+The 101-scenario battery that drives `HIDMaestroTest.exe` through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, and a full removal of HIDMaestro inside Windows Sandbox. It verifies no PnP devnodes are left in the `PRESENT` state after each one.
 
 ```powershell
 # from an ELEVATED PowerShell, repo root or anywhere
@@ -153,7 +153,7 @@ The 100-scenario battery that drives `HIDMaestroTest.exe` through every interest
 ./test/regression/regression_battery.ps1 -Exe C:\path\to\HIDMaestroTest.exe
 ```
 
-Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 33 minutes on the development laptop, a 16-core Lenovo Legion Pro 7, 39 minutes on the 4-core Celeron J4125 fixture (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`).
+Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 30 minutes on the development laptop, a 16-core Lenovo Legion Pro 7, 42 minutes on the 4-core Celeron J4125 fixture (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`).
 
 ### What each scenario catches
 
@@ -226,6 +226,7 @@ Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 33 minut
 | **S96_Capture_Fidelity** | Catalog data and driver text against their sources, no device | The INF comments are ASCII, the Xbox 360 profiles carry a real pad's manufacturer string, and `xbox-360-flight-stick` and `ps-move` carry their captured descriptors, with the Move's controls, battery and motion where psmoveapi and RPCS3 read them. |
 | **S97_Switch_Family** | A second device on the Switch Pro's mechanisms, no device | `joycon-l-proof`, a Joy-Con (L) built from `switch-pro`'s protocol, state block and report programs, loads, answers SDL's Joy-Con open with nxbt's device info, and its 0x3F stick hat follows dekuNukem's grid in all eight directions and reads centered inside its dead zone. |
 | **S101_Uninstall** | Removing HIDMaestro: `HIDMaestroUninstall.exe` and `HMUninstall` (v2.0.1) | On every machine, the tool's `--preview --json` and `HMUninstall.Preview` change nothing against a snapshot of devices, packages, the certificate, registry keys and files. Inside Windows Sandbox, with a program running that holds four controllers (a composite among them), an OEM name override and the OpenVR registration, the tool exits 2, names it and changes nothing. Once that program is killed, the removal leaves no device record, package, certificate, private key, registry key or folder, puts the OEM targets back, takes the OpenVR registration, restarts no USB root hub, and does not follow planted junctions. A program that starts during the removal waits for it to end, then installs again and keeps its controller. A file held open under `%ProgramFiles%\HIDMaestro` waits for the next start, and one under `%ProgramData%\HIDMaestro` stays, reported failed. Without Windows Sandbox and with `HIDMAESTRO_UNINSTALL_FIXTURE=1`, it removes HIDMaestro from that machine, checks it reads clean and installs the driver again. |
+| **S102_Loop_Containment** | The SDK's loops on a pass that fails (v2.1.0) | The device clock, the protocol host's tick, the USB/IP input and audio pumps, the audio event thread, the server's accept loop, a connection that ends on the server's own exception, the VR haptic reader and the output reader each outlive a failing pass, wait between passes, log the failures at powers of two and the end of the episode, and cost under 5% of a spinning thread's cycles. A protocol clock period under 0.125 ms is refused, and the audio pump with no waitable timer sleeps instead of spinning. Each case runs offline, in a child process. |
 
 Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in [`test/regression/regression_battery.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1) is the authoritative full list.
 
@@ -277,7 +278,7 @@ These five fixes interact; missing any one makes the harness hang on Win11. Pres
 
 ### Slow-hardware fixture
 
-The full battery also runs on a MeLE PCG02 GLE mini PC: Intel Celeron J4125 (4 cores, 2.0 GHz), 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044. It runs at `HIDMAESTRO_TIMEOUT_SCALE=2` over SSH, with no desktop session. On the v2.0.2 release binaries 96 scenarios passed there and 4 skipped their probes, in 39 minutes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the `wsb` command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. S101 removes HIDMaestro from that machine itself, reads it clean and installs the driver again, and only its run inside Windows Sandbox skips.
+The full battery also runs on a MeLE PCG02 GLE mini PC: Intel Celeron J4125 (4 cores, 2.0 GHz), 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044. It runs at `HIDMAESTRO_TIMEOUT_SCALE=2` over SSH, with no desktop session. On the v2.1.0 release binaries 97 scenarios passed there and 4 skipped their probes, in 42 minutes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the `wsb` command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. S101 removes HIDMaestro from that machine itself, reads it clean and installs the driver again, and only its run inside Windows Sandbox skips.
 
 The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on a slow one. ACK-driven waits scale with the machine.
 
@@ -329,7 +330,7 @@ The pre-tag validation pipeline (`scripts\pre-tag-validate.cmd`) is the gate:
 
 1. Build: `build_all.cmd` with `HMSkipArm64`, `HMSkipUsbip` and `HM_STAMP_TIME` cleared, then `scripts\check_build_layouts.ps1` (v2.0.0), then the test app, the profile extractor and the probe set. `check_build_layouts.ps1` builds the native payloads from the pinned NuGet WDK packages, under the variables an EWDK prompt sets (x64 only) and with roots that hold no kit, runs SDK-project builds of each layout, and checks the `HM_STAMP_TIME` stamping.
 2. The Switch Pro protocol check, the Switch descriptor idle check and the Switch Pro SDL3 acceptance.
-3. `regression_battery.ps1`: full 100-scenario battery. **100/100 PASS required.**
+3. `regression_battery.ps1`: full 101-scenario battery. **101/101 PASS required.**
 4. The script prints the result.
 
 The script does not run `verify.py`, `HIDMaestroTest cleanup` or a profile extractor smoke test.
@@ -350,4 +351,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-The v2.0.2 battery passed all 100 scenarios on the development laptop. On the Celeron J4125, 96 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See [platform support](../start/platform-support.md#validation) for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.
+The v2.1.0 battery passed all 101 scenarios on the development laptop. On the Celeron J4125, 97 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See [platform support](../start/platform-support.md#validation) for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.

@@ -185,7 +185,7 @@ Consumer thread
 SDK encodes state → HID native bytes via HidReportBuilder
   ↓
 Writes Data[] + GipData[] + SeqNo to Global\HIDMaestroInput<N>
-  ↓ SetEvent on Global\HIDMaestroInputEvent<N>
+  ↓ SetEvent on Global\HIDMaestroInputEvent<N> (2.1.0: while the worker waits)
 ─────── shared memory boundary ────────
 Driver worker thread wakes (WaitForMultipleObjects on Stop+Input events)
   ↓ ProcessSharedInput

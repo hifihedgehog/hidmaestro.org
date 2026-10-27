@@ -2330,7 +2330,7 @@
 
 
 <h1 id="testing-and-verification">Testing and Verification<a class="headerlink" href="#testing-and-verification" title="Permanent link">&para;</a></h1>
-<p>The regression battery has 100 scenarios, S01 to S85 and S87 to S101, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms, the catalog's capture fidelity and removing HIDMaestro from a computer. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
+<p>The regression battery has 101 scenarios, S01 to S85 and S87 to S102, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms, the catalog's capture fidelity and removing HIDMaestro from a computer. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
 <p>For the wiki coverage of where these pipelines fit, see <a href="../build-and-release/">Build and Release</a>. For the underlying SDK mechanics they exercise, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 <hr />
 <h2 id="scriptsverifypy-cross-api-correctness"><code>scripts/verify.py</code>: cross-API correctness<a class="headerlink" href="#scriptsverifypy-cross-api-correctness" title="Permanent link">&para;</a></h2>
@@ -2432,7 +2432,7 @@
 <p><code>--filter</code> runs only the named API check. Useful for iterating on a specific subsystem without waiting for the full pipeline.</p>
 <hr />
 <h2 id="testregressionregression_batteryps1-lifecycle-battery"><code>test/regression/regression_battery.ps1</code>: lifecycle battery<a class="headerlink" href="#testregressionregression_batteryps1-lifecycle-battery" title="Permanent link">&para;</a></h2>
-<p>The 100-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, and a full removal of HIDMaestro inside Windows Sandbox. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
+<p>The 101-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, and a full removal of HIDMaestro inside Windows Sandbox. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># from an ELEVATED PowerShell, repo root or anywhere</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2445,7 +2445,7 @@
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="c"># point at a non-default exe (e.g. a published build)</span>
 <a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-Exe</span> <span class="n">C</span><span class="p">:\</span><span class="n">path</span><span class="p">\</span><span class="n">to</span><span class="p">\</span><span class="n">HIDMaestroTest</span><span class="p">.</span><span class="n">exe</span>
 </code></pre></div>
-<p>Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 33 minutes on the development laptop, a 16-core Lenovo Legion Pro 7, 39 minutes on the 4-core Celeron J4125 fixture (slow-hardware target with <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>).</p>
+<p>Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 30 minutes on the development laptop, a 16-core Lenovo Legion Pro 7, 42 minutes on the 4-core Celeron J4125 fixture (slow-hardware target with <code>HIDMAESTRO_TIMEOUT_SCALE=2</code>).</p>
 <h3 id="what-each-scenario-catches">What each scenario catches<a class="headerlink" href="#what-each-scenario-catches" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -2791,6 +2791,11 @@
 <td>Removing HIDMaestro: <code>HIDMaestroUninstall.exe</code> and <code>HMUninstall</code> (v2.0.1)</td>
 <td>On every machine, the tool's <code>--preview --json</code> and <code>HMUninstall.Preview</code> change nothing against a snapshot of devices, packages, the certificate, registry keys and files. Inside Windows Sandbox, with a program running that holds four controllers (a composite among them), an OEM name override and the OpenVR registration, the tool exits 2, names it and changes nothing. Once that program is killed, the removal leaves no device record, package, certificate, private key, registry key or folder, puts the OEM targets back, takes the OpenVR registration, restarts no USB root hub, and does not follow planted junctions. A program that starts during the removal waits for it to end, then installs again and keeps its controller. A file held open under <code>%ProgramFiles%\HIDMaestro</code> waits for the next start, and one under <code>%ProgramData%\HIDMaestro</code> stays, reported failed. Without Windows Sandbox and with <code>HIDMAESTRO_UNINSTALL_FIXTURE=1</code>, it removes HIDMaestro from that machine, checks it reads clean and installs the driver again.</td>
 </tr>
+<tr>
+<td><strong>S102_Loop_Containment</strong></td>
+<td>The SDK's loops on a pass that fails (v2.1.0)</td>
+<td>The device clock, the protocol host's tick, the USB/IP input and audio pumps, the audio event thread, the server's accept loop, a connection that ends on the server's own exception, the VR haptic reader and the output reader each outlive a failing pass, wait between passes, log the failures at powers of two and the end of the episode, and cost under 5% of a spinning thread's cycles. A protocol clock period under 0.125 ms is refused, and the audio pump with no waitable timer sleeps instead of spinning. Each case runs offline, in a child process.</td>
+</tr>
 </tbody>
 </table>
 <p>Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1"><code>test/regression/regression_battery.ps1</code></a> is the authoritative full list.</p>
@@ -2826,7 +2831,7 @@
 <p>These five fixes interact; missing any one makes the harness hang on Win11. Preserved as the canonical recipe.</p>
 <hr />
 <h3 id="slow-hardware-fixture">Slow-hardware fixture<a class="headerlink" href="#slow-hardware-fixture" title="Permanent link">&para;</a></h3>
-<p>The full battery also runs on a MeLE PCG02 GLE mini PC: Intel Celeron J4125 (4 cores, 2.0 GHz), 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044. It runs at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code> over SSH, with no desktop session. On the v2.0.2 release binaries 96 scenarios passed there and 4 skipped their probes, in 39 minutes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the <code>wsb</code> command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. S101 removes HIDMaestro from that machine itself, reads it clean and installs the driver again, and only its run inside Windows Sandbox skips.</p>
+<p>The full battery also runs on a MeLE PCG02 GLE mini PC: Intel Celeron J4125 (4 cores, 2.0 GHz), 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044. It runs at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code> over SSH, with no desktop session. On the v2.1.0 release binaries 97 scenarios passed there and 4 skipped their probes, in 42 minutes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the <code>wsb</code> command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. S101 removes HIDMaestro from that machine itself, reads it clean and installs the driver again, and only its run inside Windows Sandbox skips.</p>
 <p>The slow-hardware result is the reason the harness is <strong>pure ACK-driven</strong> instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on a slow one. ACK-driven waits scale with the machine.</p>
 <p>The Celeron fixture runs the same <code>regression_battery.ps1</code> script. Build the SDK on the development laptop, copy artifacts to the Celeron over SSH (<code>scp</code>), run the battery there.</p>
 <hr />
@@ -2866,7 +2871,7 @@
 <ol>
 <li>Build: <code>build_all.cmd</code> with <code>HMSkipArm64</code>, <code>HMSkipUsbip</code> and <code>HM_STAMP_TIME</code> cleared, then <code>scripts\check_build_layouts.ps1</code> (v2.0.0), then the test app, the profile extractor and the probe set. <code>check_build_layouts.ps1</code> builds the native payloads from the pinned NuGet WDK packages, under the variables an EWDK prompt sets (x64 only) and with roots that hold no kit, runs SDK-project builds of each layout, and checks the <code>HM_STAMP_TIME</code> stamping.</li>
 <li>The Switch Pro protocol check, the Switch descriptor idle check and the Switch Pro SDL3 acceptance.</li>
-<li><code>regression_battery.ps1</code>: full 100-scenario battery. <strong>100/100 PASS required.</strong></li>
+<li><code>regression_battery.ps1</code>: full 101-scenario battery. <strong>101/101 PASS required.</strong></li>
 <li>The script prints the result.</li>
 </ol>
 <p>The script does not run <code>verify.py</code>, <code>HIDMaestroTest cleanup</code> or a profile extractor smoke test.</p>
@@ -2882,7 +2887,7 @@
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md"><code>test/regression/README.md</code></a>: the in-repo battery doc.</li>
 </ul>
 <h2 id="arm64-and-usbip-validation">ARM64 and USB/IP validation<a class="headerlink" href="#arm64-and-usbip-validation" title="Permanent link">&para;</a></h2>
-<p>The v2.0.2 battery passed all 100 scenarios on the development laptop. On the Celeron J4125, 96 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See <a href="../../start/platform-support/#validation">platform support</a> for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.</p>
+<p>The v2.1.0 battery passed all 101 scenarios on the development laptop. On the Celeron J4125, 97 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See <a href="../../start/platform-support/#validation">platform support</a> for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.</p>
 
 
 

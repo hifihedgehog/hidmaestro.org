@@ -83,9 +83,10 @@ typedef struct _DEVICE_CONTEXT {
     WDFQUEUE    DefaultQueue;     // parallel: HID IOCTLs
     WDFQUEUE    ManualQueue;      // manual: pended READ_REPORT requests
 
-    /* Locks */
-    WDFWAITLOCK InputLock;
-    WDFWAITLOCK OutputLock;
+    /* Locks: SRW locks since 2.1.0, initialized by the context's zeroing */
+    SRWLOCK     InputLock;
+    SRWLOCK     OutputLock;
+    SRWLOCK     FeatureLock;
 
     /* Shared memory: input */
     HANDLE      SharedMemHandle;
@@ -148,7 +149,7 @@ Called by the framework when PnP binds the driver to a device. Sequence:
 4. **Set HID device attributes** from the values just read.
 5. **Create the parallel default queue** with `EvtIoDeviceControl` for HID IOCTLs.
 6. **Create the manual queue** for pended `READ_REPORT` requests.
-7. **Create the input lock and output lock.**
+7. **The locks need no create.** From 2.1.0 the input, output and feature locks are SRW locks in the zeroed device context. Through 2.0.3 the driver created UMDF wait locks here, which UMDF builds on an event, so each acquire and release took a system call.
 8. **Open the input event and create the stop event** (`InputDataEvent`, which the SDK creates, and `StopEvent`). As of v2.0.0 the driver creates `StopEvent` and the output event with `D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LS)`, so a program that is not elevated cannot open them. A `StopEvent` name another program made first is not used, and the worker gets an unnamed stop event. See [Shared Memory Protocol](shared-memory-protocol.md#section-names).
 9. **Open the shared input mapping** if it exists, **open the output mapping**, **open the PID state mapping** lazily.
 10. **Spawn the worker thread.**
@@ -247,7 +248,7 @@ VOID ProcessSharedInput(PDEVICE_CONTEXT ctx)
 }
 ```
 
-Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on `WaitForMultipleObjects(StopEvent, InputDataEvent, 500ms)`: the 500 ms safety timeout ensures progress if a signal is ever dropped. Every input frame the SDK writes triggers `SetEvent(InputDataEvent)` which wakes the worker immediately.
+Idle CPU per-controller: ~0.04% (was ~3% per controller pre-fix). The worker thread sleeps on `WaitForMultipleObjects(StopEvent, InputDataEvent, 500ms)`: the 500 ms safety timeout ensures progress if a signal is ever dropped. Every input frame wakes a waiting worker. From 2.1.0 the worker counts itself in the signal section's `InputWaiters` before each wait and takes a frame handed over in `InputHandoff`, and a 2.1.0 SDK sets `InputDataEvent` only while a worker waits (see [Shared Memory Protocol](shared-memory-protocol.md#signal-section-v210)).
 
 ---
 

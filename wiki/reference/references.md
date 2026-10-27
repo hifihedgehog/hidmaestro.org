@@ -187,7 +187,7 @@ These archive Ghidra decomp output, ProcMon traces, registry dumps, and empirica
 
 - [HIDMaestro issue #19](https://github.com/hifihedgehog/HIDMaestro/issues/19): the Xbox 360 d-pad XInput regression. Backs the v1.3.3 fix in [XUSB Companion](xusb-companion.md).
 
-- [`test/regression/regression_battery.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1): the 100-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
+- [`test/regression/regression_battery.ps1`](https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1): the 101-scenario battery that empirically validates lifecycle latency, multi-controller behavior, force-kill recovery, PID FFB round-trip, the composite personas, the battery reply a pad gives XInput and the device identity of every family. Backs every "verified" / "tested" claim in [Lifecycle and Teardown](lifecycle-and-teardown.md) and [Testing and Verification](testing-and-verification.md).
 
 ---
 

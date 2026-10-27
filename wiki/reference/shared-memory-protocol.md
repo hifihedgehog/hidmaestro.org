@@ -17,14 +17,15 @@ For transport index `<N>`, `HMController.TransportIndex`. A program running alon
 | PID State | `Global\HIDMaestroPidState<N>` | 40 bytes, of which the driver's struct uses 36 | Consumer &rarr; driver: HID PID 1.0 state mirror. The driver writes its effect-block allocation back |
 | Input acknowledgement (v1.12.0) | `Global\HIDMaestroInputAck<N>` | 688 bytes | Driver &rarr; consumer: the last delivered frame's sequence number. Consumer &rarr; driver: release frames for keyboards and mice |
 | Version (v2.0.0) | `Global\HIDMaestroVersion<N>` | 64 bytes | Both directions: the SDK's and the driver's versions and protocols, and the controller's identity tag. See [Version section](#version-section-v200) |
+| Signal (v2.1.0) | `Global\HIDMaestroSignal<N>` | 256 bytes | Both directions: each driver's capability word, the HID driver's waiting workers, a frame the SDK hands to a busy worker instead of signaling it, and the companion's parked requests. See [Signal section](#signal-section-v210) |
 
 Plus named events for wake-up, and the owner pipe:
 
 | Event | Name | Purpose |
 |-------|------|---------|
-| Input data | `Global\HIDMaestroInputEvent<N>` | Auto-reset; signaled by the SDK after every input frame. Driver worker thread waits on this. |
-| Companion input | `Global\HIDMaestroCompanionInputEvent<N>` | Auto-reset. Signaled with the input event, for frames that carry GIP data, so the XUSB companion completes a parked read at frame arrival. |
-| Input acknowledgement | `Global\HIDMaestroInputAckEvent<N>` | Auto-reset. Signaled by the driver when it acknowledges a delivered frame (v1.12.0). |
+| Input data | `Global\HIDMaestroInputEvent<N>` | Auto-reset. Signaled by the SDK after an input frame, from 2.1.0 only while the driver's worker waits (see [Signal section](#signal-section-v210)). The driver's worker thread waits on this. |
+| Companion input | `Global\HIDMaestroCompanionInputEvent<N>` | Auto-reset. Signaled with the input event, for frames that carry GIP data, so the XUSB companion completes a parked read at frame arrival. From 2.1.0, only while the companion holds a parked WAIT_FOR_INPUT. |
+| Input acknowledgement | `Global\HIDMaestroInputAckEvent<N>` | Auto-reset. Signaled by the driver when it acknowledges a delivered frame (v1.12.0). From 2.1.0 the driver skips it when the controller's `AckSignal` value is 0, which a 2.1.0 SDK writes when nothing of the controller waits on it. |
 | Remove | `Global\HIDMaestroRemoveEvent<N>` | Created by the SDK with the input section. A `Dispose` of a ROOT device signals it when a program refuses its removal query, and the driver fails its device so Windows removes it by surprise removal (v2.0.0, driver protocol 5). |
 | Removed | `Global\HIDMaestroRemovedEvent<N>` | Created by the SDK with the input section. Signaled by the driver once it has failed its device. The SDK waits up to 2 s for it (v2.0.0, driver protocol 5). |
 | Output | `Global\HIDMaestroOutputEvent<N>` | Signaled per published output packet. The driver and the XUSB companion create or open it, and the SDK creates it for a USB/IP persona. |
@@ -93,14 +94,14 @@ For every other profile, the GIP buffer is left zeroed (no XUSB companion is bou
 
 ```csharp
 // SDK side, in WriteInputFrame
-// Increment SeqNo to odd → readers know "writer is mid-update"
-view->SeqNo += 1;        // odd = mid-write
-MemoryBarrier();
-// ... write DataSize, Data, GipData
-MemoryBarrier();
-view->SeqNo += 1;        // even = stable
-SetEvent(inputEventHandle);   // wake driver worker
+Volatile.Write(ref view->SeqNo, seq + 1);  // odd = mid-write
+Volatile.WriteBarrier();                   // the payload's stores after the odd number
+// ... write DataSize, Data, GipData, ExtendedReportSize and ExtendedReportData
+Volatile.Write(ref view->SeqNo, seq + 2);  // even = stable, a release store after the payload
+SetEvent(inputEventHandle);                // 2.1.0: only while the driver's worker waits
 ```
+
+Until 2.1.0 the SDK wrote the payload between two full memory fences. The write barrier and the release store keep the order a reader needs: the odd number before the payload, and the payload before the even number. On x64 neither is a fence instruction, and on ARM64 they are `dmb ish` and `stlr`. From 2.1.0 the SetEvent depends on the signal section: see [Signal section](#signal-section-v210).
 
 ### Seqlock read protocol (reader)
 
@@ -132,7 +133,7 @@ The SDK doesn't pump frames itself: the consumer drives cadence. Typical rates:
 - **SdkDemo**: 125 Hz (just enough to drive the example).
 - **A profile-switch utility**: 0 Hz between switches.
 
-The driver's worker thread wakes on `SetEvent` so its CPU cost scales with submission rate, not with a fixed polling interval. Idle CPU per controller: ~0.04% (down from ~3% pre-event-driven, when the driver had a 1ms WdfTimer busy-poll).
+The driver's worker thread wakes on `SetEvent` so its CPU cost scales with submission rate, not with a fixed polling interval. From 2.1.0 a frame written while the worker is busy carries no signal. The SDK hands it over in the signal section, and the worker reads it before it waits again. Idle CPU per controller: ~0.04% (down from ~3% pre-event-driven, when the driver had a 1ms WdfTimer busy-poll).
 
 ---
 
@@ -347,6 +348,31 @@ The consumer reads the assigned EBI via `HMController.GetCurrentPidBlockLoad()`.
 The driver reads its device instance ID before `WdfDeviceCreate`, takes the identity token from its last segment and reads the index from the identity key. It reads the controller's 2.0.0 values, `FeatureAnswers` and the cached input report IDs, only when the section exists, its range holds protocol 4 and its tag equals the tag of the devnode's own token. Every other devnode, a 1.x program's or one a killed program's key still names, is read as a 1.x controller: the values every version writes and nothing of 2.0.0, so it gets no feature answers. A devnode whose index's section carries another token's tag fails its start with STATUS_DEVICE_CONFIGURATION_ERROR. The driver writes its version, capabilities and oldest served protocol first and its protocol last, with a barrier between, at add and each time it opens the input section.
 
 Protocol 1 is the layout set through v1.11.0: the input and output sections, the events and the PID state. Protocol 2 adds the input acknowledgement and the owner pipe (v1.12.0). Protocol 3 added this section in a build that never shipped, and protocol 4 is the 2.0.0 contract. The 2.0.0 HID driver serves protocols 4 to 5 and the XUSB companion 4: driver protocol 5 adds the remove and removed events above, which the SDK uses only when the driver's half says 5, and the contract the SDK checks at create stays protocol 4. A create reads the section once its device has started. A driver whose range does not hold 4 fails the create, which removes its devnode and throws `HMDriverVersionException` with `Problem` `ProtocolNotServed`, and a set error word throws it with `ValueNotRead`. `HMController.DriverVersion` reads the driver's half. It is null until the driver has started the device, on a driver older than v2.0.0, which never writes it, and on a USB/IP persona, which has no driver.
+
+---
+
+## Signal section (v2.1.0)
+
+`Global\HIDMaestroSignal<N>`, 256 bytes, `HIDMAESTRO_SIGNAL` in `driver/hm_contract.h`. A 2.1.0 or later SDK creates it as it maps the index, after the owner pipe and after it zeroes the input section. Each HID driver host maps it once and keeps it until its device goes, and the XUSB companion holds it from its add to its release. No existing layout changed.
+
+| Offset | Field | Written by |
+|---|---|---|
+| 0 | Layout version, 1 | SDK, when it creates the section |
+| 4 | The HID driver's capabilities: 0x1, it counts its workers and takes handed-over frames | HID driver |
+| 8 | The companion's capabilities: 0x1, it counts its parked requests | companion |
+| 64 | `InputWaiters`: the HID driver's workers inside a counted wait on the input event | HID driver |
+| 68 | `InputHandoff`: a frame handed to a worker instead of signaled. Its even SeqNo once final, the SeqNo with its low bit set while provisional, or 0 | SDK and HID driver |
+| 128 | `CompanionParked`: the WAIT_FOR_INPUT requests the companion holds | companion |
+
+`InputHandoff` shares `InputWaiters`'s cache line, and `CompanionParked` has its own.
+
+Before each wait on the input event, the HID driver's worker increments `InputWaiters` and then takes `InputHandoff` with an interlocked exchange of 0. For a final SeqNo it reads the section without waiting and sends whatever new frame the section holds. A provisional SeqNo it drops. It decrements the count as its wait returns.
+
+After a frame's even SeqNo, a 2.1.0 SDK with the driver's capability reads `InputHandoff`. A final SeqNo still there is a read the worker owes, which finds this frame too, so one compare-exchange puts this frame's SeqNo in its place and no `SetEvent` runs. Otherwise, with a worker counted, it calls `SetEvent` and leaves `InputHandoff` alone. Otherwise it exchanges the provisional SeqNo in, reads the capability and the count again, and with the capability set and no worker counted makes the frame final with a compare-exchange. Otherwise it takes the frame back and calls `SetEvent`. A compare-exchange that fails found the provisional SeqNo taken, and the SDK signals. The SDK's exchange and the worker's take are full fences, so either the take sees the provisional SeqNo or the SDK's second look sees the count. A frame whose program keeps running therefore gets one read after its store: the take or the signal.
+
+The companion looks at the input section before it queues a WAIT_FOR_INPUT, counts the request in `CompanionParked` once it is queued, and then looks again. A frame written between the two looks wakes the companion's own pump, which reports it. The SDK rings the companion doorbell only while that count is not zero.
+
+Without a driver's capability the SDK signals every frame, so a 2.1.0 SDK on an older driver, and a program before 2.1.0 on this one, signal as before. The SDK never zeroes a section that already exists, since a driver host may be counting in it. The design note is [docs/design/signal-gate.md](https://github.com/hifihedgehog/HIDMaestro/blob/master/docs/design/signal-gate.md).
 
 ---
 

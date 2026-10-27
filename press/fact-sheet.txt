@@ -60,7 +60,7 @@ Adoption
 PadForge is built on HIDMaestro end to end. Other public projects that use,
 ship or build on it include foundation-sunshine, Vibepollo, Sunshine Control
 Panel, Kitsune Input, HandHeld Legend's HHL Gamepad WLAN and
-JoystickGremlinEx, 45 projects in all: https://hidmaestro.org/specs.html#adopters
+JoystickGremlinEx, 47 projects in all: https://hidmaestro.org/specs.html#adopters
 
 References
 Specifications: https://hidmaestro.org/specs.html

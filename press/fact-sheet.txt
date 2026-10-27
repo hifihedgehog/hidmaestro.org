@@ -50,10 +50,11 @@ Testing: https://hidmaestro.org/docs/reference/testing-and-verification/
 Performance
 Each release's notes compare it with the release before it, both builds
 measured in one session on the development laptop. Chained from those
-comparisons, 2.0.2 takes 76% of 1.12.0's time from process start to the first
-DualShock 4 controller, 43% of its time to create an Xbox 360 controller, and
-77% of its time from SubmitState to a game's ReadFile on a DualShock 4. Every
-tracked path, slower steps included: https://hidmaestro.org/performance.html
+comparisons, 2.1.0 takes 76% of 1.12.0's time from process start to the first
+DualShock 4 controller, 43% of its time to create an Xbox 360 controller, 77%
+of its time from SubmitState to a game's ReadFile on a DualShock 4, and 24% of
+its time for a SubmitState call on an Xbox 360 pad. Every tracked path, slower
+steps included: https://hidmaestro.org/performance.html
 
 Adoption
 PadForge is built on HIDMaestro end to end. Other public projects that use,

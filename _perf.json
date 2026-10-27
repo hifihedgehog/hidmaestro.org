@@ -4,7 +4,8 @@
     "1.12.0",
     "2.0.0",
     "2.0.1",
-    "2.0.2"
+    "2.0.2",
+    "2.1.0"
   ],
   "steps": [
     {
@@ -24,6 +25,15 @@
       "to": "2.0.2",
       "notes": "https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.0.2",
       "method": "30 runs per build in each of two passes, with the order of the builds flipped between passes, three passes for start, create and Dispose, and eight rounds alternating the builds for the per-call rows"
+    },
+    {
+      "from": "2.0.3",
+      "to": "2.1.0",
+      "notes": "https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.1.0",
+      "method": "six rounds alternating the two builds in one session, each round installing each build's driver once for the device paths",
+      "chains_from": "2.0.2",
+      "verdicts": true,
+      "note": "2.0.3 changed only the full removal's usbip-win2 step, which no charted path runs, so this step continues from the 2.0.2 point."
     }
   ],
   "metrics": [
@@ -63,6 +73,17 @@
             527.3,
             688.5
           ]
+        },
+        {
+          "before": [
+            524.0,
+            666.3
+          ],
+          "after": [
+            520.3,
+            646.2
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -102,6 +123,17 @@
             211.5,
             399.5
           ]
+        },
+        {
+          "before": [
+            221.6,
+            314.4
+          ],
+          "after": [
+            212.6,
+            299.3
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -141,6 +173,17 @@
             363.5,
             567.1
           ]
+        },
+        {
+          "before": [
+            478.5,
+            672.6
+          ],
+          "after": [
+            460.4,
+            664.6
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -180,6 +223,17 @@
             3.4,
             4.4
           ]
+        },
+        {
+          "before": [
+            2.6,
+            3.8
+          ],
+          "after": [
+            2.1,
+            2.8
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -219,6 +273,17 @@
             63.9,
             76.7
           ]
+        },
+        {
+          "before": [
+            168.0,
+            181.6
+          ],
+          "after": [
+            166.8,
+            178.8
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -258,6 +323,17 @@
             141.1,
             314.9
           ]
+        },
+        {
+          "before": [
+            128.0,
+            203.7
+          ],
+          "after": [
+            126.7,
+            208.2
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -297,6 +373,17 @@
             11.2,
             23.3
           ]
+        },
+        {
+          "before": [
+            11.3,
+            25.4
+          ],
+          "after": [
+            8.7,
+            21.4
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -336,6 +423,17 @@
             46.0,
             80.2
           ]
+        },
+        {
+          "before": [
+            39.1,
+            94.5
+          ],
+          "after": [
+            41.2,
+            93.5
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -375,6 +473,17 @@
             45.4,
             72.0
           ]
+        },
+        {
+          "before": [
+            49.7,
+            106.7
+          ],
+          "after": [
+            55.0,
+            87.0
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -414,6 +523,17 @@
             54.2,
             104.8
           ]
+        },
+        {
+          "before": [
+            64.7,
+            117.9
+          ],
+          "after": [
+            77.7,
+            115.5
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -453,6 +573,17 @@
             61.7,
             137.1
           ]
+        },
+        {
+          "before": [
+            71.3,
+            149.5
+          ],
+          "after": [
+            66.6,
+            134.2
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -492,6 +623,17 @@
             74.2,
             134.6
           ]
+        },
+        {
+          "before": [
+            70.8,
+            133.2
+          ],
+          "after": [
+            113.6,
+            180.2
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -531,6 +673,17 @@
             38.3,
             62.1
           ]
+        },
+        {
+          "before": [
+            40.5,
+            61.5
+          ],
+          "after": [
+            34.2,
+            57.5
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -570,6 +723,17 @@
             23.2,
             45.6
           ]
+        },
+        {
+          "before": [
+            29.4,
+            61.1
+          ],
+          "after": [
+            22.3,
+            58.2
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -609,6 +773,17 @@
             313.5,
             1450.4
           ]
+        },
+        {
+          "before": [
+            266.0,
+            1009.7
+          ],
+          "after": [
+            522.7,
+            928.5
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -648,6 +823,17 @@
             792.4,
             1108.2
           ]
+        },
+        {
+          "before": [
+            649.3,
+            823.8
+          ],
+          "after": [
+            180.6,
+            186.4
+          ],
+          "verdict": "faster"
         }
       ]
     },
@@ -687,6 +873,17 @@
             511.9,
             622.9
           ]
+        },
+        {
+          "before": [
+            406.7,
+            444.3
+          ],
+          "after": [
+            274.7,
+            306.2
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -726,6 +923,17 @@
             446.4,
             615.6
           ]
+        },
+        {
+          "before": [
+            384.9,
+            403.8
+          ],
+          "after": [
+            201.3,
+            207.8
+          ],
+          "verdict": "faster"
         }
       ]
     },
@@ -765,6 +973,17 @@
             348.9,
             377.8
           ]
+        },
+        {
+          "before": [
+            264.3,
+            311.3
+          ],
+          "after": [
+            297.9,
+            347.3
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -804,6 +1023,17 @@
             1490247.0,
             null
           ]
+        },
+        {
+          "before": [
+            1250137.0,
+            null
+          ],
+          "after": [
+            7609090.0,
+            null
+          ],
+          "verdict": "faster"
         }
       ]
     }

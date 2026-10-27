@@ -5,7 +5,9 @@ Each release's notes compare it with the release before it, both builds
 measured in one session on the development laptop. _perf.json keeps
 those published values, one step per release. A chart multiplies a
 path's steps from 1.12.0 on, so each ratio comes from one session and
-values from different sessions never meet in one ratio.
+values from different sessions never meet in one ratio. A step whose
+notes read the row level at the median (its "verdict", from 2.1.0 on)
+plots flat, and its measured values stay in the table under the chart.
 
 Writes performance.html, press/performance.svg, and the blocks between
 <!-- PERF:BEGIN --> and <!-- PERF:END --> in index.html and
@@ -19,8 +21,11 @@ DATA = json.load(io.open(os.path.join(ROOT, "_perf.json"), encoding="utf-8-sig")
 REL = DATA["releases"]
 STEPS = DATA["steps"]
 METRICS = DATA["metrics"]
+# A step measured against a release that changed no charted path (2.0.3,
+# whose changes are the full removal's usbip-win2 step) continues from the
+# point of the release before it: its "chains_from" names that point.
 for i, s in enumerate(STEPS):
-    assert (s["from"], s["to"]) == (REL[i], REL[i + 1]), s
+    assert (s.get("chains_from", s["from"]), s["to"]) == (REL[i], REL[i + 1]), s
 for m in METRICS:
     assert len(m["steps"]) == len(STEPS), m["id"]
     assert m["better"] in ("lower", "higher"), m["id"]
@@ -61,18 +66,32 @@ def pct(v):
     return ("%.0f%%" if round(v) >= 10 else "%.1f%%") % v
 
 
+def flat(s):
+    """A step its release's notes read level at the median."""
+    return s.get("verdict") == "level"
+
+
 def chain(m):
     """Time relative to 1.12.0 at each release. A rate becomes time per
-    frame, its inverse, so lower is faster on every chart."""
+    frame, its inverse, so lower is faster on every chart. A level step
+    keeps the point where it was."""
     idx = [100.0]
     for s in m["steps"]:
         b, a = s["before"][0], s["after"][0]
-        idx.append(idx[-1] * (a / b if m["better"] == "lower" else b / a))
+        idx.append(idx[-1] * (1.0 if flat(s) else a / b if m["better"] == "lower" else b / a))
     return idx
 
 
 def change(s):
     return (s["after"][0] / s["before"][0] - 1) * 100
+
+
+def change_text(s):
+    """The measured change, and the verdict when the step has one."""
+    t = "%+.1f%%" % change(s)
+    if "verdict" in s:
+        t += ", level at the median, plotted flat" if flat(s) else ", %s at the median" % s["verdict"]
+    return t
 
 
 # One y-axis for every chart: 0 to just above the largest value, never
@@ -85,8 +104,8 @@ def points(m, idx):
     out = [{"r": REL[0], "v": "100%, the baseline", "s": ""}]
     for i, s in enumerate(m["steps"]):
         out.append({"r": REL[i + 1], "v": "%s of %s's time" % (pct(idx[i + 1]), REL[0]),
-                    "s": "From %s: %s to %s %s (%+.1f%%)" % (REL[i], num(s["before"][0], m["unit"]),
-                                                          num(s["after"][0], m["unit"]), m["unit"], change(s))})
+                    "s": "From %s: %s to %s %s (%s)" % (STEPS[i]["from"], num(s["before"][0], m["unit"]),
+                                                     num(s["after"][0], m["unit"]), m["unit"], change_text(s))})
     return out
 
 
@@ -116,13 +135,15 @@ def card(m):
     def cell(v):
         return num(v[0], unit) + ("" if v[1] is None else "<span>%s</span>" % num(v[1], unit))
     rows = "".join(
-        '<tr><td><a href="%s">%s to %s</a></td><td>%s</td><td>%s</td><td>%+.1f%%</td></tr>'
-        % (esc(st["notes"]), esc(st["from"]), esc(st["to"]), cell(s["before"]), cell(s["after"]), change(s))
+        '<tr><td><a href="%s">%s to %s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>'
+        % (esc(st["notes"]), esc(st["from"]), esc(st["to"]), cell(s["before"]), cell(s["after"]), esc(change_text(s)))
         for st, s in zip(STEPS, m["steps"]))
     p95 = any(v[1] is not None for s in m["steps"] for v in (s["before"], s["after"]))
     note = "Medians, with the 95th percentile under each." if p95 else "Medians."
     if m["better"] == "higher":
         note += " The chart plots time per frame, the inverse of this rate, so lower is faster there too."
+    if any(flat(s) for s in m["steps"]):
+        note += " A step whose median its release's notes read level is plotted flat."
     return '''<article class="perf-card" id="m-%s">
     <h3 class="perf-title">%s</h3>
     <p class="perf-now"><b>%s</b> of %s's time</p>
@@ -163,9 +184,22 @@ def method_html():
                 sessions, the same release has measured up to 31 percent apart on a per-call <code>SubmitState</code>
                 row and 86 percent apart on a few-millisecond USB/IP row. Within one session, rows measured in two
                 passes have moved several percent from one pass to the next, so a step of a few percent is within
-                that spread.</p>''' % (REL[0], REL[-1], ratio, "\n".join(
-        '                <li><a href="%s">%s to %s</a>: %s.</li>' % (esc(s["notes"]), esc(s["from"]), esc(s["to"]), esc(s["method"]))
-        for s in STEPS)))
+                that spread.</p>%s''' % (REL[0], REL[-1], ratio, "\n".join(
+        '                <li><a href="%s">%s to %s</a>: %s.%s</li>' % (esc(s["notes"]), esc(s["from"]), esc(s["to"]), esc(s["method"]),
+                                                                (" " + esc(s["note"])) if s.get("note") else "")
+        for s in STEPS), verdict_html()))
+
+
+def verdict_html():
+    first = next((s["to"] for s in STEPS if s.get("verdicts")), None)
+    if first is None:
+        return ""
+    return ('''
+            <p class="perf-method reveal" data-d="1">From %s on, a release's notes read a path faster only when every
+                round of a session read it faster and either a second session agreed or a change had named the
+                path as its target before the measurement. They read it slower only when a second session agreed.
+                A chart moves only where the notes read the median faster or slower. Any other step is plotted
+                flat, and the table under the chart keeps its measured values.</p>''' % esc(first))
 
 
 def page():

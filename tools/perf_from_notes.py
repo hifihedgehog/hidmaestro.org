@@ -41,11 +41,22 @@ METRICS = [
     ('rate-x360', 'SubmitState, per call', '`SubmitState` back to back, Xbox 360'),
 ]
 
-# (from, to, release tag, the method its notes state)
+# (from, to, release tag, the method its notes state[, what else the step
+# carries]). A step measured against a release that changed no charted path
+# names the earlier release it continues from in "chains_from". A step with
+# "verdicts" reads each row's verdict from its notes' Change column. From
+# 2.1.0 on, the notes read a row faster only when every round of a session
+# read it faster and either a second session agreed or a change had named
+# the row as its target before the measurement, and slower only when a
+# second session agreed. A row read level at the median gets the verdict
+# "level", and tools/build_perf.py plots that step flat.
 STEPS = [
     ('1.12.0', '2.0.0', 'v2.0.0', '30 runs per build, the two builds one after the other for each path'),
     ('2.0.0', '2.0.1', 'v2.0.1', '30 runs per build in each of two passes, with the order of the builds flipped between passes, three passes for start, create and Dispose, and six for the per-call rows'),
     ('2.0.1', '2.0.2', 'v2.0.2', '30 runs per build in each of two passes, with the order of the builds flipped between passes, three passes for start, create and Dispose, and eight rounds alternating the builds for the per-call rows'),
+    ('2.0.3', '2.1.0', 'v2.1.0', 'six rounds alternating the two builds in one session, each round installing each build\'s driver once for the device paths',
+     {'chains_from': '2.0.2', 'verdicts': True,
+      'note': '2.0.3 changed only the full removal\'s usbip-win2 step, which no charted path runs, so this step continues from the 2.0.2 point.'}),
 ]
 VALUE = re.compile(r'^\s*(?P<p50>[\d,]+(?:\.\d+)?)(?:\s*\((?P<p95>[\d,]+(?:\.\d+)?)\))?\s*$')
 
@@ -59,7 +70,7 @@ def body(tag):
 
 
 def table(text, before, after):
-    """label -> (unit, [b50, b95], [a50, a95]) from the table headed before | after."""
+    """label -> (unit, [b50, b95], [a50, a95], change) from the table headed before | after."""
     lines = text.splitlines()
     head = next((i for i, l in enumerate(lines) if l.startswith('| Path | Unit | %s | %s' % (before, after))), None)
     if head is None:
@@ -76,24 +87,30 @@ def table(text, before, after):
         if not l.startswith('|'):
             break
         cells = [c.strip() for c in l.strip().strip('|').split('|')]
-        out[cells[0]] = (cells[1], val(cells[2]), val(cells[3]))
+        out[cells[0]] = (cells[1], val(cells[2]), val(cells[3]), cells[4] if len(cells) > 4 else '')
     return out
 
 
-tables = [table(body(tag), b, a) for b, a, tag, _ in STEPS]
+tables = [table(body(s[2]), s[0], s[1]) for s in STEPS]
 metrics = []
 for mid, group, label in METRICS:
     steps, unit = [], None
-    for t in tables:
+    for s, t in zip(STEPS, tables):
         if label not in t:
             sys.exit('%r missing from a table' % label)
-        u, b, a = t[label]
+        u, b, a, change = t[label]
         if unit and u != unit:
             sys.exit('%r changes unit: %s then %s' % (label, unit, u))
         if b is None or a is None:
             sys.exit('%r has a value that does not parse' % label)
         unit = u
-        steps.append({'before': b, 'after': a})
+        step = {'before': b, 'after': a}
+        if len(s) > 4 and s[4].get('verdicts'):
+            if not re.search(r'(^|, )(level|(faster|slower) at )', change):
+                sys.exit('%r has no verdict in %s\'s Change column: %r' % (label, s[1], change))
+            m = re.search(r'\b(faster|slower) at p50\b', change)
+            step['verdict'] = m.group(1) if m else 'level'
+        steps.append(step)
     metrics.append({'id': mid, 'group': group, 'label': label, 'unit': unit,
                     'better': 'higher' if unit == 'frames a second' else 'lower', 'steps': steps})
 
@@ -102,8 +119,9 @@ data = {
              "Each step is the side-by-side comparison published in that release's notes, written by tools/perf_from_notes.py. "
              "tools/build_perf.py draws performance.html and the home and press sections from this file.",
     'releases': [STEPS[0][0]] + [s[1] for s in STEPS],
-    'steps': [{'from': b, 'to': a, 'notes': 'https://github.com/%s/releases/tag/%s' % (REPO, tag), 'method': m}
-              for b, a, tag, m in STEPS],
+    'steps': [dict({'from': s[0], 'to': s[1], 'notes': 'https://github.com/%s/releases/tag/%s' % (REPO, s[2]), 'method': s[3]},
+                   **(s[4] if len(s) > 4 else {}))
+              for s in STEPS],
     'metrics': metrics,
 }
 io.open(os.path.join(ROOT, '_perf.json'), 'w', encoding='utf-8', newline='\n').write(

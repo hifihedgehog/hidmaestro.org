@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="960" viewBox="0 0 1600 960" role="img" aria-labelledby="title description">
 <title id="title">HIDMaestro performance, release over release</title>
-<desc id="description">Process start to the first controller, DualShock 4: 76% of 1.12.0&#x27;s time at 2.0.2. CreateController, Xbox 360: 43% of 1.12.0&#x27;s time at 2.0.2. Dispose, DualSense over USB/IP: 0.8% of 1.12.0&#x27;s time at 2.0.2. SubmitState to a game&#x27;s ReadFile, DualShock 4: 77% of 1.12.0&#x27;s time at 2.0.2. SubmitState to XInputGetState, Xbox 360: 98% of 1.12.0&#x27;s time at 2.0.2. SubmitState, Xbox 360: 85% of 1.12.0&#x27;s time at 2.0.2.</desc>
+<desc id="description">Process start to the first controller, DualShock 4: 76% of 1.12.0&#x27;s time at 2.1.0. CreateController, Xbox 360: 43% of 1.12.0&#x27;s time at 2.1.0. Dispose, DualSense over USB/IP: 0.8% of 1.12.0&#x27;s time at 2.1.0. SubmitState to a game&#x27;s ReadFile, DualShock 4: 77% of 1.12.0&#x27;s time at 2.1.0. SubmitState to XInputGetState, Xbox 360: 98% of 1.12.0&#x27;s time at 2.1.0. SubmitState, Xbox 360: 24% of 1.12.0&#x27;s time at 2.1.0.</desc>
 <rect width="1600" height="960" rx="12" fill="#0d1117"/>
 <g font-family="Arial, Helvetica, sans-serif">
 <text x="90" y="95" fill="#6fc3d6" font-size="15" letter-spacing="4">HIDMAESTRO</text>
@@ -17,13 +17,15 @@
 <line x1="168" y1="399.09" x2="503.33" y2="399.09" stroke="#3b434e" stroke-width="1"/>
 <text x="156" y="403.59" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="end">100%</text>
 <text x="168" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">1.12.0</text>
-<text x="279.78" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
-<text x="391.56" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
-<text x="503.33" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
-<polyline points="168,399.09 279.78,425.42 391.56,426.26 503.33,426.06" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="251.83" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
+<text x="335.67" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
+<text x="419.5" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
+<text x="503.33" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.1.0</text>
+<polyline points="168,399.09 251.83,425.42 335.67,426.26 419.5,426.06 503.33,426.06" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="168" cy="399.09" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="279.78" cy="425.42" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="391.56" cy="426.26" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="251.83" cy="425.42" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="335.67" cy="426.26" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="419.5" cy="426.06" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <circle cx="503.33" cy="426.06" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <rect x="573.33" y="250" width="453.33" height="310" rx="12" fill="#12171f" stroke="#212a36"/>
 <text x="599.33" y="290" fill="#f7f9fc" font-size="19" font-weight="600">CreateController, Xbox 360</text>
@@ -35,13 +37,15 @@
 <line x1="651.33" y1="399.09" x2="986.67" y2="399.09" stroke="#3b434e" stroke-width="1"/>
 <text x="639.33" y="403.59" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="end">100%</text>
 <text x="651.33" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">1.12.0</text>
-<text x="763.11" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
-<text x="874.89" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
-<text x="986.67" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
-<polyline points="651.33,399.09 763.11,451.08 874.89,462.51 986.67,461.77" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="735.17" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
+<text x="819" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
+<text x="902.83" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
+<text x="986.67" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.1.0</text>
+<polyline points="651.33,399.09 735.17,451.08 819,462.51 902.83,461.77 986.67,461.77" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="651.33" cy="399.09" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="763.11" cy="451.08" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="874.89" cy="462.51" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="735.17" cy="451.08" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="819" cy="462.51" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="902.83" cy="461.77" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <circle cx="986.67" cy="461.77" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <rect x="1056.67" y="250" width="453.33" height="310" rx="12" fill="#12171f" stroke="#212a36"/>
 <text x="1082.67" y="290" fill="#f7f9fc" font-size="19" font-weight="600">Dispose, DualSense over USB/IP</text>
@@ -53,13 +57,15 @@
 <line x1="1134.67" y1="399.09" x2="1470" y2="399.09" stroke="#3b434e" stroke-width="1"/>
 <text x="1122.67" y="403.59" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="end">100%</text>
 <text x="1134.67" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">1.12.0</text>
-<text x="1246.44" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
-<text x="1358.22" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
-<text x="1470" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
-<polyline points="1134.67,399.09 1246.44,508.71 1358.22,509.08 1470,509.09" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1218.5" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
+<text x="1302.33" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
+<text x="1386.17" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
+<text x="1470" y="538" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.1.0</text>
+<polyline points="1134.67,399.09 1218.5,508.71 1302.33,509.08 1386.17,509.09 1470,509.09" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="1134.67" cy="399.09" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="1246.44" cy="508.71" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="1358.22" cy="509.08" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="1218.5" cy="508.71" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="1302.33" cy="509.08" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="1386.17" cy="509.09" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <circle cx="1470" cy="509.09" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <rect x="90" y="590" width="453.33" height="310" rx="12" fill="#12171f" stroke="#212a36"/>
 <text x="116" y="630" fill="#f7f9fc" font-size="19" font-weight="600">SubmitState to a game&#x27;s ReadFile,</text>
@@ -72,13 +78,15 @@
 <line x1="168" y1="739.09" x2="503.33" y2="739.09" stroke="#3b434e" stroke-width="1"/>
 <text x="156" y="743.59" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="end">100%</text>
 <text x="168" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">1.12.0</text>
-<text x="279.78" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
-<text x="391.56" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
-<text x="503.33" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
-<polyline points="168,739.09 279.78,767.54 391.56,767.93 503.33,764.2" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="251.83" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
+<text x="335.67" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
+<text x="419.5" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
+<text x="503.33" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.1.0</text>
+<polyline points="168,739.09 251.83,767.54 335.67,767.93 419.5,764.2 503.33,764.2" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="168" cy="739.09" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="279.78" cy="767.54" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="391.56" cy="767.93" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="251.83" cy="767.54" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="335.67" cy="767.93" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="419.5" cy="764.2" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <circle cx="503.33" cy="764.2" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <rect x="573.33" y="590" width="453.33" height="310" rx="12" fill="#12171f" stroke="#212a36"/>
 <text x="599.33" y="630" fill="#f7f9fc" font-size="19" font-weight="600">SubmitState to XInputGetState, Xbox 360</text>
@@ -90,17 +98,19 @@
 <line x1="651.33" y1="739.09" x2="986.67" y2="739.09" stroke="#3b434e" stroke-width="1"/>
 <text x="639.33" y="743.59" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="end">100%</text>
 <text x="651.33" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">1.12.0</text>
-<text x="763.11" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
-<text x="874.89" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
-<text x="986.67" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
-<polyline points="651.33,739.09 763.11,747.29 874.89,744.31 986.67,741.53" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="735.17" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
+<text x="819" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
+<text x="902.83" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
+<text x="986.67" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.1.0</text>
+<polyline points="651.33,739.09 735.17,747.29 819,744.31 902.83,741.53 986.67,741.53" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="651.33" cy="739.09" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="763.11" cy="747.29" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="874.89" cy="744.31" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="735.17" cy="747.29" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="819" cy="744.31" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="902.83" cy="741.53" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <circle cx="986.67" cy="741.53" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <rect x="1056.67" y="590" width="453.33" height="310" rx="12" fill="#12171f" stroke="#212a36"/>
 <text x="1082.67" y="630" fill="#f7f9fc" font-size="19" font-weight="600">SubmitState, Xbox 360</text>
-<text x="1082.67" y="704" fill="#f7f9fc" font-size="34" font-weight="700" letter-spacing="-0.5">85%<tspan fill="#929fb0" font-size="16" font-weight="400" letter-spacing="0"> of 1.12.0's time</tspan></text>
+<text x="1082.67" y="704" fill="#f7f9fc" font-size="34" font-weight="700" letter-spacing="-0.5">24%<tspan fill="#929fb0" font-size="16" font-weight="400" letter-spacing="0"> of 1.12.0's time</tspan></text>
 <line x1="1134.67" y1="850" x2="1470" y2="850" stroke="#23272f" stroke-width="1"/>
 <text x="1122.67" y="854.5" fill="#5d6877" font-family="Consolas, monospace" font-size="13" text-anchor="end">0%</text>
 <line x1="1134.67" y1="794.55" x2="1470" y2="794.55" stroke="#23272f" stroke-width="1"/>
@@ -108,14 +118,16 @@
 <line x1="1134.67" y1="739.09" x2="1470" y2="739.09" stroke="#3b434e" stroke-width="1"/>
 <text x="1122.67" y="743.59" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="end">100%</text>
 <text x="1134.67" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">1.12.0</text>
-<text x="1246.44" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
-<text x="1358.22" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
-<text x="1470" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
-<polyline points="1134.67,739.09 1246.44,747.87 1358.22,747.94 1470,755.49" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1218.5" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.0</text>
+<text x="1302.33" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.1</text>
+<text x="1386.17" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.0.2</text>
+<text x="1470" y="878" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">2.1.0</text>
+<polyline points="1134.67,739.09 1218.5,747.87 1302.33,747.94 1386.17,755.49 1470,823.71" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="1134.67" cy="739.09" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="1246.44" cy="747.87" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="1358.22" cy="747.94" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
-<circle cx="1470" cy="755.49" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="1218.5" cy="747.87" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="1302.33" cy="747.94" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="1386.17" cy="755.49" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
+<circle cx="1470" cy="823.71" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>
 <text x="90" y="935" fill="#5d6877" font-family="Consolas, monospace" font-size="15">Method and every measured value: hidmaestro.org/performance.html</text>
 </g>
 </svg>

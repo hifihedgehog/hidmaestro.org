@@ -1,4 +1,4 @@
-﻿# Architecture Overview
+# Architecture Overview
 
 The 30,000-foot view of HIDMaestro: every component, what it owns, and how data flows from a consumer's `SubmitState` call to a game seeing input. Use this page as the starting point for the architecture chapter; the deep-dive subpages cover one component each.
 

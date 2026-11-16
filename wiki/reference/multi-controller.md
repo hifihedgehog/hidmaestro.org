@@ -1,4 +1,4 @@
-﻿# Multi-Controller
+# Multi-Controller
 
 Up to N virtual controllers running simultaneously. Verified working with 6 mixed (2× Xbox Series BT + 2× Xbox 360 Wired + 2× DualSense) on the development laptop, a Lenovo Legion Pro 7 with a Ryzen 9 9955HX3D, and on an Intel Atom Z8350 fixture. The SDK sets no limit. Downstream APIs set their own, such as XInput's four slots.
 

@@ -1,4 +1,4 @@
-﻿# References
+# References
 
 Authoritative sources for every load-bearing claim in this wiki. Each entry covers a specific topic plus the wiki pages that cite it.
 

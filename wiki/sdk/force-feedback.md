@@ -1,4 +1,4 @@
-﻿# Force Feedback
+# Force Feedback
 
 HID PID 1.0 force feedback for DirectInput consumers (specification at [usb.org/document-library](https://www.usb.org/document-library); search "HID PID 1.0"). End-to-end: descriptor authoring, the four shared-section reports, driver-side EBI auto-allocation, and the canonical packet ordering DirectInput8 / SharpDX / `pid.dll` send.
 

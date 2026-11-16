@@ -1,4 +1,4 @@
-﻿# UMDF2 Driver Internals
+# UMDF2 Driver Internals
 
 `HIDMaestro.dll` is a UMDF2 lower filter driver under `mshidumdf.sys`. This page documents the driver's responsibilities, the IOCTL dispatch table, the device context, the worker thread, the seqno-gated `READ_REPORT` path, and the empirical reasons each design choice exists. UMDF2 framework reference: search Microsoft Learn for "User-Mode Driver Framework version 2".
 

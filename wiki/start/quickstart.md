@@ -1,4 +1,4 @@
-﻿# Quickstart
+# Quickstart
 
 The shortest possible path from "I just cloned this repo" to "I have a virtual Xbox 360 controller and a virtual DualSense both visible in `joy.cpl`, both responding to input, and rumble events being captured".
 

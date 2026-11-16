@@ -1,4 +1,4 @@
-﻿# Troubleshooting
+# Troubleshooting
 
 Symptom &rarr; cause &rarr; fix table for everything that's gone wrong in HIDMaestro deployments. Organized by phase: install, create, runtime input, output / FFB, multi-controller, teardown, and Windows-side state.
 

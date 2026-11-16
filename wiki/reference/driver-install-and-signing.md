@@ -1,4 +1,4 @@
-﻿# Driver installation and signing
+# Driver installation and signing
 
 Standard profiles use HIDMaestro's UMDF2 DLLs and a locally trusted signing certificate. Composite profiles use bundled Microsoft-signed USB/IP kernel-driver packages.
 

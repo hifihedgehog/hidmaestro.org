@@ -1,4 +1,4 @@
-﻿# Custom Profiles
+# Custom Profiles
 
 Three patterns for building controllers that aren't in the 338-profile catalog: clone-and-modify, build-from-scratch, and spoof. All three use `HMProfileBuilder` plus optionally `HidDescriptorBuilder`. Resulting profiles deploy through the same `HMContext.CreateController` path as catalog entries with no special-casing.
 

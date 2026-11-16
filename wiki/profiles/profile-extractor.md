@@ -1,4 +1,4 @@
-﻿# Profile Extractor
+# Profile Extractor
 
 `HIDMaestroProfileExtractor.exe` is a standalone WPF tool that produces a HIDMaestro profile JSON from any HID device currently plugged into Windows. It ships in every release ZIP under `HIDMaestroProfileExtractor/`. No admin required, no live input capture, no gameplay involvement: the tool reads only the cached HID descriptor Windows has already parsed.
 

@@ -1,4 +1,4 @@
-﻿# HID Descriptor Builder
+# HID Descriptor Builder
 
 `HidDescriptorBuilder` is the fluent API for constructing valid HID report descriptors from semantic building blocks. The user describes what they want (sticks, buttons, hat, triggers, FFB) and the builder emits the correct HID descriptor bytes. No hex authoring, no byte counting, no aligning report sizes by hand.
 

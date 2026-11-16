@@ -1,4 +1,4 @@
-﻿# Lifecycle and Teardown
+# Lifecycle and Teardown
 
 The full create / dispose orchestration. Per-archetype create budget, the three wait gates (`WaitForHidChild`, `WaitForDeviceStarted`, `WaitForXInputSlotClaim`), the SwD-first removal ordering, the PnP lock and removal test (v2.0.0), batch teardown, and the sweep `InstallDriver` runs first, which since v2.0.0 removes only what programs that have exited left behind.
 

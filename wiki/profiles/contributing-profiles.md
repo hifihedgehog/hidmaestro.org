@@ -1,4 +1,4 @@
-﻿# Contributing Profiles
+# Contributing Profiles
 
 This is the **user-facing** page for submitting a controller profile to the catalog. The catalog ships with HIDMaestro and gets pulled into every consumer (PadForge, anyone else integrating the SDK), so contributing your device's profile means every HIDMaestro user can emulate it without owning one themselves.
 

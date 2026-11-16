@@ -1,4 +1,4 @@
-﻿# SwDevice and PnP
+# SwDevice and PnP
 
 The PnP machinery behind every HIDMaestro virtual controller. This page covers the SWD migration story (why HIDMaestro can't use `SetupDiCreateDeviceInfoW` for everything), the slot-1-skip ContainerID fix, the stable device identity that keeps a controller's paths the same on every life, and why `hmswd.exe` exists as a separate native executable.
 

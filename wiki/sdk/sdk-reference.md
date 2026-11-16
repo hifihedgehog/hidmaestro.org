@@ -1,4 +1,4 @@
-﻿# SDK Reference
+# SDK Reference
 
 The full public surface of `HIDMaestro.Core.dll`. Five primary types: `HMContext` (process-wide entry point), `HMController` (live virtual device), `HMProfile` (immutable profile handle), `HMProfileBuilder` (custom-profile builder), and `HMGamepadState` (abstract input frame). Plus `HidDescriptorBuilder`, `HMDeviceExtractor`, `HMOemNameOverride`, the PID FFB output types, the port types of devices that carry several controllers, `HMBuildInfo`, and the SDK's exceptions.
 

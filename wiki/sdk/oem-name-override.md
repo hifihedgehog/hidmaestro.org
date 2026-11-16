@@ -1,4 +1,4 @@
-﻿# OEM Name Override
+# OEM Name Override
 
 `HMOemNameOverride` overrides the label `joy.cpl` and DirectInput consumers show for a given USB VID:PID. Use it when you want a HIDMaestro virtual (or any device sharing that VID:PID) to display a specific name in `joy.cpl` and DirectInput, overriding any Windows-shipped pre-populated label.
 

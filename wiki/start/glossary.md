@@ -1,4 +1,4 @@
-﻿# Glossary
+# Glossary
 
 Terms that show up across this wiki. Most are Windows-internal or HID-spec lingo with HIDMaestro-specific meaning attached.
 

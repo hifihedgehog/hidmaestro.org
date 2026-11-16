@@ -1,4 +1,4 @@
-﻿# Profile System
+# Profile System
 
 Every device HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 338 ship in the embedded catalog across 74 vendors, counting the distinct `vendor` values with Logitech (Saitek), Generic/Arduino, PXN/Lite Star and Sony Interactive Entertainment under their parent brands and Generic left out (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, Corsair, Keychron, Cherry, and 54 more). 51 are keyboards and 52 are mice. Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
 

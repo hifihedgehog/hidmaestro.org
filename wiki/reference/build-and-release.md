@@ -1,4 +1,4 @@
-﻿# Build and release
+# Build and release
 
 HIDMaestro builds and ships for x64 and ARM64 from one source tree. See [platform support](../start/platform-support.md).
 

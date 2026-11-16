@@ -1,4 +1,4 @@
-﻿# Output Passthrough
+# Output Passthrough
 
 How rumble, haptics, force feedback, adaptive trigger config, LED color, and any other host-to-device data reaches the consumer. The driver captures the bytes; the SDK surfaces them via `HMController.OutputReceived` events; the consumer decodes per the active profile.
 

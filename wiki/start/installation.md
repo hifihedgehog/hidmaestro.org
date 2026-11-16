@@ -1,4 +1,4 @@
-﻿# Installation
+# Installation
 
 Applications reference HIDMaestro.Core.dll and call HMContext.InstallDriver(). The SDK carries its driver payloads and installation tools.
 

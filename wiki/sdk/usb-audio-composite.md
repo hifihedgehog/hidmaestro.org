@@ -1,4 +1,4 @@
-﻿# Controller Audio (Composite USB Personas)
+# Controller Audio (Composite USB Personas)
 
 A real USB DualSense presents four interfaces: USB Audio Class speaker/haptics out, microphone in, and HID. The standard `dualsense` profile presents the HID interface only, because that is the one interface UMDF2 can create. Three profiles present the full composite:
 

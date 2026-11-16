@@ -1,4 +1,4 @@
-﻿# Cross-API Coverage
+# Cross-API Coverage
 
 How a single HIDMaestro virtual device reaches DirectInput, XInput, SDL3 / HIDAPI, browser Gamepad, and Windows.Gaming.Input simultaneously, and the tricks each path requires. Most user-mode virtual-controller projects get one or two of these APIs right; HIDMaestro targets all five.
 

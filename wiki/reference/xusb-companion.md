@@ -1,4 +1,4 @@
-﻿# XUSB Companion
+# XUSB Companion
 
 `HMXInput.dll` is a UMDF2 function driver that registers the XUSB device interface for profiles whose `xinput` block names `"via": "xusbCompanion"`: the ten Xbox 360 profiles, and a profile made outside the catalog that takes `xbox-360-wired`'s presentation from the identity defaults (VID 045E with "xbox" in its id, name or product string).
 

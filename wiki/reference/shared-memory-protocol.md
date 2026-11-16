@@ -1,4 +1,4 @@
-﻿# Shared Memory Protocol
+# Shared Memory Protocol
 
 The wire format of the five pagefile-backed shared memory sections HIDMaestro uses for cross-process communication between the SDK (consumer process) and the driver (`HIDMaestro.dll` in WUDFHost) plus the XUSB companion (`HMXInput.dll` in another WUDFHost). All five are RAM-only: no disk I/O.
 

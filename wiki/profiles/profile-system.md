@@ -1,6 +1,6 @@
 ﻿# Profile System
 
-Every device HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 337 ship in the embedded catalog across 73 vendors, counting the distinct `vendor` values with Logitech (Saitek), Generic/Arduino, PXN/Lite Star and Sony Interactive Entertainment under their parent brands and Generic left out (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, Corsair, Keychron, Cherry, and 53 more). 51 are keyboards and 52 are mice. Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
+Every device HIDMaestro can emulate is a JSON file in `profiles/<vendor>/<slug>.json`. 338 ship in the embedded catalog across 74 vendors, counting the distinct `vendor` values with Logitech (Saitek), Generic/Arduino, PXN/Lite Star and Sony Interactive Entertainment under their parent brands and Generic left out (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, Corsair, Keychron, Cherry, and 54 more). 51 are keyboards and 52 are mice. Runtime-built profiles authored via `HMProfileBuilder` use the identical schema and run through identical machinery.
 
 This page documents the JSON schema field-by-field, the three runtime architecture groups a profile can fall into, and how the SDK resolves a profile into a deployable virtual device at `CreateController` time.
 
@@ -547,7 +547,7 @@ The profile fields determine which of three architecture groups the runtime inst
 
 Profiles on HIDMaestro's UMDF2 driver with no XInput presentation. The parent is `ROOT\HIDClass\<token>`. As of v2.0.0 that includes the nine Microsoft profiles that are no XInput device, the SideWinder Force Feedback 2 and eight keyboards and mice, which carry no `IG_` and no XUSB compatible IDs, so SDL now lists them.
 
-Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, every keyboard and mouse, and most of the 337-profile catalog (307 profiles).
+Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, every keyboard and mouse, and most of the 338-profile catalog (307 profiles).
 
 ```
 ROOT\HIDClass\<token>               ← UMDF2 driver (mshidumdf host)
@@ -631,7 +631,7 @@ The full per-archetype sequence lives in `DeviceOrchestrator.cs`'s `SetupControl
 ## Loading the catalog
 
 ```csharp
-// Embedded catalog (337 profiles)
+// Embedded catalog (338 profiles)
 ctx.LoadDefaultProfiles();
 
 // Custom directory of JSON profiles
@@ -724,14 +724,14 @@ The modded profile isn't registered in the catalog: it's used directly for one `
 
 ## Catalog statistics
 
-As of v2.0.0:
+As of v2.2.0:
 
 | Metric | Count |
 |--------|-------|
-| Total profiles | 337 |
+| Total profiles | 338 |
 | Keyboards and mice | 103 (51 keyboards, 52 mice) |
-| Vendor folders | 59 |
-| Plain HID profiles | 307 |
+| Vendor folders | 60 |
+| Plain HID profiles | 308 |
 | Non-xinputhid Xbox profiles | 10 |
 | xinputhid Xbox profiles | 12 |
 | USB/IP profiles | 8 (seven composite personas and the GameCube adapter) |

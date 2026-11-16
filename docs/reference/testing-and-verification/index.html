@@ -2330,7 +2330,7 @@
 
 
 <h1 id="testing-and-verification">Testing and Verification<a class="headerlink" href="#testing-and-verification" title="Permanent link">&para;</a></h1>
-<p>The regression battery has 101 scenarios, S01 to S85 and S87 to S102, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms, the catalog's capture fidelity and removing HIDMaestro from a computer. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
+<p>The regression battery has 102 scenarios, S01 to S85 and S87 to S103, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms, the catalog's capture fidelity and removing HIDMaestro from a computer. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
 <p>For the wiki coverage of where these pipelines fit, see <a href="../build-and-release/">Build and Release</a>. For the underlying SDK mechanics they exercise, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 <hr />
 <h2 id="scriptsverifypy-cross-api-correctness"><code>scripts/verify.py</code>: cross-API correctness<a class="headerlink" href="#scriptsverifypy-cross-api-correctness" title="Permanent link">&para;</a></h2>
@@ -2432,7 +2432,7 @@
 <p><code>--filter</code> runs only the named API check. Useful for iterating on a specific subsystem without waiting for the full pipeline.</p>
 <hr />
 <h2 id="testregressionregression_batteryps1-lifecycle-battery"><code>test/regression/regression_battery.ps1</code>: lifecycle battery<a class="headerlink" href="#testregressionregression_batteryps1-lifecycle-battery" title="Permanent link">&para;</a></h2>
-<p>The 101-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, and a full removal of HIDMaestro inside Windows Sandbox. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
+<p>The 102-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, and a full removal of HIDMaestro inside Windows Sandbox. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># from an ELEVATED PowerShell, repo root or anywhere</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2639,7 +2639,7 @@
 <tr>
 <td><strong>S67_Wgi_Mapping</strong></td>
 <td>What WGI reads from a DualSense, a DualShock 4 v1 and a game pad built in code, with the XUSB Xbox 360 pad as the same-window positive control (foundation-sunshine #1056)</td>
-<td>A DualSense stays a RawGameController with no GameInput key, as a real one does. A DualShock 4 v1 reads correctly through the mapping Windows ships for it. Only the one shape the table fits gets a table, dropped on dispose.</td>
+<td>A DualSense stays a RawGameController with no GameInput key, as a real one does. Where GameInput has written HapticFeedback = DS5 to its key for 054C:0CE6, Windows.Gaming.Input lists no DualSense, real or virtual (microsoftconnect/GameInput #61), and the two listing checks are skipped. A DualShock 4 v1 reads correctly through the mapping Windows ships for it. Only the one shape the table fits gets a table, dropped on dispose.</td>
 </tr>
 <tr>
 <td><strong>S68_Vr_Driver_Conflict</strong></td>
@@ -2796,6 +2796,11 @@
 <td>The SDK's loops on a pass that fails (v2.1.0)</td>
 <td>The device clock, the protocol host's tick, the USB/IP input and audio pumps, the audio event thread, the server's accept loop, a connection that ends on the server's own exception, the VR haptic reader and the output reader each outlive a failing pass, wait between passes, log the failures at powers of two and the end of the episode, and cost under 5% of a spinning thread's cycles. A protocol clock period under 0.125 ms is refused, and the audio pump with no waitable timer sleeps instead of spinning. Each case runs offline, in a child process.</td>
 </tr>
+<tr>
+<td><strong>S103_Sinput_Persona</strong></td>
+<td>The SInput personas, against SDL's SInput driver (v2.2.0)</td>
+<td>Over raw HID, on a controller with a nonzero index, <code>sinput</code> answers SDL's features command (output report 0x03, command 0x02) with the issue's 64-byte input report 0x02, SINPUT-LIB-HID's layout with OpenPuck's one finger per touchpad, and <code>joypad-steam-input</code> with joypad-os's bytes 0 to 19 and a serial of its own, the last serial byte the controller's index. Data-only frames arrive as report 0x01. Type 2 haptics decode to <code>leftMotor</code> and <code>rightMotor</code>, type 1 on <code>sinput</code> to the louder amplitude's high byte per side, and RGB on <code>joypad-steam-input</code> to <code>lightbarRed</code>, <code>lightbarGreen</code> and <code>lightbarBlue</code>. The features command, a player LED write, RGB on <code>sinput</code> and type 1 on <code>joypad-steam-input</code> decode nothing. With 20 raw frames 0.1 ms apart after each of 100 features commands, every command gets its reply. The unfiltered SDL3 build of PadForge's fork, its revision stamped, then opens two <code>sinput</code> pads: their name, standard type, a serial each, accelerometer and gyroscope, two touchpads, rumble without player LED or RGB capabilities, South and the left stick from a submitted frame, rumble decoded on its own pad, a refused color, and no player LED or color on the wire. Then two <code>joypad-steam-input</code> pads: their name, a serial each, no sensors and no touchpads, rumble, player LED and RGB capabilities, South and the left stick, rumble and a color decoded on their own pad, and on the wire the features command, each pad's player number, haptics and the color.</td>
+</tr>
 </tbody>
 </table>
 <p>Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1"><code>test/regression/regression_battery.ps1</code></a> is the authoritative full list.</p>
@@ -2871,7 +2876,7 @@
 <ol>
 <li>Build: <code>build_all.cmd</code> with <code>HMSkipArm64</code>, <code>HMSkipUsbip</code> and <code>HM_STAMP_TIME</code> cleared, then <code>scripts\check_build_layouts.ps1</code> (v2.0.0), then the test app, the profile extractor and the probe set. <code>check_build_layouts.ps1</code> builds the native payloads from the pinned NuGet WDK packages, under the variables an EWDK prompt sets (x64 only) and with roots that hold no kit, runs SDK-project builds of each layout, and checks the <code>HM_STAMP_TIME</code> stamping.</li>
 <li>The Switch Pro protocol check, the Switch descriptor idle check and the Switch Pro SDL3 acceptance.</li>
-<li><code>regression_battery.ps1</code>: full 101-scenario battery. <strong>101/101 PASS required.</strong></li>
+<li><code>regression_battery.ps1</code>: full 102-scenario battery. <strong>102/102 PASS required.</strong></li>
 <li>The script prints the result.</li>
 </ol>
 <p>The script does not run <code>verify.py</code>, <code>HIDMaestroTest cleanup</code> or a profile extractor smoke test.</p>
@@ -2887,7 +2892,7 @@
 <li><a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/README.md"><code>test/regression/README.md</code></a>: the in-repo battery doc.</li>
 </ul>
 <h2 id="arm64-and-usbip-validation">ARM64 and USB/IP validation<a class="headerlink" href="#arm64-and-usbip-validation" title="Permanent link">&para;</a></h2>
-<p>The v2.1.0 battery passed all 101 scenarios on the development laptop. On the Celeron J4125, 97 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See <a href="../../start/platform-support/#validation">platform support</a> for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.</p>
+<p>The v2.2.0 battery passed all 102 scenarios on the development laptop. The Celeron J4125 was not reachable for this release. On 2.1.0 there, 97 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. See <a href="../../start/platform-support/#validation">platform support</a> for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport. ARM64 hardware has not run the battery.</p>
 
 
 

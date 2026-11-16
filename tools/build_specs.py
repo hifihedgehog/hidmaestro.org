@@ -23,7 +23,7 @@ CATS = [
    "Controller audio and haptics", "Wii U GameCube adapter",
    "Capture a controller you own"]),
  ("catalog", "The catalog", [
-   "337 device profiles", "Keyboards and mice", "Devices are JSON"]),
+   "338 device profiles", "Keyboards and mice", "Devices are JSON"]),
  ("latency", "Latency and transport", [
    "~35 µs measured input latency", "Event-driven output at 0.15 ms",
    "No socket, no batching cap", "The comparison, honestly",

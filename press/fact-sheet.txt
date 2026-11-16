@@ -1,18 +1,18 @@
 HIDMaestro
-Product information | October 26, 2026
+Product information | November 16, 2026
 
 HIDMaestro is a free, open-source SDK for creating virtual game controllers, keyboards and mice on Windows. Applications use its C# API and JSON device profiles to define device identity, submit input, and receive output such as rumble and force feedback. PadForge uses HIDMaestro for virtual controller output. HIDMaestro is available under the MIT license, including for commercial use.
 
 Website: https://hidmaestro.org/
 Press resources: https://hidmaestro.org/press/
-Current release: v2.1.0, October 26, 2026
-Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.1.0
+Current release: v2.2.0, November 16, 2026
+Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.2.0
 Performance, release over release: https://hidmaestro.org/performance.html
 Platforms: Windows 10 and 11 on x64. Windows 11 on ARM64.
 SDK: C# / .NET 10. The driver and device profiles are embedded in HIDMaestro.Core.dll.
 Price: Free.
 License: MIT. Commercial use is permitted subject to the license terms.
-License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.1.0/LICENSE
+License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.2.0/LICENSE
 
 Architecture
 Applications submit input through the C# SDK. JSON profiles describe device
@@ -33,12 +33,16 @@ root-hub filter too, which an SDK through 2.0.0 installed.
 Version 2.1.0 fixes frames that arrived late, out of order or twice, keeps the
 Xbox 360 profiles' HID devices alive across a system sleep, and cuts the work
 the SDK, the driver and the USB/IP transport do for each frame.
+Version 2.2.0 adds sinput, an SInput gamepad that SDL opens through its
+SInput driver, and has joypad-steam-input answer the same features command.
+The driver is the 2.1.0 build.
 
 Setup and validation
 Device creation and driver installation require administrator rights.
-For 2.1.0, the 101-scenario regression battery passed on the development
-laptop, a 16-core Lenovo Legion Pro 7 on Windows 11. On a 4-core Celeron
-J4125 Windows 10 mini PC, 97 scenarios passed and 4 skipped, leaving out the
+For 2.2.0, the 102-scenario regression battery passed on the development
+laptop, a 16-core Lenovo Legion Pro 7 on Windows 11. The 4-core Celeron
+J4125 Windows 10 mini PC was not reachable for this release. On 2.1.0
+there, 97 scenarios passed and 4 skipped, leaving out the
 checks that need a Steam client, a desktop session or Windows Sandbox.
 ARM64 binaries were built and signed, but the regression battery has not
 been run on ARM64 hardware.

@@ -57,7 +57,7 @@
             <a href="/docs/" class="btn btn-ghost">Read the docs</a>
         </div>
         <div class="hero-new-row reveal" data-d="4">
-            <a class="hero-new" href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.1.0" target="_blank" rel="noopener"><b>New in v2.1.0</b><span>Frames that arrive once and in order, and less work per frame</span></a>
+            <a class="hero-new" href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.2.0" target="_blank" rel="noopener"><b>New in v2.2.0</b><span>An SInput gamepad that SDL's SInput driver opens</span></a>
         </div>
     </div>
 
@@ -72,7 +72,7 @@
     <div class="container reveal" data-d="4">
         <div class="trust">
             <div class="trust-item"><span>The engine inside <a href="https://padforge.org/" target="_blank" rel="noopener"><b>PadForge</b></a></span></div>
-            <div class="trust-item"><span><b>337</b> device profiles</span></div>
+            <div class="trust-item"><span><b>338</b> device profiles</span></div>
             <div class="trust-item"><span><b>~35 &micro;s</b> measured latency</span></div>
             <div class="trust-item"><span><b>MIT licensed.</b> Commercial use welcome.</span></div>
         </div>
@@ -98,7 +98,7 @@
 
             <div class="manifest reveal" data-d="1">
                 <div class="mf" style="--mf: var(--ember)"><b>Exact hardware identity</b><span>VID/PID, strings, descriptors, layout, and the bus type itself</span></div>
-                <div class="mf" style="--mf: var(--brand-ps)"><b>337 device profiles</b><span>Xbox 360 to HOTAS to keyboards, every one a JSON file</span></div>
+                <div class="mf" style="--mf: var(--brand-ps)"><b>338 device profiles</b><span>Xbox 360 to HOTAS to keyboards, every one a JSON file</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Devices are JSON</b><span>No device-specific code: reports, protocols and answers are profile data</span></div>
                 <div class="mf" style="--mf: var(--brand-xbox)"><b>~35 &micro;s measured latency</b><span>10,000 iterations, reproducible with one command</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Every gaming API at once</b><span>DirectInput, XInput, SDL3, browser, WGI, RawInput</span></div>
@@ -118,7 +118,7 @@
                 <div class="mf" style="--mf: var(--brand-ps)"><b>Self-bootstrapping install</b><span>No EV certificate, no test-signing mode, no reboot</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Hot-plug, no reboot</b><span>Create, live-swap, and remove, with no leftover devices</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Six-plus controllers at once</b><span>Correct per-controller order on every API</span></div>
-                <div class="mf" style="--mf: var(--brand-nin)"><b>A 101-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
+                <div class="mf" style="--mf: var(--brand-nin)"><b>A 102-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
             </div>
         </div>
     </div>
@@ -180,7 +180,7 @@
 <section class="section-tight section-alt">
     <div class="container">
         <div class="stat-grid">
-            <div class="stat reveal"><div class="stat-n">337</div><div class="stat-l">Device profiles</div></div>
+            <div class="stat reveal"><div class="stat-n">338</div><div class="stat-l">Device profiles</div></div>
             <div class="stat reveal" data-d="2"><div class="stat-n">~35<em>&micro;s</em></div><div class="stat-l">Median single-press</div></div>
             <div class="stat reveal" data-d="3"><div class="stat-n">100</div><div class="stat-l">Battery scenarios</div></div>
             <div class="stat reveal" data-d="4"><div class="stat-n">0</div><div class="stat-l">Kernel drivers for standard profiles</div></div>
@@ -357,7 +357,7 @@
         <div class="details reveal" data-d="2" style="max-width:760px; margin-inline:auto">
             <details class="detail">
                 <summary>100 regression scenarios</summary>
-                <div class="detail-body">A 101-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client and its firmware updater, the browser Gamepad API, WGI, Raw Input for every catalog keyboard and mouse, programs running side by side as separate processes, NativeAOT and single-file apps, Dolphin, Slippi and SDL reading the GameCube adapter persona, the battery reply a pad gives XInput, the driver catalogs for both architectures, the device identity of every family across nine lives, and a full removal of HIDMaestro inside Windows Sandbox. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
+                <div class="detail-body">A 102-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client and its firmware updater, the browser Gamepad API, WGI, Raw Input for every catalog keyboard and mouse, programs running side by side as separate processes, NativeAOT and single-file apps, Dolphin, Slippi and SDL reading the GameCube adapter persona, the battery reply a pad gives XInput, the driver catalogs for both architectures, the device identity of every family across nine lives, and a full removal of HIDMaestro inside Windows Sandbox. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
             </details>
             <details class="detail">
                 <summary>Six pads, every API, correct order</summary>
@@ -394,7 +394,7 @@
                 <div class="details reveal" data-d="3">
                     <details class="detail">
                         <summary>Reference the SDK</summary>
-                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 337-profile catalog, the driver binaries for x64 and ARM64, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
+                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 338-profile catalog, the driver binaries for x64 and ARM64, and the signing tools embedded. Grab it from a release ZIP or build from source.</div>
                     </details>
                     <details class="detail">
                         <summary>Install the driver</summary>
@@ -445,7 +445,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
                     </thead>
                     <tbody>
                         <tr><td>Kernel driver required</td><td class="us">No, except the composite USB personas</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td></tr>
-                        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 337 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td></tr>
+                        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 338 profiles</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td></tr>
                         <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td></tr>
                         <tr><td>Local single-press latency</td><td class="us">~35 &micro;s measured</td><td>168 &micro;s published</td><td>N/A</td><td>N/A</td></tr>
                         <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Retired</td><td>Stale</td></tr>

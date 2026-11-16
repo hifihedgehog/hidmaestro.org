@@ -4,7 +4,7 @@
         "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller carries the hardware and compatible IDs a real device of its transport carries, classic BTHENUM or LE BTHLEDevice, so it reports as Bluetooth, not as a USB device wearing its name. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
     },
     {
-        "t":  "337 device profiles",
+        "t":  "338 device profiles",
         "d":  "Embedded profiles across 73 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, keyboards, mice, and more. Every device is a JSON file. Adding support for a new one means writing JSON, not modifying code."
     },
     {
@@ -113,11 +113,11 @@
     },
     {
         "t":  "One DLL",
-        "d":  "HIDMaestro.Core.dll contains the 337-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and usbip-win2\u0027s signed host controller driver for both, 18.1 MB in all as of v2.0.1. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host. A source build can leave out the ARM64 payload or the USB/IP transport, and HMBuildInfo reports what a build carries."
+        "d":  "HIDMaestro.Core.dll contains the 338-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and usbip-win2\u0027s signed host controller driver for both, 18.1 MB in all as of v2.0.1. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host. A source build can leave out the ARM64 payload or the USB/IP transport, and HMBuildInfo reports what a build carries."
     },
     {
         "t":  "Regression coverage",
-        "d":  "The battery has 101 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, every catalog keyboard and mouse through Raw Input, programs running side by side as separate processes, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, every raw value of every catalog conversion through the SDK\u0027s rounding, the Sony, Valve and Nintendo vendor-blob reports against golden bytes, profiles and device models loaded strictly, every report program three ways, the protocol engine and device clock, the version contract on the live driver, a Joy-Con built from the Switch Pro\u0027s mechanisms, the SDK and drivers checked for device shortcuts, and a full removal of HIDMaestro inside Windows Sandbox. Production signing and the full HIDMaestro integration gate remain pending."
+        "d":  "The battery has 102 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, every catalog keyboard and mouse through Raw Input, programs running side by side as separate processes, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, every raw value of every catalog conversion through the SDK\u0027s rounding, the Sony, Valve and Nintendo vendor-blob reports against golden bytes, profiles and device models loaded strictly, every report program three ways, the protocol engine and device clock, the version contract on the live driver, a Joy-Con built from the Switch Pro\u0027s mechanisms, the SDK and drivers checked for device shortcuts, and a full removal of HIDMaestro inside Windows Sandbox. Production signing and the full HIDMaestro integration gate remain pending."
     },
     {
         "t":  "Judged by the real consumers",

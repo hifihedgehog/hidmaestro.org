@@ -35,7 +35,7 @@ Safe to call on every startup. Returns the number restored. See [OEM Name Overri
 
 ```csharp
 using var ctx = new HMContext();
-int loaded = ctx.LoadDefaultProfiles();   // returns 337
+int loaded = ctx.LoadDefaultProfiles();   // returns 338
 ```
 
 `HMContext` is the SDK's process-wide entry point. The constructor is cheap: it kicks off three background prewarm tasks (staging the driver payload when a deploy is coming, profile catalog parse, GameInput service warm-up) but doesn't block.

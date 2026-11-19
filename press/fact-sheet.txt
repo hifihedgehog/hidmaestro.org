@@ -1,23 +1,24 @@
 HIDMaestro
-Product information | November 16, 2026
+Product information | November 19, 2026
 
 HIDMaestro is a free, open-source SDK for creating virtual game controllers, keyboards and mice on Windows. Applications use its C# API and JSON device profiles to define device identity, submit input, and receive output such as rumble and force feedback. PadForge uses HIDMaestro for virtual controller output. HIDMaestro is available under the MIT license, including for commercial use.
 
 Website: https://hidmaestro.org/
 Press resources: https://hidmaestro.org/press/
-Current release: v2.2.0, November 16, 2026
-Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.2.0
+Current release: v2.3.0, November 19, 2026
+Release notes and downloads: https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.3.0
 Performance, release over release: https://hidmaestro.org/performance.html
 Platforms: Windows 10 and 11 on x64. Windows 11 on ARM64.
 SDK: C# / .NET 10. The driver and device profiles are embedded in HIDMaestro.Core.dll.
 Price: Free.
 License: MIT. Commercial use is permitted subject to the license terms.
-License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.2.0/LICENSE
+License text: https://github.com/hifihedgehog/HIDMaestro/blob/v2.3.0/LICENSE
 
 Architecture
 Applications submit input through the C# SDK. JSON profiles describe device
-identity and reports. The core HID/XUSB paths use Windows UMDF2. Composite USB
-profiles use a signed usbip-win2 transport for USB HID, audio and vendor interfaces.
+identity and reports. On x64 the core HID/XUSB paths use Windows UMDF2. Composite USB
+profiles, and every profile on ARM64, use a signed usbip-win2 transport for USB
+HID, audio and vendor interfaces.
 Output events return to the application, which handles physical-device routing.
 Input API support depends on the selected profile.
 Version 2.0.0 moves device behavior out of code and into the profiles.
@@ -36,16 +37,23 @@ the SDK, the driver and the USB/IP transport do for each frame.
 Version 2.2.0 adds sinput, an SInput gamepad that SDL opens through its
 SInput driver, and has joypad-steam-input answer the same features command.
 The driver is the 2.1.0 build.
+Version 2.3.0 runs every profile on Windows on ARM64. Windows there does not
+install HIDMaestro's driver, so each controller is a USB device on
+usbip-win2's host controller that Windows' own drivers bind, and a program
+needs no code change. On x64 the UMDF2 driver stays the default, and any
+profile can run on either backend. The DLL builds and signs the driver's
+catalogs itself and no longer carries Windows SDK or WDK tools. The driver
+is the 2.1.0 build.
 
 Setup and validation
 Device creation and driver installation require administrator rights.
-For 2.2.0, the 102-scenario regression battery passed on the development
-laptop, a 16-core Lenovo Legion Pro 7 on Windows 11. The 4-core Celeron
-J4125 Windows 10 mini PC was not reachable for this release. On 2.1.0
-there, 97 scenarios passed and 4 skipped, leaving out the
+For 2.3.0, the 111-scenario regression battery passed on the development
+laptop, a 16-core Lenovo Legion Pro 7 on Windows 11. On the 4-core Celeron
+J4125 Windows 10 mini PC, 107 scenarios passed and 4 skipped on the UMDF2
+driver and again with every controller on USB/IP, leaving out the
 checks that need a Steam client, a desktop session or Windows Sandbox.
-ARM64 binaries were built and signed, but the regression battery has not
-been run on ARM64 hardware.
+On an ARM64 Surface, where every controller runs on USB/IP, 107 passed
+and 4 skipped.
 Installation: https://hidmaestro.org/docs/start/installation/
 Platform support: https://hidmaestro.org/docs/start/platform-support/
 Quickstart: https://hidmaestro.org/docs/start/quickstart/

@@ -36,7 +36,7 @@ does.</p>
   <a href="profiles/">
     <span class="pf-eyebrow">Every device</span>
     <h3>Profiles</h3>
-    <p>The JSON profile system, 338 built-in devices, custom and cloned devices, and the extractor that captures yours.</p>
+    <p>The JSON profile system, 344 built-in devices, custom and cloned devices, and the extractor that captures yours.</p>
   </a>
   <a href="troubleshooting/">
     <span class="pf-eyebrow">Something broke</span>
@@ -80,7 +80,7 @@ does.</p>
 A C# SDK and matching UMDF2 driver. Add the SDK to your app, call
 `HMContext.InstallDriver()` once, and `HMContext.CreateController(profile)`
 whenever you need a virtual gamepad, keyboard or mouse. It replaces ViGEmBus and vJoy with one
-user-mode driver, 338 embedded profiles, runtime-built custom profiles,
+user-mode driver, 344 embedded profiles, runtime-built custom profiles,
 HID PID 1.0 force feedback, and live-swap teardown that does not leak PnP
 state.
 

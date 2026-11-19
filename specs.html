@@ -227,7 +227,7 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>Every profile on ARM64 Windows</dt>
-                    <dd>Windows on ARM64 and Windows in S mode do not install HIDMaestro's UMDF2 driver, so there every controller is a USB device that HIDMaestro's user-mode code serves through usbip-win2's host controller, and Windows' own drivers bind it: HidUsb for the HID profiles, xusb22 for the Xbox 360 profiles and Windows' GIP drivers for the Xbox One and Series profiles. HMBackend.Auto makes that choice before anything on the machine changes, so a program written for x64 runs on ARM64 with no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro.</dd>
+                    <dd>HIDMaestro signs its UMDF2 driver on each machine, and Windows on ARM64 and Windows in S mode do not install a driver signed that way. There every controller runs on HIDMaestro's USB/IP driver, a USB device that HIDMaestro's user-mode code serves through the usbip-win2 host controller it carries. Windows' own drivers bind it: HidUsb for the HID profiles, xusb22 for the Xbox 360 profiles and Windows' GIP drivers for the Xbox One and Series profiles. HMBackend.Auto makes that choice before anything on the machine changes, so a program written for x64 runs on ARM64 with no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Windows 10 and 11</dt>
@@ -544,7 +544,7 @@
                 </details>
                 <details class="detail">
                     <summary>Does HIDMaestro support ARM64?</summary>
-                    <div class="detail-body">Yes, every profile as of v2.3.0. Windows on ARM64 does not install HIDMaestro's UMDF2 driver, so there each controller is a USB device on usbip-win2's host controller that Windows' own drivers bind, and a program needs no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro.</div>
+                    <div class="detail-body">Yes, every profile as of v2.3.0. HIDMaestro signs its UMDF2 driver on each machine, and Windows on ARM64 does not install a driver signed that way. So there every controller runs on HIDMaestro's USB/IP driver, the usbip-win2 host controller it carries, as a USB device that Windows' own drivers bind, and a program needs no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro.</div>
                 </details>
             </div>
         </section>

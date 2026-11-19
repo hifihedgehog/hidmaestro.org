@@ -37,13 +37,15 @@ the SDK, the driver and the USB/IP transport do for each frame.
 Version 2.2.0 adds sinput, an SInput gamepad that SDL opens through its
 SInput driver, and has joypad-steam-input answer the same features command.
 The driver is the 2.1.0 build.
-Version 2.3.0 runs every profile on Windows on ARM64. Windows there does not
-install HIDMaestro's driver, so each controller is a USB device on
-usbip-win2's host controller that Windows' own drivers bind, and a program
-needs no code change. On x64 the UMDF2 driver stays the default, and any
-profile can run on either backend. The DLL builds and signs the driver's
-catalogs itself and no longer carries Windows SDK or WDK tools. The driver
-is the 2.1.0 build.
+Version 2.3.0 runs every profile on Windows on ARM64. HIDMaestro has two
+drivers: the UMDF2 driver, which it signs on each machine, and the USB/IP
+driver, the usbip-win2 host controller it carries. Windows on ARM64 does
+not install a driver signed on the machine, so every controller there
+runs on the USB/IP driver, as a USB device that Windows' own drivers
+bind, and a program needs no code change. On x64 the UMDF2 driver stays
+the default, and any profile can run on either driver. The DLL builds
+and signs the UMDF2 driver's catalogs itself and no longer carries
+Windows SDK or WDK tools. The UMDF2 driver is the 2.1.0 build.
 
 Setup and validation
 Device creation and driver installation require administrator rights.

@@ -394,7 +394,7 @@
                 <div class="details reveal" data-d="3">
                     <details class="detail">
                         <summary>Reference the SDK</summary>
-                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 344-profile catalog and the driver binaries and usbip-win2's host controller for x64 and ARM64 embedded. Grab it from a release ZIP or build from source.</div>
+                        <div class="detail-body">One DLL, HIDMaestro.Core.dll, with the 344-profile catalog and both drivers, UMDF2 and USB/IP, embedded for x64 and ARM64. Grab it from a release ZIP or build from source.</div>
                     </details>
                     <details class="detail">
                         <summary>Install the driver</summary>
@@ -492,7 +492,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
         </div>
         <p class="dl-arch reveal" data-d="3">v2.0.1 adds <b>HIDMaestroUninstall.exe</b> to each ZIP. It removes HIDMaestro from a computer and needs no .NET runtime. <a href="docs/start/removing-hidmaestro/">Read what it removes and what stays</a>.</p>
         <p class="dl-arch reveal" data-d="3">Programs built on HIDMaestro 1.x must move to 2.0.0. <a href="docs/start/migration/">Read what changes</a>.</p>
-        <p class="dl-arch reveal" data-d="3">v2.3.0 runs every profile on <b>ARM64 Windows</b>, each controller a USB device on usbip-win2's host controller. Each release has an x64 ZIP and an ARM64 ZIP, and HIDMaestro.Core.dll is the same file in both. <a href="docs/start/platform-support/">Read what was measured on each</a>.</p>
+        <p class="dl-arch reveal" data-d="3">v2.3.0 runs every profile on <b>ARM64 Windows</b>, each controller a USB device on HIDMaestro's USB/IP driver. Each release has an x64 ZIP and an ARM64 ZIP, and HIDMaestro.Core.dll is the same file in both. <a href="docs/start/platform-support/">Read what was measured on each</a>.</p>
         <div class="dl-meta reveal" data-d="3">
             <span>One DLL</span><span>x64 and ARM64</span><span>MIT</span>
         </div>

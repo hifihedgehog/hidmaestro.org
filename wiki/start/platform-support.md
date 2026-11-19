@@ -1,11 +1,11 @@
 # Platform support
 
-HIDMaestro runs every profile on x64 and ARM64 Windows as of v2.3.0. One `HIDMaestro.Core.dll` serves both. On x64 a controller runs on HIDMaestro's UMDF2 driver, which the SDK signs with a certificate it creates on the machine. Windows on ARM64 and Windows in S mode do not install a driver signed that way, so there every controller is a USB device that HIDMaestro's user-mode code serves through usbip-win2's host controller, and Windows' own drivers bind it. `HMBackend.Auto` makes that choice before anything on the machine changes, so a program needs no code change, and a program on x64 can put any profile on USB/IP with `HMBackend.Usbip`. The [README](https://github.com/hifihedgehog/HIDMaestro#where-the-driver-installs) has the members.
+HIDMaestro runs every profile on x64 and ARM64 Windows as of v2.3.0. One `HIDMaestro.Core.dll` serves both. HIDMaestro has two drivers. On x64 a controller runs by default on the UMDF2 driver, which the SDK signs with a certificate it creates on the machine. Windows on ARM64 and Windows in S mode do not install a driver signed that way, so there every controller runs on the USB/IP driver: a USB device that HIDMaestro's user-mode code serves through the usbip-win2 host controller it carries, and Windows' own drivers bind it. `HMBackend.Auto` makes that choice before anything on the machine changes, so a program needs no code change, and a program on x64 can put any profile on USB/IP with `HMBackend.Usbip`. The [README](https://github.com/hifihedgehog/HIDMaestro#where-the-driver-installs) has the members.
 
 | Component | x64 Windows | ARM64 Windows |
 |---|---|---|
 | Managed SDK | AnyCPU assembly | Same assembly |
-| HID and XInput devices | HIDMaestro's UMDF2 driver and XUSB companion | USB devices on usbip-win2's host controller, which Windows' HidUsb, xusb22 and GIP drivers bind |
+| HID and XInput devices | The UMDF2 driver and its XUSB companion | USB devices on the USB/IP driver, which Windows' HidUsb, xusb22 and GIP drivers bind |
 | Device helper | Native x64 | Carried as ARM64, not used there |
 | USB/IP transport | Microsoft-signed x64 package | Microsoft-signed ARM64 package |
 | Test app, example, ProfileExtractor | `win-x64` | `win-arm64` |

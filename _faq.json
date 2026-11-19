@@ -5,11 +5,11 @@
     },
     {
         "q":  "Do I need to enable test-signing mode?",
-        "a":  "No. On x64 standard profiles use UMDF2 with a locally trusted certificate. The bundled USB/IP kernel packages retain their upstream Microsoft signatures. The SDK does not enable Windows test-signing mode."
+        "a":  "No. Standard profiles use UMDF2 with a locally trusted certificate. The bundled USB/IP kernel packages retain their upstream Microsoft signatures. The SDK does not enable Windows test-signing mode."
     },
     {
         "q":  "Does anything kernel-mode get installed?",
-        "a":  "On x64, the composite Sony, Valve and Nintendo profiles install the bundled usbip-win2 0.9.8.1 transport on a machine that has none, and on ARM64 every profile uses it. As of v2.0.1 that is its host controller alone: the SDK never runs usbip-win2\u0027s installer or installs its root-hub filter, so no USB device drops. Standard profiles on x64 use the Windows UMDF2 stack. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, with no window and no USB device dropping, so there is nothing to do when updating."
+        "a":  "Composite Sony, Valve and Nintendo profiles install the bundled usbip-win2 0.9.8.1 transport on a machine that has none. As of v2.0.1 that is its host controller alone: the SDK never runs usbip-win2\u0027s installer or installs its root-hub filter, so no USB device drops. Standard profiles use the Windows UMDF2 stack. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, with no window and no USB device dropping, so there is nothing to do when updating."
     },
     {
         "q":  "Can I add a controller you don\u0027t ship?",
@@ -17,7 +17,7 @@
     },
     {
         "q":  "How is this different from ViGEmBus, vJoy, or VIIPER?",
-        "a":  "Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 344 of them, down to the bus type on x64, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side."
+        "a":  "Those tools install kernel drivers and present a small set of fixed device types. HIDMaestro runs in user mode and presents the exact identity of the profile you pick, 338 of them, down to the bus type, and adding a device means writing JSON rather than driver code. VIIPER additionally routes input through a network stack even for local play. The full comparison table above puts the tools side by side."
     },
     {
         "q":  "Does it work with Steam?",
@@ -33,7 +33,7 @@
     },
     {
         "q":  "Does it work in NativeAOT and single-file apps?",
-        "a":  "Yes, as of v2.0.0, for NativeAOT and for trimmed, self-contained, single-file apps, on x64 and ARM64. The battery runs the two apps for the machine\u0027s architecture, the x64 apps on x64 and the ARM64 apps on an ARM64 Microsoft Surface Pro."
+        "a":  "Yes, as of v2.0.0, for NativeAOT and for trimmed, self-contained, single-file apps, on x64 and ARM64. The battery runs the two apps for the machine\u0027s architecture, so the ARM64 apps are built and published and have not run on ARM64 hardware."
     },
     {
         "q":  "Does the GameCube adapter work with Dolphin and Slippi?",
@@ -41,6 +41,6 @@
     },
     {
         "q":  "Does HIDMaestro support ARM64?",
-        "a":  "Yes, every profile as of v2.3.0. HIDMaestro self-signs its UMDF2 driver on each machine, and Windows on ARM64 does not allow installing a self-signed UMDF2 driver. So there every controller runs on HIDMaestro\u0027s USB/IP driver, the usbip-win2 host controller it carries, as a USB device that Windows\u0027 own drivers bind, and a program needs no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro."
+        "a":  "Yes. Use v1.9.1 or later. One HIDMaestro.Core.dll serves x64 and ARM64 and carries a native driver payload for each, and the release has an ARM64 ZIP with an ARM64 test app and profile extractor. The ARM64 payload builds and is signed, and the battery builds its driver catalog on every run. No ARM64 machine has run the battery yet."
     }
 ]

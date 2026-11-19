@@ -2674,7 +2674,7 @@
 
 
 <h1 id="profile-system">Profile System<a class="headerlink" href="#profile-system" title="Permanent link">&para;</a></h1>
-<p>Every device HIDMaestro can emulate is a JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code>. 344 ship in the embedded catalog across 74 vendors, counting the distinct <code>vendor</code> values with Logitech (Saitek), Generic/Arduino, PXN/Lite Star and Sony Interactive Entertainment under their parent brands and Generic left out (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, Corsair, Keychron, Cherry, and 54 more). 51 are keyboards and 52 are mice. Runtime-built profiles authored via <code>HMProfileBuilder</code> use the identical schema and run through identical machinery.</p>
+<p>Every device HIDMaestro can emulate is a JSON file in <code>profiles/&lt;vendor&gt;/&lt;slug&gt;.json</code>. 338 ship in the embedded catalog across 74 vendors, counting the distinct <code>vendor</code> values with Logitech (Saitek), Generic/Arduino, PXN/Lite Star and Sony Interactive Entertainment under their parent brands and Generic left out (Microsoft, Sony, Nintendo, Logitech, Thrustmaster, Fanatec, MOZA, SimuCUBE, VKB, VIRPIL, WinWing, Honeycomb, Hori, 8BitDo, Razer, Steelseries, Valve, Corsair, Keychron, Cherry, and 54 more). 51 are keyboards and 52 are mice. Runtime-built profiles authored via <code>HMProfileBuilder</code> use the identical schema and run through identical machinery.</p>
 <p>This page documents the JSON schema field-by-field, the three runtime architecture groups a profile can fall into, and how the SDK resolves a profile into a deployable virtual device at <code>CreateController</code> time.</p>
 <hr />
 <h2 id="on-disk-layout">On-disk layout<a class="headerlink" href="#on-disk-layout" title="Permanent link">&para;</a></h2>
@@ -3620,7 +3620,7 @@
 <p>The profile fields determine which of three architecture groups the runtime instance lands in. USB/IP profiles (<code>"backend": "usbip"</code>), the composite personas and the GameCube adapter, are none of the three: see <a href="../../sdk/usb-audio-composite/">Composite USB Personas</a>. Disposal speed, device-tree shape, and downstream API mechanics all vary by group. See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the per-group teardown latency table. The create and dispose times in the headings below were measured before v2.0.0.</p>
 <h3 id="1-plain-hid-200-ms-create-80-ms-dispose">1. Plain HID (~200 ms create, ~80 ms dispose)<a class="headerlink" href="#1-plain-hid-200-ms-create-80-ms-dispose" title="Permanent link">&para;</a></h3>
 <p>Profiles on HIDMaestro's UMDF2 driver with no XInput presentation. The parent is <code>ROOT\HIDClass\&lt;token&gt;</code>. As of v2.0.0 that includes the nine Microsoft profiles that are no XInput device, the SideWinder Force Feedback 2 and eight keyboards and mice, which carry no <code>IG_</code> and no XUSB compatible IDs, so SDL now lists them.</p>
-<p>Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, every keyboard and mouse, and most of the 344-profile catalog (307 profiles).</p>
+<p>Includes DualSense, DualShock 4, all Logitech wheels, Thrustmaster HOTAS, flight sticks, pedals, arcade sticks, every keyboard and mouse, and most of the 338-profile catalog (307 profiles).</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>ROOT\HIDClass\&lt;token&gt;               ← UMDF2 driver (mshidumdf host)
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  └─ HID\VID_054C&amp;PID_0CE6\...       ← raw HID PDO, no upper filter
 </code></pre></div>
@@ -3684,7 +3684,7 @@
 <p>The full per-archetype sequence lives in <code>DeviceOrchestrator.cs</code>'s <code>SetupController</code> (~390 lines). See <a href="../../reference/lifecycle-and-teardown/">Lifecycle and Teardown</a> for the disposal counterpart.</p>
 <hr />
 <h2 id="loading-the-catalog">Loading the catalog<a class="headerlink" href="#loading-the-catalog" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1">// Embedded catalog (344 profiles)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1">// Embedded catalog (338 profiles)</span>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">ctx</span><span class="p">.</span><span class="n">LoadDefaultProfiles</span><span class="p">();</span>
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
 <a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1">// Custom directory of JSON profiles</span>
@@ -3752,7 +3752,7 @@
 <p><strong><code>buttonMap</code></strong> is <strong>not present</strong>: identity Xbox layout (<code>HMButton.A</code> &rarr; descriptor button 0, etc.).</p>
 <hr />
 <h2 id="catalog-statistics">Catalog statistics<a class="headerlink" href="#catalog-statistics" title="Permanent link">&para;</a></h2>
-<p>As of v2.3.0:</p>
+<p>As of v2.2.0:</p>
 <table>
 <thead>
 <tr>
@@ -3763,7 +3763,7 @@
 <tbody>
 <tr>
 <td>Total profiles</td>
-<td>344</td>
+<td>338</td>
 </tr>
 <tr>
 <td>Keyboards and mice</td>
@@ -3775,7 +3775,7 @@
 </tr>
 <tr>
 <td>Plain HID profiles</td>
-<td>311</td>
+<td>308</td>
 </tr>
 <tr>
 <td>Non-xinputhid Xbox profiles</td>
@@ -3787,7 +3787,7 @@
 </tr>
 <tr>
 <td>USB/IP profiles</td>
-<td>11 (seven composite personas, the GameCube adapter, xbox-one-s-full, and joycon-l-usb and joycon-r-usb, the Joy-Con Charging Grip)</td>
+<td>8 (seven composite personas and the GameCube adapter)</td>
 </tr>
 <tr>
 <td>With FFB descriptors</td>
@@ -3803,7 +3803,7 @@
 </tr>
 </tbody>
 </table>
-<p>The largest vendor folders are Logitech (46), Microsoft (32), misc (32, the catch-all), Razer (22), Thrustmaster (20), Nintendo (19) and Sony (17).</p>
+<p>The largest vendor folders are Logitech (46), misc (32, the catch-all), Microsoft (31), Razer (22), Thrustmaster (20), and Sony (17).</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>

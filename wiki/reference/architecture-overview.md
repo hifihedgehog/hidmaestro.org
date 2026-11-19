@@ -102,7 +102,7 @@ Responsibilities:
 - Run the per-controller output-reader background thread that drains the shared output ring at ~125 Hz.
 - Manage HID PID 1.0 force-feedback shared state.
 - Manage `joy.cpl` OEM-name overrides with crash-safe restore.
-- Embed and load the 344-profile catalog, through source-generated JSON, so the SDK also runs in NativeAOT and trimmed single-file apps (v2.0.0).
+- Embed and load the 338-profile catalog, through source-generated JSON, so the SDK also runs in NativeAOT and trimmed single-file apps (v2.0.0).
 
 Lines of code: ~5,300 in public surface (`HMContext` / `HMController` / `HidDescriptorBuilder` / `HMProfileBuilder` / `HMDeviceExtractor` / `HMOemNameOverride` / value types) plus ~16,600 in `Internal/` (`DeviceOrchestrator`, `DeviceManager`, `SwdDeviceFactory`, `DriverBuilder`, `HidDescriptorReconstructor`, `HidReportBuilder`, `SharedMemoryIO`, `OemNameOverrideStore`, `PnputilHelper`, etc.).
 
@@ -146,7 +146,7 @@ Lifetime: `SWDeviceLifetimeParentPresent` so the device persists past process ex
 
 Detail: [SwDevice and PnP](swdevice-and-pnp.md).
 
-### 5. The 344-profile catalog
+### 5. The 338-profile catalog
 
 Embedded as a JSON resource inside `HIDMaestro.Core.dll`. 73 vendors across 59 folders, 1 to 46 profiles each, 103 of the profiles keyboards and mice. See [Profile System](../profiles/profile-system.md) for the schema and runtime classification.
 
@@ -296,7 +296,7 @@ HIDMaestro/
 ├── tools/HIDMaestroProfileExtractor/  ; standalone WPF extractor GUI
 ├── example/SdkDemo/                ; minimal SDK consumer
 ├── test/                           ; HIDMaestroTest CLI + regression battery + probes
-├── profiles/                       ; 344 profile JSONs
+├── profiles/                       ; 338 profile JSONs
 ├── scripts/                        ; build, signing, verification, multi-pad-check
 ├── build/                          ; build outputs (driver DLLs, hmswd.exe, stamped INFs)
 └── docs/                           ; README screenshots, investigation notes

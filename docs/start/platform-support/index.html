@@ -1942,7 +1942,7 @@
 
 
 <h1 id="platform-support">Platform support<a class="headerlink" href="#platform-support" title="Permanent link">&para;</a></h1>
-<p>HIDMaestro runs every profile on x64 and ARM64 Windows as of v2.3.0. One <code>HIDMaestro.Core.dll</code> serves both. HIDMaestro has two drivers. On x64 a controller runs by default on the UMDF2 driver, which the SDK self-signs with a certificate it creates on the machine. Windows on ARM64 and Windows in S mode do not allow installing a self-signed UMDF2 driver, so there every controller runs on the USB/IP driver: a USB device that HIDMaestro's user-mode code serves through the usbip-win2 host controller it carries, and Windows' own drivers bind it. <code>HMBackend.Auto</code> makes that choice before anything on the machine changes, so a program needs no code change, and a program on x64 can put any profile on USB/IP with <code>HMBackend.Usbip</code>. The <a href="https://github.com/hifihedgehog/HIDMaestro#where-the-driver-installs">README</a> has the members.</p>
+<p>HIDMaestro runs on x64 and ARM64 Windows. Use v1.9.1 or later on ARM64. One <code>HIDMaestro.Core.dll</code> serves both. It carries a native driver and helper payload for each architecture and picks the set matching the operating system, so an x64 consumer running under emulation on ARM64 Windows still gets ARM64 drivers.</p>
 <table>
 <thead>
 <tr>
@@ -1958,14 +1958,14 @@
 <td>Same assembly</td>
 </tr>
 <tr>
-<td>HID and XInput devices</td>
-<td>The UMDF2 driver and its XUSB companion</td>
-<td>USB devices on the USB/IP driver, which Windows' HidUsb, xusb22 and GIP drivers bind</td>
+<td>HID and XInput drivers</td>
+<td>Native x64</td>
+<td>Native ARM64</td>
 </tr>
 <tr>
-<td>Device helper</td>
+<td>Device helper and signing tool</td>
 <td>Native x64</td>
-<td>Carried as ARM64, not used there</td>
+<td>Native ARM64</td>
 </tr>
 <tr>
 <td>USB/IP transport</td>
@@ -2001,9 +2001,10 @@
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">dotnet</span> <span class="n">build</span> <span class="n">tools</span><span class="p">\</span><span class="n">HIDMaestroProfileExtractor</span><span class="p">\</span><span class="n">HIDMaestroProfileExtractor</span><span class="p">.</span><span class="n">csproj</span> <span class="n">-c</span> <span class="n">Release</span> <span class="n">-p</span><span class="p">:</span><span class="n">HMTargetArchitecture</span><span class="p">=</span><span class="n">arm64</span>
 </code></pre></div>
 <h2 id="nativeaot-trimmed-and-single-file-apps">NativeAOT, trimmed and single-file apps<a class="headerlink" href="#nativeaot-trimmed-and-single-file-apps" title="Permanent link">&para;</a></h2>
-<p>As of v2.0.0 <code>HIDMaestro.Core.dll</code> works in NativeAOT apps and in trimmed, self-contained, single-file apps, for x64 and ARM64. Profiles load through source-generated JSON, every Win32 call goes through <code>LibraryImport</code>, and <code>hmswd.exe</code> always comes from the embedded resource, since <code>Assembly.Location</code> is empty in a single-file app. At v1.12.0 both kinds of app loaded 0 of the 336 catalog profiles, because reflection-based JSON is switched off in them. The <code>aot_smoke</code> probe publishes one source four ways, NativeAOT and trimmed single-file for each architecture. Each app loads the catalog, installs the driver, creates a <code>dualshock-4-v2</code> on the UMDF2 driver and a <code>dualsense-composite</code> on USB/IP, submits input, reads it back, writes an output report, waits for <code>OutputReceived</code> and disposes. Battery scenarios S74 and S75 run the two apps for the machine's architecture: the x64 apps on the Legion Pro 7 and the PCG02 GLE, and the ARM64 apps on the Surface Pro, where every controller runs on USB/IP (the three systems under <a href="#validation">Validation</a>). See <a href="../../reference/build-and-release/#nativeaot-trimming-and-single-file">Build and Release</a>.</p>
-<p>As of v2.3.0 <code>InstallDriver()</code> builds a catalog for each driver INF and signs the package in its own process, through the catalog and signing functions Windows itself provides, before it adds the package to the driver store. Through v2.2.0 it ran the Inf2Cat and SignTool it carried. The catalogs keep Inf2Cat's operating-system values, <code>10_X64</code>, and <code>10_RS3_ARM64</code> for version 1709, the first Windows 10 release on ARM64, since Inf2Cat has no bare <code>10_ARM64</code>. Windows on ARM64 still refuses the package, so there <code>InstallDriver()</code> installs usbip-win2's host controller instead.</p>
-<p>Battery scenario S61 runs the SDK's catalog writer and signer on the x64 and ARM64 driver packages and a WinUSB package with no device, reads each catalog back, and compares it with Inf2Cat's element for element where the WDK is installed and each signature with SignTool's byte for byte where the Windows SDK is installed.</p>
+<p>As of v2.0.0 <code>HIDMaestro.Core.dll</code> works in NativeAOT apps and in trimmed, self-contained, single-file apps, for x64 and ARM64. Profiles load through source-generated JSON, every Win32 call goes through <code>LibraryImport</code>, and <code>hmswd.exe</code> always comes from the embedded resource, since <code>Assembly.Location</code> is empty in a single-file app. At v1.12.0 both kinds of app loaded 0 of the 336 catalog profiles, because reflection-based JSON is switched off in them. The <code>aot_smoke</code> probe publishes one source four ways, NativeAOT and trimmed single-file for each architecture. Each app loads the catalog, installs the driver, creates a <code>dualshock-4-v2</code> on the UMDF2 driver and a <code>dualsense-composite</code> on USB/IP, submits input, reads it back, writes an output report, waits for <code>OutputReceived</code> and disposes. Battery scenarios S74 and S75 run the two apps for the machine's architecture, so the ARM64 apps are built and published and have not run on ARM64 hardware. See <a href="../../reference/build-and-release/#nativeaot-trimming-and-single-file">Build and Release</a>.</p>
+<p><code>InstallDriver()</code> builds a catalog for each driver INF with Inf2Cat before it signs the package and adds it to the driver store. Inf2Cat's ARM64 values name a Windows release, from <code>10_RS3_ARM64</code> on, and it has no bare <code>10_ARM64</code>. v1.9.0 asked for <code>10_ARM64</code>, which Inf2Cat rejects, so on ARM64 <code>InstallDriver()</code> failed before any driver reached the store. v1.9.1 asks for <code>10_RS3_ARM64</code>, version 1709, the first Windows 10 release on ARM64. x64 keeps <code>10_X64</code>.</p>
+<p>One Inf2Cat serves both architectures. It is an x64 .NET program, which Windows 11 on ARM64 runs under its x64 emulation.</p>
+<p>Battery scenario S61 extracts each architecture's payload with the embedded Inf2Cat, runs Inf2Cat with the value the SDK picks for that architecture, and requires one catalog per INF. Inf2Cat only parses the INFs and hashes the files, so the check runs on x64 for both architectures.</p>
 <h2 id="usbip-0981">USB/IP 0.9.8.1<a class="headerlink" href="#usbip-0981" title="Permanent link">&para;</a></h2>
 <p>Composite personas use the bundled usbip-win2 0.9.8.1. It is the first release with the fix for the attach work item that blocked driver unload in 0.9.8.0 (<a href="https://github.com/vadimgrn/usbip-win2/pull/188">usbip-win2#188</a>). The <a href="https://github.com/vadimgrn/usbip-win2/releases/tag/v.0.9.8.1">release page</a> carries the x64 installer only. The ARM64 installer is the same tag's build that the project's signing service posted in <a href="https://github.com/vadimgrn/usbip-win2/issues/13">usbip-win2#13</a>. Both installers ship the 0.9.8.1 tag's own headers, and neither carries the development branch's later changes.</p>
 <p>As of v2.0.1 the SDK DLL holds the host controller's driver package for each architecture, <code>usbip2_ude.inf</code>, <code>.sys</code> and <code>.cat</code>, unpacked at build time from those installers, and no longer the installers themselves. That brought <code>HIDMaestro.Core.dll</code> from 63.1 MB to 18.1 MB. The build checks each installer against its pinned SHA-256 and each unpacked file against its own, and the SDK checks the staged files again before Windows installs them. Both drivers are signed by Microsoft: the x64 one after hardware certification testing, the ARM64 one by attestation.</p>
@@ -2012,47 +2013,12 @@
 <p>Handheld Companion's and VIIPER's installers look for usbip-win2's Apps entry, find none after HIDMaestro's install, and run usbip-win2's installer. That adds the root-hub filter, so every USB device drops once, and a second host controller. HIDMaestro works with two host controllers.</p>
 <p>A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. <code>HIDMAESTRO_KEEP_TRANSPORT=1</code> turns the move off.</p>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
-<p>The v2.3.0 release gate ran on x64 and on ARM64, on three systems:</p>
-<table>
-<thead>
-<tr>
-<th>System</th>
-<th>Processor</th>
-<th>Memory</th>
-<th>Graphics</th>
-<th>Windows</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Lenovo Legion Pro 7 16AFR10H, 16-inch laptop</td>
-<td>AMD Ryzen 9 9955HX3D, 16 cores, 32 threads</td>
-<td>64 GB DDR5-5600</td>
-<td>NVIDIA GeForce RTX 5080 Laptop GPU</td>
-<td>Windows 11 IoT Enterprise LTSC, version 25H2, build 26200</td>
-</tr>
-<tr>
-<td>MeLE PCG02 GLE, fanless stick PC</td>
-<td>Intel Celeron J4125, 4 cores, 4 threads</td>
-<td>8 GB LPDDR4-2133</td>
-<td>Intel UHD Graphics 600</td>
-<td>Windows 10 IoT Enterprise LTSC, version 21H2, build 19044</td>
-</tr>
-<tr>
-<td>Microsoft Surface Pro for Business, 12-inch (2nd Edition), tablet</td>
-<td>Qualcomm Snapdragon X2 Plus, 6 cores, 6 threads</td>
-<td>24 GB LPDDR5x-9523</td>
-<td>Qualcomm Adreno X2-45</td>
-<td>Windows 11 Pro, version 26H1, build 28000</td>
-</tr>
-</tbody>
-</table>
-<p>On the Legion Pro 7 the full 111-scenario battery passed all 111 scenarios in 42 minutes. The PCG02 GLE ran it twice, at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code> over SSH. On the UMDF2 driver, after the uninstaller had removed HIDMaestro from the machine so that the first create installed the driver from nothing, 107 passed in 63 minutes and 4 skipped their probes. With every controller on USB/IP, 107 passed in 41 minutes and the same 4 skipped. S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the <code>wsb</code> command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. On the Surface Pro, over SSH, where Windows refuses the driver package and every controller runs on USB/IP, 107 passed in 24 minutes and the same 4 skipped.</p>
+<p>The v2.2.0 release gate ran on x64: the full 102-scenario battery passed all 102 scenarios on the release binaries on the development laptop, a Lenovo Legion Pro 7 16AFR10H with a 16-core AMD Ryzen 9 9955HX3D, 64 GB of DDR5-5600 and an NVIDIA GeForce RTX 5080 Laptop GPU on Windows 11 build 26200, in 30 minutes. The 4-core Intel Celeron J4125 fixture was not reachable for this release, so its half of the battery did not run. On 2.1.0, on that 4-core Intel Celeron J4125 mini PC with Windows 10 IoT Enterprise LTSC 19044, at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code> over SSH, 97 passed in 42 minutes and 4 skipped their probes: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the <code>wsb</code> command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. S101 removes HIDMaestro from that machine itself, reads it clean and installs the driver again, and only its run inside Windows Sandbox skips.</p>
 <p>The v1.12.0 release gate ran on x64: the full 70-scenario battery passed all 70 scenarios on the release binaries on Windows 11 26200. The gate machine's host controller runs 0.9.8.1, put there by the v1.9.2 move, so every composite scenario ran through the client's 0.9.8.1 request format against the live driver. The DualSense composite passed 26/26 end to end, and the Switch 2 Pro composite 255/255, with Windows binding WinUSB to its vendor interface from the persona's own descriptors. Its root-hub filter is still the older one the move leaves alone, so SET_INTERFACE never reaches a composite there, and audio stream state comes from the traffic instead (<a href="../../sdk/usb-audio-composite/">USB audio composite</a>).</p>
 <p>The 0.9.8.0 request format was checked by compiling that version's own header with MSVC for x64 and ARM64, and the client sends its exact sizes and offsets. It has not run against a live driver. The move from 0.9.7.5 to 0.9.8.1 uses the same Windows driver update that moved machines from 0.9.7.7 to 0.9.7.5 in v1.9.0, which took 878 ms on 26200.</p>
 <p>0.9.8.1 rounds a full-speed device's interrupt polling interval up where 0.9.7.5 rounded it down. Windows does not pace interrupt reads by that interval. Measured on 26200 by giving the DualShock 4 composite an interval that 0.9.7.5 converts to the same 8 ms period, the composite delivered 146 to 158 reports per second either way.</p>
 <p>Both native payloads and the ARM64 applications compile, link and stamp as ARM64, and both bundled transport drivers are verified as the right architecture with valid Microsoft signatures.</p>
-<p>On ARM64 the battery runs on the Surface Pro. Windows refuses the driver package there, so the steps after the catalog, signing it and adding the package to the driver store, do not run on ARM64, and every controller runs on USB/IP.</p>
+<p>ARM64 hardware has not run the battery. On ARM64, the steps after the catalog, signing it and adding the package to the driver store, have not run.</p>
 
 
 

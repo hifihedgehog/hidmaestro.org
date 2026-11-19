@@ -41,6 +41,6 @@
     },
     {
         "q":  "Does HIDMaestro support ARM64?",
-        "a":  "Yes, every profile as of v2.3.0. HIDMaestro self-signs its UMDF2 driver on each machine, and Windows on ARM64 does not allow installing a driver signed that way. So there every controller runs on HIDMaestro\u0027s USB/IP driver, the usbip-win2 host controller it carries, as a USB device that Windows\u0027 own drivers bind, and a program needs no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro."
+        "a":  "Yes, every profile as of v2.3.0. HIDMaestro self-signs its UMDF2 driver on each machine, and Windows on ARM64 does not allow installing a self-signed UMDF2 driver. So there every controller runs on HIDMaestro\u0027s USB/IP driver, the usbip-win2 host controller it carries, as a USB device that Windows\u0027 own drivers bind, and a program needs no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro."
     }
 ]

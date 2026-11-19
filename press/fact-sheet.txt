@@ -40,8 +40,8 @@ The driver is the 2.1.0 build.
 Version 2.3.0 runs every profile on Windows on ARM64. HIDMaestro has two
 drivers: the UMDF2 driver, which it self-signs on each machine, and the
 USB/IP driver, the usbip-win2 host controller it carries. Windows on
-ARM64 does not allow installing a driver self-signed on the machine, so
-every controller there runs on the USB/IP driver, as a USB device that
+ARM64 does not allow installing a self-signed UMDF2 driver, so every
+controller there runs on the USB/IP driver, as a USB device that
 Windows' own drivers bind, and a program needs no code change. On x64
 the UMDF2 driver stays the default, and any profile can run on either
 driver. The DLL builds and signs the UMDF2 driver's catalogs itself and

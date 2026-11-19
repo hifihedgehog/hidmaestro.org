@@ -133,7 +133,7 @@
     },
     {
         "t":  "Every profile on ARM64 Windows",
-        "d":  "HIDMaestro self-signs its UMDF2 driver on each machine, and Windows on ARM64 and Windows in S mode do not allow installing a driver signed that way. There every controller runs on HIDMaestro\u0027s USB/IP driver, a USB device that HIDMaestro\u0027s user-mode code serves through the usbip-win2 host controller it carries. Windows\u0027 own drivers bind it: HidUsb for the HID profiles, xusb22 for the Xbox 360 profiles and Windows\u0027 GIP drivers for the Xbox One and Series profiles. HMBackend.Auto makes that choice before anything on the machine changes, so a program written for x64 runs on ARM64 with no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro."
+        "d":  "HIDMaestro self-signs its UMDF2 driver on each machine, and Windows on ARM64 and Windows in S mode do not allow installing a self-signed UMDF2 driver. There every controller runs on HIDMaestro\u0027s USB/IP driver, a USB device that HIDMaestro\u0027s user-mode code serves through the usbip-win2 host controller it carries. Windows\u0027 own drivers bind it: HidUsb for the HID profiles, xusb22 for the Xbox 360 profiles and Windows\u0027 GIP drivers for the Xbox One and Series profiles. HMBackend.Auto makes that choice before anything on the machine changes, so a program written for x64 runs on ARM64 with no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro."
     },
     {
         "t":  "Windows 10 and 11",

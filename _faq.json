@@ -33,7 +33,7 @@
     },
     {
         "q":  "Does it work in NativeAOT and single-file apps?",
-        "a":  "Yes, as of v2.0.0, for NativeAOT and for trimmed, self-contained, single-file apps, on x64 and ARM64. The battery runs the two apps for the machine\u0027s architecture, the x64 apps on x64 and the ARM64 apps on an ARM64 Surface."
+        "a":  "Yes, as of v2.0.0, for NativeAOT and for trimmed, self-contained, single-file apps, on x64 and ARM64. The battery runs the two apps for the machine\u0027s architecture, the x64 apps on x64 and the ARM64 apps on an ARM64 Microsoft Surface Pro."
     },
     {
         "q":  "Does the GameCube adapter work with Dolphin and Slippi?",
@@ -41,6 +41,6 @@
     },
     {
         "q":  "Does HIDMaestro support ARM64?",
-        "a":  "Yes, every profile as of v2.3.0. Windows on ARM64 does not install HIDMaestro\u0027s UMDF2 driver, so there each controller is a USB device on usbip-win2\u0027s host controller that Windows\u0027 own drivers bind, and a program needs no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Surface."
+        "a":  "Yes, every profile as of v2.3.0. Windows on ARM64 does not install HIDMaestro\u0027s UMDF2 driver, so there each controller is a USB device on usbip-win2\u0027s host controller that Windows\u0027 own drivers bind, and a program needs no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 111-scenario battery runs on an ARM64 Microsoft Surface Pro."
     }
 ]

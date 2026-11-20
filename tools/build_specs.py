@@ -23,7 +23,7 @@ CATS = [
    "Controller audio and haptics", "Wii U GameCube adapter",
    "Capture a controller you own"]),
  ("catalog", "The catalog", [
-   "338 device profiles", "Keyboards and mice", "Devices are JSON"]),
+   "344 device profiles", "Keyboards and mice", "Devices are JSON"]),
  ("latency", "Latency and transport", [
    "~35 µs measured input latency", "Event-driven output at 0.15 ms",
    "No socket, no batching cap", "The comparison, honestly",
@@ -39,8 +39,8 @@ CATS = [
  ("validation", "Validation", [
    "Regression coverage", "Judged by the real consumers"]),
  ("platform", "Platform and licensing", [
-   "Native on ARM64 Windows", "Windows 10 and 11",
-   "UMDF2 standard profiles", "The composite exception, stated",
+   "Every profile on ARM64 Windows", "Windows 10 and 11",
+   "UMDF2 standard profiles", "The USB/IP transport, stated",
    "MIT licensed"]),
 ]
 

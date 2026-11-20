@@ -214,7 +214,7 @@ Idle CPU is the **per-controller WUDFHost** measurement. Each per-instance host 
 
 ## Celeron J4125 fixture (slow-hardware validation)
 
-The regression battery also runs on an Intel Celeron J4125 mini PC (4 cores, 2.0 GHz, 8 GB RAM, Windows 10 IoT Enterprise LTSC 19044). Slow-hardware target for validating the event-driven harness without time-based settles.
+The regression battery also runs on a MeLE PCG02 GLE fanless stick PC (Intel Celeron J4125, 4 cores and 4 threads, 8 GB LPDDR4-2133, Windows 10 IoT Enterprise LTSC, version 21H2, build 19044). Slow-hardware target for validating the event-driven harness without time-based settles.
 
 It runs the full battery at `HIDMAESTRO_TIMEOUT_SCALE=2`. On the v2.0.0 release binaries every multi-controller scenario passed there, as on Ryzen-class hardware. The slow-hardware result is the reason the harness is pure ACK-driven instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on a slow one. ACK-driven waits scale with the machine.
 

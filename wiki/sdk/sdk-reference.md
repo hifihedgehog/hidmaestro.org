@@ -83,7 +83,7 @@ public IReadOnlyList<HMProfileLoadIssue> ProfileLoadIssues { get; }   // v2.0.0
 
 `GetProfile(id)` looks up by stable ID slug (e.g. `"xbox-360-wired"`, `"dualsense"`, `"thrustmaster-t300rs"`). Returns null if no such profile is loaded. Case-insensitive.
 
-`LoadDefaultProfiles` loads the embedded catalog (338 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. An id already loaded refuses the later file.
+`LoadDefaultProfiles` loads the embedded catalog (344 entries shipping inside `HIDMaestro.Core.dll`) and returns the count added. An id already loaded refuses the later file.
 
 `LoadProfilesFromDirectory(path)` loads `*.json` from a directory matching the [Profile System](../profiles/profile-system.md) schema. Useful for shipping a curated subset, or for hot-loading runtime-modified profiles. Schema validation files (`schema.json`) are skipped, and so is a `models` folder at the directory's top, which holds named device models and identity defaults for the directory's profiles (see [Device models](../profiles/profile-system.md#device-models-v200)). Files load recursively, in ordinal path order. Does not auto-load the embedded catalog: call both if you want catalog + custom.
 

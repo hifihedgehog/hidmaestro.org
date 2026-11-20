@@ -75,4 +75,4 @@ Composite profiles install the bundled USB/IP transport, usbip-win2 0.9.8.1's ho
 
 A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. `HIDMAESTRO_KEEP_TRANSPORT=1` turns the move off. There is nothing for a user to do.
 
-See [platform support](platform-support.md) for the architecture matrix and measured results. ARM64 hardware has not run the battery.
+See [platform support](platform-support.md) for the architecture matrix and measured results. The battery passes on x64 and on an ARM64 Microsoft Surface Pro.

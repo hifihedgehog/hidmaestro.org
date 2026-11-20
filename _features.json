@@ -1,11 +1,11 @@
 [
     {
         "t":  "Exact hardware identity",
-        "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller carries the hardware and compatible IDs a real device of its transport carries, classic BTHENUM or LE BTHLEDevice, so it reports as Bluetooth, not as a USB device wearing its name. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
+        "d":  "Profile-driven VID/PID, product strings, HID descriptors, axis and button layout, and bus type. A Bluetooth controller carries the hardware and compatible IDs a real device of its transport carries, classic BTHENUM or LE BTHLEDevice, so it reports as Bluetooth, not as a USB device wearing its name. On the USB/IP driver, which runs every controller on ARM64, a Bluetooth profile presents the device it is on UMDF2, and its node carries a Bluetooth marker where hidapi reads the bus, so SDL reads the pad as Bluetooth and drives it in its Bluetooth protocol. SDL3\u0027s controller database matches it, Steam recognizes it, Chrome identifies it, joy.cpl shows the right name."
     },
     {
-        "t":  "338 device profiles",
-        "d":  "Embedded profiles across 73 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, keyboards, mice, and more. Every device is a JSON file. Adding support for a new one means writing JSON, not modifying code."
+        "t":  "344 device profiles",
+        "d":  "Embedded profiles across 74 vendors: Xbox 360, Xbox Series, DualSense, Thrustmaster, Logitech, flight sticks, racing wheels, keyboards, mice, and more. Every device is a JSON file. Adding support for a new one means writing JSON, not modifying code."
     },
     {
         "t":  "Devices are JSON",
@@ -101,11 +101,11 @@
     },
     {
         "t":  "UMDF2 standard profiles",
-        "d":  "Standard profiles run through the Windows UMDF2 stack and a locally trusted signing certificate. Composite profiles use the bundled Microsoft-signed USB/IP transport. The installation does not enable Windows test-signing mode."
+        "d":  "On x64 standard profiles run through the Windows UMDF2 stack and a locally trusted signing certificate. Composite profiles, and every profile on ARM64, use the bundled Microsoft-signed USB/IP transport. The installation does not enable Windows test-signing mode."
     },
     {
         "t":  "Self-bootstrapping install",
-        "d":  "InstallDriver() creates a locally trusted certificate, signs the driver, and installs it. No EV certificate, no test-signing mode, no reboot. When the installed driver already matches, the call completes in ~40-60 ms. Only one program deploys at a time. An older driver is upgraded whatever runs on it, and a newer one is never downgraded."
+        "d":  "InstallDriver() creates a locally trusted certificate, signs the driver, and installs it. No EV certificate, no test-signing mode, no reboot. When the installed driver already matches, the call completes in ~40-60 ms. Only one program deploys at a time. An older driver is upgraded whatever runs on it, and a newer one is never downgraded. On ARM64, where Windows does not install the driver, InstallDriver() installs usbip-win2\u0027s host controller instead."
     },
     {
         "t":  "Removing HIDMaestro",
@@ -113,27 +113,27 @@
     },
     {
         "t":  "One DLL",
-        "d":  "HIDMaestro.Core.dll contains the 338-profile catalog, a driver and helper payload for x64 and one for ARM64, the signing tools, and usbip-win2\u0027s signed host controller driver for both, 18.1 MB in all as of v2.0.1. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host. A source build can leave out the ARM64 payload or the USB/IP transport, and HMBuildInfo reports what a build carries."
+        "d":  "HIDMaestro.Core.dll contains the 344-profile catalog, the UMDF2 driver and helper for x64 and ARM64, and usbip-win2\u0027s signed host controller driver for both, 4.6 MB in all as of v2.3.0. It builds the driver\u0027s catalogs and signs them in its own process, so it carries no Windows SDK or WDK tool. It picks the set matching the machine. The OpenVR plugin is x64 for its SteamVR host. A source build can leave out the ARM64 payload or the USB/IP transport, and HMBuildInfo reports what a build carries."
     },
     {
         "t":  "Regression coverage",
-        "d":  "The battery has 102 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, every catalog keyboard and mouse through Raw Input, programs running side by side as separate processes, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, every raw value of every catalog conversion through the SDK\u0027s rounding, the Sony, Valve and Nintendo vendor-blob reports against golden bytes, profiles and device models loaded strictly, every report program three ways, the protocol engine and device clock, the version contract on the live driver, a Joy-Con built from the Switch Pro\u0027s mechanisms, the SDK and drivers checked for device shortcuts, and a full removal of HIDMaestro inside Windows Sandbox. Production signing and the full HIDMaestro integration gate remain pending."
+        "d":  "The battery has 114 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, every catalog keyboard and mouse through Raw Input, programs running side by side as separate processes, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, every raw value of every catalog conversion through the SDK\u0027s rounding, the Sony, Valve and Nintendo vendor-blob reports against golden bytes, profiles and device models loaded strictly, every report program three ways, the protocol engine and device clock, the version contract on the live driver, a Joy-Con built from the Switch Pro\u0027s mechanisms, the SDK and drivers checked for device shortcuts, and a full removal of HIDMaestro inside Windows Sandbox. Production signing and the full HIDMaestro integration gate remain pending."
     },
     {
         "t":  "Judged by the real consumers",
         "d":  "The battery checks more than HIDMaestro\u0027s own decode of its own encode. A stock upstream SDL3 build reads the Valve personas and must bind each with its own Valve driver, and a scenario starts the actual Steam client and asserts it claims and classifies them, gives a second Deck and a second 2026 controller settings of their own, and drives the Deck\u0027s haptics. Another runs Steam\u0027s own firmware updater, which must see the 2026 Steam Controller persona and offer it no update. Stock SDL3 arms the Bluetooth DualShock 4 persona itself and must keep reading it, and opens the DualShock 3 persona the way PCSX2 configures it. SDL3 with libusb starts the Switch 2 Pro persona and reads its motion back on every axis, and the Steam client must add it and keep reading it. The decoders Steam Input is built on are the judges. Dolphin\u0027s and Slippi\u0027s own adapter code, compiled unmodified, reads the GameCube adapter persona, and SDL built with libusb lists one gamepad per port."
     },
     {
-        "t":  "The composite exception, stated",
-        "d":  "Composite Sony, Valve and Nintendo profiles use the bundled usbip-win2 0.9.8.1 kernel transport, redistributed unmodified and checked against its pinned SHA-256 at build and again before Windows installs it. As of v2.0.1 the SDK installs only its host controller, silently, on a machine that has none. It never runs usbip-win2\u0027s installer or uninstaller and never installs its root-hub filter, so no USB device drops. The install is recorded, so a removal takes HIDMaestro\u0027s install and leaves another program\u0027s. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused."
+        "t":  "The USB/IP transport, stated",
+        "d":  "Every controller on ARM64 Windows, the composite Sony, Valve and Nintendo profiles on x64, and any controller a program puts on HMBackend.Usbip use the bundled usbip-win2 0.9.8.1 kernel transport, redistributed unmodified and checked against its pinned SHA-256 at build and again before Windows installs it. As of v2.0.1 the SDK installs only its host controller, silently, on a machine that has none. It never runs usbip-win2\u0027s installer or uninstaller and never installs its root-hub filter, so no USB device drops. The install is recorded, so a removal takes HIDMaestro\u0027s install and leaves another program\u0027s. A machine HIDMaestro put on 0.9.7.7 or 0.9.7.5 is moved to 0.9.8.1 automatically, through one Windows driver update that leaves the root-hub filter alone, in a session where the controller is still unused."
     },
     {
         "t":  "MIT licensed",
         "d":  "Free and open source. Use it in your own projects, commercial or otherwise, with no restrictions."
     },
     {
-        "t":  "Native on ARM64 Windows",
-        "d":  "The HID driver, the XInput companion and the device helper are built for ARM64 as well as x64, and the INFs carry an NTARM64 section. HIDMaestro.Core.dll holds both sets and installs the one matching the operating system. Composite personas use a Microsoft-signed ARM64 build of the USB transport. The release has an ARM64 ZIP with an ARM64 test app and profile extractor. Use v1.9.1 or later on ARM64. The battery builds the ARM64 driver catalog on every run, and no ARM64 machine has run the battery yet."
+        "t":  "Every profile on ARM64 Windows",
+        "d":  "HIDMaestro self-signs its UMDF2 driver on each machine, and Windows on ARM64 and Windows in S mode do not allow installing a self-signed UMDF2 driver. There every controller runs on HIDMaestro\u0027s USB/IP driver, a USB device that HIDMaestro\u0027s user-mode code serves through the usbip-win2 host controller it carries. Windows\u0027 own drivers bind it: HidUsb for the HID profiles, with xinputhid on a Bluetooth Xbox pad\u0027s node, xusb22 for the Xbox 360 profiles and Windows\u0027 GIP drivers for the wired Xbox One and Series profiles. HMBackend.Auto makes that choice before anything on the machine changes, so a program written for x64 runs on ARM64 with no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 114-scenario battery runs on an ARM64 Microsoft Surface Pro."
     },
     {
         "t":  "Windows 10 and 11",

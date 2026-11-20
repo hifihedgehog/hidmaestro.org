@@ -1543,10 +1543,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-the-338-profile-catalog" class="md-nav__link">
+  <a href="#5-the-344-profile-catalog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. The 338-profile catalog
+        5. The 344-profile catalog
       
     </span>
   </a>
@@ -2064,10 +2064,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-the-338-profile-catalog" class="md-nav__link">
+  <a href="#5-the-344-profile-catalog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. The 338-profile catalog
+        5. The 344-profile catalog
       
     </span>
   </a>
@@ -2291,7 +2291,7 @@
 <li>Run the per-controller output-reader background thread that drains the shared output ring at ~125 Hz.</li>
 <li>Manage HID PID 1.0 force-feedback shared state.</li>
 <li>Manage <code>joy.cpl</code> OEM-name overrides with crash-safe restore.</li>
-<li>Embed and load the 338-profile catalog, through source-generated JSON, so the SDK also runs in NativeAOT and trimmed single-file apps (v2.0.0).</li>
+<li>Embed and load the 344-profile catalog, through source-generated JSON, so the SDK also runs in NativeAOT and trimmed single-file apps (v2.0.0).</li>
 </ul>
 <p>Lines of code: ~5,300 in public surface (<code>HMContext</code> / <code>HMController</code> / <code>HidDescriptorBuilder</code> / <code>HMProfileBuilder</code> / <code>HMDeviceExtractor</code> / <code>HMOemNameOverride</code> / value types) plus ~16,600 in <code>Internal/</code> (<code>DeviceOrchestrator</code>, <code>DeviceManager</code>, <code>SwdDeviceFactory</code>, <code>DriverBuilder</code>, <code>HidDescriptorReconstructor</code>, <code>HidReportBuilder</code>, <code>SharedMemoryIO</code>, <code>OemNameOverrideStore</code>, <code>PnputilHelper</code>, etc.).</p>
 <h3 id="2-hidmaestrodll-the-umdf2-driver">2. <code>HIDMaestro.dll</code>: the UMDF2 driver<a class="headerlink" href="#2-hidmaestrodll-the-umdf2-driver" title="Permanent link">&para;</a></h3>
@@ -2323,7 +2323,7 @@
 <p>Args: <code>create | remove &lt;enumerator&gt; &lt;suffix&gt; &lt;container-guid&gt; &lt;hw-ids&gt; &lt;compat-ids&gt; &lt;description&gt;</code>. Returns the resulting instance ID on stdout for the SDK to record.</p>
 <p>Lifetime: <code>SWDeviceLifetimeParentPresent</code> so the device persists past process exit. <code>remove</code> reconnects to the previously-created device by re-<code>SwDeviceCreate</code>-ing with identical args (the docs guarantee this returns a fresh handle to the existing device), downgrades lifetime to <code>Handle</code>, then <code>SwDeviceClose</code>.</p>
 <p>Detail: <a href="../swdevice-and-pnp/">SwDevice and PnP</a>.</p>
-<h3 id="5-the-338-profile-catalog">5. The 338-profile catalog<a class="headerlink" href="#5-the-338-profile-catalog" title="Permanent link">&para;</a></h3>
+<h3 id="5-the-344-profile-catalog">5. The 344-profile catalog<a class="headerlink" href="#5-the-344-profile-catalog" title="Permanent link">&para;</a></h3>
 <p>Embedded as a JSON resource inside <code>HIDMaestro.Core.dll</code>. 73 vendors across 59 folders, 1 to 46 profiles each, 103 of the profiles keyboards and mice. See <a href="../../profiles/profile-system/">Profile System</a> for the schema and runtime classification.</p>
 <p>A profile can describe more than a report. As of v2.0.0 <code>extendedReport.ports</code> describes a report that carries several controllers, the top-level <code>protocol</code> describes the commands a USB/IP device answers and when it sends input, <code>stateBlock</code> and <code>inputReports</code> describe a device that builds its reports from its own state, and <code>usbConfiguration.winUsb</code> names the interface GUID a WinUSB binding registers. The SDK checks them when a file loads and compiles them once at create. The Wii U GameCube adapter and the Switch 2 Pro composite use them, and no SDK code names either device. A profile takes the feature answers, protocol and presentation it does not carry itself from a model it names with <code>deviceModelFrom</code>, or from the identity defaults. See <a href="../../profiles/profile-system/#device-models-v200">Device models</a>. See <a href="../../sdk/gamecube-adapter/">Wii U GameCube Adapter</a> and <a href="../../profiles/profile-system/#devices-with-ports-and-protocols-v200">Profile System</a>.</p>
 <hr />
@@ -2493,7 +2493,7 @@
 <a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a>├── tools/HIDMaestroProfileExtractor/  ; standalone WPF extractor GUI
 <a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a>├── example/SdkDemo/                ; minimal SDK consumer
 <a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a>├── test/                           ; HIDMaestroTest CLI + regression battery + probes
-<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>├── profiles/                       ; 338 profile JSONs
+<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>├── profiles/                       ; 344 profile JSONs
 <a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a>├── scripts/                        ; build, signing, verification, multi-pad-check
 <a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a>├── build/                          ; build outputs (driver DLLs, hmswd.exe, stamped INFs)
 <a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a>└── docs/                           ; README screenshots, investigation notes

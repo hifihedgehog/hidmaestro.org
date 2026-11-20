@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """Generate hidmaestro.org's performance charts from _perf.json.
 
-Each release's notes compare it with the release before it, both builds
-measured in one session on the development laptop. _perf.json keeps
-those published values, one step per release. A chart multiplies a
-path's steps from 1.12.0 on, so each ratio comes from one session and
-values from different sessions never meet in one ratio. A step whose
-notes read the row level at the median (its "verdict", from 2.1.0 on)
-plots flat, and its measured values stay in the table under the chart.
+Each step is a release's published comparison with the release before
+it, both builds measured in one session: on the development laptop
+through 2.1.0, and on a desktop PC from 2.3.0 on. _perf.json keeps
+those published values, one step per release that has a comparison. A
+chart multiplies a path's steps from 1.12.0 on, so each ratio comes
+from one session and values from different sessions never meet in one
+ratio. A step whose notes read the row level at the median (its
+"verdict", from 2.1.0 on) plots flat, and its measured values stay in
+the table under the chart.
 
 Writes performance.html, press/performance.svg, and the blocks between
 <!-- PERF:BEGIN --> and <!-- PERF:END --> in index.html and
@@ -21,9 +23,10 @@ DATA = json.load(io.open(os.path.join(ROOT, "_perf.json"), encoding="utf-8-sig")
 REL = DATA["releases"]
 STEPS = DATA["steps"]
 METRICS = DATA["metrics"]
-# A step measured against a release that changed no charted path (2.0.3,
-# whose changes are the full removal's usbip-win2 step) continues from the
-# point of the release before it: its "chains_from" names that point.
+# A step measured against a release with no comparison of its own (2.0.3,
+# whose changes are the full removal's usbip-win2 step, and 2.2.0, which
+# was not measured) continues from the point of the release before that
+# one: its "chains_from" names that point.
 for i, s in enumerate(STEPS):
     assert (s.get("chains_from", s["from"]), s["to"]) == (REL[i], REL[i + 1]), s
 for m in METRICS:
@@ -173,9 +176,10 @@ def groups():
 
 def method_html():
     ratio = ", times ".join("%s's ratio to %s" % (s["to"], s["from"]) for s in STEPS)
-    return ('''            <p class="perf-method reveal" data-d="1">Each release's notes compare it with the release before it on the
-                development laptop, a Lenovo Legion Pro 7 16AFR10H, with diagnostic logging off and both builds
-                measured in the same session. A chart multiplies those comparisons from %s on, so the %s point is
+    return ('''            <p class="perf-method reveal" data-d="1">Each step is the comparison in a release's notes with the release
+                before it, with diagnostic logging off and both builds measured in the same session: on the
+                development laptop, a Lenovo Legion Pro 7 16AFR10H, through 2.1.0, and on a desktop PC with an AMD
+                Ryzen 9 9950X3D from 2.3.0 on. A chart multiplies those comparisons from %s on, so the %s point is
                 %s. Each ratio compares medians.</p>
             <ul class="perf-steps reveal" data-d="1">
 %s
@@ -191,15 +195,15 @@ def method_html():
 
 
 def verdict_html():
-    first = next((s["to"] for s in STEPS if s.get("verdicts")), None)
-    if first is None:
+    ruled = [s for s in STEPS if s.get("verdicts")]
+    if not ruled:
         return ""
+    for s in ruled:
+        assert s.get("rule"), s["to"]
     return ('''
-            <p class="perf-method reveal" data-d="1">From %s on, a release's notes read a path faster only when every
-                round of a session read it faster and either a second session agreed or a change had named the
-                path as its target before the measurement. They read it slower only when a second session agreed.
-                A chart moves only where the notes read the median faster or slower. Any other step is plotted
-                flat, and the table under the chart keeps its measured values.</p>''' % esc(first))
+            <p class="perf-method reveal" data-d="1">%s A chart moves only where the notes read the median faster
+                or slower. Any other step is plotted flat, and the table under the chart keeps its measured
+                values.</p>''' % " ".join("In %s's notes, %s." % (esc(s["to"]), esc(s["rule"])) for s in ruled))
 
 
 def page():
@@ -222,7 +226,7 @@ TEMPLATE = '''<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIDMaestro performance, release over release</title>
-    <meta name="description" content="The %(n)d paths every HIDMaestro release since %(first)s has measured against the one before, charted to %(last)s: start, create, removal, input to the game, output and the cost of a submit.">
+    <meta name="description" content="The %(n)d paths every HIDMaestro release comparison since %(first)s has measured against the release before, charted to %(last)s: start, create, removal, input to the game, output and the cost of a submit.">
     <link rel="icon" type="image/png" href="assets/icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -254,8 +258,8 @@ TEMPLATE = '''<!DOCTYPE html>
         <p class="kicker kicker-cy reveal">Performance</p>
         <h1 class="display-l reveal" data-d="1">Measured, release over release.</h1>
         <p class="lede reveal" data-d="2">
-            These charts follow the %(n)d paths that every release's comparison has measured
-            since %(first)s, as time relative to %(first)s. Lower is faster. Point at a chart,
+            These charts follow the %(n)d paths that every published release comparison has
+            measured since %(first)s, as time relative to %(first)s. Lower is faster. Point at a chart,
             or tab to it, to read each release's value. The table under each chart lists every
             measured value.
         </p>
@@ -346,7 +350,7 @@ def press_block():
     return '''<!-- PERF:BEGIN, written by tools/build_perf.py from _perf.json -->
 <section class="perf-section press-width" id="performance" aria-labelledby="performance-title">
     <div class="section-heading"><div><p class="eyebrow">Performance</p><h2 id="performance-title">Release over release</h2></div><a class="text-link" href="/performance.html">All %d paths <span aria-hidden="true">&#8599;</span></a></div>
-    <p class="perf-intro">Time relative to %s. Lower is faster. Each step is the side-by-side comparison published with that release, both builds measured in one session on the development laptop.</p>
+    <p class="perf-intro">Time relative to %s. Lower is faster. Each step is the side-by-side comparison published with that release, both builds measured in one session, on the development laptop through 2.1.0 and on a desktop PC from 2.3.0 on.</p>
     <div class="perf-grid">
 %s
     </div>

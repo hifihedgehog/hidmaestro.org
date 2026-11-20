@@ -67,13 +67,18 @@ Quickstart: https://hidmaestro.org/docs/start/quickstart/
 Testing: https://hidmaestro.org/docs/reference/testing-and-verification/
 
 Performance
-Each release's notes compare it with the release before it, both builds
-measured in one session on the development laptop. Chained from those
-comparisons, 2.1.0 takes 76% of 1.12.0's time from process start to the first
-DualShock 4 controller, 43% of its time to create an Xbox 360 controller, 77%
-of its time from SubmitState to a game's ReadFile on a DualShock 4, and 24% of
-its time for a SubmitState call on an Xbox 360 pad. Every tracked path, slower
-steps included: https://hidmaestro.org/performance.html
+The notes of 2.0.0, 2.0.1, 2.0.2, 2.1.0 and 2.3.0 compare each release with
+the one before it, both builds measured in one session: on the Legion Pro 7
+laptop through 2.1.0, and for 2.3.0 on a desktop PC with an ASUS ROG
+Crosshair X870E Extreme motherboard (AMD Ryzen 9 9950X3D, 96 GB DDR5-6000,
+Windows 11 IoT Enterprise LTSC). The notes of 2.0.3 and 2.2.0 carry no
+comparison, so the chain treats those two steps as unchanged. Chained from
+those comparisons, 2.3.0 takes 79% of 1.12.0's time from process start to the
+first DualShock 4 controller, 43% of its time to create an Xbox 360
+controller, 77% of its time from SubmitState to a game's ReadFile on a
+DualShock 4, and 72% of its time for a SubmitState call on an Xbox 360 pad.
+Every tracked path, slower steps included:
+https://hidmaestro.org/performance.html
 
 Adoption
 PadForge is built on HIDMaestro end to end. Other public projects that use,
@@ -100,4 +105,4 @@ https://github.com/nefarius/DsHidMini
 The DualShock 3 profile's report descriptor is DsHidMini's, under its BSD 3-Clause license.
 Composite USB profiles use usbip-win2 by Vadym Hrynchyshyn:
 https://github.com/vadimgrn/usbip-win2
-Third-party notices: https://github.com/hifihedgehog/HIDMaestro/blob/v2.0.3/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt
+Third-party notices: https://github.com/hifihedgehog/HIDMaestro/blob/v2.3.0/sdk/HIDMaestro.Core/THIRD-PARTY-NOTICES.txt

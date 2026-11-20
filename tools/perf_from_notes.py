@@ -42,21 +42,24 @@ METRICS = [
 ]
 
 # (from, to, release tag, the method its notes state[, what else the step
-# carries]). A step measured against a release that changed no charted path
-# names the earlier release it continues from in "chains_from". A step with
-# "verdicts" reads each row's verdict from its notes' Change column. From
-# 2.1.0 on, the notes read a row faster only when every round of a session
-# read it faster and either a second session agreed or a change had named
-# the row as its target before the measurement, and slower only when a
-# second session agreed. A row read level at the median gets the verdict
-# "level", and tools/build_perf.py plots that step flat.
+# carries]). A step measured against a release with no comparison of its
+# own names the earlier release it continues from in "chains_from". A step
+# with "verdicts" reads each row's verdict from its notes' Change column,
+# and its "rule" states how those notes read a row faster or slower. A row
+# read level at the median gets the verdict "level", and
+# tools/build_perf.py plots that step flat.
 STEPS = [
     ('1.12.0', '2.0.0', 'v2.0.0', '30 runs per build, the two builds one after the other for each path'),
     ('2.0.0', '2.0.1', 'v2.0.1', '30 runs per build in each of two passes, with the order of the builds flipped between passes, three passes for start, create and Dispose, and six for the per-call rows'),
     ('2.0.1', '2.0.2', 'v2.0.2', '30 runs per build in each of two passes, with the order of the builds flipped between passes, three passes for start, create and Dispose, and eight rounds alternating the builds for the per-call rows'),
     ('2.0.3', '2.1.0', 'v2.1.0', 'six rounds alternating the two builds in one session, each round installing each build\'s driver once for the device paths',
      {'chains_from': '2.0.2', 'verdicts': True,
+      'rule': 'a path reads faster only when every round of a session read it faster and either a second session agreed or a change had named the path as its target before the measurement, and slower only when a second session agreed',
       'note': '2.0.3 changed only the full removal\'s usbip-win2 step, which no charted path runs, so this step continues from the 2.0.2 point.'}),
+    ('2.2.0', '2.3.0', 'v2.3.0', 'six rounds alternating the two builds in one session on a desktop PC with an AMD Ryzen 9 9950X3D, each round installing each build\'s driver once for the device paths',
+     {'chains_from': '2.1.0', 'verdicts': True,
+      'rule': 'a path reads faster or slower only when all six rounds of the one session moved the same way, the exact sign test at p = 0.031',
+      'note': '2.2.0 was not measured against 2.1.0, so this step continues from the 2.1.0 point. 2.2.0\'s one change on a charted path is a check for a pending protocol reply before each frame of a profile with a protocol host, such as the DualShock 3.'}),
 ]
 VALUE = re.compile(r'^\s*(?P<p50>[\d,]+(?:\.\d+)?)(?:\s*\((?P<p95>[\d,]+(?:\.\d+)?)\))?\s*$')
 
@@ -115,7 +118,7 @@ for mid, group, label in METRICS:
                     'better': 'higher' if unit == 'frames a second' else 'lower', 'steps': steps})
 
 data = {
-    'about': "Release-over-release performance of HIDMaestro on the development laptop, a Lenovo Legion Pro 7 16AFR10H. "
+    'about': "Release-over-release performance of HIDMaestro, measured on the development laptop, a Lenovo Legion Pro 7 16AFR10H, through 2.1.0 and on a desktop PC with an AMD Ryzen 9 9950X3D from 2.3.0. "
              "Each step is the side-by-side comparison published in that release's notes, written by tools/perf_from_notes.py. "
              "tools/build_perf.py draws performance.html and the home and press sections from this file.",
     'releases': [STEPS[0][0]] + [s[1] for s in STEPS],

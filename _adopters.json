@@ -4,8 +4,6 @@
   "projects": [
     {"name": "PadForge", "url": "https://padforge.org/", "home": true,
      "d": "The flagship. Every capability this SDK ships, in one app"},
-    {"name": "foundation-sunshine", "url": "https://github.com/AlkaidLab/foundation-sunshine", "home": true,
-     "d": "A Sunshine fork whose DualSense support is built on HIDMaestro"},
     {"name": "Vibepollo", "url": "https://github.com/Nonary/Vibepollo", "home": true,
      "d": "A Sunshine fork whose DualSense over USB/IP draws on HIDMaestro's composite descriptors"},
     {"name": "Sunshine Control Panel", "url": "https://github.com/qiin2333/sunshine-control-panel", "home": true,
@@ -49,6 +47,8 @@
      "d": "DualSense haptics for Forza Horizon 6, with HIDMaestro as an Xbox emulation backend"},
     {"name": "G7 Bridge", "url": "https://github.com/link007113/G7Bridge",
      "d": "A GameSir G7 Pro on its 2.4 GHz receiver as a virtual Steam Controller"},
+    {"name": "GDM", "url": "https://github.com/LiebheartZ/Gamepad-Input-Manager-Project",
+     "d": "Identifies each physical controller and gives it a virtual Xbox 360 or DualShock 4 output"},
     {"name": "GKMD", "url": "https://github.com/4zyz4/GKMD",
      "d": "A virtual USB game controller engine modified from HIDMaestro 1.5.1"},
     {"name": "GlassPad", "url": "https://github.com/dansunmi/GlassPad",
@@ -61,6 +61,8 @@
      "d": "Brings a Steam Controller from an iPad or iPhone to a PC as a wired Steam Controller"},
     {"name": "JoyLinkea 2", "url": "https://github.com/aslegui/JoyLinkea-2",
      "d": "Phones as web controllers for a Windows PC over a LAN or online"},
+    {"name": "KeyParcel", "url": "https://github.com/0x3fffff/KeyParcel",
+     "d": "A LAN text relay that can type what it receives through a HIDMaestro virtual keyboard"},
     {"name": "KSX", "url": "https://github.com/Victor-Villacis/ksx",
      "d": "Splits keyboards and arcade encoders into virtual controllers, with a HIDMaestro DualSense output"},
     {"name": "libvirtualhid", "url": "https://github.com/LizardByte/libvirtualhid",
@@ -75,6 +77,8 @@
      "d": "Turns an analog lever into a virtual ZUIKI mascon for JR EAST Train Simulator"},
     {"name": "Mimic Tear", "url": "https://github.com/farouk-01/mimic-tear",
      "d": "A neural network that learns a player's style to fight Elden Ring bosses, with a HIDMaestro controller bridge"},
+    {"name": "MotionStudio", "url": "https://github.com/hotuns/MotionStudio",
+     "d": "Controller mapping and gyro aiming, with HIDMaestro as its default keyboard and mouse backend"},
     {"name": "NATSX Controller", "url": "https://github.com/nafisajuliansahsaputra/natsx-controller",
      "d": "Turns an Android phone into an Xbox 360 controller on Windows"},
     {"name": "OmniPad", "url": "https://github.com/WizardOfXerox/OmniPad",
@@ -87,6 +91,8 @@
      "d": "Bridges a Beitong Pangu controller to a virtual DualSense Edge or Xbox controller"},
     {"name": "PCSX2 Remote Play System", "url": "https://github.com/hallowslab/PCSX2-Remote-Play-System",
      "d": "Streams PCSX2 and RPCS3 over a LAN and feeds the client's controller back through HIDMaestro"},
+    {"name": "PIDAL", "url": "https://github.com/joegaffey/pidal",
+     "d": "Presents a HID PID 1.0 force feedback wheel and drives the physical wheel through DirectInput"},
     {"name": "Satellite", "url": "https://github.com/TinkerNorth/satellite",
      "d": "A wireless-gamepad server that plugs matching virtual controllers into the host PC for its LAN clients"},
     {"name": "SCX-VPad", "url": "https://github.com/syrrath-creator/SCX-VPad",
@@ -104,6 +110,10 @@
     {"name": "USB Racing Controller", "url": "https://github.com/MarioGoDevLike/RacingController",
      "d": "An Android phone as an Xbox racing controller over a USB cable"},
     {"name": "virtual-gamepad", "url": "https://github.com/Kaushik-Sahu/virtual-gamepad",
-     "d": "A phone-to-PC Xbox 360 controller over WebRTC, driven through HIDMaestro"}
+     "d": "A phone-to-PC Xbox 360 controller over WebRTC, driven through HIDMaestro"},
+    {"name": "WheelBri", "url": "https://github.com/grusnac/WheelBri",
+     "d": "Presents a wheel rig to games as a Logitech G25, G27, G920 or G923, on a descriptor from HIDMaestro's builder"},
+    {"name": "XiaojiDriver", "url": "https://github.com/ZyphrZero/XiaojiDriver",
+     "d": "A UMDF2 driver derived from HIDMaestro for a persistent virtual keyboard and mouse"}
   ]
 }

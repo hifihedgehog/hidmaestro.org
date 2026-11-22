@@ -126,9 +126,7 @@ controller audio and haptics, the Valve personas, and the virtual VR
 controllers. Its Softpedia listing is an Editor's Pick at 5.0 out of 5. To
 watch the SDK work without writing any code, install PadForge.
 
-Others include [foundation-sunshine](https://github.com/AlkaidLab/foundation-sunshine),
-a Sunshine fork whose DualSense support is built on HIDMaestro,
-[Vibepollo](https://github.com/Nonary/Vibepollo), a Sunshine fork whose
+Others include [Vibepollo](https://github.com/Nonary/Vibepollo), a Sunshine fork whose
 DualSense over USB/IP draws on HIDMaestro's composite descriptors,
 [Kitsune Input](https://kitsuneinput.com/app), whose virtual gamepad is
 derived from HIDMaestro, HandHeld Legend's

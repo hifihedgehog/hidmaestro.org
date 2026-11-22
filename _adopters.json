@@ -4,6 +4,8 @@
   "projects": [
     {"name": "PadForge", "url": "https://padforge.org/", "home": true,
      "d": "The flagship. Every capability this SDK ships, in one app"},
+    {"name": "foundation-sunshine", "url": "https://github.com/AlkaidLab/foundation-sunshine", "home": true,
+     "d": "A Sunshine fork whose DualSense support is built on HIDMaestro"},
     {"name": "Vibepollo", "url": "https://github.com/Nonary/Vibepollo", "home": true,
      "d": "A Sunshine fork whose DualSense over USB/IP draws on HIDMaestro's composite descriptors"},
     {"name": "Sunshine Control Panel", "url": "https://github.com/qiin2333/sunshine-control-panel", "home": true,

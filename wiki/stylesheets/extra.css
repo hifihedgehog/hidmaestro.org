@@ -1,143 +1,343 @@
 /* =====================================================================
-   HIDMaestro docs design system: the PadForge family identity verbatim
-   (deep steel surfaces, ember accents, telemetry-cyan mono labels).
-   Display: Archivo. Body: Instrument Sans. Code: JetBrains Mono.
-   Fonts load in overrides/main.html; theme font loading is off.
-   Copied from padforge.org/wiki/stylesheets/extra.css, the shipped
-   spec, per the family-uniformity ruling. Do not re-derive tokens.
+   HIDMaestro docs, in the PadForge 6 look that padforge.org/DESIGN.md
+   sets for the family. Both color schemes take PadForge's app brushes:
+   the dark scheme the app's dark theme, the light scheme its light one,
+   each value named beside it. One family, the system's Segoe UI Variable
+   (Text for text, Display from 18px up). Code stays in a monospace face
+   because it is code. Labels are words in the body face, never
+   monospace capitals. Ember marks a link and the page you are on, cold
+   blue marks focus. Copied from padforge.org/wiki/stylesheets/extra.css,
+   with the logo that follows the scheme at the end.
    ===================================================================== */
 
 :root {
-  --md-text-font: "Instrument Sans";
-  --md-code-font: "JetBrains Mono";
-
-  /* Ember, shared with the app and the landing page. */
-  --md-primary-fg-color: #d9531c;
-  --md-primary-fg-color--light: #f2652a;
-  --md-primary-fg-color--dark: #b34314;
-  --md-accent-fg-color: #f2652a;
-
-  /* PadForge surface tokens, light scheme. */
-  --pf-panel: #f6f7f9;
-  --pf-border: #e3e6ea;
-  --pf-kicker: #3a7f92;   /* telemetry cyan, darkened for white ground */
-  --pf-steel: #0a0d12;    /* header steel, both schemes */
-  --pf-h1: #14171c;       /* full-strength display ink */
+  --md-text-font: "Segoe UI Variable Text", "Segoe UI", system-ui, Roboto;
+  --md-code-font: "Cascadia Mono", "Cascadia Code", Consolas;
+  --pf-display: "Segoe UI Variable Display", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
 }
 
+/* ---- Light scheme: the app's light brushes ---- */
+[data-md-color-scheme="default"] {
+  color-scheme: light;
+  --pf-page: #ffffff;        /* SteelFieldBrush, light */
+  --pf-pane: #f3f4f7;        /* SteelPaneBrush, light */
+  --pf-pane-line: #d6d8de;   /* SteelPaneLineBrush, light */
+  --pf-card: #f3f4f7;        /* SteelPaneBrush, light: a card on the white page */
+  --pf-admonition: #ffffff;  /* SteelFieldBrush, light: a note keeps the page white under its links */
+  --pf-placeholder: #44536b; /* TextFillColorSecondaryBrush, light */
+  --pf-card-edge: #c9cdd6;   /* SteelPillLineBrush, light */
+  --pf-raised: #e4e7ee;      /* SteelRaisedBrush, light */
+  --pf-raised-lift: #d9dde6; /* SteelLiftBrush, light */
+  --pf-line: #c9cdd6;        /* SteelLineBrush, light */
+  --pf-line-soft: #d6d8de;   /* SteelLineSoftBrush, light */
+  --pf-well: #eef0f4;        /* SteelWellBrush, light */
+  --pf-text-1: #1a2433;      /* TextFillColorPrimaryBrush, light */
+  --pf-text-2: #44536b;      /* TextFillColorSecondaryBrush, light */
+  --pf-text-3: #6b7a94;      /* TextFillColorTertiaryBrush, light: marks and edges only, under 4.5:1 as text */
+  --pf-ember: #ff6b2c;       /* EmberBrush: fills only, too light for text on white */
+  --pf-ember-text: #c24a12;  /* EmberTextBrush, light */
+  --pf-ember-ink: #160a03;   /* EmberInkBrush */
+  --pf-ember-lift: #ff8450;  /* EmberLiftBrush */
+  --pf-link-hover: #9a3a10;  /* LinkHoverBrush, light */
+  --pf-cold: #1e6e9f;        /* ColdBrush, light */
+  --pf-wait: #8f6200;        /* WaitBrush, light */
+  --pf-hl-tint: rgba(194, 74, 18, 0.12);
+
+  --md-default-bg-color: var(--pf-page);
+  --md-default-bg-color--light: rgba(255, 255, 255, 0.7);
+  --md-default-bg-color--lighter: rgba(255, 255, 255, 0.3);
+  --md-default-bg-color--lightest: rgba(255, 255, 255, 0.12);
+  --md-default-fg-color: var(--pf-text-1);
+  --md-default-fg-color--light: var(--pf-text-2);
+  --md-default-fg-color--lighter: var(--pf-text-2);
+  --md-default-fg-color--lightest: var(--pf-line-soft);
+  --md-primary-fg-color: var(--pf-ember-text);
+  --md-primary-fg-color--light: var(--pf-ember-text);
+  --md-primary-fg-color--dark: var(--pf-link-hover);
+  --md-primary-bg-color: var(--pf-text-1);
+  --md-primary-bg-color--light: var(--pf-text-2);
+  --md-accent-fg-color: var(--pf-link-hover);
+  --md-accent-fg-color--transparent: rgba(194, 74, 18, 0.1);
+  --md-typeset-color: var(--pf-text-1);
+  --md-typeset-a-color: var(--pf-ember-text);
+  --md-typeset-table-color: var(--pf-line-soft);
+  --md-typeset-table-color--light: rgba(26, 36, 51, 0.03);
+  --md-code-bg-color: var(--pf-well);
+  --md-code-fg-color: var(--pf-text-1);
+  --md-admonition-bg-color: var(--pf-page);
+  --md-admonition-fg-color: var(--pf-text-1);
+  --md-footer-bg-color: var(--pf-pane);
+  --md-footer-bg-color--dark: #e9ebf0;   /* SteelWindowBrush, light */
+  --md-footer-fg-color: var(--pf-text-1);
+  --md-footer-fg-color--light: var(--pf-text-2);
+  --md-footer-fg-color--lighter: var(--pf-text-2);
+
+  /* Code colors from the app's light brushes */
+  --md-code-hl-keyword-color: var(--pf-cold);
+  --md-code-hl-string-color: var(--pf-wait);
+  --md-code-hl-number-color: var(--pf-link-hover);
+  --md-code-hl-constant-color: var(--pf-link-hover);
+  --md-code-hl-special-color: var(--pf-link-hover);
+  --md-code-hl-function-color: var(--pf-text-1);
+  --md-code-hl-name-color: var(--pf-text-1);
+  --md-code-hl-operator-color: var(--pf-text-2);
+  --md-code-hl-punctuation-color: var(--pf-text-2);
+  --md-code-hl-comment-color: var(--pf-text-2);
+  --md-code-hl-generic-color: var(--pf-text-2);
+  --md-code-hl-variable-color: var(--pf-text-1);
+}
+
+/* ---- Dark scheme: the app's dark brushes ---- */
 [data-md-color-scheme="slate"] {
-  --md-primary-fg-color: #f2652a;
-  --md-primary-fg-color--light: #ff7d3d;
-  --md-primary-fg-color--dark: #d9531c;
-  --md-accent-fg-color: #ff8c50;
+  color-scheme: dark;
+  --pf-page: #0b1018;        /* ApplicationBackgroundBrush, the page */
+  --pf-pane: #0a0e16;        /* SteelPaneBrush */
+  --pf-pane-line: #161e2b;   /* SteelPaneLineBrush */
+  --pf-card: #121925;        /* CardBackgroundFillColorDefaultBrush */
+  --pf-card-edge: #263142;   /* SteelPillLineBrush */
+  --pf-raised: #18202e;      /* SteelRaisedBrush */
+  --pf-raised-lift: #212c3d; /* SteelLiftBrush */
+  --pf-line: #2a3546;        /* SteelLineBrush */
+  --pf-line-soft: #1e2734;   /* SteelLineSoftBrush */
+  --pf-well: #121925;        /* CardBackgroundFillColorDefaultBrush: code sits on a card */
+  --pf-text-1: #eef2f7;      /* TextFillColorPrimaryBrush */
+  --pf-text-sub: #cfd7e3;    /* SubRowTextBrush */
+  --pf-text-2: #a9b4c4;      /* TextFillColorSecondaryBrush */
+  --pf-text-3: #8693a6;      /* TextFillColorTertiaryBrush */
+  --pf-ember: #ff6b2c;       /* EmberBrush */
+  --pf-ember-text: #ff6b2c;  /* EmberTextBrush */
+  --pf-ember-ink: #160a03;   /* EmberInkBrush */
+  --pf-ember-lift: #ff8450;  /* EmberLiftBrush */
+  --pf-link-hover: #ffb08a;  /* LinkHoverBrush */
+  --pf-cold: #7cc7ea;        /* ColdBrush */
+  --pf-wait: #f2b84b;        /* WaitBrush */
+  --pf-hl-tint: rgba(255, 107, 44, 0.10);  /* EmberTintBrush */
+  --pf-admonition: #121925; /* CardBackgroundFillColorDefaultBrush */
+  --pf-placeholder: #8693a6; /* TextFillColorTertiaryBrush */
 
-  /* Deep steel canvas, the landing page's ground. */
-  --md-default-bg-color: #0d1117;
-  --md-code-bg-color: #12171f;
+  --md-default-bg-color: var(--pf-page);
+  --md-default-bg-color--light: rgba(11, 16, 24, 0.54);
+  --md-default-bg-color--lighter: rgba(11, 16, 24, 0.26);
+  --md-default-bg-color--lightest: rgba(11, 16, 24, 0.07);
+  --md-default-fg-color: var(--pf-text-1);
+  --md-default-fg-color--light: var(--pf-text-2);
+  --md-default-fg-color--lighter: var(--pf-text-3);
+  --md-default-fg-color--lightest: var(--pf-line-soft);
+  --md-primary-fg-color: var(--pf-ember);
+  --md-primary-fg-color--light: var(--pf-ember-lift);
+  --md-primary-fg-color--dark: var(--pf-ember);
+  --md-primary-bg-color: var(--pf-text-1);
+  --md-primary-bg-color--light: var(--pf-text-2);
+  --md-accent-fg-color: var(--pf-link-hover);
+  --md-accent-fg-color--transparent: rgba(255, 107, 44, 0.1);
+  --md-typeset-color: var(--pf-text-1);
+  --md-typeset-a-color: var(--pf-ember-text);
+  --md-typeset-table-color: var(--pf-line-soft);
+  --md-typeset-table-color--light: rgba(238, 242, 247, 0.03);
+  --md-code-bg-color: var(--pf-well);
+  --md-code-fg-color: var(--pf-text-sub);
+  --md-admonition-bg-color: var(--pf-card);
+  --md-admonition-fg-color: var(--pf-text-1);
+  --md-footer-bg-color: var(--pf-pane);
+  --md-footer-bg-color--dark: #070a10;   /* SteelWindowBrush */
+  --md-footer-fg-color: var(--pf-text-1);
+  --md-footer-fg-color--light: var(--pf-text-2);
+  --md-footer-fg-color--lighter: var(--pf-text-3);
 
-  --pf-panel: #12171f;
-  --pf-border: #212a36;
-  --pf-kicker: #6fc3d6;
-  --pf-h1: #f5f7fb;
+  /* Code colors from the app's dark brushes */
+  --md-code-hl-keyword-color: var(--pf-cold);
+  --md-code-hl-string-color: var(--pf-wait);
+  --md-code-hl-number-color: #ff8a57;    /* EmberHotBrush */
+  --md-code-hl-constant-color: #ff8a57;  /* EmberHotBrush */
+  --md-code-hl-special-color: #ff8a57;   /* EmberHotBrush */
+  --md-code-hl-function-color: var(--pf-text-1);
+  --md-code-hl-name-color: var(--pf-text-sub);
+  --md-code-hl-operator-color: var(--pf-text-2);
+  --md-code-hl-punctuation-color: var(--pf-text-2);
+  --md-code-hl-comment-color: var(--pf-text-3);
+  --md-code-hl-generic-color: var(--pf-text-2);
+  --md-code-hl-variable-color: var(--pf-text-sub);
 }
 
-/* ---- Header and tabs: steel in both schemes, like the landing nav ---- */
+:focus-visible { outline: 2px solid var(--pf-cold); outline-offset: 2px; }
+
+/* ---- Header and tabs: the app's pane, a line under it ---- */
 
 .md-header,
 .md-tabs {
-  background-color: var(--pf-steel);
-  color: #f5f7fb;
+  background-color: var(--pf-pane);
+  color: var(--pf-text-1);
 }
 
-.md-header {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
-}
+.md-header { box-shadow: 0 1px 0 var(--pf-pane-line); }
+.md-header--shadow { box-shadow: 0 1px 0 var(--pf-pane-line), 0 8px 24px -12px rgba(0, 0, 0, 0.35); }
+.md-tabs { border-bottom: 1px solid var(--pf-pane-line); }
 
 .md-header__title,
 .md-header__topic {
-  font-family: "Archivo", var(--md-text-font), sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-family: var(--pf-display);
+  font-weight: 600;
+  letter-spacing: -0.005em;
 }
 
 .md-tabs__link {
-  font-family: "Archivo", var(--md-text-font), sans-serif;
+  font-family: var(--md-text-font-family);
   font-weight: 600;
-  font-size: 0.68rem;
-  opacity: 0.72;
-}
-
-.md-tabs__link--active,
-.md-tabs__link:hover {
-  color: var(--md-primary-fg-color--light);
+  font-size: 0.7rem;
+  color: var(--pf-text-2);
   opacity: 1;
 }
+.md-tabs__link:hover { color: var(--pf-text-1); }
+/* The section you are in is the picked one: its name, and an ember line. */
+.md-tabs__item--active .md-tabs__link { color: var(--pf-text-1); }
+.md-tabs__item--active { box-shadow: inset 0 -2px 0 var(--pf-ember); }
+
+/* The drawer's title on a phone sits on the pane, as the header does. */
+.md-nav--primary .md-nav__title[for=__drawer] { background-color: var(--pf-pane); color: var(--pf-text-1); }
+
+/* The repository facts are text, so 12px at the least. */
+.md-source__facts { font-size: 0.6rem; }
+
+/* ---- Search: a pill on the field steel, cold at focus ---- */
+
+@media screen and (min-width: 60em) {
+  .md-search__form {
+    background-color: var(--md-default-bg-color);
+    border: 1px solid var(--pf-line);
+    border-radius: 0.9rem;
+    transition: border-color 0.2s, border-radius 0.2s;
+  }
+  .md-search__form:hover { background-color: var(--md-default-bg-color); border-color: var(--pf-text-3); }
+  .md-search__input { color: var(--pf-text-1); }
+  .md-search__input::placeholder { color: var(--pf-placeholder); }
+  .md-search__icon[for=__search] { color: var(--pf-text-2); }
+  [data-md-toggle=search]:checked ~ .md-header .md-search__form {
+    border-color: var(--pf-cold);
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+  .md-search__output { border: 1px solid var(--pf-card-edge); border-top: 0; border-radius: 0 0 0.5rem 0.5rem; }
+}
+.md-search__scrollwrap, .md-search-result__meta { background-color: var(--pf-card); }
+.md-search-result__meta { color: var(--pf-text-2); font-size: 0.65rem; }
+.md-search-result__item { box-shadow: 0 -1px var(--pf-line-soft); }
+.md-search-result__link:hover, .md-search-result__link:focus { background-color: var(--pf-raised); }
+.md-search-result mark { color: var(--pf-ember-text); }
+.md-search-result__article h1, .md-search-result__article h2 { font-family: var(--pf-display); }
+
+/* ---- Navigation: the page you are on is picked, in ember ---- */
+
+.md-nav__link--active, .md-nav__link--active code { color: var(--md-typeset-a-color); font-weight: 600; }
+.md-nav__title { color: var(--pf-text-2); }
 
 /* ---- Typography ---- */
 
 .md-typeset h1,
 .md-typeset h2,
-.md-typeset h3,
-.md-typeset h4 {
-  font-family: "Archivo", var(--md-text-font), sans-serif;
-  letter-spacing: -0.015em;
+.md-typeset h3 {
+  font-family: var(--pf-display);
+  letter-spacing: -0.012em;
 }
 
-.md-typeset h1 {
-  font-weight: 800;
-  color: var(--pf-h1);
-}
+.md-typeset h1 { font-weight: 700; color: var(--pf-text-1); }
+.md-typeset h2 { font-weight: 600; color: var(--pf-text-1); }
+.md-typeset h3 { font-weight: 600; color: var(--pf-text-1); }
+.md-typeset h4, .md-typeset h5, .md-typeset h6 { font-weight: 600; color: var(--pf-text-1); }
+.md-typeset a:hover, .md-typeset a:focus { color: var(--pf-link-hover); }
+/* A link set in code sits on the code's well, a step darker than the page. */
+[data-md-color-scheme="default"] .md-typeset a code { color: var(--pf-link-hover); }
 
-.md-typeset h2 { font-weight: 700; }
-.md-typeset h3 { font-weight: 700; }
-
-/* ---- Buttons: the landing page's pills ---- */
+/* ---- Buttons: the app's pills ---- */
 
 .md-typeset .md-button {
   border-radius: 999px;
-  border-width: 1px;
+  border: 1px solid var(--pf-line);
+  background: var(--pf-raised);
+  color: var(--pf-text-1);
   font-weight: 600;
-  padding: 0.5em 1.6em;
-  transition: transform 0.15s, filter 0.15s, border-color 0.15s;
+  padding: 0.55em 1.5em;
+  transition: background-color 0.15s, border-color 0.15s;
 }
 
-.md-typeset .md-button:hover { transform: translateY(-2px); }
-
-.md-typeset .md-button--primary {
-  background: linear-gradient(135deg, #ff8c50 0%, #f2652a 45%, #d9531c 100%);
-  border-color: transparent;
-  color: #fff;
+.md-typeset .md-button:hover,
+.md-typeset .md-button:focus {
+  background: var(--pf-raised-lift);
+  border-color: var(--pf-line);
+  color: var(--pf-text-1);
 }
 
-.md-typeset .md-button--primary:hover {
-  filter: brightness(1.08);
-  background: linear-gradient(135deg, #ff8c50 0%, #f2652a 45%, #d9531c 100%);
-  border-color: transparent;
-  color: #fff;
+.md-typeset .md-button--primary,
+.md-typeset .md-button--primary:hover,
+.md-typeset .md-button--primary:focus {
+  background: var(--pf-ember);
+  border-color: var(--pf-ember);
+  color: var(--pf-ember-ink);
 }
+.md-typeset .md-button--primary:hover { background: var(--pf-ember-lift); border-color: var(--pf-ember-lift); }
 
-/* ---- Content components ---- */
+/* ---- Code: a card, the code face kept ---- */
 
-.md-typeset .admonition,
-.md-typeset details {
-  border-radius: 10px;
-  box-shadow: none;
-  border-width: 1px;
+.md-typeset pre > code {
+  border-radius: 8px;
+  border: 1px solid var(--pf-card-edge);
 }
+.md-typeset :not(pre) > code { border-radius: 4px; }
 
-.md-typeset pre > code { border-radius: 8px; }
+/* ---- Tables: a card with its edge, the header row on raised steel ---- */
 
 .md-typeset table:not([class]) {
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: none;
-  border: 1px solid var(--pf-border);
+  border: 1px solid var(--pf-card-edge);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  background-color: var(--pf-page);
 }
 
 .md-typeset table:not([class]) th {
-  background-color: var(--pf-panel);
-  font-family: "Archivo", var(--md-text-font), sans-serif;
-  font-weight: 700;
+  background-color: var(--pf-raised);
+  color: var(--pf-text-1);
+  font-weight: 600;
 }
+
+.md-typeset table:not([class]) td { border-top-color: var(--pf-line-soft); }
+.md-typeset table:not([class]) code { font-size: 0.875em; }
+
+/* ---- Admonitions: a card with one colored mark on its edge ---- */
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 12px;
+  box-shadow: none;
+  border: 1px solid var(--pf-card-edge);
+  border-left: 3px solid var(--pf-cold);
+  background-color: var(--pf-admonition);
+  font-size: 0.75rem;
+}
+.md-typeset .admonition-title,
+.md-typeset summary { font-weight: 600; }
+
+.md-typeset .admonition.note, .md-typeset details.note,
+.md-typeset .admonition.info, .md-typeset details.info,
+.md-typeset .admonition.abstract, .md-typeset details.abstract,
+.md-typeset .admonition.tip, .md-typeset details.tip,
+.md-typeset .admonition.question, .md-typeset details.question,
+.md-typeset .admonition.example, .md-typeset details.example,
+.md-typeset .admonition.quote, .md-typeset details.quote,
+.md-typeset .admonition.success, .md-typeset details.success { border-color: var(--pf-card-edge); border-left-color: var(--pf-cold); }
+.md-typeset .admonition.warning, .md-typeset details.warning { border-color: var(--pf-card-edge); border-left-color: var(--pf-wait); }
+.md-typeset .admonition.danger, .md-typeset details.danger,
+.md-typeset .admonition.failure, .md-typeset details.failure,
+.md-typeset .admonition.bug, .md-typeset details.bug { border-color: var(--pf-card-edge); border-left-color: var(--pf-ember); }
+
+.md-typeset .admonition > .admonition-title,
+.md-typeset details > summary { background-color: var(--pf-raised); }
+.md-typeset .admonition > .admonition-title::before,
+.md-typeset details > summary::before { background-color: var(--pf-cold); }
+.md-typeset .warning > .admonition-title::before,
+.md-typeset .warning > summary::before { background-color: var(--pf-wait); }
+.md-typeset .danger > .admonition-title::before, .md-typeset .danger > summary::before,
+.md-typeset .failure > .admonition-title::before, .md-typeset .failure > summary::before,
+.md-typeset .bug > .admonition-title::before, .md-typeset .bug > summary::before { background-color: var(--pf-ember-text); }
 
 /* ---- Home hero ---- */
 
@@ -146,19 +346,18 @@
   text-align: center;
 }
 
+/* The page's name above its headline: a word in the body face. */
 .pf-kicker {
-  font-family: var(--md-code-font), monospace;
-  font-size: 0.62rem;
+  font-family: var(--md-text-font-family);
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--pf-kicker);
+  color: var(--pf-ember-text);
   margin-bottom: 0.4rem;
 }
 
 .pf-hero h1 {
   font-size: clamp(2rem, 5.5vw, 3.2rem);
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.04;
   margin: 0.2em auto 0.4em;
@@ -169,7 +368,7 @@
   max-width: 34rem;
   margin: 0 auto 1.4rem;
   font-size: 0.85rem;
-  color: var(--md-default-fg-color--light);
+  color: var(--pf-text-2);
 }
 
 .pf-hero .md-button { margin: 0.2rem 0.3rem; }
@@ -186,44 +385,43 @@
 .pf-cards > a {
   display: block;
   padding: 1.1rem 1.2rem 1.2rem;
-  background: var(--pf-panel);
-  border: 1px solid var(--pf-border);
-  border-radius: 14px;
-  color: var(--md-default-fg-color);
-  transition: border-color 0.15s, transform 0.15s;
+  background: var(--pf-card);
+  border: 1px solid var(--pf-card-edge);
+  border-radius: 12px;
+  color: var(--pf-text-1);
+  transition: border-color 0.15s, background-color 0.15s;
 }
 
-.pf-cards > a:hover {
-  border-color: var(--md-accent-fg-color);
-  transform: translateY(-2px);
-  color: var(--md-default-fg-color);
+.pf-cards > a:hover,
+.pf-cards > a:focus {
+  background: var(--pf-raised);
+  border-color: var(--pf-line);
+  color: var(--pf-text-1);
 }
 
 .pf-eyebrow {
   display: block;
-  font-family: var(--md-code-font), monospace;
-  font-size: 0.55rem;
+  font-family: var(--md-text-font-family);
+  font-size: 0.65rem;
   font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--pf-kicker);
-  margin-bottom: 0.45rem;
+  color: var(--pf-text-2);
+  margin-bottom: 0.35rem;
 }
 
 .pf-cards h3 {
   margin: 0 0 0.35rem 0;
-  font-family: "Archivo", var(--md-text-font), sans-serif;
-  font-weight: 700;
-  color: var(--md-default-fg-color);
-  font-size: 0.85rem;
+  font-family: var(--pf-display);
+  font-weight: 600;
+  color: var(--pf-text-1);
+  font-size: 0.95rem;
 }
 
-.pf-cards > a:hover h3 { color: var(--md-accent-fg-color); }
+.pf-cards > a:hover h3 { color: var(--pf-text-1); }
 
 .pf-cards p {
   margin: 0;
-  font-size: 0.68rem;
-  color: var(--md-default-fg-color--light);
+  font-size: 0.7rem;
+  color: var(--pf-text-2);
 }
 
 .product-footer-nav {
@@ -232,10 +430,21 @@
   gap: .75rem 1.5rem;
   padding: 1.2rem .6rem;
   color: var(--md-footer-fg-color);
-  font-size: .72rem;
+  font-size: .75rem;
 }
-.product-footer-nav a:hover { color: var(--md-accent-fg-color); }
+.product-footer-nav a:hover { color: var(--pf-link-hover); }
 .product-footer-nav a:focus-visible {
-  outline: 2px solid var(--md-accent-fg-color);
+  outline: 2px solid var(--pf-cold);
   outline-offset: 5px;
 }
+
+/* Tutorial videos: the column's full width, the frame's own proportions. */
+.md-typeset .pf-video { width: 100%; margin: 1.6em 0; }
+.md-typeset .pf-video video { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--pf-card-edge); background: #000; }
+.md-typeset .pf-video figcaption { max-width: none; margin-top: 0.6em; font-size: 0.75rem; color: var(--pf-text-2); }
+
+/* The header follows the scheme, so the logo does: the dark mark on the
+   light pane, the light mark on the dark one (overrides/partials/logo.html). */
+.hm-logo-light { display: none; }
+[data-md-color-scheme="slate"] .hm-logo-dark { display: none; }
+[data-md-color-scheme="slate"] .hm-logo-light { display: inline; }

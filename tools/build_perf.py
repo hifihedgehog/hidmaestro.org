@@ -123,7 +123,9 @@ def plot(m, idx):
     ticks = "".join('<span class="perf-tick%s" style="top:%s%%">%d%%</span>'
                     % (" base" if t == 100 else "", top(t), t) for t in TICKS)
     rels = "".join('<span class="perf-rel" style="left:%s%%">%s</span>' % (left(i), esc(r)) for i, r in enumerate(REL))
-    pts = "".join('<span class="perf-pt" style="left:%s%%;top:%s%%"></span>' % (left(i), top(v)) for i, v in enumerate(idx))
+    # The current release's point is the live one, in ember (perf.css).
+    pts = "".join('<span class="perf-pt%s" style="left:%s%%;top:%s%%"></span>'
+                  % (" now" if i == len(idx) - 1 else "", left(i), top(v)) for i, v in enumerate(idx))
     aria = "%s, time relative to %s: %s." % (plain(m["label"]), REL[0], ", ".join(
         "%s at %s" % (r, pct(v)) for r, v in zip(REL, idx)))
     data = json.dumps(points(m, idx), separators=(",", ":"), ensure_ascii=False)
@@ -228,11 +230,8 @@ TEMPLATE = '''<!DOCTYPE html>
     <title>HIDMaestro performance, release over release</title>
     <meta name="description" content="The %(n)d paths every HIDMaestro release comparison since %(first)s has measured against the release before, charted to %(last)s: start, create, removal, input to the game, output and the cost of a submit.">
     <link rel="icon" type="image/png" href="assets/icon.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=12">
-    <link rel="stylesheet" href="perf.css?v=1">
+    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="perf.css?v=2">
     <script>document.documentElement.classList.add('js');</script>
     <script src="perf.js?v=1" defer></script>
 </head>
@@ -255,7 +254,7 @@ TEMPLATE = '''<!DOCTYPE html>
 
 <header class="spec-hero">
     <div class="container">
-        <p class="kicker kicker-cy reveal">Performance</p>
+        <p class="kicker reveal">Performance</p>
         <h1 class="display-l reveal" data-d="1">Measured, release over release.</h1>
         <p class="lede reveal" data-d="2">
             These charts follow the %(n)d paths that every published release comparison has
@@ -269,7 +268,7 @@ TEMPLATE = '''<!DOCTYPE html>
 <div class="container spec-wrap">
     <aside class="spec-nav">
         <div class="spec-nav-in">
-            <p class="mono-tag">Contents</p>
+            <p class="list-label">Contents</p>
 %(nav)s
         </div>
     </aside>
@@ -290,7 +289,7 @@ TEMPLATE = '''<!DOCTYPE html>
             <div class="footer-links"><a href="/">Home</a><a href="/press/">Press</a><a href="/performance.html">Performance</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a><a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a></div>
         </div>
         <div class="footer-note">
-            <span>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color:var(--text-muted)">MIT License</a></span>
+            <span>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color:var(--text-2)">MIT License</a></span>
             <span>The engine inside PadForge</span>
         </div>
     </div>
@@ -331,7 +330,7 @@ def home_block():
 <section class="section section-alt" id="performance">
     <div class="container">
         <div class="perf-head">
-            <p class="kicker kicker-cy reveal">Performance</p>
+            <p class="kicker reveal">Performance</p>
             <h2 class="display-m reveal" data-d="1">Measured, release over release.</h2>
             <p class="lede reveal" data-d="2">
                 Time relative to %s. Lower is faster. Each step is the side-by-side comparison
@@ -373,7 +372,9 @@ def wrap(text, width):
 
 def press_svg():
     """The press kit's sheet: the press charts at 1600 x 960, in the
-    architecture artwork's frame, fonts and colors."""
+    architecture artwork's frame, fonts and colors, which are the PadForge 6
+    look: the app's brushes, the system's face, steel lines and the current
+    release's point in ember."""
     sw, sh = 1600, 960
     x0, y0, gap = 90, 250, 30
     cw = (sw - 2 * x0 - 2 * gap) / 3.0
@@ -382,37 +383,38 @@ def press_svg():
          '<title id="title">HIDMaestro performance, release over release</title>',
          '<desc id="description">%s</desc>' % esc(" ".join(
              "%s: %s of %s's time at %s." % (plain(by_id(i)["label"]), pct(chain(by_id(i))[-1]), REL[0], REL[-1]) for i in PRESS)),
-         '<rect width="%d" height="%d" rx="12" fill="#0d1117"/>' % (sw, sh),
-         '<g font-family="Arial, Helvetica, sans-serif">',
-         '<text x="90" y="95" fill="#6fc3d6" font-size="15" letter-spacing="4">HIDMAESTRO</text>',
-         '<text x="90" y="162" fill="#f7f9fc" font-size="46" font-weight="600" letter-spacing="-1.5">Performance, release over release</text>',
-         '<text x="90" y="206" fill="#929fb0" font-size="21">Time relative to %s. Lower is faster. Each step is the side-by-side comparison published with that release.</text>' % esc(REL[0])]
+         '<rect width="%d" height="%d" rx="12" fill="#0a0e15"/>' % (sw, sh),
+         '<g font-family="\'Segoe UI Variable Text\', \'Segoe UI\', system-ui, -apple-system, Roboto, Arial, sans-serif" style="font-variant-numeric: tabular-nums">',
+         '<text x="90" y="95" fill="#ff6b2c" font-size="17" font-weight="600">HIDMaestro</text>',
+         '<text x="90" y="162" fill="#eef2f7" font-size="46" font-weight="600" letter-spacing="-1" font-family="\'Segoe UI Variable Display\', \'Segoe UI\', system-ui, -apple-system, Roboto, Arial, sans-serif">Performance, release over release</text>',
+         '<text x="90" y="206" fill="#a9b4c4" font-size="21">Time relative to %s. Lower is faster. Each step is the side-by-side comparison published with that release.</text>' % esc(REL[0])]
     for k, i in enumerate(PRESS):
         m = by_id(i)
         idx = chain(m)
         cx = x0 + (k % 3) * (cw + gap)
         cy = y0 + (k // 3) * (ch + gap)
-        o.append('<rect x="%s" y="%s" width="%s" height="%s" rx="12" fill="#12171f" stroke="#212a36"/>' % (fmt(cx), fmt(cy), fmt(cw), fmt(ch)))
+        o.append('<rect x="%s" y="%s" width="%s" height="%s" rx="12" fill="#121925" stroke="#263142"/>' % (fmt(cx), fmt(cy), fmt(cw), fmt(ch)))
         for n, line in enumerate(wrap(plain(m["label"]), 40)[:2]):
-            o.append('<text x="%s" y="%s" fill="#f7f9fc" font-size="19" font-weight="600">%s</text>' % (fmt(cx + 26), fmt(cy + 40 + n * 24), esc(line)))
-        o.append('<text x="%s" y="%s" fill="#f7f9fc" font-size="34" font-weight="700" letter-spacing="-0.5">%s<tspan fill="#929fb0" font-size="16" font-weight="400" letter-spacing="0"> of %s\'s time</tspan></text>'
+            o.append('<text x="%s" y="%s" fill="#eef2f7" font-size="19" font-weight="600">%s</text>' % (fmt(cx + 26), fmt(cy + 40 + n * 24), esc(line)))
+        o.append('<text x="%s" y="%s" fill="#eef2f7" font-size="34" font-weight="600" letter-spacing="-0.5">%s<tspan fill="#a9b4c4" font-size="16" font-weight="400" letter-spacing="0"> of %s\'s time</tspan></text>'
                  % (fmt(cx + 26), fmt(cy + 114), pct(idx[-1]), esc(REL[0])))
         px0, px1, py0, py1 = cx + 78, cx + cw - 40, cy + 138, cy + ch - 50
         X = lambda j: px0 + (px1 - px0) * j / LAST
         Y = lambda v: py0 + (py1 - py0) * (TOP - v) / TOP
         for t in TICKS:
             o.append('<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-width="1"/>'
-                     % (fmt(px0), fmt(Y(t)), fmt(px1), fmt(Y(t)), "#3b434e" if t == 100 else "#23272f"))
-            o.append('<text x="%s" y="%s" fill="%s" font-family="Consolas, monospace" font-size="13" text-anchor="end">%d%%</text>'
-                     % (fmt(px0 - 12), fmt(Y(t) + 4.5), "#929fb0" if t == 100 else "#5d6877", t))
+                     % (fmt(px0), fmt(Y(t)), fmt(px1), fmt(Y(t)), "#2a3546" if t == 100 else "#1e2734"))
+            o.append('<text x="%s" y="%s" fill="%s" font-size="14" text-anchor="end">%d%%</text>'
+                     % (fmt(px0 - 12), fmt(Y(t) + 4.5), "#a9b4c4" if t == 100 else "#8693a6", t))
         for j, r in enumerate(REL):
-            o.append('<text x="%s" y="%s" fill="#929fb0" font-family="Consolas, monospace" font-size="13" text-anchor="middle">%s</text>'
+            o.append('<text x="%s" y="%s" fill="#a9b4c4" font-size="14" text-anchor="middle">%s</text>'
                      % (fmt(X(j)), fmt(py1 + 28), esc(r)))
-        o.append('<polyline points="%s" fill="none" stroke="#d9531c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'
+        o.append('<polyline points="%s" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'
                  % " ".join("%s,%s" % (fmt(X(j)), fmt(Y(v))) for j, v in enumerate(idx)))
         for j, v in enumerate(idx):
-            o.append('<circle cx="%s" cy="%s" r="5.5" fill="#d9531c" stroke="#12171f" stroke-width="2.5"/>' % (fmt(X(j)), fmt(Y(v))))
-    o.append('<text x="90" y="935" fill="#5d6877" font-family="Consolas, monospace" font-size="15">Method and every measured value: hidmaestro.org/performance.html</text>')
+            o.append('<circle cx="%s" cy="%s" r="5.5" fill="%s" stroke="#121925" stroke-width="2.5"/>'
+                     % (fmt(X(j)), fmt(Y(v)), "#ff6b2c" if j == len(idx) - 1 else "#a9b4c4"))
+    o.append('<text x="90" y="935" fill="#8693a6" font-size="15">Method and every measured value: hidmaestro.org/performance.html</text>')
     o.append('</g>')
     o.append('</svg>')
     return "\n".join(o) + "\n"

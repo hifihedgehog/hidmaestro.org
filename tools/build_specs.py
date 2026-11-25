@@ -137,10 +137,7 @@ page = '''<!DOCTYPE html>
     <title>HIDMaestro specifications: every capability, in full</title>
     <meta name="description" content="The complete HIDMaestro capability list: identity, the profile catalog, latency, APIs, VR, the SDK surface, validation, and platform details.">
     <link rel="icon" type="image/png" href="assets/icon.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=12">
+    <link rel="stylesheet" href="style.css?v=13">
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -175,7 +172,7 @@ page = '''<!DOCTYPE html>
 <div class="container spec-wrap">
     <aside class="spec-nav">
         <div class="spec-nav-in">
-            <p class="mono-tag">Contents</p>
+            <p class="list-label">Contents</p>
 %s
         </div>
     </aside>
@@ -191,7 +188,7 @@ page = '''<!DOCTYPE html>
             <div class="footer-links"><a href="/">Home</a><a href="/press/">Press</a><a href="/performance.html">Performance</a><a href="/specs.html">Specifications</a><a href="/docs/">Documentation</a><a href="https://github.com/hifihedgehog/HIDMaestro" target="_blank" rel="noopener">GitHub</a></div>
         </div>
         <div class="footer-note">
-            <span>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color:var(--text-muted)">MIT License</a></span>
+            <span>Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color:var(--text-2)">MIT License</a></span>
             <span>The engine inside PadForge</span>
         </div>
     </div>

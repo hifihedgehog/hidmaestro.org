@@ -1,9 +1,12 @@
 # hidmaestro.org design guide
 
-This site is the padforge.org v6 design system, applied to HIDMaestro.
-The system's rules, the rationale behind them, and the twelve things not
-to do live in `padforge.org/DESIGN.md`, the family spec. Read that file
-before adding anything here. The one rule carries over unchanged:
+This site wears PadForge 6's look, the design system padforge.org took
+on with PadForge 6.0.0: the app's brushes for every color, the system's
+Segoe UI Variable for every word, steel surfaces, and ember only for what
+is live or picked. The system's rules, the rationale behind them, the
+token table and the things not to do live in `padforge.org/DESIGN.md`,
+the family spec. Read that file before adding anything here. The one
+rule carries over unchanged:
 
 **Show the product. Say less. Prove it elsewhere.**
 
@@ -38,12 +41,25 @@ source, README or site.
 - The product is an SDK, so the code panel (`.code-panel`) is a product
   shot and gets staged like one. It appears once.
 - The latency chart stays flat (`.chart-shot`): angling a data chart
-  taxes the one thing it exists for.
+  taxes the one thing it exists for. HIDMaestro's bar is ember, the
+  others steel.
+- The performance charts (`perf.css`, `tools/build_perf.py`) draw steel
+  lines and labels. Ember marks the current release's point, the live
+  one, and the point under the pointer. The press sheet
+  (`press/performance.svg`) and the architecture graphic
+  (`press/architecture.svg`) use the same brushes and the system's face.
+- Code (the code panel, the press page's SDK excerpt) keeps a monospace
+  face, Cascadia Mono, in the docs' code colors: keywords cold, type
+  names the primary text, strings the wait color.
+- The docs header follows the scheme, so `wiki/overrides/partials/logo.html`
+  shows the dark mark in the light scheme and the light mark in the dark
+  one.
 - The screenshots are 4-up API collages rather than single app windows.
   They still ride the rig, whole and unclipped.
 - PadForge-only components (the colorway morph, the annotated
-  controller, the device check) are absent here, removed from the
-  stylesheet rather than left as dead rules.
+  controller, the device check, the films, the reviewer guides) are
+  absent here, removed from the stylesheets rather than left as dead
+  rules.
 
 ## Before you ship
 

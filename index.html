@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIDMaestro: Virtual controllers with real identity</title>
-    <meta name="description" content="User-mode virtual game controllers, keyboards and mice for x64 and ARM64 Windows. Pick a device profile. Every gaming API sees the exact identity of real hardware, down to the bus type, at ~35 µs measured latency.">
+    <meta name="description" content="User-mode virtual game controllers, keyboards, mice, touchscreens and pens for x64 and ARM64 Windows. Pick a device profile. Every gaming API sees the exact identity of real hardware, down to the bus type, at ~35 µs measured latency.">
     <meta name="keywords" content="HIDMaestro, virtual controller, virtual keyboard, virtual mouse, UMDF2, DirectInput, XInput, SDL3, gamepad emulation, HID descriptor, controller emulation, ARM64, Windows on Arm, ViGEmBus alternative, vJoy alternative, VIIPER alternative">
     <meta property="og:title" content="HIDMaestro: Virtual controllers with real identity">
-    <meta property="og:description" content="User-mode virtual game controllers, keyboards and mice for x64 and ARM64 Windows. Pick a device profile. Every gaming API sees the exact identity of real hardware, down to the bus type.">
+    <meta property="og:description" content="User-mode virtual game controllers, keyboards, mice, touchscreens and pens for x64 and ARM64 Windows. Pick a device profile. Every gaming API sees the exact identity of real hardware, down to the bus type.">
     <meta property="og:image" content="https://hidmaestro.org/assets/logo.png">
     <meta property="og:url" content="https://hidmaestro.org">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="HIDMaestro: Virtual controllers with real identity">
-    <meta name="twitter:description" content="User-mode virtual game controllers, keyboards and mice for x64 and ARM64 Windows. Pick a device profile. Every gaming API sees the exact identity of real hardware.">
+    <meta name="twitter:description" content="User-mode virtual game controllers, keyboards, mice, touchscreens and pens for x64 and ARM64 Windows. Pick a device profile. Every gaming API sees the exact identity of real hardware.">
     <meta name="twitter:image" content="https://hidmaestro.org/assets/logo.png">
     <link rel="icon" type="image/png" href="assets/icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,7 +57,7 @@
             <a href="/docs/" class="btn btn-ghost">Read the docs</a>
         </div>
         <div class="hero-new-row reveal" data-d="4">
-            <a class="hero-new" href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.3.0" target="_blank" rel="noopener"><b>New in v2.3.0</b><span>Every profile on Windows on ARM64</span></a>
+            <a class="hero-new" href="https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.4.0" target="_blank" rel="noopener"><b>New in v2.4.0</b><span>Touchscreens, touchpads and pens</span></a>
         </div>
     </div>
 
@@ -93,7 +93,7 @@
                     A C# SDK and a matching user-mode driver. Your code picks a
                     profile, and the game on the other side sees the real thing.
                 </p>
-                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 36 capabilities</a>
+                <a href="specs.html" class="btn btn-ghost reveal" data-d="3" style="margin-top:2rem">See all 37 capabilities</a>
             </div>
 
             <div class="manifest reveal" data-d="1">
@@ -103,6 +103,7 @@
                 <div class="mf" style="--mf: var(--brand-xbox)"><b>~35 &micro;s measured latency</b><span>10,000 iterations, reproducible with one command</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Every gaming API at once</b><span>DirectInput, XInput, SDL3, browser, WGI, RawInput</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Keyboards and mice</b><span>51 keyboards and 52 mice, and every report arrives</span></div>
+                <div class="mf" style="--mf: var(--brand-xbox)"><b>Touchscreens, touchpads and pens</b><span>Windows takes each as that kind of device, on both drivers</span></div>
                 <div class="mf" style="--mf: var(--brand-ps)"><b>Removes itself</b><span>One tool or one call takes the driver, devices, certificate and files</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Programs side by side</b><span>Two apps that embed HIDMaestro, each keeping its own controllers</span></div>
                 <div class="mf" style="--mf: var(--brand-nin)"><b>A Wii U GameCube adapter</b><span>Four ports for Dolphin, Slippi and SDL, described by one profile</span></div>
@@ -118,7 +119,7 @@
                 <div class="mf" style="--mf: var(--brand-ps)"><b>Self-bootstrapping install</b><span>No EV certificate, no test-signing mode, no reboot</span></div>
                 <div class="mf" style="--mf: var(--telemetry)"><b>Hot-plug, no reboot</b><span>Create, live-swap, and remove, with no leftover devices</span></div>
                 <div class="mf" style="--mf: var(--ember)"><b>Six-plus controllers at once</b><span>Correct per-controller order on every API</span></div>
-                <div class="mf" style="--mf: var(--brand-nin)"><b>A 114-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
+                <div class="mf" style="--mf: var(--brand-nin)"><b>A 115-scenario battery</b><span>Stock SDL and the Steam client are among the judges</span></div>
             </div>
         </div>
     </div>
@@ -357,7 +358,7 @@
         <div class="details reveal" data-d="2" style="max-width:760px; margin-inline:auto">
             <details class="detail">
                 <summary>114 regression scenarios</summary>
-                <div class="detail-body">A 114-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client and its firmware updater, the browser Gamepad API, WGI, Raw Input for every catalog keyboard and mouse, programs running side by side as separate processes, NativeAOT and single-file apps, Dolphin, Slippi and SDL reading the GameCube adapter persona, the battery reply a pad gives XInput, the driver catalogs for both architectures, the device identity of every family across nine lives, and a full removal of HIDMaestro inside Windows Sandbox. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
+                <div class="detail-body">A 115-scenario regression battery covers DirectInput, XInput, SDL3, stock upstream SDL, the Steam client and its firmware updater, the browser Gamepad API, WGI, Raw Input for every catalog keyboard and mouse, programs running side by side as separate processes, NativeAOT and single-file apps, Dolphin, Slippi and SDL reading the GameCube adapter persona, the battery reply a pad gives XInput, the driver catalogs for both architectures, the device identity of every family across nine lives, and a full removal of HIDMaestro inside Windows Sandbox. A real Xbox Series X|S Bluetooth controller tested side by side shows byte-identical behavior across the HID class APIs.</div>
             </details>
             <details class="detail">
                 <summary>Six pads, every API, correct order</summary>
@@ -438,17 +439,21 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
                         <tr>
                             <th scope="col">Capability</th>
                             <th scope="col" class="us">HIDMaestro</th>
+                            <th scope="col">libvirtualhid</th>
                             <th scope="col">VIIPER</th>
                             <th scope="col">ViGEmBus</th>
                             <th scope="col">vJoy</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>Kernel driver required</td><td class="us">No on x64, except the composite USB personas. usbip-win2's on ARM64</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td></tr>
-                        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 344 profiles, the Bluetooth bus on x64</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td></tr>
-                        <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td></tr>
-                        <tr><td>Local single-press latency</td><td class="us">~35 &micro;s measured</td><td>168 &micro;s published</td><td>N/A</td><td>N/A</td></tr>
-                        <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Retired</td><td>Stale</td></tr>
+                        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 344 profiles, the Bluetooth bus on x64</td><td>7 built in, PlayStation in USB framing on Windows</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td></tr>
+                        <tr><td>Touchscreens, touchpads and pens</td><td class="us">HID devices on both drivers, the touchpad a precision touchpad</td><td>Touch and pen by pointer injection, no HID device, no touchpad</td><td>None</td><td>None</td><td>None</td></tr>
+                        <tr><td>DualSense speaker, haptics and microphone</td><td class="us">Yes, the composite persona</td><td>No, HID only</td><td>No, HID only</td><td>No DualSense</td><td>No DualSense</td></tr>
+                        <tr><td>Windows on ARM64</td><td class="us">Yes, every profile</td><td>No, AMD64 only</td><td>Yes</td><td>Yes</td><td>No, x86 and x64</td></tr>
+                        <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write C++ with its descriptor</td><td>Write Go per device</td><td>N/A</td><td>N/A</td></tr>
+                        <tr><td>Local single-press latency</td><td class="us">~35 &micro;s measured</td><td>Not published</td><td>168 &micro;s published</td><td>N/A</td><td>N/A</td></tr>
+                        <tr><td>Price and license</td><td class="us">Free, MIT</td><td>MIT library, source-available driver, a paid machine license for driver-backed devices</td><td>Free, GPL-3.0</td><td>Free, BSD-3-Clause</td><td>Free, MIT</td></tr>
+                        <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Active</td><td>Retired</td><td>Stale</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -493,6 +498,7 @@ ctrl.SubmitState(<span class="ck">new</span> <span class="ct">HMGamepadState</sp
         <p class="dl-arch reveal" data-d="3">v2.0.1 adds <b>HIDMaestroUninstall.exe</b> to each ZIP. It removes HIDMaestro from a computer and needs no .NET runtime. <a href="docs/start/removing-hidmaestro/">Read what it removes and what stays</a>.</p>
         <p class="dl-arch reveal" data-d="3">Programs built on HIDMaestro 1.x must move to 2.0.0. <a href="docs/start/migration/">Read what changes</a>.</p>
         <p class="dl-arch reveal" data-d="3">v2.3.0 runs every profile on <b>ARM64 Windows</b>, each controller a USB device on HIDMaestro's USB/IP driver. Each release has an x64 ZIP and an ARM64 ZIP, and HIDMaestro.Core.dll is the same file in both. <a href="docs/start/platform-support/">Read what was measured on each</a>.</p>
+        <p class="dl-arch reveal" data-d="3">v2.4.0 adds <b>touchscreens, precision touchpads and pens</b> on both drivers, and Windows takes each as that kind of device. <a href="docs/sdk/touch-and-pen/">Read how to build one</a>.</p>
         <div class="dl-meta reveal" data-d="3">
             <span>One DLL</span><span>x64 and ARM64</span><span>MIT</span>
         </div>

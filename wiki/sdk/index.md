@@ -39,6 +39,10 @@ lists every change a 1.x program meets.
 - **[Wii U GameCube Adapter](gamecube-adapter.md)**: the
   `gamecube-adapter` persona, `HMController.Ports`, `BindWinUsb()` for
   Dolphin, Slippi and SDL, rumble, and the host poll interval.
+- **[Touchscreens, Touchpads and Pens](touch-and-pen.md)**: profiles that
+  are a touchscreen, a precision touchpad or a pen, `SubmitTouch` and
+  `SubmitPen`, the descriptor builder's three starters, and what Windows
+  writes to each as it starts.
 - **[Switch 2 Pro with Motion](switch2-pro.md)**: the
   `switch2-pro-controller-composite` persona, its two USB interfaces,
   motion for Steam and SDL, and what each host needs.

@@ -209,7 +209,7 @@ For a profile with an XUSB companion (`"xinput": {"via": "xusbCompanion"}`), the
 
 `SubmitRawReport(report)` pushes a raw HID input report for data `HMGamepadState` doesn't model, such as vendor extensions. Pass **data bytes only**: do NOT include a Report ID prefix. The driver prepends the Report ID automatically. For profiles with no Report ID, pass the full report as-is. As of v2.0.0 that report is the one the SDK tells the driver: the descriptor's first input report with game pad fields, a keyboard's or mouse's first input report, or the profile's `dataReportId`, at the profile's `inputReportSize` when it sets one. See [The report a data frame fills](../profiles/profile-system.md#the-report-a-data-frame-fills-v200).
 
-Throws `ArgumentException` if `report` is empty or exceeds the 256-byte shared-section payload capacity. A device that builds its own reports (`HMProfile.BuildsItsOwnReports`: `switch-pro`, `switch-pro-usb`, `dualshock-3-full` and `switch2-pro-controller-composite`) takes `SubmitRawReport` and `SubmitRawExtendedReport` as its state block, verbatim and of the state block's size, and throws `ArgumentException` naming the size for any other length. Which report it sends, and when, belongs to the device. See [Switch 2 Pro with Motion](switch2-pro.md).
+Throws `ArgumentException` if `report` is empty or exceeds the 256-byte shared-section payload capacity. `SubmitRawExtendedReport` takes a whole report of up to 1024 bytes as of v2.4.0, where it took 80. A UMDF2 driver older than 2.4.0 carries 80 bytes, so on one the SDK refuses a longer report, or a verbatim frame past 80 bytes, with `NotSupportedException` before any byte goes. A device that builds its own reports (`HMProfile.BuildsItsOwnReports`: `switch-pro`, `switch-pro-usb`, `dualshock-3-full` and `switch2-pro-controller-composite`) takes `SubmitRawReport` and `SubmitRawExtendedReport` as its state block, verbatim and of the state block's size, and throws `ArgumentException` naming the size for any other length. Which report it sends, and when, belongs to the device. See [Switch 2 Pro with Motion](switch2-pro.md).
 
 The output of either method becomes visible through every downstream API simultaneously: `XInputGetState`, `joy.cpl`, browser Gamepad, SDL3, WGI. See [Cross-API Coverage](../reference/cross-api-coverage.md) for the per-API translation.
 
@@ -229,6 +229,20 @@ public event Action<HMController, HMKeyboardLeds>? KeyboardLedsChanged;
 Each submit method packs into the reports the profile's descriptor declares and throws `InvalidOperationException` when the descriptor has no collection of its kind. `HMMouseState` holds `Buttons` (`HMMouseButtons`, `Left` to `Button16`), `X`, `Y`, `Wheel` and `Pan`. `X` and `Y` are counts on a relative pointer and a position inside the field's range on an absolute one. `SubmitKeyboard` takes the modifiers (`HMKeyModifiers`) and every key held, by HID usage (`HMKey`). An empty span releases them, and more keys than the report holds report ErrorRollOver. `SubmitConsumer` takes Consumer-page usages, such as 0x00E9 Volume Increment.
 
 On a keyboard or mouse, `DeliversEveryReport` is true and each submit returns once the previous report has been delivered, at most one report per millisecond. `ReleasesOnConsumerExit` is true when the driver lets go of every held key and button if the process ends without disposing. `KeyboardLeds` holds the LED state Windows last sent, and `KeyboardLedsChanged` raises each change. See [Keyboards and Mice](keyboards-and-mice.md).
+
+### Touchscreens, touchpads and pens (v2.4.0)
+
+```csharp
+public void SubmitTouch(ReadOnlySpan<HMTouchContact> contacts, HMMouseButtons buttons = HMMouseButtons.None);
+public void SubmitPen(in HMPenState state);
+public int? TouchDeviceMode { get; }
+```
+
+`SubmitTouch` reports every contact down or in range now, by identifier, in the profile's own descriptor (`HMProfile.Touch`), and a touchpad's buttons. A contact the last submit carried and this one does not is lifted where it was, and an empty span lifts them all. More contacts than one report carries go out as several reports, the first with the whole count, as Windows' hybrid mode reads them. It throws `InvalidOperationException` when the descriptor has no touchscreen or touchpad collection, and `ArgumentException` for more contacts than `HMTouchLayout.MaxContacts`, one identifier twice, or an identifier past `HMTouchLayout.MaxContactId`.
+
+`SubmitPen` reports the pen (`HMProfile.Pen`): in range or not, the tip, its buttons, position, pressure, tilt and twist. It throws `InvalidOperationException` when the descriptor has no pen collection. Both deliver every report in order, as a keyboard or mouse submit does, and the driver lifts what a program leaves down when it goes away.
+
+`TouchDeviceMode` is the Device Mode or Input Mode Windows last wrote to the configuration collection, or null until it writes one: 2 for a touchscreen's multiple input, 3 when Windows reads a touchpad's own reports. See [Touchscreens, Touchpads and Pens](touch-and-pen.md).
 
 ### Ports, device protocols and WinUSB (v2.0.0)
 

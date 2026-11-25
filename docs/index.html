@@ -786,6 +786,8 @@
       
         
       
+        
+      
     
     
     
@@ -1079,6 +1081,34 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sdk/touch-and-pen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Touchscreens, Touchpads and Pens
   
 
     
@@ -1956,6 +1986,11 @@ does.</p>
     <h3>Technical Reference</h3>
     <p>Architecture, driver internals, the shared memory protocol, PnP lifecycle, and how every gaming API is satisfied.</p>
   </a>
+  <a href="sdk/touch-and-pen/">
+    <span class="pf-eyebrow">New in v2.4.0</span>
+    <h3>Touchscreens, touchpads and pens</h3>
+    <p>A profile can be a touchscreen, a precision touchpad or a pen, and Windows takes each as that kind of device, on both drivers.</p>
+  </a>
   <a href="start/removing-hidmaestro/">
     <span class="pf-eyebrow">New in v2.0.1</span>
     <h3>Removing HIDMaestro</h3>
@@ -1986,10 +2021,15 @@ does.</p>
 <h2 id="what-hidmaestro-is">What HIDMaestro is<a class="headerlink" href="#what-hidmaestro-is" title="Permanent link">&para;</a></h2>
 <p>A C# SDK and matching UMDF2 driver. Add the SDK to your app, call
 <code>HMContext.InstallDriver()</code> once, and <code>HMContext.CreateController(profile)</code>
-whenever you need a virtual gamepad, keyboard or mouse. It replaces ViGEmBus and vJoy with one
+whenever you need a virtual gamepad, keyboard, mouse, touchscreen, touchpad or pen. It replaces ViGEmBus and vJoy with one
 user-mode driver, 344 embedded profiles, runtime-built custom profiles,
 HID PID 1.0 force feedback, and live-swap teardown that does not leak PnP
 state.</p>
+<p>v2.4.0 adds touchscreens, precision touchpads and pens. <code>SubmitTouch</code> and
+<code>SubmitPen</code> pack into the reports the profile's descriptor declares, and
+Windows writes a touchscreen's Device Mode and a touchpad's Input Mode as it
+does for hardware. See
+<a href="sdk/touch-and-pen/">Touchscreens, Touchpads and Pens</a>.</p>
 <p>v2.0.1 removes HIDMaestro from a computer, with <code>HIDMaestroUninstall.exe</code>
 from the release ZIP or with <code>HMUninstall.Run()</code> from a program, and
 installs usbip-win2's host controller without its installer or root-hub

@@ -3,6 +3,7 @@
         <tr>
             <th scope="col">Capability</th>
             <th scope="col" class="us">HIDMaestro</th>
+            <th scope="col">libvirtualhid</th>
             <th scope="col">VIIPER</th>
             <th scope="col">ViGEmBus</th>
             <th scope="col">vJoy</th>
@@ -10,12 +11,14 @@
         </tr>
     </thead>
     <tbody>
-        <tr><td>Kernel driver required</td><td class="us">No, except the composite USB personas</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td><td>No (on VHF)</td></tr>
-        <tr><td>Installs without test-signing</td><td class="us">Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
-        <tr><td>Network play</td><td class="us">App layer via consumers (PadForge Remote Link)</td><td>In the driver: +1-5 ms wired, +10-50 ms Wi-Fi</td><td>No</td><td>No</td><td>No</td></tr>
-        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 344 profiles, the Bluetooth bus on x64</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
-        <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td><td>Write C, or raw descriptor</td></tr>
-        <tr><td>Local single-press latency</td><td class="us">~35 µs measured</td><td>168 µs published</td><td>N/A</td><td>N/A</td><td>Not published</td></tr>
-        <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Retired</td><td>Stale</td><td>Active</td></tr>
+        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 344 profiles, the Bluetooth bus on x64</td><td>7 built in, PlayStation in USB framing on Windows</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
+        <tr><td>Touchscreens, touchpads and pens</td><td class="us">HID devices on both drivers, the touchpad a precision touchpad</td><td>Touch and pen by pointer injection, no HID device, no touchpad</td><td>None</td><td>None</td><td>None</td><td>Only from a raw descriptor you write</td></tr>
+        <tr><td>DualSense speaker, haptics and microphone</td><td class="us">Yes, the composite persona</td><td>No, HID only</td><td>No, HID only</td><td>No DualSense</td><td>No DualSense</td><td>No, HID only</td></tr>
+        <tr><td>Windows on ARM64</td><td class="us">Yes, every profile</td><td>No, AMD64 only</td><td>Yes</td><td>Yes</td><td>No, x86 and x64</td><td>Yes</td></tr>
+        <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write C++ with its descriptor</td><td>Write Go per device</td><td>N/A</td><td>N/A</td><td>Write C, or raw descriptor</td></tr>
+        <tr><td>Local single-press latency</td><td class="us">~35 &micro;s measured</td><td>Not published</td><td>168 &micro;s published</td><td>N/A</td><td>N/A</td><td>Not published</td></tr>
+        <tr><td>Price and license</td><td class="us">Free, MIT</td><td>MIT library, source-available driver, a paid machine license for driver-backed devices</td><td>Free, GPL-3.0</td><td>Free, BSD-3-Clause</td><td>Free, MIT</td><td>Free, MIT</td></tr>
+        <tr><td>Installs without test-signing</td><td class="us">Yes</td><td>Yes, a signed MSI</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+        <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Active</td><td>Retired</td><td>Stale</td><td>Active</td></tr>
     </tbody>
 </table>

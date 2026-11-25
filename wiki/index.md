@@ -48,6 +48,11 @@ does.</p>
     <h3>Technical Reference</h3>
     <p>Architecture, driver internals, the shared memory protocol, PnP lifecycle, and how every gaming API is satisfied.</p>
   </a>
+  <a href="sdk/touch-and-pen/">
+    <span class="pf-eyebrow">New in v2.4.0</span>
+    <h3>Touchscreens, touchpads and pens</h3>
+    <p>A profile can be a touchscreen, a precision touchpad or a pen, and Windows takes each as that kind of device, on both drivers.</p>
+  </a>
   <a href="start/removing-hidmaestro/">
     <span class="pf-eyebrow">New in v2.0.1</span>
     <h3>Removing HIDMaestro</h3>
@@ -79,10 +84,16 @@ does.</p>
 
 A C# SDK and matching UMDF2 driver. Add the SDK to your app, call
 `HMContext.InstallDriver()` once, and `HMContext.CreateController(profile)`
-whenever you need a virtual gamepad, keyboard or mouse. It replaces ViGEmBus and vJoy with one
+whenever you need a virtual gamepad, keyboard, mouse, touchscreen, touchpad or pen. It replaces ViGEmBus and vJoy with one
 user-mode driver, 344 embedded profiles, runtime-built custom profiles,
 HID PID 1.0 force feedback, and live-swap teardown that does not leak PnP
 state.
+
+v2.4.0 adds touchscreens, precision touchpads and pens. `SubmitTouch` and
+`SubmitPen` pack into the reports the profile's descriptor declares, and
+Windows writes a touchscreen's Device Mode and a touchpad's Input Mode as it
+does for hardware. See
+[Touchscreens, Touchpads and Pens](sdk/touch-and-pen.md).
 
 v2.0.1 removes HIDMaestro from a computer, with `HIDMaestroUninstall.exe`
 from the release ZIP or with `HMUninstall.Run()` from a program, and

@@ -706,6 +706,8 @@
       
         
       
+        
+      
     
     
     
@@ -999,6 +1001,34 @@
     
   
     Keyboards and Mice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdk/touch-and-pen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Touchscreens, Touchpads and Pens
   
 
     
@@ -2330,7 +2360,7 @@
 
 
 <h1 id="testing-and-verification">Testing and Verification<a class="headerlink" href="#testing-and-verification" title="Permanent link">&para;</a></h1>
-<p>The regression battery has 114 scenarios, S01 to S85 and S87 to S115, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms, the catalog's capture fidelity, removing HIDMaestro from a computer, and every profile on both backends. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
+<p>The regression battery has 115 scenarios, S01 to S85 and S87 to S116, covering lifecycle, input and output formats, consumer APIs, USB/IP, VR, device identity, the driver catalogs, the Sony reports against the programs that read them, programs side by side, NativeAOT apps, the GameCube adapter persona, the SDK's rounding, profiles and device models as data, the report programs, the protocol engine, a second device on the Switch Pro's mechanisms, the catalog's capture fidelity, removing HIDMaestro from a computer, every profile on both backends, and touchscreens, touchpads and pens. scripts/verify.py provides additional cross-API checks on a live deployment. Report the actual result for each machine. An unavailable fixture is not a passing test.</p>
 <p>For the wiki coverage of where these pipelines fit, see <a href="../build-and-release/">Build and Release</a>. For the underlying SDK mechanics they exercise, see <a href="../../sdk/sdk-reference/">SDK Reference</a> and <a href="../lifecycle-and-teardown/">Lifecycle and Teardown</a>.</p>
 <hr />
 <h2 id="scriptsverifypy-cross-api-correctness"><code>scripts/verify.py</code>: cross-API correctness<a class="headerlink" href="#scriptsverifypy-cross-api-correctness" title="Permanent link">&para;</a></h2>
@@ -2432,7 +2462,7 @@
 <p><code>--filter</code> runs only the named API check. Useful for iterating on a specific subsystem without waiting for the full pipeline.</p>
 <hr />
 <h2 id="testregressionregression_batteryps1-lifecycle-battery"><code>test/regression/regression_battery.ps1</code>: lifecycle battery<a class="headerlink" href="#testregressionregression_batteryps1-lifecycle-battery" title="Permanent link">&para;</a></h2>
-<p>The 114-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, and a full removal of HIDMaestro inside Windows Sandbox. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
+<p>The 115-scenario battery that drives <code>HIDMaestroTest.exe</code> through every interesting create / live-swap / remove / force-kill sequence plus the HID PID 1.0 force-feedback round-trip, the composite personas, the battery reply a pad gives XInput, the driver catalogs for both architectures, Steam's firmware updater against the 2026 Steam Controller persona, the device identity of every family across nine lives, every catalog keyboard and mouse through Raw Input, programs that embed HIDMaestro side by side, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, and a full removal of HIDMaestro inside Windows Sandbox. It verifies no PnP devnodes are left in the <code>PRESENT</code> state after each one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># from an ELEVATED PowerShell, repo root or anywhere</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">./</span><span class="n">test</span><span class="p">/</span><span class="n">regression</span><span class="p">/</span><span class="n">regression_battery</span><span class="p">.</span><span class="n">ps1</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2861,6 +2891,11 @@
 <td>Every profile reads to the programs that name controllers as its pins say, on each backend (v2.3.0)</td>
 <td><code>offline</code>: <code>identity-pins.txt</code> covers every deployable profile, a line that holds for one backend only, or from one Windows build on, follows a comment that says why, no reader is pinned to another device's IDs without a reason, and the USB/IP pins read what the real devices on record read (<code>real-devices.txt</code>). <code>live</code>, on UMDF2 and USB/IP on x64 and on USB/IP on ARM64: each profile is created and read through the HID class with the bus hidapi's rule gives, XInput, Windows.Gaming.Input, SDL 3.4.18 with its default hints, and the id Chrome builds, computed with Chromium's own rules and tables. A profile whose device a driver package from outside Windows and HIDMaestro drives on the machine is named and not compared.</td>
 </tr>
+<tr>
+<td><strong>S116_Digitizer</strong></td>
+<td>Touchscreens, touchpads and pens reach Windows as the devices they are (v2.4.0)</td>
+<td><code>offline</code>: the touch and pen packer over real touchscreen, touchpad and pen descriptors, read back by the probe's own walk of each descriptor, <code>HidDescriptorBuilder</code>'s three starters with their feature answers, and the release slots, which take each report whole or not at all. <code>live</code>, on each backend the machine runs: Windows writes Device Mode 2 to a touchscreen and Input Mode 3 to a precision touchpad, contacts and pen states read back through HidP, a 116-byte touch report goes whole, and a 1024-byte report reads back byte for byte while a 1025-byte one is refused. <code>kill</code>: on UMDF2 the contacts a killed consumer left down come up with their identifiers, and on USB/IP the device leaves with the consumer. A console session in use gets contacts in range only, with no tip and no click.</td>
+</tr>
 </tbody>
 </table>
 <p>Each scenario covers a specific historical bug or invariant. The full list is the codified history of what has broken in this area before. The rows above are the ones worth reading standalone. The scenario array in <a href="https://github.com/hifihedgehog/HIDMaestro/blob/master/test/regression/regression_battery.ps1"><code>test/regression/regression_battery.ps1</code></a> is the authoritative full list.</p>
@@ -2936,7 +2971,7 @@
 <ol>
 <li>Build: <code>build_all.cmd</code> with <code>HMSkipArm64</code>, <code>HMSkipUsbip</code> and <code>HM_STAMP_TIME</code> cleared, then <code>scripts\check_build_layouts.ps1</code> (v2.0.0), then the test app, the profile extractor and the probe set. <code>check_build_layouts.ps1</code> builds the native payloads from the pinned NuGet WDK packages, under the variables an EWDK prompt sets (x64 only) and with roots that hold no kit, runs SDK-project builds of each layout, and checks the <code>HM_STAMP_TIME</code> stamping.</li>
 <li>The Switch Pro protocol check, the Switch descriptor idle check and the Switch Pro SDL3 acceptance.</li>
-<li><code>regression_battery.ps1</code>: full 114-scenario battery. <strong>114/114 PASS required.</strong></li>
+<li><code>regression_battery.ps1</code>: full 115-scenario battery. <strong>115/115 PASS required.</strong></li>
 <li>The script prints the result.</li>
 </ol>
 <p>The script does not run <code>verify.py</code>, <code>HIDMaestroTest cleanup</code> or a profile extractor smoke test.</p>

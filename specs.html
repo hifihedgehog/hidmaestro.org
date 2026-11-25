@@ -110,6 +110,10 @@
                     <dd>A profile can be a keyboard or a mouse. The catalog holds 51 keyboards and 52 mice from 32 vendors, each the report descriptor of a real device's keyboard or mouse interface. Raw Input lists each one as its kind, a Scroll Lock pressed on a virtual keyboard turns Scroll Lock on, and the mouse moves the cursor. SubmitKeyboard, SubmitMouse and SubmitConsumer pack into whatever reports the profile declares. Every report arrives: the driver confirms each one Windows takes, and a burst of 600 one-count moves lost nothing. If the consumer dies with a key held, the driver lets go of it, and the next session's cleanup removes the devices it left.</dd>
                 </div>
                 <div class="spec-row">
+                    <dt>Touchscreens, touchpads and pens</dt>
+                    <dd>A profile can be a touchscreen, a precision touchpad or a pen, on both drivers. SubmitTouch and SubmitPen pack into the reports the profile's descriptor declares, and Windows reads the device as it reads hardware: it writes Device Mode 2 to a touchscreen, and Input Mode 3 to a touchpad once its capabilities and certification reports pass, the step that makes it a precision touchpad. HidDescriptorBuilder builds a touchscreen of up to 20 contacts, a precision touchpad in the layout mac-precision-touchpad gives Windows, and Microsoft's sample pen, and a descriptor of your own works the same way. Every report arrives in order, and if the program ends with contacts down, the UMDF2 driver lifts each one. On the Surface Pro, a pen in range moved the cursor to its place within 16 ms of each submit.</dd>
+                </div>
+                <div class="spec-row">
                     <dt>Devices are JSON</dt>
                     <dd>Add a controller by writing a data-only JSON profile or by capturing one you already own, with no recompile. The SDK and the drivers hold no per-device code: battery scenario S88 fails on a device name, a vendor or product ID compared or switched on, or a profile field only one device sets, and the Sony feature answers, the Switch Pro's and Switch 2 Pro's protocols, the DualShock 3's sixaxis form and the XUSB companion's answers are all profile data. A report field's wire form is parameters: min and max, invert, a center for offset binary, a scale for motion counts, a battery level table, bit groups packed across frames, and a sensor clock that counts elapsed time. Profiles load strictly: a mistake refuses the file, and HMContext.ProfileLoadIssues lists it with the JSON path and the reason. A profile built in code meets the same checks at create, which throws HMProfileException before it touches the machine. A profile takes the feature answers, protocol and presentation it does not carry from a model it names with deviceModelFrom, or from identity defaults that keep a profile made outside the catalog behaving as its VID and PID did in 1.x. A device that builds its reports from its own state, as the Switch Pro, the Switch 2 Pro and the DualShock 3 do, carries a state block and report programs, compiled at build for the catalog and interpreted for your own profiles. HIDMaestroProfileCheck, in the release ZIP, checks a profile file as the SDK loads it and prints each problem with its JSON path. Adding a controller to a code-per-device emulator means writing and compiling a new device implementation. That difference is the whole point of the profile system. A device that carries several controllers in one report, and the commands it answers, are data too: the Wii U GameCube adapter's four ports and its command protocol are its profile, run by mechanisms any profile can use.</dd>
                 </div>
@@ -213,7 +217,7 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>Regression coverage</dt>
-                    <dd>The battery has 114 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, every catalog keyboard and mouse through Raw Input, programs running side by side as separate processes, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, every raw value of every catalog conversion through the SDK's rounding, the Sony, Valve and Nintendo vendor-blob reports against golden bytes, profiles and device models loaded strictly, every report program three ways, the protocol engine and device clock, the version contract on the live driver, a Joy-Con built from the Switch Pro's mechanisms, the SDK and drivers checked for device shortcuts, and a full removal of HIDMaestro inside Windows Sandbox. Production signing and the full HIDMaestro integration gate remain pending.</dd>
+                    <dd>The battery has 115 scenarios covering lifecycle, encoders, consumer APIs, USB/IP, VR, the battery reply a pad gives XInput, device identity across nine lives per family, the driver catalogs for both architectures, the DualShock 3 and 4 reports against the programs that read them, the Switch 2 Pro persona against a capture of a real pad, the registry keys a virtual shares with real devices, every catalog keyboard and mouse through Raw Input, touchscreens, touchpads and pens through Windows' HID parser, programs running side by side as separate processes, NativeAOT and single-file apps, the GameCube adapter persona through Dolphin, Slippi and SDL, every raw value of every catalog conversion through the SDK's rounding, the Sony, Valve and Nintendo vendor-blob reports against golden bytes, profiles and device models loaded strictly, every report program three ways, the protocol engine and device clock, the version contract on the live driver, a Joy-Con built from the Switch Pro's mechanisms, the SDK and drivers checked for device shortcuts, and a full removal of HIDMaestro, inside Windows Sandbox or on a test machine. Production signing and the full HIDMaestro integration gate remain pending.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Judged by the real consumers</dt>
@@ -227,7 +231,7 @@
             <dl class="spec-list reveal" data-d="1">
                 <div class="spec-row">
                     <dt>Every profile on ARM64 Windows</dt>
-                    <dd>HIDMaestro self-signs its UMDF2 driver on each machine, and Windows on ARM64 and Windows in S mode do not allow installing a self-signed UMDF2 driver. There every controller runs on HIDMaestro's USB/IP driver, a USB device that HIDMaestro's user-mode code serves through the usbip-win2 host controller it carries. Windows' own drivers bind it: HidUsb for the HID profiles, with xinputhid on a Bluetooth Xbox pad's node, xusb22 for the Xbox 360 profiles and Windows' GIP drivers for the wired Xbox One and Series profiles. HMBackend.Auto makes that choice before anything on the machine changes, so a program written for x64 runs on ARM64 with no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 114-scenario battery runs on an ARM64 Microsoft Surface Pro.</dd>
+                    <dd>HIDMaestro self-signs its UMDF2 driver on each machine, and Windows on ARM64 and Windows in S mode do not allow installing a self-signed UMDF2 driver. There every controller runs on HIDMaestro's USB/IP driver, a USB device that HIDMaestro's user-mode code serves through the usbip-win2 host controller it carries. Windows' own drivers bind it: HidUsb for the HID profiles, with xinputhid on a Bluetooth Xbox pad's node, xusb22 for the Xbox 360 profiles and Windows' GIP drivers for the wired Xbox One and Series profiles. HMBackend.Auto makes that choice before anything on the machine changes, so a program written for x64 runs on ARM64 with no code change. The release has an ARM64 ZIP with an ARM64 test app and profile extractor, and the 115-scenario battery runs on an ARM64 Microsoft Surface Pro.</dd>
                 </div>
                 <div class="spec-row">
                     <dt>Windows 10 and 11</dt>
@@ -503,6 +507,7 @@
         <tr>
             <th scope="col">Capability</th>
             <th scope="col" class="us">HIDMaestro</th>
+            <th scope="col">libvirtualhid</th>
             <th scope="col">VIIPER</th>
             <th scope="col">ViGEmBus</th>
             <th scope="col">vJoy</th>
@@ -510,13 +515,15 @@
         </tr>
     </thead>
     <tbody>
-        <tr><td>Kernel driver required</td><td class="us">No, except the composite USB personas</td><td>Yes (USBIP)</td><td>Yes</td><td>Yes</td><td>No (on VHF)</td></tr>
-        <tr><td>Installs without test-signing</td><td class="us">Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
-        <tr><td>Network play</td><td class="us">App layer via consumers (PadForge Remote Link)</td><td>In the driver: +1-5 ms wired, +10-50 ms Wi-Fi</td><td>No</td><td>No</td><td>No</td></tr>
-        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 344 profiles, the Bluetooth bus on x64</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
-        <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write Go per device</td><td>N/A</td><td>N/A</td><td>Write C, or raw descriptor</td></tr>
-        <tr><td>Local single-press latency</td><td class="us">~35 µs measured</td><td>168 µs published</td><td>N/A</td><td>N/A</td><td>Not published</td></tr>
-        <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Retired</td><td>Stale</td><td>Active</td></tr>
+        <tr><td>Exact identity, incl. Bluetooth bus</td><td class="us">Yes, 344 profiles, the Bluetooth bus on x64</td><td>7 built in, PlayStation in USB framing on Windows</td><td>USB only</td><td>2 fixed types</td><td>Fixed identity</td><td>4 presets, USB only</td></tr>
+        <tr><td>Touchscreens, touchpads and pens</td><td class="us">HID devices on both drivers, the touchpad a precision touchpad</td><td>Touch and pen by pointer injection, no HID device, no touchpad</td><td>None</td><td>None</td><td>None</td><td>Only from a raw descriptor you write</td></tr>
+        <tr><td>DualSense speaker, haptics and microphone</td><td class="us">Yes, the composite persona</td><td>No, HID only</td><td>No, HID only</td><td>No DualSense</td><td>No DualSense</td><td>No, HID only</td></tr>
+        <tr><td>Windows on ARM64</td><td class="us">Yes, every profile</td><td>No, AMD64 only</td><td>Yes</td><td>Yes</td><td>No, x86 and x64</td><td>Yes</td></tr>
+        <tr><td>Add a new device</td><td class="us">JSON, or capture one you own</td><td>Write C++ with its descriptor</td><td>Write Go per device</td><td>N/A</td><td>N/A</td><td>Write C, or raw descriptor</td></tr>
+        <tr><td>Local single-press latency</td><td class="us">~35 &micro;s measured</td><td>Not published</td><td>168 &micro;s published</td><td>N/A</td><td>N/A</td><td>Not published</td></tr>
+        <tr><td>Price and license</td><td class="us">Free, MIT</td><td>MIT library, source-available driver, a paid machine license for driver-backed devices</td><td>Free, GPL-3.0</td><td>Free, BSD-3-Clause</td><td>Free, MIT</td><td>Free, MIT</td></tr>
+        <tr><td>Installs without test-signing</td><td class="us">Yes</td><td>Yes, a signed MSI</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+        <tr><td>Status</td><td class="us">Active</td><td>Active</td><td>Active</td><td>Retired</td><td>Stale</td><td>Active</td></tr>
     </tbody>
 </table>
                 </div>

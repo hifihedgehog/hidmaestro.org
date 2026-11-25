@@ -469,7 +469,7 @@ A profile file's device model is checked when it loads, and a mistake refuses th
 - an unknown field type, an input semantic that names no SDK value, or a button name the SDK cannot express
 - a report ID that does not parse, or an `armOn` type other than `featureWrite`, `outputWrite` and `featureRead`
 - an output port count that differs from the input's, or more than 32 ports under a protocol
-- an input report over the 80-byte extended lane, or an output block or field past the output ring's 256 data bytes
+- an input report over the input lane's 1024 bytes (80 through v2.3.0), or an output block or field past the output ring's 256 data bytes
 - output ports or fields past one OUT packet on a protocol whose SET_REPORT loses its report ID
 - a command rule whose match or minimum length is longer than the OUT endpoint's packet
 - a register a rule names that `state` does not declare, `replies.pending` outside 1 to 1024, `setReportStripsId` without `setReport`, or a `getReport` other than `"input"`, `"reportId"` and `"deviceReport"`

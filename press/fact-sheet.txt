@@ -1,7 +1,7 @@
 HIDMaestro
 Product information | November 20, 2026
 
-HIDMaestro is a free, open-source SDK for creating virtual game controllers, keyboards and mice on Windows. Applications use its C# API and JSON device profiles to define device identity, submit input, and receive output such as rumble and force feedback. PadForge uses HIDMaestro for virtual controller output. HIDMaestro is available under the MIT license, including for commercial use.
+HIDMaestro is a free, open-source SDK for creating virtual game controllers, keyboards, mice, touchscreens, touchpads and pens on Windows. Applications use its C# API and JSON device profiles to define device identity, submit input, and receive output such as rumble and force feedback. PadForge uses HIDMaestro for virtual controller output. HIDMaestro is available under the MIT license, including for commercial use.
 
 Website: https://hidmaestro.org/
 Press resources: https://hidmaestro.org/press/
@@ -47,6 +47,11 @@ program needs no code change. On x64 the UMDF2 driver stays the default,
 and any profile can run on either driver. The DLL builds and signs the
 UMDF2 driver's catalogs itself and no longer carries Windows SDK or WDK
 tools. The UMDF2 driver is the 2.1.0 build.
+Version 2.4.0 adds touchscreens, precision touchpads and pens on both
+drivers, and Windows writes a touchscreen's Device Mode and a touchpad's
+Input Mode as it does for hardware. A USB/IP speaker now drains one 10 ms
+period at a time, as a real pad's does, through usbip-win2's root hub
+filter on HIDMaestro's own hub alone. The UMDF2 driver is 2.4.0.
 
 Setup and validation
 Device creation and driver installation require administrator rights.

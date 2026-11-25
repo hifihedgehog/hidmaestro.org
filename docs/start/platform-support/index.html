@@ -2042,7 +2042,7 @@
 <p>Handheld Companion's and VIIPER's installers look for usbip-win2's Apps entry, find none after HIDMaestro's install, and run usbip-win2's installer. That adds the root-hub filter, so every USB device drops once, and a second host controller. HIDMaestro works with two host controllers.</p>
 <p>A machine that HIDMaestro put on an older usbip-win2, 0.9.7.7 through v1.8.1 or 0.9.7.5 in v1.9.0 and v1.9.1, is moved to 0.9.8.1 automatically. The SDK carries the host controller's own signed driver files and puts them on the existing controller with one Windows driver update. It never runs the vendor installer for this, and it leaves the root-hub filter alone, so no USB device drops and no window appears. It happens only in a Windows session where nothing has used the controller yet, because a used controller does not release its driver. Until then the older transport keeps working. Any other usbip-win2 version was installed by another program and is left as it is. <code>HIDMAESTRO_KEEP_TRANSPORT=1</code> turns the move off.</p>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
-<p>The v2.3.0 release gate ran on x64 and on ARM64, on three systems:</p>
+<p>The v2.4.0 release gate ran on x64 and on ARM64, on four systems:</p>
 <table>
 <thead>
 <tr>
@@ -2062,6 +2062,13 @@
 <td>Windows 11 IoT Enterprise LTSC, version 25H2, build 26200</td>
 </tr>
 <tr>
+<td>Desktop PC, ASUS ROG Crosshair X870E Extreme motherboard</td>
+<td>AMD Ryzen 9 9950X3D, 16 cores, 32 threads</td>
+<td>96 GB DDR5-6000</td>
+<td>NVIDIA GeForce RTX 5080</td>
+<td>Windows 11 IoT Enterprise LTSC, version 25H2, build 26200</td>
+</tr>
+<tr>
 <td>MeLE PCG02 GLE, fanless stick PC</td>
 <td>Intel Celeron J4125, 4 cores, 4 threads</td>
 <td>8 GB LPDDR4-2133</td>
@@ -2077,7 +2084,7 @@
 </tr>
 </tbody>
 </table>
-<p>On the Legion Pro 7 the full 114-scenario battery passed all 114 scenarios in 55 minutes. The PCG02 GLE ran it twice, at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code> over SSH. On the UMDF2 driver, after the uninstaller had removed HIDMaestro from the machine so that the first create installed the driver from nothing, 110 passed in 75 minutes and 4 skipped their probes. With every controller on USB/IP, 110 passed in 44 minutes and the same 4 skipped. S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 the <code>wsb</code> command for Windows Sandbox, which this machine lacks. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. On the Surface Pro, over SSH, where Windows refuses the driver package and every controller runs on USB/IP, 110 passed in 28 minutes and the same 4 skipped.</p>
+<p>On the Legion Pro 7 the full 115-scenario battery passed all 115 scenarios in 49 minutes, S73 and S101's removal in Windows Sandbox among them. The other three systems have no Windows Sandbox, so S73 skipped on each and S101's removal ran on the machine itself: HIDMaestro was removed, checked to be gone and installed again. On the desktop PC, 110 passed in 39 minutes and 5 skipped. The PCG02 GLE ran at <code>HIDMAESTRO_TIMEOUT_SCALE=2</code> over SSH, on the UMDF2 driver, after the uninstaller had removed HIDMaestro from the machine so that the first create installed the driver from nothing: 110 passed in 88 minutes and the same 5 skipped. S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 and S101's sandbox half the <code>wsb</code> command. Inside passing scenarios, the checks that need a desktop session, a Steam client or SteamVR skip there too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. On the Surface Pro, over SSH, where Windows refuses the driver package and every controller runs on USB/IP, 111 passed in 27 minutes and 4 skipped: S61's signing checks, S70, S73 and S101's sandbox half.</p>
 <p>The v1.12.0 release gate ran on x64: the full 70-scenario battery passed all 70 scenarios on the release binaries on Windows 11 26200. The gate machine's host controller runs 0.9.8.1, put there by the v1.9.2 move, so every composite scenario ran through the client's 0.9.8.1 request format against the live driver. The DualSense composite passed 26/26 end to end, and the Switch 2 Pro composite 255/255, with Windows binding WinUSB to its vendor interface from the persona's own descriptors. Its root-hub filter is still the older one the move leaves alone, so SET_INTERFACE never reaches a composite there, and audio stream state comes from the traffic instead (<a href="../../sdk/usb-audio-composite/">USB audio composite</a>).</p>
 <p>The 0.9.8.0 request format was checked by compiling that version's own header with MSVC for x64 and ARM64, and the client sends its exact sizes and offsets. It has not run against a live driver. The move from 0.9.7.5 to 0.9.8.1 uses the same Windows driver update that moved machines from 0.9.7.7 to 0.9.7.5 in v1.9.0, which took 878 ms on 26200.</p>
 <p>0.9.8.1 rounds a full-speed device's interrupt polling interval up where 0.9.7.5 rounded it down. Windows does not pace interrupt reads by that interval. Measured on 26200 by giving the DualShock 4 composite an interval that 0.9.7.5 converts to the same 8 ms period, the composite delivered 146 to 158 reports per second either way.</p>

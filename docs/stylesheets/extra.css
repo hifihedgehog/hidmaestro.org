@@ -453,3 +453,8 @@
 [data-md-color-scheme="slate"] .md-nav__button.md-logo img.hm-logo-dark { display: none; }
 [data-md-color-scheme="slate"] .md-header__button.md-logo img.hm-logo-light,
 [data-md-color-scheme="slate"] .md-nav__button.md-logo img.hm-logo-light { display: block; }
+
+/* The drawer's repository bar on ember with ember ink, as the primary
+   button is. Material colors it with the header's text, which is dark on
+   the light scheme's rust and light on the dark scheme's ember. */
+.md-nav__source { background-color: var(--pf-ember); color: var(--pf-ember-ink); }

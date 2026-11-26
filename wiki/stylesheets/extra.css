@@ -444,7 +444,12 @@
 .md-typeset .pf-video figcaption { max-width: none; margin-top: 0.6em; font-size: 0.75rem; color: var(--pf-text-2); }
 
 /* The header follows the scheme, so the logo does: the dark mark on the
-   light pane, the light mark on the dark one (overrides/partials/logo.html). */
-.hm-logo-light { display: none; }
-[data-md-color-scheme="slate"] .hm-logo-dark { display: none; }
-[data-md-color-scheme="slate"] .hm-logo-light { display: inline; }
+   light pane, the light mark on the dark one (overrides/partials/logo.html).
+   Scoped to Material's two logo buttons, the header's and the drawer's,
+   whose img rules set display: block and outrank a bare class. */
+.md-header__button.md-logo img.hm-logo-light,
+.md-nav__button.md-logo img.hm-logo-light { display: none; }
+[data-md-color-scheme="slate"] .md-header__button.md-logo img.hm-logo-dark,
+[data-md-color-scheme="slate"] .md-nav__button.md-logo img.hm-logo-dark { display: none; }
+[data-md-color-scheme="slate"] .md-header__button.md-logo img.hm-logo-light,
+[data-md-color-scheme="slate"] .md-nav__button.md-logo img.hm-logo-light { display: block; }

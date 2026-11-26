@@ -6,7 +6,8 @@
     "2.0.1",
     "2.0.2",
     "2.1.0",
-    "2.3.0"
+    "2.3.0",
+    "2.4.0"
   ],
   "steps": [
     {
@@ -46,6 +47,15 @@
       "verdicts": true,
       "rule": "a path reads faster or slower only when all six rounds of the one session moved the same way, the exact sign test at p = 0.031",
       "note": "2.2.0 was not measured against 2.1.0, so this step continues from the 2.1.0 point. 2.2.0's one change on a charted path is a check for a pending protocol reply before each frame of a profile with a protocol host, such as the DualShock 3."
+    },
+    {
+      "from": "2.3.0",
+      "to": "2.4.0",
+      "notes": "https://github.com/hifihedgehog/HIDMaestro/releases/tag/v2.4.0",
+      "method": "six rounds alternating the two builds in one session on a desktop PC with an AMD Ryzen 9 9950X3D, each round installing each build's own driver once for the device paths",
+      "verdicts": true,
+      "rule": "a path reads faster or slower only when all six rounds of the one session moved the same way, the exact sign test at p = 0.031",
+      "note": "In this session three charted paths moved between groups of runs on one build: CreateController on the Xbox 360, whose 2.3.0 round medians ran from 322 to 475 ms, SubmitState on the DualShock 4, from 152 to 787 ns, and Dispose on the DualSense over USB/IP, from 2.5 to 11.7 ms. The notes read those three level. The one charted path the session read slower is SubmitState on the Switch 2 Pro, by 1.8% at p50."
     }
   ],
   "metrics": [
@@ -107,6 +117,17 @@
             460.6
           ],
           "verdict": "slower"
+        },
+        {
+          "before": [
+            500.6,
+            522.8
+          ],
+          "after": [
+            500.9,
+            526.3
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -166,6 +187,17 @@
           "after": [
             140.2,
             152.1
+          ],
+          "verdict": "level"
+        },
+        {
+          "before": [
+            206.0,
+            231.7
+          ],
+          "after": [
+            205.4,
+            226.5
           ],
           "verdict": "level"
         }
@@ -229,6 +261,17 @@
             366.9
           ],
           "verdict": "level"
+        },
+        {
+          "before": [
+            458.9,
+            483.7
+          ],
+          "after": [
+            343.6,
+            381.8
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -290,6 +333,17 @@
             3.5
           ],
           "verdict": "slower"
+        },
+        {
+          "before": [
+            4.4,
+            9.9
+          ],
+          "after": [
+            4.0,
+            5.9
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -349,6 +403,17 @@
           "after": [
             30.6,
             35.9
+          ],
+          "verdict": "level"
+        },
+        {
+          "before": [
+            126.7,
+            151.1
+          ],
+          "after": [
+            127.2,
+            147.2
           ],
           "verdict": "level"
         }
@@ -412,6 +477,17 @@
             94.8
           ],
           "verdict": "level"
+        },
+        {
+          "before": [
+            204.3,
+            223.6
+          ],
+          "after": [
+            201.2,
+            227.7
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -471,6 +547,17 @@
           "after": [
             12.1,
             24.9
+          ],
+          "verdict": "level"
+        },
+        {
+          "before": [
+            11.1,
+            23.0
+          ],
+          "after": [
+            10.7,
+            24.1
           ],
           "verdict": "level"
         }
@@ -534,6 +621,17 @@
             46.4
           ],
           "verdict": "level"
+        },
+        {
+          "before": [
+            32.4,
+            44.8
+          ],
+          "after": [
+            34.0,
+            47.2
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -593,6 +691,17 @@
           "after": [
             29.6,
             44.3
+          ],
+          "verdict": "level"
+        },
+        {
+          "before": [
+            30.1,
+            47.1
+          ],
+          "after": [
+            30.0,
+            43.0
           ],
           "verdict": "level"
         }
@@ -656,6 +765,17 @@
             56.9
           ],
           "verdict": "level"
+        },
+        {
+          "before": [
+            37.0,
+            66.0
+          ],
+          "after": [
+            38.0,
+            64.0
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -715,6 +835,17 @@
           "after": [
             46.1,
             64.2
+          ],
+          "verdict": "level"
+        },
+        {
+          "before": [
+            48.0,
+            68.1
+          ],
+          "after": [
+            48.9,
+            68.8
           ],
           "verdict": "level"
         }
@@ -778,6 +909,17 @@
             115.7
           ],
           "verdict": "level"
+        },
+        {
+          "before": [
+            86.2,
+            121.4
+          ],
+          "after": [
+            91.7,
+            127.1
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -837,6 +979,17 @@
           "after": [
             30.1,
             45.6
+          ],
+          "verdict": "level"
+        },
+        {
+          "before": [
+            32.2,
+            46.8
+          ],
+          "after": [
+            32.2,
+            48.0
           ],
           "verdict": "level"
         }
@@ -900,6 +1053,17 @@
             37.5
           ],
           "verdict": "level"
+        },
+        {
+          "before": [
+            20.6,
+            35.8
+          ],
+          "after": [
+            20.4,
+            34.4
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -961,6 +1125,17 @@
             968.9
           ],
           "verdict": "slower"
+        },
+        {
+          "before": [
+            216.6,
+            1101.3
+          ],
+          "after": [
+            154.2,
+            1129.6
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -1022,6 +1197,17 @@
             647.4
           ],
           "verdict": "slower"
+        },
+        {
+          "before": [
+            561.9,
+            751.3
+          ],
+          "after": [
+            558.1,
+            732.5
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -1083,6 +1269,17 @@
             283.0
           ],
           "verdict": "faster"
+        },
+        {
+          "before": [
+            241.6,
+            317.2
+          ],
+          "after": [
+            240.6,
+            297.3
+          ],
+          "verdict": "level"
         }
       ]
     },
@@ -1142,6 +1339,17 @@
           "after": [
             182.4,
             209.5
+          ],
+          "verdict": "level"
+        },
+        {
+          "before": [
+            177.8,
+            214.4
+          ],
+          "after": [
+            182.1,
+            202.5
           ],
           "verdict": "level"
         }
@@ -1205,6 +1413,17 @@
             257.5
           ],
           "verdict": "level"
+        },
+        {
+          "before": [
+            233.7,
+            309.4
+          ],
+          "after": [
+            236.5,
+            283.4
+          ],
+          "verdict": "slower"
         }
       ]
     },
@@ -1266,6 +1485,17 @@
             null
           ],
           "verdict": "faster"
+        },
+        {
+          "before": [
+            13995951.0,
+            null
+          ],
+          "after": [
+            13861510.0,
+            null
+          ],
+          "verdict": "level"
         }
       ]
     }

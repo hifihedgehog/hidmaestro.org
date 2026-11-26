@@ -60,6 +60,10 @@ STEPS = [
      {'chains_from': '2.1.0', 'verdicts': True,
       'rule': 'a path reads faster or slower only when all six rounds of the one session moved the same way, the exact sign test at p = 0.031',
       'note': '2.2.0 was not measured against 2.1.0, so this step continues from the 2.1.0 point. 2.2.0\'s one change on a charted path is a check for a pending protocol reply before each frame of a profile with a protocol host, such as the DualShock 3.'}),
+    ('2.3.0', '2.4.0', 'v2.4.0', 'six rounds alternating the two builds in one session on a desktop PC with an AMD Ryzen 9 9950X3D, each round installing each build\'s own driver once for the device paths',
+     {'verdicts': True,
+      'rule': 'a path reads faster or slower only when all six rounds of the one session moved the same way, the exact sign test at p = 0.031',
+      'note': 'In this session three charted paths moved between groups of runs on one build: CreateController on the Xbox 360, whose 2.3.0 round medians ran from 322 to 475 ms, SubmitState on the DualShock 4, from 152 to 787 ns, and Dispose on the DualSense over USB/IP, from 2.5 to 11.7 ms. The notes read those three level. The one charted path the session read slower is SubmitState on the Switch 2 Pro, by 1.8% at p50.'}),
 ]
 VALUE = re.compile(r'^\s*(?P<p50>[\d,]+(?:\.\d+)?)(?:\s*\((?P<p95>[\d,]+(?:\.\d+)?)\))?\s*$')
 

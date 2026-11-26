@@ -148,7 +148,7 @@ def card(m):
     if m["better"] == "higher":
         note += " The chart plots time per frame, the inverse of this rate, so lower is faster there too."
     if any(flat(s) for s in m["steps"]):
-        note += " A step whose median its release's notes read level is plotted flat."
+        note += " A step that its release's notes read as level is plotted flat."
     return '''<article class="perf-card" id="m-%s">
     <h3 class="perf-title">%s</h3>
     <p class="perf-now"><b>%s</b> of %s's time</p>

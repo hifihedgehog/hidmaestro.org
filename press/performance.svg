@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="960" viewBox="0 0 1600 960" role="img" aria-labelledby="title description">
 <title id="title">HIDMaestro performance, release over release</title>
-<desc id="description">Process start to the first controller, DualShock 4: 79% of 1.12.0&#x27;s time at 2.3.0. CreateController, Xbox 360: 43% of 1.12.0&#x27;s time at 2.3.0. Dispose, DualSense over USB/IP: 0.8% of 1.12.0&#x27;s time at 2.3.0. SubmitState to a game&#x27;s ReadFile, DualShock 4: 77% of 1.12.0&#x27;s time at 2.3.0. SubmitState to XInputGetState, Xbox 360: 98% of 1.12.0&#x27;s time at 2.3.0. SubmitState, Xbox 360: 72% of 1.12.0&#x27;s time at 2.3.0.</desc>
+<desc id="description">Process start to the first controller, DualShock 4: 79% of 1.12.0&#x27;s time at 2.4.0. CreateController, Xbox 360: 43% of 1.12.0&#x27;s time at 2.4.0. Dispose, DualSense over USB/IP: 0.8% of 1.12.0&#x27;s time at 2.4.0. SubmitState to a game&#x27;s ReadFile, DualShock 4: 77% of 1.12.0&#x27;s time at 2.4.0. SubmitState to XInputGetState, Xbox 360: 98% of 1.12.0&#x27;s time at 2.4.0. SubmitState, Xbox 360: 72% of 1.12.0&#x27;s time at 2.4.0.</desc>
 <rect width="1600" height="960" rx="12" fill="#0a0e15"/>
 <g font-family="'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif" style="font-variant-numeric: tabular-nums">
 <text x="90" y="95" fill="#ff6b2c" font-size="17" font-weight="600">HIDMaestro</text>
@@ -17,17 +17,19 @@
 <line x1="168" y1="408.33" x2="503.33" y2="408.33" stroke="#2a3546" stroke-width="1"/>
 <text x="156" y="412.83" fill="#a9b4c4" font-size="14" text-anchor="end">100%</text>
 <text x="168" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">1.12.0</text>
-<text x="235.07" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
-<text x="302.13" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
-<text x="369.2" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
-<text x="436.27" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
-<text x="503.33" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
-<polyline points="168,408.33 235.07,432.47 302.13,433.24 369.2,433.05 436.27,433.05 503.33,430.08" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="223.89" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
+<text x="279.78" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
+<text x="335.67" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
+<text x="391.56" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
+<text x="447.44" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
+<text x="503.33" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.4.0</text>
+<polyline points="168,408.33 223.89,432.47 279.78,433.24 335.67,433.05 391.56,433.05 447.44,430.08 503.33,430.08" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="168" cy="408.33" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="235.07" cy="432.47" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="302.13" cy="433.24" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="369.2" cy="433.05" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="436.27" cy="433.05" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="223.89" cy="432.47" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="279.78" cy="433.24" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="335.67" cy="433.05" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="391.56" cy="433.05" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="447.44" cy="430.08" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
 <circle cx="503.33" cy="430.08" r="5.5" fill="#ff6b2c" stroke="#121925" stroke-width="2.5"/>
 <rect x="573.33" y="250" width="453.33" height="310" rx="12" fill="#121925" stroke="#263142"/>
 <text x="599.33" y="290" fill="#eef2f7" font-size="19" font-weight="600">CreateController, Xbox 360</text>
@@ -39,17 +41,19 @@
 <line x1="651.33" y1="408.33" x2="986.67" y2="408.33" stroke="#2a3546" stroke-width="1"/>
 <text x="639.33" y="412.83" fill="#a9b4c4" font-size="14" text-anchor="end">100%</text>
 <text x="651.33" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">1.12.0</text>
-<text x="718.4" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
-<text x="785.47" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
-<text x="852.53" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
-<text x="919.6" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
-<text x="986.67" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
-<polyline points="651.33,408.33 718.4,455.99 785.47,466.47 852.53,465.79 919.6,465.79 986.67,465.79" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="707.22" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
+<text x="763.11" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
+<text x="819" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
+<text x="874.89" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
+<text x="930.78" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
+<text x="986.67" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.4.0</text>
+<polyline points="651.33,408.33 707.22,455.99 763.11,466.47 819,465.79 874.89,465.79 930.78,465.79 986.67,465.79" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="651.33" cy="408.33" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="718.4" cy="455.99" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="785.47" cy="466.47" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="852.53" cy="465.79" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="919.6" cy="465.79" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="707.22" cy="455.99" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="763.11" cy="466.47" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="819" cy="465.79" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="874.89" cy="465.79" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="930.78" cy="465.79" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
 <circle cx="986.67" cy="465.79" r="5.5" fill="#ff6b2c" stroke="#121925" stroke-width="2.5"/>
 <rect x="1056.67" y="250" width="453.33" height="310" rx="12" fill="#121925" stroke="#263142"/>
 <text x="1082.67" y="290" fill="#eef2f7" font-size="19" font-weight="600">Dispose, DualSense over USB/IP</text>
@@ -61,17 +65,19 @@
 <line x1="1134.67" y1="408.33" x2="1470" y2="408.33" stroke="#2a3546" stroke-width="1"/>
 <text x="1122.67" y="412.83" fill="#a9b4c4" font-size="14" text-anchor="end">100%</text>
 <text x="1134.67" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">1.12.0</text>
-<text x="1201.73" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
-<text x="1268.8" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
-<text x="1335.87" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
-<text x="1402.93" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
-<text x="1470" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
-<polyline points="1134.67,408.33 1201.73,508.82 1268.8,509.15 1335.87,509.16 1402.93,509.16 1470,509.16" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1190.56" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
+<text x="1246.44" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
+<text x="1302.33" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
+<text x="1358.22" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
+<text x="1414.11" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
+<text x="1470" y="538" fill="#a9b4c4" font-size="14" text-anchor="middle">2.4.0</text>
+<polyline points="1134.67,408.33 1190.56,508.82 1246.44,509.15 1302.33,509.16 1358.22,509.16 1414.11,509.16 1470,509.16" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="1134.67" cy="408.33" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="1201.73" cy="508.82" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="1268.8" cy="509.15" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="1335.87" cy="509.16" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="1402.93" cy="509.16" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1190.56" cy="508.82" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1246.44" cy="509.15" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1302.33" cy="509.16" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1358.22" cy="509.16" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1414.11" cy="509.16" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
 <circle cx="1470" cy="509.16" r="5.5" fill="#ff6b2c" stroke="#121925" stroke-width="2.5"/>
 <rect x="90" y="590" width="453.33" height="310" rx="12" fill="#121925" stroke="#263142"/>
 <text x="116" y="630" fill="#eef2f7" font-size="19" font-weight="600">SubmitState to a game&#x27;s ReadFile,</text>
@@ -84,17 +90,19 @@
 <line x1="168" y1="748.33" x2="503.33" y2="748.33" stroke="#2a3546" stroke-width="1"/>
 <text x="156" y="752.83" fill="#a9b4c4" font-size="14" text-anchor="end">100%</text>
 <text x="168" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">1.12.0</text>
-<text x="235.07" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
-<text x="302.13" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
-<text x="369.2" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
-<text x="436.27" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
-<text x="503.33" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
-<polyline points="168,748.33 235.07,774.41 302.13,774.77 369.2,771.35 436.27,771.35 503.33,771.35" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="223.89" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
+<text x="279.78" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
+<text x="335.67" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
+<text x="391.56" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
+<text x="447.44" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
+<text x="503.33" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.4.0</text>
+<polyline points="168,748.33 223.89,774.41 279.78,774.77 335.67,771.35 391.56,771.35 447.44,771.35 503.33,771.35" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="168" cy="748.33" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="235.07" cy="774.41" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="302.13" cy="774.77" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="369.2" cy="771.35" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="436.27" cy="771.35" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="223.89" cy="774.41" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="279.78" cy="774.77" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="335.67" cy="771.35" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="391.56" cy="771.35" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="447.44" cy="771.35" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
 <circle cx="503.33" cy="771.35" r="5.5" fill="#ff6b2c" stroke="#121925" stroke-width="2.5"/>
 <rect x="573.33" y="590" width="453.33" height="310" rx="12" fill="#121925" stroke="#263142"/>
 <text x="599.33" y="630" fill="#eef2f7" font-size="19" font-weight="600">SubmitState to XInputGetState, Xbox 360</text>
@@ -106,17 +114,19 @@
 <line x1="651.33" y1="748.33" x2="986.67" y2="748.33" stroke="#2a3546" stroke-width="1"/>
 <text x="639.33" y="752.83" fill="#a9b4c4" font-size="14" text-anchor="end">100%</text>
 <text x="651.33" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">1.12.0</text>
-<text x="718.4" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
-<text x="785.47" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
-<text x="852.53" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
-<text x="919.6" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
-<text x="986.67" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
-<polyline points="651.33,748.33 718.4,755.85 785.47,753.11 852.53,750.57 919.6,750.57 986.67,750.57" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="707.22" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
+<text x="763.11" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
+<text x="819" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
+<text x="874.89" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
+<text x="930.78" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
+<text x="986.67" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.4.0</text>
+<polyline points="651.33,748.33 707.22,755.85 763.11,753.11 819,750.57 874.89,750.57 930.78,750.57 986.67,750.57" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="651.33" cy="748.33" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="718.4" cy="755.85" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="785.47" cy="753.11" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="852.53" cy="750.57" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="919.6" cy="750.57" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="707.22" cy="755.85" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="763.11" cy="753.11" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="819" cy="750.57" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="874.89" cy="750.57" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="930.78" cy="750.57" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
 <circle cx="986.67" cy="750.57" r="5.5" fill="#ff6b2c" stroke="#121925" stroke-width="2.5"/>
 <rect x="1056.67" y="590" width="453.33" height="310" rx="12" fill="#121925" stroke="#263142"/>
 <text x="1082.67" y="630" fill="#eef2f7" font-size="19" font-weight="600">SubmitState, Xbox 360</text>
@@ -128,17 +138,19 @@
 <line x1="1134.67" y1="748.33" x2="1470" y2="748.33" stroke="#2a3546" stroke-width="1"/>
 <text x="1122.67" y="752.83" fill="#a9b4c4" font-size="14" text-anchor="end">100%</text>
 <text x="1134.67" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">1.12.0</text>
-<text x="1201.73" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
-<text x="1268.8" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
-<text x="1335.87" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
-<text x="1402.93" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
-<text x="1470" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
-<polyline points="1134.67,748.33 1201.73,756.38 1268.8,756.44 1335.87,763.36 1402.93,825.9 1470,776.62" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1190.56" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.0</text>
+<text x="1246.44" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.1</text>
+<text x="1302.33" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.0.2</text>
+<text x="1358.22" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.1.0</text>
+<text x="1414.11" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.3.0</text>
+<text x="1470" y="878" fill="#a9b4c4" font-size="14" text-anchor="middle">2.4.0</text>
+<polyline points="1134.67,748.33 1190.56,756.38 1246.44,756.44 1302.33,763.36 1358.22,825.9 1414.11,776.62 1470,776.62" fill="none" stroke="#a9b4c4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="1134.67" cy="748.33" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="1201.73" cy="756.38" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="1268.8" cy="756.44" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="1335.87" cy="763.36" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
-<circle cx="1402.93" cy="825.9" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1190.56" cy="756.38" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1246.44" cy="756.44" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1302.33" cy="763.36" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1358.22" cy="825.9" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
+<circle cx="1414.11" cy="776.62" r="5.5" fill="#a9b4c4" stroke="#121925" stroke-width="2.5"/>
 <circle cx="1470" cy="776.62" r="5.5" fill="#ff6b2c" stroke="#121925" stroke-width="2.5"/>
 <text x="90" y="935" fill="#8693a6" font-size="15">Method and every measured value: hidmaestro.org/performance.html</text>
 </g>

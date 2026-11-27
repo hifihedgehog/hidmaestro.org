@@ -550,6 +550,7 @@ public sealed class HMProfile
     public string Vendor { get; }
     public ushort VendorId { get; }
     public ushort ProductId { get; }
+    public ushort HidProductId { get; }   // v2.4.1: the PID the HID device reports, hidPid else ProductId
     public string ProductString { get; }
     public string ManufacturerString { get; }
     public string DisplayName { get; }
@@ -686,6 +687,9 @@ public sealed class HMProfileBuilder
     public HMProfileBuilder HidDeviceDescription(string? desc);   // v2.4.1: the HID device's name on UMDF2
     public HMProfileBuilder JoystickName(string? name);           // v2.4.1: the Game Controllers name
     public HMProfileBuilder ReplacesJoystickNames(IEnumerable<string>? names);   // v2.4.1
+    public HMProfileBuilder HidPid(ushort? pid);                  // v2.4.1: the PID the HID device reports
+    public HMProfileBuilder HidVersionNumber(ushort? version);    // v2.4.1
+    public HMProfileBuilder HidProductString(string? s);          // v2.4.1
     public HMProfileBuilder Type(string type);            // "gamepad", "wheel", "hotas", ...
     public HMProfileBuilder Connection(string conn);      // "usb", "bluetooth", ...
     public HMProfileBuilder DriverMode(string? mode);     // "xinputhid" or null
@@ -717,7 +721,7 @@ public sealed class HMProfileBuilder
 }
 ```
 
-`HidDeviceDescription`, `JoystickName` and `ReplacesJoystickNames` (v2.4.1) set the profile fields of the same names, which [the profile reference](../profiles/profile-system.md#optional-fields) describes. Each null falls back as the field does, and `FromProfile` copies all three.
+`HidDeviceDescription`, `JoystickName` and `ReplacesJoystickNames` (v2.4.1) set the profile fields of the same names, which [the profile reference](../profiles/profile-system.md#optional-fields) describes. Each null falls back as the field does, and `FromProfile` copies all three. `HidPid`, `HidVersionNumber` and `HidProductString` (v2.4.1) set what the HID device reports, the fields `hidPid`, `hidVersionNumber` and `hidProductString`. A copy keeps its source's three while its VID and PID stay the source's, and drops all three when given another VID or PID unless one of them is set.
 
 `Build()` returns an `HMProfile`, and throws `HMProfileException` for its own errors, such as a builder given no VID or PID. A copy keeps its source's VID and PID, and an explicit `Vid(0)` or `Pid(0)` builds. The result can be passed directly to `HMContext.CreateController`.
 

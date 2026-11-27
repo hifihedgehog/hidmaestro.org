@@ -682,7 +682,10 @@ public sealed class HMProfileBuilder
     public HMProfileBuilder Pid(ushort pid);
     public HMProfileBuilder ProductString(string s);
     public HMProfileBuilder ManufacturerString(string s);
-    public HMProfileBuilder DeviceDescription(string? desc);
+    public HMProfileBuilder DeviceDescription(string? desc);      // the device node's name
+    public HMProfileBuilder HidDeviceDescription(string? desc);   // v2.4.1: the HID device's name on UMDF2
+    public HMProfileBuilder JoystickName(string? name);           // v2.4.1: the Game Controllers name
+    public HMProfileBuilder ReplacesJoystickNames(IEnumerable<string>? names);   // v2.4.1
     public HMProfileBuilder Type(string type);            // "gamepad", "wheel", "hotas", ...
     public HMProfileBuilder Connection(string conn);      // "usb", "bluetooth", ...
     public HMProfileBuilder DriverMode(string? mode);     // "xinputhid" or null
@@ -713,6 +716,8 @@ public sealed class HMProfileBuilder
     public HMProfile Build();
 }
 ```
+
+`HidDeviceDescription`, `JoystickName` and `ReplacesJoystickNames` (v2.4.1) set the profile fields of the same names, which [the profile reference](../profiles/profile-system.md#optional-fields) describes. Each null falls back as the field does, and `FromProfile` copies all three.
 
 `Build()` returns an `HMProfile`, and throws `HMProfileException` for its own errors, such as a builder given no VID or PID. A copy keeps its source's VID and PID, and an explicit `Vid(0)` or `Pid(0)` builds. The result can be passed directly to `HMContext.CreateController`.
 

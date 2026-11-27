@@ -65,7 +65,9 @@ The `misc/` vendor catches everything else: arcade controllers, niche racing ped
   "descriptor": "05010905a101a10009300931150026ffff350046ffff950275108102c0...",
   "nativeDescriptor": "05010905a101...",
   "inputReportSize": 18,
-  "deviceDescription": "Controller (XBOX 360 For Windows)",
+  "deviceDescription": "Xbox 360 Controller for Windows",
+  "joystickName": "Controller (XBOX 360 For Windows)",
+  "replacesJoystickNames": ["Xbox 360 Controller for Windows"],
   "triggerMode": "combined",
   "driverMode": null,
   "buttonMap": null,
@@ -97,7 +99,10 @@ The `misc/` vendor catches everything else: arcade controllers, niche racing ped
 | `inputReportSize` | int \| null | derived | Length on the wire of the input report a data-only frame fills, in bytes, the report ID's byte included. The driver sends that report at this length. When null, the report's own length in the descriptor. |
 | `dataReportId` | string \| null | null | v2.0.0. The input report a data-only frame fills, as a hex byte such as `"0x01"`, for a device where the SDK's own choice is wrong. Must name an input report the descriptor declares, and is refused beside an always-armed `extendedReport`. See [The report a data frame fills](#the-report-a-data-frame-fills-v200). |
 | `nativeDescriptor` | string \| null | null | The original physical device's descriptor before any HIDMaestro-side modifications. Kept as a record; not used at runtime. |
-| `deviceDescription` | string \| null | `productString` | The Device Manager display name (`FriendlyName` PnP property). Some catalog profiles (Logitech F310) carry a curated `deviceDescription` distinct from `productString`. |
+| `deviceDescription` | string \| null | `productString` | The device node's name in Device Manager (its `FriendlyName`): on UMDF2 the root devnode, an xinputhid pad's software parent and the XUSB companion. Some catalog profiles (Logitech F310) carry a curated `deviceDescription` distinct from `productString`. `hidDeviceDescription` and `joystickName` default to it. |
+| `hidDeviceDescription` | string \| null | `deviceDescription` | v2.4.1. The name of the HID device under the device node, and of every node under it, on UMDF2. Windows.Gaming.Input reports it as the controller's name there. On USB/IP Windows names the HID device from its own INF. The Bluetooth Xbox profiles set HID-compliant game controller, and the wired Xbox One and Series profiles Xbox One Game Controller. |
+| `joystickName` | string \| null | `deviceDescription` | v2.4.1. The name Game Controllers (joy.cpl) shows. On both backends the SDK writes it as `OEMName` under `HKLM\SYSTEM\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM\VID_xxxx&PID_xxxx` while the virtual lives, and puts back the value it found when the last virtual of the identity goes. Ignored for a keyboard, mouse or digitizer. |
+| `replacesJoystickNames` | string[] \| null | null | v2.4.1. Game Controllers names earlier HIDMaestro releases wrote for the VID and PID. Windows copies the HKLM `OEMName` into the user's HKCU key the first time Game Controllers shows a device the user's key names nothing for, keeps the copy and reads it ahead of HKLM. A create on either backend deletes the user's `OEMName` for the VID and PID when it is exactly one of these names, the value alone, so Windows copies the current name again. A value that differs from every one, or one an active `HMOemNameOverride` holds, stays, and nothing is put back later. Ignored for a keyboard, mouse or digitizer. |
 | `triggerMode` | string \| null | null | Profile-level annotation describing the descriptor's trigger encoding: `combined` (descriptor declares one Z axis carrying `LT - RT`), `separate` (descriptor declares independent Z + Rz), or null for non-gamepad. **Note:** every Xbox profile surfaces in DirectInput as 5 axes with combined Z regardless of this annotation: the velocity-usage trick + xinputhid synthesis collapse separate-trigger descriptors into the canonical `xusb22.sys` 5-axis shape. WGI / browser see separate triggers via Vx/Vy + GameInput registry mapping. |
 | `driverMode` | string \| null | null | `"xinputhid"` binds Microsoft's xinputhid filter for GIP-over-HID profiles like Xbox Series BT, One BT and Elite v2 BT. As of v2.0.0 it is the alias of the `xinput` block's `"via": "xinputhid"`, and `"xusb22"` an alias for the same path. A profile carries its `xinput` block, its `driverMode`, or neither. |
 | `xinput` | object \| null | null | v2.0.0. How the device reaches XInput, the presentation group of the device model. `via` is `"xusbCompanion"`, an XUSB companion devnode beside the HID device as xusb22 presents a wired Xbox 360 pad, or `"xinputhid"`. `subType`, `flags`, `battery`, `information` and `capabilities` set what the companion answers. An empty block means no XInput. See [XUSB Companion](../reference/xusb-companion.md#answers-from-the-profile-v200). |
@@ -705,7 +710,9 @@ The modded profile isn't registered in the catalog: it's used directly for one `
   "nativeDescriptor": "05010905A1018501093009311500270000000075109502810209330934810209320935810205091901290A150025017501950281027506950181010501093915012508350046C03C660E007504950181428503060046ED01950E091001110050B5",
   "xinput": { "via": "xusbCompanion" },
   "inputReportSize": 18,
-  "deviceDescription": "Controller (XBOX 360 For Windows)",
+  "deviceDescription": "Xbox 360 Controller for Windows",
+  "joystickName": "Controller (XBOX 360 For Windows)",
+  "replacesJoystickNames": ["Xbox 360 Controller for Windows"],
   "triggerMode": "combined"
 }
 ```

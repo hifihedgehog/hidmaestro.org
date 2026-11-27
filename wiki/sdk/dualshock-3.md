@@ -10,7 +10,7 @@ Source: [`profiles/sony/dualshock-3-full.json`](https://github.com/hifihedgehog/
 
 | Profile | What a host sees | Pressure and motion |
 |---|---|---|
-| `dualshock-3` | The pad's own 148-byte USB descriptor, filled through the standard descriptor path | Neither. Rumble and the player LEDs since v1.10.1 |
+| `dualshock-3` | The pad's own 148-byte USB descriptor and, since v2.4.1, its whole native 49-byte report 0x01 from the first frame | Both since v2.4.1: the twelve pressure bytes, the accelerometer and the yaw rate, with the battery byte. Rumble and the player LEDs since v1.10.1 |
 | `dualshock-3-full` | A 12-byte joystick report, and the whole native 49-byte report as feature report 0 | Both, plus battery, rumble and the player LEDs |
 
 PS3 emulators want `dualshock-3-full`.
@@ -36,6 +36,24 @@ Ten fields carry pressure from 0 to 255: `PressureA` (cross), `PressureB` (circl
 A pressed button whose pressure is left at 0 is sent as 255, so code that only knows digital state presses every button fully. A nonzero pressure is sent as given, whether or not the button is pressed.
 
 Motion comes from `AccelX`, `AccelY` and `AccelZ` at 8192 counts per g and `GyroYaw` at 16 counts per degree per second, the same units the DualShock 4 and DualSense profiles use. The persona converts them to the DualShock 3's 10-bit sensors, 113 counts per g and 123 per 90 degrees per second, the scales Linux's `hid-sony.c` and RPCS3 use. A DualShock 3 has one gyro axis, so `GyroPitch` and `GyroRoll` are not sent. The battery byte reads 0xEE, charging, at every level and 0xEF with `BatteryFull`, as a DualShock 3 on USB reports. Through v1.12.0 an unset state read as a dying pad.
+
+## The native report on `dualshock-3`
+
+Since v2.4.1 `dualshock-3` sends the native input report 0x01 its descriptor declares, all 49 bytes, from the first frame ([issue #78](https://github.com/hifihedgehog/HIDMaestro/issues/78)), built from the same field list as `dualshock-3-full`'s native report, so the bytes match for the same state. Byte 0 is the report ID:
+
+| Bytes | What `SubmitState` puts there |
+|---|---|
+| 2 | Select (`Back`), L3 (`LeftStick`), R3 (`RightStick`) and Start in bits 0 to 3, and the D-pad's up, right, down and left from `Hat` in bits 4 to 7 |
+| 3 | L2, R2, L1 (`LeftBumper`), R1 (`RightBumper`), Triangle (`Y`), Circle (`B`), Cross (`A`) and Square (`X`) in bits 0 to 7. L2 and R2 are set while their trigger byte is above 0 |
+| 4 | PS (`Guide`) in bit 0 |
+| 6 to 9 | The left stick's X and Y, then the right stick's, 0x80 at rest |
+| 14 to 17 | The D-pad's pressure: up, right, down, left |
+| 18, 19 | L2 and R2, the trigger values |
+| 20 to 25 | The pressure of L1, R1, Triangle, Circle, Cross and Square |
+| 30 | The battery, as above |
+| 41 to 48 | Accelerometer X, Z and Y, then the yaw rate, each 10-bit and big-endian, 0x0200 at rest |
+
+Every other HMButton bit sets nothing, `LeftTriggerClick` and `RightTriggerClick` among them. The pressure and motion rules above hold here too. The trigger values come from the axes the profile's `axisMap` names, Rx and Ry, where `HMGamepadStateHelpers.StandardAxes` puts them, and the right stick keeps Z and Rz. `SubmitRawReport` takes the whole 49-byte report with its ID as well as the 48-byte data-only frame. Through v2.4.0 the profile had no `buttonMap`, so HMButton bit n pressed button n and `A` pressed Select, and bytes 10 to 48 stayed 0.
 
 ## Output
 
@@ -77,6 +95,7 @@ Battery scenario S64 checks, first offline and then on a live persona:
 - Rumble and LED writes in SDL's form and in RPCS3's form, decoded on `OutputDecoded`.
 - Stock SDL with PCSX2's hints: a PS3 controller with 16 axes and 11 buttons, every pressure axis at the value submitted, the player LED SDL sets, and rumble.
 - On `dualshock-3`, the native output report through `WriteFile` and `HidD_SetOutputReport`, every field decoded on `OutputDecoded`, a stop included.
+- On `dualshock-3`, since v2.4.1, the native input report: each HMButton bit alone, each hat direction, the triggers at four values and the right stick at its corner, encoded offline and read back live through `ReadFile`, against the bytes SDL's PS3 driver, Linux's `hid-sony.c` and DsHidMini read. Its `buttonMap` puts each bit on the same button in a report built from the descriptor.
 
 Neither PCSX2 nor RPCS3 has been run against the persona.
 

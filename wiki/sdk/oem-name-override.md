@@ -137,17 +137,29 @@ if (restored > 0)
     Logger.Info($"Recovered {restored} orphan OEM-name override(s) from prior session");
 
 // For each virtual where you want a custom joy.cpl label:
-HMOemNameOverride.Set(profile.VendorId, profile.ProductId, "PadForge Slot 0");
+HMOemNameOverride.Set(profile.VendorId, profile.HidProductId, "PadForge Slot 0");
 using var ctrl = ctx.CreateController(profile);
 
 // At virtual teardown:
 ctrl.Dispose();
-HMOemNameOverride.Clear(profile.VendorId, profile.ProductId);
+HMOemNameOverride.Clear(profile.VendorId, profile.HidProductId);
 ```
+
+Pass `HidProductId` (v2.4.1), the PID the controller's HID device reports, which DirectInput and Game Controllers read. It is 0x02FF for the eight wired Xbox One and Series profiles and `ProductId` for every other profile.
 
 For consumers that lock to single-instance execution (PadForge does), `RecoverOrphans` at startup plus a paired `Set`/`Clear` per virtual covers the full lifecycle.
 
 For consumers that may run multiple instances simultaneously, the global mutex serializes write attempts. The pending record is per-VID:PID, so two consumers overriding two different VID:PIDs don't conflict; two consumers fighting over the same VID:PID will have whichever `Set` call ran last win, and the other consumer's `Clear` will restore the original (skipping the intermediate label).
+
+---
+
+## The name a create writes
+
+A create writes the HKLM `Joystick` label alone, `OEMName`, and not the `DirectInput` path or HKCU. The label is the profile's `joystickName`, else its `deviceDescription`, else its `productString` (v2.4.1). It goes under the VID:PID of the controller's HID device, `HMProfile.HidProductId`: the profile's `hidPid`, else its `pid` (v2.4.1). The eight wired Xbox One and Series profiles set `hidPid` 0x02FF, as Windows' GIP driver makes a real pad's HID device, so their label goes under `VID_045E&PID_02FF` on both backends, and an override for one of them takes that PID. The SDK records the key's prior state before the write and puts it back when the last virtual of the identity goes.
+
+HKCU is written only through `HMOemNameOverride`, with one exception. Windows copies the HKLM `OEMName` into the user's HKCU key the first time Game Controllers shows a device the user's key names nothing for, keeps the copy and reads it ahead of HKLM, so a name an earlier release wrote outlives the profile change that replaced it. A profile lists those names in `replacesJoystickNames` (v2.4.1). A create deletes the user's HKCU `OEMName` for the same VID:PID when it is exactly one of them, the value alone, and Windows copies the current name again. A value that differs from every listed name stays, and so does one an active `HMOemNameOverride` holds. Nothing is put back afterward.
+
+For a VID:PID where Windows has an HKCU preload, such as "PC TWIN SHOCK Gamepad" for `VID_0079&PID_0006`, the preload keeps showing in `joy.cpl` unless the program calls `HMOemNameOverride.Set`.
 
 ---
 

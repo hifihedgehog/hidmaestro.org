@@ -153,7 +153,7 @@ The 115-scenario battery that drives `HIDMaestroTest.exe` through every interest
 ./test/regression/regression_battery.ps1 -Exe C:\path\to\HIDMaestroTest.exe
 ```
 
-Exit code 0 if every scenario passed, 1 if any failed. Total wall time: 55 minutes on the development laptop, a Lenovo Legion Pro 7 16AFR10H, 75 minutes on the MeLE PCG02 GLE stick PC (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`), 44 minutes there with every controller on USB/IP, and 28 minutes on an ARM64 Microsoft Surface Pro. [Platform support](../start/platform-support.md#validation) lists each system's hardware.
+Exit code 0 if every scenario passed, 1 if any failed. Total wall time at v2.4.1: 44 minutes on a desktop PC with an AMD Ryzen 9 9950X3D, 83 minutes on the MeLE PCG02 GLE stick PC (slow-hardware target with `HIDMAESTRO_TIMEOUT_SCALE=2`) and 28 minutes on an ARM64 Microsoft Surface Pro, each without the scenarios its machine skips. [Platform support](../start/platform-support.md#validation) lists each system's hardware.
 
 ### What each scenario catches
 
@@ -292,7 +292,7 @@ These five fixes interact; missing any one makes the harness hang on Win11. Pres
 
 ### Slow-hardware fixture
 
-The full battery also runs on a MeLE PCG02 GLE fanless stick PC: Intel Celeron J4125 (4 cores, 4 threads), 8 GB LPDDR4-2133, Intel UHD Graphics 600, Windows 10 IoT Enterprise LTSC, version 21H2 (build 19044). It runs at `HIDMAESTRO_TIMEOUT_SCALE=2` over SSH, with no desktop session. At the v2.4.0 gate 110 scenarios passed there and 5 skipped, in 88 minutes on the UMDF2 driver: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 and S101's sandbox half the `wsb` command for Windows Sandbox, which this machine lacks. S101's removal ran on the machine itself instead. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. Before the UMDF2 run the uninstaller removes HIDMaestro from that machine, so the run's first create installs the driver from nothing.
+The full battery also runs on a MeLE PCG02 GLE fanless stick PC: Intel Celeron J4125 (4 cores, 4 threads), 8 GB LPDDR4-2133, Intel UHD Graphics 600, Windows 10 IoT Enterprise LTSC, version 21H2 (build 19044). It runs at `HIDMAESTRO_TIMEOUT_SCALE=2` over SSH, with no desktop session. At the v2.4.1 gate 110 scenarios passed there and 5 skipped, in 83 minutes on the UMDF2 driver: S54 and S62 need a Steam client, S70 a desktop session's Raw Input devices, and S73 and S101's sandbox half the `wsb` command for Windows Sandbox, which this machine lacks. S101's removal ran on the machine itself instead. Inside passing scenarios, the checks that need a desktop session or a Steam client skip too: the Raw Input checks in S37 and S71, S50's legacy reader app, section Y of S71 and the Steam client checks in S65. Before the UMDF2 run the uninstaller removes HIDMaestro from that machine, so the run's first create installs the driver from nothing.
 
 The slow-hardware result is the reason the harness is **pure ACK-driven** instead of fixed-sleep timed: a fixed sleep that's "enough" on a fast machine isn't enough on a slow one. ACK-driven waits scale with the machine.
 
@@ -365,4 +365,4 @@ Total: ~30-40 minutes on Ryzen-class. If any step fails, don't tag.
 
 ## ARM64 and USB/IP validation
 
-The v2.4.0 battery passed all 115 scenarios on the Legion Pro 7 laptop. On the desktop PC and on the PCG02 GLE stick PC, 110 passed and 5 skipped on the UMDF2 driver, and on the ARM64 Surface Pro 111 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. S101 removed HIDMaestro from those three machines themselves. See [platform support](../start/platform-support.md#validation) for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport.
+The v2.4.1 battery ran on three systems. On the desktop PC and on the PCG02 GLE stick PC, 110 passed and 5 skipped on the UMDF2 driver, and on the ARM64 Surface Pro 111 passed and 4 skipped, with the checks that need a Steam client, a desktop session or Windows Sandbox left out. S101 removed HIDMaestro from each machine itself. See [platform support](../start/platform-support.md#validation) for the gate result, the ARM64 driver catalog, and the usbip-win2 0.9.8.1 transport.

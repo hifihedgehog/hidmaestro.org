@@ -1258,6 +1258,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-name-a-create-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The name a create writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#caveats" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2143,6 +2154,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-name-a-create-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The name a create writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#caveats" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2385,15 +2407,21 @@
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">Logger</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">$&quot;Recovered {restored} orphan OEM-name override(s) from prior session&quot;</span><span class="p">);</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1">// For each virtual where you want a custom joy.cpl label:</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">Set</span><span class="p">(</span><span class="n">profile</span><span class="p">.</span><span class="n">VendorId</span><span class="p">,</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">ProductId</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;PadForge Slot 0&quot;</span><span class="p">);</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">Set</span><span class="p">(</span><span class="n">profile</span><span class="p">.</span><span class="n">VendorId</span><span class="p">,</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">HidProductId</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;PadForge Slot 0&quot;</span><span class="p">);</span>
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="k">using</span><span class="w"> </span><span class="nn">var</span><span class="w"> </span><span class="n">ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">CreateController</span><span class="p">(</span><span class="n">profile</span><span class="p">);</span>
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1">// At virtual teardown:</span>
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="n">ctrl</span><span class="p">.</span><span class="n">Dispose</span><span class="p">();</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">Clear</span><span class="p">(</span><span class="n">profile</span><span class="p">.</span><span class="n">VendorId</span><span class="p">,</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">ProductId</span><span class="p">);</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="n">HMOemNameOverride</span><span class="p">.</span><span class="n">Clear</span><span class="p">(</span><span class="n">profile</span><span class="p">.</span><span class="n">VendorId</span><span class="p">,</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">HidProductId</span><span class="p">);</span>
 </code></pre></div>
+<p>Pass <code>HidProductId</code> (v2.4.1), the PID the controller's HID device reports, which DirectInput and Game Controllers read. It is 0x02FF for the eight wired Xbox One and Series profiles and <code>ProductId</code> for every other profile.</p>
 <p>For consumers that lock to single-instance execution (PadForge does), <code>RecoverOrphans</code> at startup plus a paired <code>Set</code>/<code>Clear</code> per virtual covers the full lifecycle.</p>
 <p>For consumers that may run multiple instances simultaneously, the global mutex serializes write attempts. The pending record is per-VID:PID, so two consumers overriding two different VID:PIDs don't conflict; two consumers fighting over the same VID:PID will have whichever <code>Set</code> call ran last win, and the other consumer's <code>Clear</code> will restore the original (skipping the intermediate label).</p>
+<hr />
+<h2 id="the-name-a-create-writes">The name a create writes<a class="headerlink" href="#the-name-a-create-writes" title="Permanent link">&para;</a></h2>
+<p>A create writes the HKLM <code>Joystick</code> label alone, <code>OEMName</code>, and not the <code>DirectInput</code> path or HKCU. The label is the profile's <code>joystickName</code>, else its <code>deviceDescription</code>, else its <code>productString</code> (v2.4.1). It goes under the VID:PID of the controller's HID device, <code>HMProfile.HidProductId</code>: the profile's <code>hidPid</code>, else its <code>pid</code> (v2.4.1). The eight wired Xbox One and Series profiles set <code>hidPid</code> 0x02FF, as Windows' GIP driver makes a real pad's HID device, so their label goes under <code>VID_045E&amp;PID_02FF</code> on both backends, and an override for one of them takes that PID. The SDK records the key's prior state before the write and puts it back when the last virtual of the identity goes.</p>
+<p>HKCU is written only through <code>HMOemNameOverride</code>. Two changes there are deletions of a name that is HIDMaestro's own (v2.4.1). Windows copies the HKLM <code>OEMName</code> into the user's HKCU key the first time Game Controllers or DirectInput meets a device the user's key names nothing for, keeps the copy and reads it ahead of HKLM. A profile lists the names earlier releases wrote in <code>replacesJoystickNames</code>, and a create deletes the user's HKCU <code>OEMName</code> for the same VID:PID when it is exactly one of them. When the user's key held no <code>OEMName</code> at the create, the release deletes Windows' copy of the name the virtual wrote, so that name does not stay behind as the name of a real device with the same IDs. Each deletion removes the <code>OEMName</code> value alone, and Windows copies the name HKLM holds then. A value that differs, a name the user's key held before the create, and one an active <code>HMOemNameOverride</code> holds stay. Nothing is put back afterward.</p>
+<p>For a VID:PID where Windows has an HKCU preload, such as "PC TWIN SHOCK Gamepad" for <code>VID_0079&amp;PID_0006</code>, the preload keeps showing in <code>joy.cpl</code> unless the program calls <code>HMOemNameOverride.Set</code>.</p>
 <hr />
 <h2 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h2>
 <h3 id="system-wide-visibility">System-wide visibility<a class="headerlink" href="#system-wide-visibility" title="Permanent link">&para;</a></h3>

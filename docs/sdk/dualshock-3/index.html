@@ -1018,6 +1018,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-native-report-on-dualshock-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The native report on dualshock-3
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#output" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1960,6 +1971,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-native-report-on-dualshock-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The native report on dualshock-3
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#output" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2047,8 +2069,8 @@
 <tbody>
 <tr>
 <td><code>dualshock-3</code></td>
-<td>The pad's own 148-byte USB descriptor, filled through the standard descriptor path</td>
-<td>Neither. Rumble and the player LEDs since v1.10.1</td>
+<td>The pad's own 148-byte USB descriptor and, since v2.4.1, its whole native 49-byte report 0x01 from the first frame</td>
+<td>Both since v2.4.1: the twelve pressure bytes, the accelerometer and the yaw rate, with the battery byte. Rumble and the player LEDs since v1.10.1</td>
 </tr>
 <tr>
 <td><code>dualshock-3-full</code></td>
@@ -2074,6 +2096,55 @@
 <p>Ten fields carry pressure from 0 to 255: <code>PressureA</code> (cross), <code>PressureB</code> (circle), <code>PressureX</code> (square), <code>PressureY</code> (triangle), <code>PressureLeftBumper</code>, <code>PressureRightBumper</code>, and <code>PressureDpadUp</code>, <code>PressureDpadRight</code>, <code>PressureDpadDown</code>, <code>PressureDpadLeft</code>. L2 and R2 take their pressure from the triggers.</p>
 <p>A pressed button whose pressure is left at 0 is sent as 255, so code that only knows digital state presses every button fully. A nonzero pressure is sent as given, whether or not the button is pressed.</p>
 <p>Motion comes from <code>AccelX</code>, <code>AccelY</code> and <code>AccelZ</code> at 8192 counts per g and <code>GyroYaw</code> at 16 counts per degree per second, the same units the DualShock 4 and DualSense profiles use. The persona converts them to the DualShock 3's 10-bit sensors, 113 counts per g and 123 per 90 degrees per second, the scales Linux's <code>hid-sony.c</code> and RPCS3 use. A DualShock 3 has one gyro axis, so <code>GyroPitch</code> and <code>GyroRoll</code> are not sent. The battery byte reads 0xEE, charging, at every level and 0xEF with <code>BatteryFull</code>, as a DualShock 3 on USB reports. Through v1.12.0 an unset state read as a dying pad.</p>
+<h2 id="the-native-report-on-dualshock-3">The native report on <code>dualshock-3</code><a class="headerlink" href="#the-native-report-on-dualshock-3" title="Permanent link">&para;</a></h2>
+<p>Since v2.4.1 <code>dualshock-3</code> sends the native input report 0x01 its descriptor declares, all 49 bytes, from the first frame (<a href="https://github.com/hifihedgehog/HIDMaestro/issues/78">issue #78</a>), built from the same field list as <code>dualshock-3-full</code>'s native report, so the bytes match for the same state. Byte 0 is the report ID:</p>
+<table>
+<thead>
+<tr>
+<th>Bytes</th>
+<th>What <code>SubmitState</code> puts there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>Select (<code>Back</code>), L3 (<code>LeftStick</code>), R3 (<code>RightStick</code>) and Start in bits 0 to 3, and the D-pad's up, right, down and left from <code>Hat</code> in bits 4 to 7</td>
+</tr>
+<tr>
+<td>3</td>
+<td>L2, R2, L1 (<code>LeftBumper</code>), R1 (<code>RightBumper</code>), Triangle (<code>Y</code>), Circle (<code>B</code>), Cross (<code>A</code>) and Square (<code>X</code>) in bits 0 to 7. L2 and R2 are set while their trigger byte is above 0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>PS (<code>Guide</code>) in bit 0</td>
+</tr>
+<tr>
+<td>6 to 9</td>
+<td>The left stick's X and Y, then the right stick's, 0x80 at rest</td>
+</tr>
+<tr>
+<td>14 to 17</td>
+<td>The D-pad's pressure: up, right, down, left</td>
+</tr>
+<tr>
+<td>18, 19</td>
+<td>L2 and R2, the trigger values</td>
+</tr>
+<tr>
+<td>20 to 25</td>
+<td>The pressure of L1, R1, Triangle, Circle, Cross and Square</td>
+</tr>
+<tr>
+<td>30</td>
+<td>The battery, as above</td>
+</tr>
+<tr>
+<td>41 to 48</td>
+<td>Accelerometer X, Z and Y, then the yaw rate, each 10-bit and big-endian, 0x0200 at rest</td>
+</tr>
+</tbody>
+</table>
+<p>Every other HMButton bit sets nothing, <code>LeftTriggerClick</code> and <code>RightTriggerClick</code> among them. The pressure and motion rules above hold here too. The trigger values come from the axes the profile's <code>axisMap</code> names, Rx and Ry, where <code>HMGamepadStateHelpers.StandardAxes</code> puts them, and the right stick keeps Z and Rz. <code>SubmitRawReport</code> takes the whole 49-byte report with its ID as well as the 48-byte data-only frame. Through v2.4.0 the profile had no <code>buttonMap</code>, so HMButton bit n pressed button n and <code>A</code> pressed Select, and bytes 10 to 48 stayed 0.</p>
 <h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">&para;</a></h2>
 <p>On both profiles, rumble and LED writes arrive on <code>OutputDecoded</code> as report <code>0x01</code>, the native output report. <code>dualshock-3</code> decodes the report as a host writes it, since v1.10.1. <code>dualshock-3-full</code> also takes the sixaxis.sys form, described under How it works:</p>
 <table>
@@ -2124,6 +2195,7 @@
 <li>Rumble and LED writes in SDL's form and in RPCS3's form, decoded on <code>OutputDecoded</code>.</li>
 <li>Stock SDL with PCSX2's hints: a PS3 controller with 16 axes and 11 buttons, every pressure axis at the value submitted, the player LED SDL sets, and rumble.</li>
 <li>On <code>dualshock-3</code>, the native output report through <code>WriteFile</code> and <code>HidD_SetOutputReport</code>, every field decoded on <code>OutputDecoded</code>, a stop included.</li>
+<li>On <code>dualshock-3</code>, since v2.4.1, the native input report: each HMButton bit alone, each hat direction, the triggers at four values and the right stick at its corner, encoded offline and read back live through <code>ReadFile</code>, against the bytes SDL's PS3 driver, Linux's <code>hid-sony.c</code> and DsHidMini read. Its <code>buttonMap</code> puts each bit on the same button in a report built from the descriptor.</li>
 </ul>
 <p>Neither PCSX2 nor RPCS3 has been run against the persona.</p>
 <p>SDL's sixaxis driver reads the feature reply's motion words big-endian. DsHidMini and RPCS3 read them little-endian, and the persona follows DsHidMini, so SDL reports wrong accelerometer values through that driver, as it does on DsHidMini. PCSX2 uses no motion.</p>
